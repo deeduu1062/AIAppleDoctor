@@ -114,12 +114,38 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .pick .field.yr{flex:0 0 112px}
 .pick .btn-s{flex:none;min-height:46px;padding-inline:18px}
 .pick .btn-s:disabled{opacity:.45;cursor:default}
-.entryform{max-width:760px;margin-top:14px;border-color:var(--brand-bg);box-shadow:inset 0 0 0 1px var(--brand-bg)}
+.entryform{margin-top:14px;border-color:var(--brand-bg);box-shadow:inset 0 0 0 1px var(--brand-bg)}
 .entryform h4{font-size:1.1rem;font-weight:700;margin-bottom:10px}
 .entryform .dels{margin-top:12px}
 .entryform .linebox > .rowhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
 .entryform .rowhead b{font-size:.95rem}
 .entryform > .btn-s{margin-top:12px}
+.erow{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(6,minmax(0,1fr));gap:8px;align-items:end}
+.erow .field label{font-size:.8rem;margin-bottom:3px;line-height:1.2}
+.lotbox .field input,.lotbox .field select{min-height:38px;padding:5px 8px;font-size:.95rem}
+.lotbox .linebox{padding-top:8px;margin-top:8px}
+.lotbox .lothead{margin-bottom:4px}
+.lotbox .moreline{margin:4px 0 0;padding-top:0;border-top:0}
+.lotbox .moreline summary{padding:4px 0;font-size:.85rem}
+.entryform .rowhead b{font-size:.85rem;color:var(--muted)}
+.lottab{margin-top:12px}
+.lottab .tablewrap{margin-top:0}
+.ledger.sm{min-width:520px}
+.ledger.sm th,.ledger.sm td{padding:6px 10px;font-size:.88rem}
+.ledger.sm td.t{text-align:left;font-family:var(--body)}
+.lotbox{container-type:inline-size}
+@media (max-width:640px){
+  .erow{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .erow>.field:nth-child(-n+3){grid-column:span 4}
+  .erow>.field:nth-child(n+4){grid-column:span 3}
+  .erow .field label{font-size:.74rem}
+}
+@container (max-width:680px){
+  .erow{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .erow>.field:nth-child(-n+3){grid-column:span 4}
+  .erow>.field:nth-child(n+4){grid-column:span 3}
+  .erow .field label{font-size:.74rem}
+}
 .entrymsg{margin-top:10px;color:var(--good);font-weight:600;min-height:0}
 .addrow{display:flex;gap:8px;align-items:flex-end;margin-top:12px}
 .addrow .field{flex:1}
@@ -523,9 +549,10 @@ img{max-width:100%}
         <p class="entrymsg" id="entryMsg" role="status"></p>
         <form class="lotbox entryform" id="entryForm" novalidate hidden>
           <h4 id="ne_title"></h4>
+          <p class="hint" data-i18n="exp_note"></p>
           <div id="ne_rows"></div>
           <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button>
-          <div class="lotsum" id="ne_sum"></div>
+          <div class="lottab" id="ne_sum"></div>
           <p class="autherr" id="ne_err" role="alert"></p>
           <div class="dels"><button class="btn-s add" type="submit" data-i18n="ne_submit"></button><button class="btn-s" type="button" data-act="cancelentry" data-i18n="ne_cancel"></button></div>
         </form>
@@ -651,7 +678,7 @@ en: {
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
-  ne_h:"New lot: {o}, {y} ({l})", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"Lot saved to {o}, {y}.",
+  ne_h:"New lot: {o}, {y} ({l})", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"Lot saved to {o}, {y}.",
   lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
   lot_margin:"Lot margin before yearly costs",
   f_boxes:"Boxes sold", f_price:"Price per box (₹)", f_comm:"Commission (%)",
@@ -787,7 +814,7 @@ hi: {
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
-  ne_h:"नया लॉट: {o}, {y} ({l})", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"लॉट {o}, {y} में सहेज लिया गया।",
+  ne_h:"नया लॉट: {o}, {y} ({l})", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"लॉट {o}, {y} में सहेज लिया गया।",
   lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
   lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
   f_boxes:"बेची गई पेटियाँ", f_price:"प्रति पेटी भाव (₹)", f_comm:"कमीशन (%)",
@@ -1342,6 +1369,7 @@ function lastLineFor(oid, y) {
   for (const s of others) { const n = pick(s); if (n) return n; }
   return null;
 }
+const wb = t => esc(t).replace(/\//g, "/<wbr>");
 let draft = [];
 const EXPK = ["tod", "grd", "car", "exp"];
 function neRow(prev) { const r = {grade:"", boxes:"", rate:""}; EXPK.forEach(k => { r[k] = prev && +prev[k] ? String(+prev[k]) : ""; }); return r; }
@@ -1349,26 +1377,37 @@ const draftLine = r => Object.assign(blankLine(), {grade:r.grade, boxes:numOf(r.
 const draftFilled = r => !!(r.grade || numOf(r.boxes) || numOf(r.rate));
 function rowHtml(r, i) {
   const id = "ne" + i + "_";
-  const f = (k, lab) => '<div class="field"><label for="' + id + k + '">' + tr(lab) + '</label><input id="' + id + k + '" data-ne="' + i + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(r[k]) + '"></div>';
+  const f = (k, lab) => '<div class="field"><label for="' + id + k + '">' + wb(tr(lab)) + '</label><input id="' + id + k + '" data-ne="' + i + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(r[k]) + '"></div>';
   const typeSel = '<div class="field"><label for="' + id + 'grade">' + tr("f_type") + '</label><select id="' + id + 'grade" data-ne="' + i + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
     GRADES.map(g => '<option value="' + esc(g) + '"' + (g === r.grade ? " selected" : "") + ">" + esc(tr(GRADE_KEY[g])) + "</option>").join("") + "</select></div>";
   return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b>" +
     (draft.length > 1 ? '<button class="link" type="button" data-act="nerm" data-i="' + i + '">' + tr("ne_rm") + "</button>" : "") + "</div>" +
-    '<div class="grid tight">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + "</div>" +
-    '<p class="subhead">' + tr("exp_h") + '</p><div class="grid tight">' + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + "</div>" +
-    '<p class="linecalc" data-nelc="' + i + '"></p></div>';
+    '<div class="erow">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + "</div></div>";
 }
 function renderDraft() { $("ne_rows").innerHTML = draft.map(rowHtml).join(""); updDraft(); }
-function updDraft() {
-  document.querySelectorAll("[data-nelc]").forEach(el => {
-    const r = draft[+el.dataset.nelc]; if (!r) return;
-    if (!draftFilled(r)) { el.textContent = ""; return; }
-    const c = lineCalc(draftLine(r));
-    el.textContent = tr("lc").replace("{g}", inr(c.gross)).replace("{e}", inr(c.exp)).replace("{p}", inr(c.epb)).replace("{n}", inr(c.net));
+function lotTable(rows) {
+  if (!rows.length) return "";
+  const cls = n => (n < 0 ? "neg" : "pos");
+  const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
+  const head = ["ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"];
+  let h = '<div class="tablewrap"><table class="ledger sm"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>";
+  rows.forEach(x => {
+    const c = lineCalc(x[1]);
+    h += '<tr><th scope="row">' + x[0] + '</th><td class="t">' + esc(gname(x[1].grade)) + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) +
+      '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + "</td></tr>";
   });
-  const c = lotCalc({lines: draft.filter(draftFilled).map(draftLine)});
-  $("ne_sum").innerHTML = [["ls_boxes", fmtN(c.b)], ["ls_gross", inr(c.gross)], ["ls_exp", inr(c.exp)], ["ls_net", inr(c.net)], ["ls_ppb", inr(c.nppb)]]
-    .map(p => "<div><span>" + tr(p[0]) + "</span><b>" + p[1] + "</b></div>").join("");
+  h += "</tbody>";
+  if (rows.length > 1) {
+    const t = lotCalc({lines: rows.map(x => x[1])});
+    h += '<tfoot><tr><th scope="row" colspan="2">' + tr("ne_tot") + "</th><td>" + fmtN(t.b) + "</td><td>" + inr(t.gross) + "</td><td>" + inr(t.exp) +
+      '</td><td class="' + cls(t.net) + '">' + inr(t.net) + "</td><td>" + inr(t.nppb) + "</td></tr></tfoot>";
+  }
+  return h + "</table></div>";
+}
+function updDraft() {
+  const rows = [];
+  draft.forEach((r, i) => { if (draftFilled(r)) rows.push([i + 1, draftLine(r)]); });
+  $("ne_sum").innerHTML = lotTable(rows);
 }
 function openEntry() {
   const o = curOrchard(); if (!o || !sel.y) return;
@@ -1450,7 +1489,7 @@ function renderEditor() {
 }
 function lineHtml(n) {
   const id = "n_" + n.id;
-  const f = (k, type, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + tr(lab) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="' + type + '"' +
+  const f = (k, type, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + wb(tr(lab)) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="' + type + '"' +
     (type === "number" ? ' inputmode="decimal" min="0" step="any"' : "") + ' value="' + esc(v) + '"></div>';
   const c = (k, lab) => '<label class="chk"><input type="checkbox" data-line="' + n.id + '" data-f="' + k + '"' + (n[k] ? " checked" : "") + "> " + tr(lab) + "</label>";
   const opts = GRADES.slice();
@@ -1458,13 +1497,11 @@ function lineHtml(n) {
   const typeSel = '<div class="field"><label for="' + id + '_grade">' + tr("f_type") + '</label><select id="' + id + '_grade" data-line="' + n.id + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
     opts.map(g => '<option value="' + esc(g) + '"' + (g === n.grade ? " selected" : "") + ">" + esc(GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) + "</option>").join("") + "</select></div>";
   const more = !!(n.date || n.paidOn || n.half || n.paid);
-  return '<div class="linebox"><div class="grid tight">' + typeSel +
-    f("boxes", "number", "f_boxes", n.boxes || "") + f("rate", "number", "f_price", n.rate || "") + "</div>" +
-    '<p class="subhead">' + tr("exp_h") + '</p><div class="grid tight">' +
+  return '<div class="linebox"><div class="erow">' + typeSel +
+    f("boxes", "number", "f_boxes", n.boxes || "") + f("rate", "number", "f_price", n.rate || "") +
     f("tod", "number", "f_tod", n.tod || "") + f("grd", "number", "f_grd", n.grd || "") + f("car", "number", "f_car", n.car || "") + f("exp", "number", "f_oth", n.exp || "") + "</div>" +
     '<details class="manage moreline"' + (more ? " open" : "") + "><summary>" + tr("more_h") + '</summary><div class="grid tight">' + f("date", "date", "f_date", n.date) + f("paidOn", "date", "f_paidon", n.paidOn) +
     '</div><div class="checks">' + c("half", "f_half") + c("paid", "f_paid") + "</div></details>" +
-    '<p class="linecalc" data-lc="' + n.id + '"></p>' +
     '<button class="link" type="button" data-act="rmline" data-id="' + n.id + '">' + tr("line_remove") + "</button></div>";
 }
 function lotHtml(l) {
@@ -1472,7 +1509,7 @@ function lotHtml(l) {
     '<button class="btn-s" type="button" data-act="rmlot" data-id="' + l.id + '">' + tr("lot_remove") + "</button></div>" +
     l.lines.map(n => lineHtml(n)).join("") +
     '<button class="btn-s" type="button" data-act="addline" data-id="' + l.id + '">' + tr("line_add") + "</button>" +
-    '<div class="lotsum" data-lsum="' + l.id + '"></div></div>';
+    '<div class="lottab" data-lsum="' + l.id + '"></div></div>';
 }
 function renderDels() {
   const o = curOrchard(), se = curSeason();
@@ -1517,9 +1554,7 @@ function renderResults() {
   });
   document.querySelectorAll("[data-lsum]").forEach(el => {
     const l = se.lots.find(x => x.id === el.getAttribute("data-lsum")); if (!l) return;
-    const c = lotCalc(l);
-    el.innerHTML = [["ls_boxes", fmtN(c.b)], ["ls_gross", inr(c.gross)], ["ls_exp", inr(c.exp)], ["ls_net", inr(c.net)], ["ls_ppb", inr(c.nppb)]]
-      .map(p => "<div><span>" + tr(p[0]) + "</span><b>" + p[1] + "</b></div>").join("");
+    el.innerHTML = lotTable(l.lines.map((n, i) => [i + 1, n]).filter(x => +x[1].boxes || +x[1].rate));
   });
 }
 
