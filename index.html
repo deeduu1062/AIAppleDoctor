@@ -129,6 +129,13 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .lotbox .moreline summary{padding:4px 0;font-size:.85rem}
 .entryform .rowhead b{font-size:.85rem;color:var(--muted)}
 .lottab{margin-top:12px}
+.ledger tr.editing th,.ledger tr.editing td{background:var(--surface-2)}
+.ledger.sm td.acts{white-space:nowrap;text-align:right;font-family:var(--body)}
+.ledger.sm td.acts,.ledger.sm th.acts{position:sticky;right:0;background:var(--surface);box-shadow:-6px 0 6px -6px rgba(0,0,0,.25)}
+.ledger.sm tr.editing td.acts{background:var(--surface-2)}
+.ledger.sm td.acts .link{padding:2px 0;margin-left:12px;font-size:.88rem}
+.ledger.sm td.acts .ed{color:var(--muted);font-size:.85rem;font-weight:600}
+.ledger.sm td.acts .link.del{color:var(--bad)}
 .lottab .tablewrap{margin-top:0}
 .ledger.sm{min-width:520px}
 .ledger.sm th,.ledger.sm td{padding:6px 10px;font-size:.88rem}
@@ -550,9 +557,9 @@ img{max-width:100%}
         <form class="lotbox entryform" id="entryForm" novalidate hidden>
           <h4 id="ne_title"></h4>
           <p class="hint" data-i18n="exp_note"></p>
+          <div class="lottab" id="ne_sum"></div>
           <div id="ne_rows"></div>
           <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button>
-          <div class="lottab" id="ne_sum"></div>
           <p class="autherr" id="ne_err" role="alert"></p>
           <div class="dels"><button class="btn-s add" type="submit" data-i18n="ne_submit"></button><button class="btn-s" type="button" data-act="cancelentry" data-i18n="ne_cancel"></button></div>
         </form>
@@ -678,7 +685,7 @@ en: {
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
-  ne_h:"New lot: {o}, {y} ({l})", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"Lot saved to {o}, {y}.",
+  ne_h:"New lot: {o}, {y} ({l})", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"Lot saved to {o}, {y}.",
   lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
   lot_margin:"Lot margin before yearly costs",
   f_boxes:"Boxes sold", f_price:"Price per box (₹)", f_comm:"Commission (%)",
@@ -814,7 +821,7 @@ hi: {
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
-  ne_h:"नया लॉट: {o}, {y} ({l})", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"लॉट {o}, {y} में सहेज लिया गया।",
+  ne_h:"नया लॉट: {o}, {y} ({l})", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"लॉट {o}, {y} में सहेज लिया गया।",
   lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
   lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
   f_boxes:"बेची गई पेटियाँ", f_price:"प्रति पेटी भाव (₹)", f_comm:"कमीशन (%)",
@@ -1380,38 +1387,56 @@ function rowHtml(r, i) {
   const f = (k, lab) => '<div class="field"><label for="' + id + k + '">' + wb(tr(lab)) + '</label><input id="' + id + k + '" data-ne="' + i + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(r[k]) + '"></div>';
   const typeSel = '<div class="field"><label for="' + id + 'grade">' + tr("f_type") + '</label><select id="' + id + 'grade" data-ne="' + i + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
     GRADES.map(g => '<option value="' + esc(g) + '"' + (g === r.grade ? " selected" : "") + ">" + esc(tr(GRADE_KEY[g])) + "</option>").join("") + "</select></div>";
-  return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b>" +
-    (draft.length > 1 ? '<button class="link" type="button" data-act="nerm" data-i="' + i + '">' + tr("ne_rm") + "</button>" : "") + "</div>" +
+  return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b></div>" +
     '<div class="erow">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + "</div></div>";
 }
-function renderDraft() { $("ne_rows").innerHTML = draft.map(rowHtml).join(""); updDraft(); }
-function lotTable(rows) {
+let editIdx = 0;
+const rowOk = r => !!(r.grade && numOf(r.boxes) && numOf(r.rate));
+function renderDraft() {
+  if (editIdx < 0 || editIdx >= draft.length) editIdx = draft.length - 1;
+  $("ne_rows").innerHTML = draft.length ? rowHtml(draft[editIdx], editIdx) : "";
+  updDraft();
+}
+function focusNe(i, k) { const el = $("ne" + i + "_" + (k || "grade")); if (el) { el.focus(); if (el.scrollIntoView) el.scrollIntoView({block: "center"}); } }
+function curBad() {
+  const cur = draft[editIdx];
+  if (cur && draftFilled(cur) && !rowOk(cur)) {
+    set("ne_err", tr("ne_err").replace("{n}", editIdx + 1));
+    focusNe(editIdx, !cur.grade ? "grade" : !numOf(cur.boxes) ? "boxes" : "rate");
+    return true;
+  }
+  return false;
+}
+function lotTable(rows, acts) {
   if (!rows.length) return "";
   const cls = n => (n < 0 ? "neg" : "pos");
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
   const head = ["ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"];
-  let h = '<div class="tablewrap"><table class="ledger sm"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>";
+  let h = '<div class="tablewrap"><table class="ledger sm"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + (acts ? '<th scope="col" class="acts"></th>' : "") + "</tr></thead><tbody>";
   rows.forEach(x => {
     const c = lineCalc(x[1]);
-    h += '<tr><th scope="row">' + x[0] + '</th><td class="t">' + esc(gname(x[1].grade)) + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) +
-      '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + "</td></tr>";
+    const i = x[0] - 1, ed = acts && i === editIdx;
+    h += '<tr' + (ed ? ' class="editing"' : "") + '><th scope="row">' + x[0] + '</th><td class="t">' + esc(gname(x[1].grade)) + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) +
+      '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + "</td>" +
+      (acts ? '<td class="acts">' + (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" data-act="nedit" data-i="' + i + '">' + tr("ne_edit") + "</button>") +
+        '<button class="link del" type="button" data-act="nedel" data-i="' + i + '">' + tr("ne_del") + "</button></td>" : "") + "</tr>";
   });
   h += "</tbody>";
   if (rows.length > 1) {
     const t = lotCalc({lines: rows.map(x => x[1])});
     h += '<tfoot><tr><th scope="row" colspan="2">' + tr("ne_tot") + "</th><td>" + fmtN(t.b) + "</td><td>" + inr(t.gross) + "</td><td>" + inr(t.exp) +
-      '</td><td class="' + cls(t.net) + '">' + inr(t.net) + "</td><td>" + inr(t.nppb) + "</td></tr></tfoot>";
+      '</td><td class="' + cls(t.net) + '">' + inr(t.net) + "</td><td>" + inr(t.nppb) + "</td>" + (acts ? '<td class="acts"></td>' : "") + "</tr></tfoot>";
   }
   return h + "</table></div>";
 }
 function updDraft() {
   const rows = [];
   draft.forEach((r, i) => { if (draftFilled(r)) rows.push([i + 1, draftLine(r)]); });
-  $("ne_sum").innerHTML = lotTable(rows);
+  $("ne_sum").innerHTML = lotTable(rows, true);
 }
 function openEntry() {
   const o = curOrchard(); if (!o || !sel.y) return;
-  draft = [neRow(lastLineFor(o.id, sel.y))];
+  draft = [neRow(lastLineFor(o.id, sel.y))]; editIdx = 0;
   set("ne_err", ""); set("entryMsg", "");
   entryOpen = true; renderAll();
   $("ne0_grade").focus();
@@ -1422,14 +1447,13 @@ function onDraft(e) {
   r[t.dataset.f] = t.value; set("ne_err", ""); updDraft();
 }
 $("entryForm").addEventListener("input", onDraft);
-$("entryForm").addEventListener("change", onDraft);
 $("entryForm").addEventListener("submit", e => {
   e.preventDefault(); set("ne_err", "");
   const o = curOrchard(); if (!o || !sel.y) return;
   const rows = [];
   for (let i = 0; i < draft.length; i++) {
     const r = draft[i]; if (!draftFilled(r)) continue;
-    if (!r.grade || !numOf(r.boxes) || !numOf(r.rate)) { set("ne_err", tr("ne_err").replace("{n}", i + 1)); const el = $("ne" + i + "_" + (!r.grade ? "grade" : !numOf(r.boxes) ? "boxes" : "rate")); if (el) el.focus(); return; }
+    if (!rowOk(r)) { editIdx = i; renderDraft(); set("ne_err", tr("ne_err").replace("{n}", i + 1)); focusNe(i, !r.grade ? "grade" : !numOf(r.boxes) ? "boxes" : "rate"); return; }
     rows.push(draftLine(r));
   }
   if (!rows.length) { set("ne_err", tr("ne_none")); return; }
@@ -1654,9 +1678,10 @@ $("rp-orch").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b) return;
   const act = b.dataset.act;
   const thisYear = new Date().getFullYear();
-  if ((act === "rmlot" || act === "rmline") && !b.dataset.armed) {
-    b.dataset.armed = "1"; b.textContent = tr("rm_sure");
-    setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = tr(act === "rmlot" ? "lot_remove" : "line_remove"); } }, 3000);
+  if ((act === "rmlot" || act === "rmline" || act === "nedel") && !b.dataset.armed) {
+    const back = b.textContent;
+    b.dataset.armed = "1"; b.textContent = tr(act === "nedel" ? "ne_sure" : "rm_sure");
+    setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = back; } }, 3000);
     return;
   }
   if (act === "addorch") {
@@ -1668,8 +1693,30 @@ $("rp-orch").addEventListener("click", e => {
   } else if (act === "openentry") { openEntry(); return; }
   else if (act === "cancelentry") { entryOpen = false; draft = []; renderAll(); return; }
   else if (act === "nerow") {
-    draft.push(neRow(draft[draft.length - 1])); renderDraft();
-    const el = $("ne" + (draft.length - 1) + "_grade"); if (el) { el.focus(); el.scrollIntoView({block: "center"}); }
+    set("ne_err", "");
+    if (curBad()) return;
+    const cur = draft[editIdx];
+    if (cur && !draftFilled(cur)) { focusNe(editIdx); return; }
+    const blank = draft.findIndex(r => !draftFilled(r));
+    if (blank >= 0) editIdx = blank; else { draft.push(neRow(cur || draft[draft.length - 1])); editIdx = draft.length - 1; }
+    renderDraft(); focusNe(editIdx);
+    return;
+  } else if (act === "nedit") {
+    set("ne_err", "");
+    let i = +b.dataset.i; if (i === editIdx) return;
+    if (curBad()) return;
+    if (draft[editIdx] && !draftFilled(draft[editIdx])) { draft.splice(editIdx, 1); if (i > editIdx) i--; }
+    editIdx = i; renderDraft(); focusNe(editIdx);
+    return;
+  } else if (act === "nedel") {
+    set("ne_err", "");
+    const i = +b.dataset.i, gone = draft[i];
+    draft.splice(i, 1);
+    if (i === editIdx) {
+      const blank = draft.findIndex(r => !draftFilled(r));
+      if (blank >= 0) editIdx = blank; else { draft.push(neRow(draft[draft.length - 1] || gone)); editIdx = draft.length - 1; }
+    } else if (i < editIdx) editIdx--;
+    renderDraft();
     return;
   } else if (act === "nerm") { draft.splice(+b.dataset.i, 1); renderDraft(); return; }
   else if (act === "addyear") {
