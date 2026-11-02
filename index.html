@@ -7,7 +7,7 @@
 <title>Apple Doctor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Hind:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Khand:wght@500;600;700&family=Hind:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
 <style>
 /* Layout: a deep-green orchard band up top with a live example season, then a record-keeping calculator (orchards, years, lots), a yearly totals table, a plain roadmap list, and the apple year as a 12-month grid. */
 :root{
@@ -359,6 +359,67 @@ footer p{max-width:70ch}
 body{margin:0}
 img{max-width:100%}
 [hidden]{display:none!important}
+</style>
+
+<style>
+/* Theme: an apple orchard. Kraft apple-box (peti) banner with a printed label, Royal Delicious red, leaf green, bark-brown text. */
+:root{
+  --bg:#FAF7F1;--surface:#FFFFFF;--surface-2:#F1E8DA;--fg:#2E2018;--muted:#6B5646;--line:#E3D6C3;
+  --brand:#2F6B2F;--brand-bg:#2F6B2F;--on-brand:#FFFFFF;--on-brand-soft:#D9EAD0;--on-brand-line:rgba(255,255,255,.32);
+  --apple:#B11F24;--on-apple:#FFFFFF;--good:#2F7A34;--bad:#B3261E;
+  --kraft:#D8BA88;--kraft-ink:#7E1519;--kraft-soft:#5A4030;--kraft-line:rgba(70,45,25,.3);--label:#FFFCF6;--leaf:#3E8A3A;
+  --seg-pack:#C9862B;--seg-year:#8A6A52;--seg-profit:#2F7A34;
+  --display:"Khand","Hind",system-ui,sans-serif;
+  --mono:"Barlow Semi Condensed","Hind",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16110E;--surface:#211A15;--surface-2:#2C231C;--fg:#F2E9DD;--muted:#BCA995;--line:#3E3229;
+    --brand:#8CC47E;--brand-bg:#2F6B2F;--on-brand:#FFFFFF;--on-brand-soft:#CFE3C6;--on-brand-line:rgba(255,255,255,.28);
+    --apple:#E0504A;--on-apple:#FFFFFF;--good:#7CC27C;--bad:#FF8A7D;
+    --kraft:#4A3929;--kraft-ink:#F4B9A8;--kraft-soft:#DCC6AA;--kraft-line:rgba(240,225,200,.25);--label:#241C17;--leaf:#7CC27C;
+    --seg-pack:#D9A441;--seg-year:#A98A70;--seg-profit:#7CC27C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16110E;--surface:#211A15;--surface-2:#2C231C;--fg:#F2E9DD;--muted:#BCA995;--line:#3E3229;
+  --brand:#8CC47E;--brand-bg:#2F6B2F;--on-brand:#FFFFFF;--on-brand-soft:#CFE3C6;--on-brand-line:rgba(255,255,255,.28);
+  --apple:#E0504A;--on-apple:#FFFFFF;--good:#7CC27C;--bad:#FF8A7D;
+  --kraft:#4A3929;--kraft-ink:#F4B9A8;--kraft-soft:#DCC6AA;--kraft-line:rgba(240,225,200,.25);--label:#241C17;--leaf:#7CC27C;
+  --seg-pack:#D9A441;--seg-year:#A98A70;--seg-profit:#7CC27C;
+}
+h1,h2,h3,h4{font-weight:700;letter-spacing:0}
+.section h2{font-weight:700;letter-spacing:0;line-height:1.05}
+/* brand: an apple with a leaf */
+.brand{font-weight:700;font-size:1.5rem;letter-spacing:0;color:var(--apple)}
+.brand i{position:relative;width:16px;height:16px;border-radius:48% 48% 52% 52%/58% 58% 42% 42%;background:var(--apple);margin-top:3px}
+.brand i::before{content:"";position:absolute;left:7px;top:-4px;width:2px;height:5px;background:var(--fg);border-radius:1px}
+.brand i::after{content:"";position:absolute;left:9px;top:-6px;width:8px;height:5px;background:var(--leaf);border-radius:0 100% 0 100%;transform:rotate(-15deg)}
+/* the welcome banner is the side of a kraft apple box */
+.hero{color:var(--fg);background:repeating-linear-gradient(90deg,rgba(70,45,25,.05) 0 2px,transparent 2px 9px),var(--kraft);
+  --on-brand:var(--kraft-ink);--on-brand-soft:var(--kraft-soft);--on-brand-line:var(--kraft-line);--tree:rgba(47,107,47,.42);--tree-apple:rgba(177,31,36,.85)}
+.hero h1{color:var(--kraft-ink);font-size:clamp(2.8rem,10vw,5rem);line-height:.92}
+html[lang="hi"] .hero h1{line-height:1.15}
+.hero .greet{color:var(--fg);font-family:var(--body);font-weight:600}
+.kicker,.sample .tag,legend,.big-label,.months .m,.months .now,.pill{text-transform:none!important;letter-spacing:0!important;font-family:var(--body)!important;font-weight:600}
+.kicker{font-size:1.05rem;color:var(--kraft-ink)}
+legend{font-size:.95rem}
+.big-label{font-size:.95rem}
+.pill{font-size:.82rem}
+.btn.ghost{border-color:var(--kraft-line);color:var(--fg)}
+.btn.ghost:hover{border-color:var(--fg)}
+.join .btn.ghost{border-color:var(--on-brand-line);color:var(--on-brand)}
+.sample{background:var(--label);color:var(--fg);border:2px solid var(--apple);border-radius:14px;
+  box-shadow:0 0 0 5px var(--label),0 0 0 7px var(--apple),0 14px 26px rgba(60,35,15,.22);transform:rotate(-1.6deg)}
+@media (prefers-reduced-motion:no-preference){.sample{transition:transform .3s}.sample:hover{transform:rotate(0)}}
+.sample .tag{font-size:1rem;color:var(--apple)}
+.sample .lab,.sample .meta,.hrow span,.sample .note{color:var(--muted)}
+.sample .fig{color:var(--apple);font-weight:600}
+.sample .note{border-top-color:var(--line)}
+.join{background:#24502A}
+.months li[aria-current="date"]{background:var(--apple)}
+.months li[aria-current="date"] .m,.months .now{color:#FFE3DE}
+.tabbar .tab[aria-selected="true"]{color:var(--apple)}
 </style>
 </head>
 <body>
