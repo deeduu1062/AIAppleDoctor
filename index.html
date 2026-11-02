@@ -543,10 +543,10 @@ img{max-width:100%}
       <div id="recApp" hidden>
         <p class="status" id="status" aria-live="polite"></p>
         <div class="tabs" role="tablist">
-          <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="tab_year"></button>
-          <button class="tab" role="tab" id="rt-orch" aria-selected="true" aria-controls="rp-orch" type="button" data-i18n="tab_edit"></button>
+          <button class="tab" role="tab" id="rt-year" aria-selected="true" aria-controls="rp-year" type="button" data-i18n="tab_year"></button>
+          <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="tab_edit"></button>
         </div>
-<div class="panel" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch">
+<div class="panel single" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
       <div>
         <div class="pick">
           <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
@@ -600,7 +600,7 @@ img{max-width:100%}
       </div>
     </div>
 
-    <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year" hidden>
+    <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year">
       <div>
         <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
         <div id="yearDetail"></div>
@@ -1224,7 +1224,7 @@ async function loadMine() {
   if (loadFailed) { set("loadErrMsg", msg); renderOrchGate(); return; }
   S = parsed || makeSample();
   loaded = true; rev = 0; savedRev = 0; sel.o = null; sel.y = null; fixSel();
-  setStatus("st_cloud"); renderAll(); renderOrchGate();
+  setStatus("st_cloud"); entryOpen = false; showSub("year"); renderAll(); renderOrchGate();
   if (justSignedIn) { justSignedIn = false; showTool("orch", false, true); }
   else if (!tabPicked) showTool("orch");
 }
@@ -1484,7 +1484,6 @@ function renderEditor() {
   $("addEntryBtn").disabled = !o || addingO;
   if (!o || addingO) entryOpen = false;
   $("entryForm").hidden = !entryOpen;
-  $("rp-orch").classList.toggle("single", entryOpen);
   if (entryOpen) { $("resBox").hidden = true; $("headline").hidden = true; }
   if (entryOpen) {
     const nl = (se ? se.lots.length : 0) + 1;
@@ -1552,7 +1551,7 @@ function renderDels() {
 function renderResults() {
   const o = curOrchard(), se = curSeason();
   const has = !!(o && se);
-  $("resBox").hidden = !has || entryOpen;
+  $("resBox").hidden = true;
   $("headline").hidden = !has || entryOpen;
   if (!has) return;
   const r = seasonCalc(se);
