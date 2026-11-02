@@ -133,6 +133,11 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .lothead2{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .lothead2 b{font-family:var(--display);font-size:1.05rem}
 .lothead2 .link.del{color:var(--bad);font-size:.88rem}
+.possel{max-width:260px;margin-bottom:8px}
+.possel label{font-size:.8rem;margin-bottom:3px}
+.lothead2 .lotmv{display:flex;gap:14px;margin-left:auto}
+.lothead2 .lotmv .link{font-size:.88rem;padding:4px 0;color:var(--muted)}
+.lothead2 b small{font-family:var(--body);font-weight:500;font-size:.9rem;color:var(--muted)}
 .editbox{margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--surface-2)}
 .editbox .subhead{margin:0 0 2px}
 .editbox .linebox{border-top:0;margin-top:0;padding-top:0}
@@ -627,6 +632,7 @@ legend{font-size:.95rem}
         <p class="entrymsg" id="entryMsg" role="status"></p>
         <form class="lotbox entryform" id="entryForm" novalidate hidden>
           <h4 id="ne_title"></h4>
+          <div class="field possel"><label for="ne_pos" data-i18n="ne_pos"></label><select id="ne_pos"></select></div>
           <p class="hint" data-i18n="exp_note"></p>
           <div class="lottab" id="ne_sum"></div>
           <div id="ne_rows"></div>
@@ -756,7 +762,7 @@ en: {
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
-  ne_h:"New lot: {o}, {y} ({l})", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"Lot saved to {o}, {y}.",
+  ne_h:"New lot: {o}, {y}", ne_pos:"Save as", ne_end:"{l} (at the end)", lot_up:"Move up", lot_down:"Move down", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"{l} saved to {o}, {y}.",
   lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
   lot_margin:"Lot margin before yearly costs",
   f_boxes:"Boxes sold", f_price:"Price per box (₹)", f_comm:"Commission (%)",
@@ -858,7 +864,7 @@ en: {
   lang_btn:"हिंदी", orchard_fallback:"Orchard", lot_fallback:"Lot",
   calc_p:"Keep a record for each orchard and each year. Add every lot you sold with its boxes, rate and expense. Gross is boxes × rate, and net income is gross minus expenses.",
   lot_help:"Each lot shows its entries. Tap Edit to change an entry or Delete to remove it.", half_note:"A half box counts as half a box when working out net per box.",
-  f_lname:"Lot name (for example Part 1)", f_grade:"Grade or note (optional)", f_date:"Sale date (optional)",
+  f_lname:"Lot name (optional, for example the buyer or mandi)", f_grade:"Grade or note (optional)", f_date:"Sale date (optional)",
   f_boxes:"Boxes", f_rate:"Rate per box (₹)", f_exp:"Expense per box (₹)", f_paidon:"Payment date (optional)",
   f_half:"Half box", f_paid:"Payment received",
   line_add:"Add another grade or rate", line_remove:"Remove line", lot_remove:"Remove lot", rm_sure:"Tap again to remove",
@@ -892,7 +898,7 @@ hi: {
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
-  ne_h:"नया लॉट: {o}, {y} ({l})", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"लॉट {o}, {y} में सहेज लिया गया।",
+  ne_h:"नया लॉट: {o}, {y}", ne_pos:"किस नंबर पर सहेजें", ne_end:"{l} (आख़िर में)", lot_up:"ऊपर करें", lot_down:"नीचे करें", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"{l} {o}, {y} में सहेज लिया गया।",
   lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
   lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
   f_boxes:"बेची गई पेटियाँ", f_price:"प्रति पेटी भाव (₹)", f_comm:"कमीशन (%)",
@@ -994,7 +1000,7 @@ hi: {
   lang_btn:"English", orchard_fallback:"बाग़", lot_fallback:"लॉट",
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। बेचे गए हर लॉट की पेटियाँ, भाव और ख़र्च डालें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर।",
   lot_help:"हर लॉट में उसकी एंट्री दिखती हैं। किसी एंट्री को बदलने के लिए बदलें, हटाने के लिए हटाएँ दबाएँ।", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
-  f_lname:"लॉट का नाम (जैसे पार्ट 1)", f_grade:"ग्रेड या टिप्पणी (वैकल्पिक)", f_date:"बिक्री की तारीख़ (वैकल्पिक)",
+  f_lname:"लॉट का नाम (वैकल्पिक, जैसे ख़रीदार या मंडी)", f_grade:"ग्रेड या टिप्पणी (वैकल्पिक)", f_date:"बिक्री की तारीख़ (वैकल्पिक)",
   f_boxes:"पेटियाँ", f_rate:"प्रति पेटी भाव (₹)", f_exp:"प्रति पेटी ख़र्च (₹)", f_paidon:"भुगतान की तारीख़ (वैकल्पिक)",
   f_half:"आधी पेटी", f_paid:"भुगतान मिल गया",
   line_add:"एक और ग्रेड या भाव जोड़ें", line_remove:"यह पंक्ति हटाएँ", lot_remove:"लॉट हटाएँ", rm_sure:"हटाने के लिए दोबारा दबाएँ",
@@ -1440,7 +1446,9 @@ $("rp-year").addEventListener("click", e => {
 $("rt-orch").addEventListener("click", () => showSub("orch"));
 
 /* ---------- orchards panel ---------- */
-let addingO = false, entryOpen = false, editLine = null;
+let addingO = false, entryOpen = false, editLine = null, newPos = null;
+const autoName = n => !n || /^(lot|part|लॉट|पार्ट)\s*\d+$/i.test(String(n).trim());
+const lotNo = i => tr("lot_fallback") + " " + (i + 1);
 const lineBlank = n => !(+n.boxes || +n.rate || n.grade);
 function closeEditLine() {
   const se = curSeason();
@@ -1519,7 +1527,7 @@ function updDraft() {
 function openEntry() {
   const o = curOrchard(); if (!o || !sel.y) return;
   closeEditLine();
-  draft = [neRow(lastLineFor(o.id, sel.y))]; editIdx = 0;
+  draft = [neRow(lastLineFor(o.id, sel.y))]; editIdx = 0; newPos = null;
   set("ne_err", ""); set("entryMsg", "");
   entryOpen = true; renderAll();
   $("ne0_grade").focus();
@@ -1530,6 +1538,7 @@ function onDraft(e) {
   r[t.dataset.f] = t.value; set("ne_err", ""); updDraft();
 }
 $("entryForm").addEventListener("input", onDraft);
+$("ne_pos").addEventListener("change", e => { newPos = parseInt(e.target.value, 10) || null; });
 $("entryForm").addEventListener("submit", e => {
   e.preventDefault(); set("ne_err", "");
   const o = curOrchard(); if (!o || !sel.y) return;
@@ -1542,10 +1551,11 @@ $("entryForm").addEventListener("submit", e => {
   if (!rows.length) { set("ne_err", tr("ne_none")); return; }
   let se = curSeason();
   if (!se) { se = {id:newId(), oid:o.id, year:sel.y, costs:blankCosts(), lots:[]}; S.seasons.push(se); }
-  se.lots.push({id:newId(), name:tr("lot_fallback") + " " + (se.lots.length + 1), lines:rows});
+  const at = newPos && newPos <= se.lots.length ? newPos - 1 : se.lots.length;
+  se.lots.splice(at, 0, {id:newId(), name:"", lines:rows});
   entryOpen = false; draft = [];
   save(); renderAll();
-  set("entryMsg", tr("ne_ok").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y));
+  set("entryMsg", tr("ne_ok").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y).replace("{l}", lotNo(at)));
 });
 function renderEditor() {
   const o = curOrchard(), se = curSeason();
@@ -1568,8 +1578,11 @@ function renderEditor() {
   $("entryForm").hidden = !entryOpen;
   if (entryOpen) { $("resBox").hidden = true; $("headline").hidden = true; }
   if (entryOpen) {
-    const nl = (se ? se.lots.length : 0) + 1;
-    set("ne_title", tr("ne_h").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y).replace("{l}", tr("lot_fallback") + " " + nl));
+    const cnt = se ? se.lots.length : 0, pos = newPos && newPos <= cnt + 1 ? newPos : cnt + 1;
+    set("ne_title", tr("ne_h").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y));
+    let po = "";
+    for (let k = 1; k <= cnt + 1; k++) po += '<option value="' + k + '"' + (k === pos ? " selected" : "") + ">" + (k === cnt + 1 ? tr("ne_end").replace("{l}", lotNo(k - 1)) : lotNo(k - 1)) + "</option>";
+    $("ne_pos").innerHTML = po;
     renderDraft();
   }
   $("addOrchRow").hidden = !addingO;
@@ -1584,7 +1597,7 @@ function renderEditor() {
   else if (!se) h = '<p class="empty">' + tr("empty_year") + "</p>";
   else {
     h += "<fieldset><legend>" + tr("lots_h") + '</legend><p class="hint">' + tr("lot_help") + " " + tr("half_note") + '</p>';
-    se.lots.forEach(l => { h += lotHtml(l); });
+    se.lots.forEach((l, i) => { h += lotHtml(l, i, se.lots.length); });
     h += "</fieldset>";
     const hasC = COST_KEYS.some(k => +se.costs[k] > 0);
     h += '<details class="manage"' + (hasC ? " open" : "") + "><summary>" + tr("g_year") + '</summary><p class="hint">' + tr("costs_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
@@ -1611,13 +1624,15 @@ function lineHtml(n) {
     '</div><div class="checks">' + c("half", "f_half") + c("paid", "f_paid") + "</div></details>" +
     "</div>";
 }
-function lotHtml(l) {
+function lotHtml(l, i, cnt) {
   const n = editLine && editLine.lot === l.id ? l.lines.find(x => x.id === editLine.line) : null;
-  return '<div class="lotbox"><div class="lothead2"><b>' + esc(l.name || tr("lot_fallback")) + "</b>" +
+  return '<div class="lotbox"><div class="lothead2"><b>' + lotNo(i) + (autoName(l.name) ? "" : " <small>(" + esc(l.name) + ")</small>") + "</b>" +
+    '<span class="lotmv">' + (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + l.id + '">' + tr("lot_up") + "</button>" : "") +
+    (i < cnt - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + l.id + '">' + tr("lot_down") + "</button>" : "") + "</span>" +
     '<button class="link del" type="button" data-act="rmlot" data-id="' + l.id + '">' + tr("lot_remove") + "</button></div>" +
     '<div class="lottab" data-lsum="' + l.id + '"></div>' +
     (n ? '<div class="editbox"><p class="subhead">' + tr("ne_editing") + "</p>" + lineHtml(n) +
-      '<div class="field lname"><label for="l_' + l.id + '_name">' + tr("f_lname") + '</label><input id="l_' + l.id + '_name" data-lot="' + l.id + '" data-f="name" type="text" maxlength="60" value="' + esc(l.name) + '"></div>' +
+      '<div class="field lname"><label for="l_' + l.id + '_name">' + tr("f_lname") + '</label><input id="l_' + l.id + '_name" data-lot="' + l.id + '" data-f="name" type="text" maxlength="60" value="' + esc(autoName(l.name) ? "" : l.name) + '"></div>' +
       '<div class="dels"><button class="btn-s add" type="button" data-act="sdone">' + tr("ne_done") + "</button></div></div>"
       : '<button class="btn-s" type="button" data-act="addline" data-id="' + l.id + '">' + tr("ne_more") + "</button>") +
     "</div>";
@@ -1826,6 +1841,11 @@ $("rp-orch").addEventListener("click", e => {
     if (filled.length) nl.exp = +filled[filled.length - 1].exp || 0;
     l.lines.push(nl); editLine = {lot: l.id, line: nl.id};
     fixSel(); save(); renderAll(); const el = $("n_" + nl.id + "_grade"); if (el) el.focus(); return;
+  } else if (act === "lotup" || act === "lotdown") {
+    const se = curSeason(); if (!se) return;
+    const i = se.lots.findIndex(x => x.id === b.dataset.id), j = act === "lotup" ? i - 1 : i + 1;
+    if (i < 0 || j < 0 || j >= se.lots.length) return;
+    const t = se.lots[i]; se.lots[i] = se.lots[j]; se.lots[j] = t;
   } else if (act === "sedit") {
     closeEditLine(); editLine = {lot: b.dataset.lot, line: b.dataset.id};
     renderAll(); const el = $("n_" + b.dataset.id + "_grade"); if (el) { el.focus(); el.scrollIntoView({block: "center"}); } return;
