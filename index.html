@@ -514,7 +514,7 @@ img{max-width:100%}
           <button class="btn-s add" type="button" data-act="addorch" data-i18n="add_btn"></button>
         </div>
         <div class="addrow" id="addYearRow" hidden>
-          <div class="field"><label for="newYear" data-i18n="ph_year"></label><input id="newYear" type="number" inputmode="numeric" min="2000" max="2100" step="1"></div>
+          <div class="field"><label for="newYear" data-i18n="ph_year"></label><select id="newYear"></select></div>
           <button class="btn-s add" type="button" data-act="addyear" data-i18n="add_btn"></button>
         </div>
         <div id="exBanner" class="banner" hidden>
@@ -630,7 +630,7 @@ en: {
   calc_h:"Profit calculator",
   calc_p:"Keep a record for each orchard and each year. Profit per orchard and per year works itself out. The first records are examples you can clear.",
   tab_orch:"My orchards", tab_year:"Yearly profit", tab_cmp:"Mandi or ladhani?", reset:"Put back the example numbers",
-  lbl_orchard:"Orchard", lbl_year:"Year", add_btn:"Add", ph_orchard:"New orchard name", ph_year:"Add a year, for example 2026",
+  lbl_orchard:"Orchard", lbl_year:"Year", add_btn:"Add", ph_orchard:"New orchard name", ph_year:"Choose the year to add",
   manage:"Rename, trees, delete", f_oname:"Orchard name", f_trees:"Number of trees (optional)",
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
@@ -765,7 +765,7 @@ hi: {
   calc_h:"मुनाफ़ा कैलकुलेटर",
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। हर बाग़ और हर साल का मुनाफ़ा अपने आप निकल आता है। शुरू के रिकॉर्ड उदाहरण हैं, जिन्हें आप हटा सकते हैं।",
   tab_orch:"मेरे बाग़", tab_year:"साल भर का मुनाफ़ा", tab_cmp:"मंडी या लदानी?", reset:"उदाहरण वाले आँकड़े वापस लाएँ",
-  lbl_orchard:"बाग़", lbl_year:"साल", add_btn:"जोड़ें", ph_orchard:"नए बाग़ का नाम", ph_year:"साल जोड़ें, जैसे 2026",
+  lbl_orchard:"बाग़", lbl_year:"साल", add_btn:"जोड़ें", ph_orchard:"नए बाग़ का नाम", ph_year:"जोड़ने के लिए साल चुनें",
   manage:"नाम बदलें, पेड़, हटाएँ", f_oname:"बाग़ का नाम", f_trees:"पेड़ों की संख्या (वैकल्पिक)",
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
@@ -1323,13 +1323,17 @@ function renderEditor() {
     '<option value="__new"' + (addingO ? " selected" : "") + ">" + tr("opt_new_o") + "</option>";
   $("selOrchard").disabled = false;
   const years = seasonsOf(sel.o).map(s => s.year).sort((a, b) => b - a);
+  const thisY = new Date().getFullYear(), free = [];
+  for (let i = 0; i < 10; i++) if (years.indexOf(thisY - i) < 0) free.push(thisY - i);
   if (o && !years.length) addingY = true;
+  if (!free.length) addingY = false;
+  $("newYear").innerHTML = free.map(y => '<option value="' + y + '">' + y + "</option>").join("");
   $("selYear").innerHTML = years.map(y => '<option value="' + y + '"' + (y === sel.y && !addingY ? " selected" : "") + ">" + y + "</option>").join("") +
-    (o ? '<option value="__new"' + (addingY ? " selected" : "") + ">" + tr("opt_new_y") + "</option>" : "");
+    (o && free.length ? '<option value="__new"' + (addingY ? " selected" : "") + ">" + tr("opt_new_y") + "</option>" : "");
   $("selYear").disabled = !o;
   $("addOrchRow").hidden = !addingO;
   $("addYearRow").hidden = !(addingY && o && !addingO);
-  if (!$("addYearRow").hidden && !$("newYear").value) $("newYear").value = new Date().getFullYear();
+
   $("exBanner").hidden = !S.orchards.some(x => x.ex);
   $("manage").hidden = !o;
   if (o) { $("oname").value = o.name || ""; $("otrees").value = o.trees || ""; }
@@ -1538,9 +1542,9 @@ $("rp-orch").addEventListener("click", e => {
   } else if (act === "addyear") {
     if (!curOrchard()) return;
     const y = Math.round(numOf($("newYear").value));
-    if (y < 2000 || y > 2100) return;
+    if (!(y >= 2000 && y <= 2100)) return;
     if (!S.seasons.some(s => s.oid === sel.o && s.year === y)) S.seasons.push({id:newId(), oid:sel.o, year:y, costs:blankCosts(), lots:[blankLot(tr("lot_fallback") + " 1")]});
-    sel.y = y; $("newYear").value = ""; addingY = false;
+    sel.y = y; addingY = false;
   } else if (act === "addlot") {
     const se = curSeason(); if (!se) return;
     const lastLot = se.lots[se.lots.length - 1];
