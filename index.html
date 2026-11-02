@@ -358,7 +358,7 @@ img{max-width:100%}
     <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
     <nav class="nav" aria-label="Account and language"><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
   </header>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -543,8 +543,8 @@ img{max-width:100%}
       <div id="recApp" hidden>
         <p class="status" id="status" aria-live="polite"></p>
         <div class="tabs" role="tablist">
-          <button class="tab" role="tab" id="rt-orch" aria-selected="true" aria-controls="rp-orch" type="button" data-i18n="tab_edit"></button>
           <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="tab_year"></button>
+          <button class="tab" role="tab" id="rt-orch" aria-selected="true" aria-controls="rp-orch" type="button" data-i18n="tab_edit"></button>
         </div>
 <div class="panel" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch">
       <div>
@@ -1167,6 +1167,7 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
 let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
+let tabPicked = false;
 let user = null, loaded = false, loadFailed = false, pendingEmail = "";
 let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink/.test(String(location.hash) + String(location.search));
 let saving = false, again = false, saveTimer = null, rev = 0, savedRev = 0;
@@ -1192,7 +1193,7 @@ window.addEventListener("online", () => { if (isDirty()) flush(); });
 window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
 
 function renderAcct() {
-  $("acctBar").hidden = !user; $("orIntro").hidden = !!user;
+  $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user;
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || ""));
   if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail));
@@ -1225,6 +1226,7 @@ async function loadMine() {
   loaded = true; rev = 0; savedRev = 0; sel.o = null; sel.y = null; fixSel();
   setStatus("st_cloud"); renderAll(); renderOrchGate();
   if (justSignedIn) { justSignedIn = false; showTool("orch", false, true); }
+  else if (!tabPicked) showTool("orch");
 }
 async function applyUser(u) {
   const changed = (u ? u.id : null) !== (user ? user.id : null);
@@ -1758,7 +1760,7 @@ $("rp-orch").addEventListener("click", e => {
 });
 
 /* ---- top tabs ---- */
-const TT = ["calc","diag","spray","cal","mandi","buy","orch"];
+const TT = ["orch","calc","diag","spray","cal","mandi","buy"];
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -1774,7 +1776,7 @@ function showTool(w, focus, scroll) {
 }
 TT.forEach((n, i) => {
   const b = $("tt-" + n);
-  b.addEventListener("click", () => showTool(n, false, true));
+  b.addEventListener("click", () => { tabPicked = true; showTool(n, false, true); });
   b.addEventListener("keydown", e => {
     let j = -1;
     if (e.key === "ArrowRight") j = (i + 1) % TT.length;
