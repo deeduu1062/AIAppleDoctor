@@ -454,9 +454,12 @@ img{max-width:100%}
         <p data-i18n="auth_p"></p>
         <div id="authStep1">
           <form id="authForm" novalidate>
-            <div class="field"><label for="authEmail" data-i18n="auth_email"></label><input id="authEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false"></div>
+            <div class="field"><label for="authEmail" data-i18n="auth_email"></label><input id="authEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+            <div class="field"><label for="authPw" data-i18n="auth_pw"></label><input id="authPw" type="password" autocomplete="current-password"></div>
             <p class="autherr" id="authErr" role="alert"></p>
-            <button class="btn-s add" type="submit" id="authSend" data-i18n="auth_send"></button>
+            <p class="sentmsg" id="authInfo" role="status"></p>
+            <div class="dels"><button class="btn-s add" type="submit" id="authSignIn" data-i18n="auth_signin"></button><button class="btn-s" type="button" id="authCreate" data-i18n="auth_create"></button></div>
+            <div class="dels"><button class="link" type="button" id="authForgot" data-i18n="auth_forgot"></button><button class="link" type="button" id="authSend" data-i18n="auth_send"></button></div>
           </form>
         </div>
         <div id="authStep2" hidden>
@@ -469,6 +472,17 @@ img{max-width:100%}
         </div>
       </div>
 
+      <div class="authcard" id="pwCard" hidden>
+        <h3 data-i18n="pw_h"></h3>
+        <p data-i18n="pw_p"></p>
+        <form id="pwForm" novalidate>
+          <div class="field"><label for="pwNew" data-i18n="pw_new"></label><input id="pwNew" type="password" autocomplete="new-password"></div>
+          <p class="autherr" id="pwErr" role="alert"></p>
+          <p class="sentmsg" id="pwOk" role="status"></p>
+          <div class="dels"><button class="btn-s add" type="submit" data-i18n="pw_save"></button><button class="btn-s" type="button" id="pwCancel" data-i18n="pw_cancel"></button></div>
+        </form>
+      </div>
+
       <div class="authcard" id="loadErr" hidden>
         <h3 data-i18n="load_h"></h3>
         <p class="autherr" id="loadErrMsg"></p>
@@ -476,7 +490,7 @@ img{max-width:100%}
       </div>
 
       <div id="recApp" hidden>
-        <div class="acctbar"><span id="acct_email"></span><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div>
+        <div class="acctbar"><span id="acct_email"></span><button class="link" type="button" id="setPw" data-i18n="acct_setpw"></button><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div>
         <p class="status" id="status" aria-live="polite"></p>
         <div class="tabs" role="tablist">
           <button class="tab" role="tab" id="rt-orch" aria-selected="true" aria-controls="rp-orch" type="button" data-i18n="tab_edit"></button>
@@ -693,8 +707,14 @@ en: {
   pc_rec:"To keep every lot for each orchard and see your total for each year, you will need to sign in. Sign-in is coming next, and your records will stay private to your account.",
   tt_orch:"My orchards", hdr_signin:"Sign in", hdr_mine:"My orchards", s_signin:"Sign in needed", s_signedin:"Signed in",
   or_p:"Create your own private account to keep your orchards, sale lots and yearly totals. Only you can see them, and they are there on any phone you sign in on.",
-  auth_h:"Sign in or create your account", auth_p:"Enter your email and we will send you a sign-in link. There is no password to remember. If you are new, the same step creates your account.",
-  auth_email:"Email address", auth_send:"Email me a sign-in link",
+  auth_h:"Sign in or create your account", auth_p:"Sign in with your email and password. New here? Choose a password and tap Create account. You can also ask for a sign-in link by email instead of using a password.",
+  auth_email:"Email address", auth_send:"Email me a sign-in link instead",
+  auth_pw:"Password", auth_signin:"Sign in", auth_create:"Create account", auth_forgot:"Forgot password?",
+  auth_err_pw:"Enter a password of at least 8 characters.", auth_err_cred:"Wrong email or password.",
+  auth_confirm:"We sent a confirmation email to {e}. Open it, tap the link, then sign in.",
+  auth_reset_sent:"If {e} has an account, we sent a link to reset the password.",
+  pw_h:"Set a password", pw_p:"Choose a password for next time. Use at least 8 characters.", pw_new:"New password", pw_save:"Save password", pw_cancel:"Cancel",
+  pw_ok:"Password saved. You can now sign in with your email and this password.", acct_setpw:"Set or change password",
   auth_sent:"We sent an email to {e}. Open it on this phone and tap the link. If it shows a 6-digit code instead, type the code below.",
   auth_code:"6-digit code (if your email has one)", auth_verify:"Sign in with code", auth_other:"Use a different email",
   auth_err_email:"Enter a valid email address.", auth_err_lib:"Sign-in could not load. Check your internet connection and refresh the page.",
@@ -818,8 +838,14 @@ hi: {
   pc_rec:"हर बाग़ का हर लॉट सहेजने और हर साल का कुल देखने के लिए आपको साइन इन करना होगा। साइन-इन अगला काम है, और आपका रिकॉर्ड सिर्फ़ आपके खाते में रहेगा।",
   tt_orch:"मेरे बाग़", hdr_signin:"साइन इन", hdr_mine:"मेरे बाग़", s_signin:"साइन इन ज़रूरी", s_signedin:"साइन इन है",
   or_p:"अपने बाग़, बिक्री के लॉट और साल भर के कुल सहेजने के लिए अपना निजी खाता बनाएँ। इन्हें सिर्फ़ आप देख सकते हैं, और जिस भी फ़ोन पर साइन इन करें वहाँ मिलेंगे।",
-  auth_h:"साइन इन करें या अपना खाता बनाएँ", auth_p:"अपना ईमेल डालें, हम आपको साइन-इन लिंक भेजेंगे। याद रखने के लिए कोई पासवर्ड नहीं। अगर आप नए हैं तो यही क़दम आपका खाता बना देता है।",
-  auth_email:"ईमेल पता", auth_send:"मुझे साइन-इन लिंक ईमेल करें",
+  auth_h:"साइन इन करें या अपना खाता बनाएँ", auth_p:"अपने ईमेल और पासवर्ड से साइन इन करें। नए हैं? पासवर्ड चुनें और खाता बनाएँ दबाएँ। चाहें तो पासवर्ड की जगह ईमेल से साइन-इन लिंक भी मँगवा सकते हैं।",
+  auth_email:"ईमेल पता", auth_send:"इसकी जगह साइन-इन लिंक ईमेल करें",
+  auth_pw:"पासवर्ड", auth_signin:"साइन इन", auth_create:"खाता बनाएँ", auth_forgot:"पासवर्ड भूल गए?",
+  auth_err_pw:"कम से कम 8 अक्षरों का पासवर्ड डालें।", auth_err_cred:"ईमेल या पासवर्ड ग़लत है।",
+  auth_confirm:"हमने {e} पर पुष्टि वाला ईमेल भेजा है। उसे खोलें, लिंक दबाएँ, फिर साइन इन करें।",
+  auth_reset_sent:"अगर {e} का खाता है, तो हमने पासवर्ड बदलने का लिंक भेजा है।",
+  pw_h:"पासवर्ड बनाएँ", pw_p:"अगली बार के लिए पासवर्ड चुनें। कम से कम 8 अक्षर रखें।", pw_new:"नया पासवर्ड", pw_save:"पासवर्ड सहेजें", pw_cancel:"रद्द करें",
+  pw_ok:"पासवर्ड सहेज लिया गया। अब आप अपने ईमेल और इस पासवर्ड से साइन इन कर सकते हैं।", acct_setpw:"पासवर्ड बनाएँ या बदलें",
   auth_sent:"हमने {e} पर ईमेल भेजा है। इसे इसी फ़ोन पर खोलें और लिंक दबाएँ। अगर उसमें 6 अंकों का कोड दिखे, तो नीचे वही कोड डालें।",
   auth_code:"6 अंकों का कोड (अगर ईमेल में हो)", auth_verify:"कोड से साइन इन करें", auth_other:"दूसरा ईमेल इस्तेमाल करें",
   auth_err_email:"सही ईमेल पता डालें।", auth_err_lib:"साइन-इन लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।",
@@ -1098,9 +1124,11 @@ function renderAcct() {
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || ""));
   if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail));
 }
+let recovering = false, pwOpen = false;
 function renderOrchGate() {
-  const ready = !!(user && loaded);
+  const ready = !!(user && loaded) && !recovering;
   $("authCard").hidden = !!user;
+  $("pwCard").hidden = !(user && (recovering || pwOpen));
   $("loadErr").hidden = !(user && !loaded && loadFailed);
   $("recApp").hidden = !ready;
   $("orchPill").className = "pill" + (user ? " live" : "");
@@ -1129,14 +1157,14 @@ async function applyUser(u) {
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
   if (!u) {
-    S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = "";
+    S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false;
     $("authStep1").hidden = false; $("authStep2").hidden = true;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
   if (changed) await loadMine();
 }
 if (sb) {
-  sb.auth.onAuthStateChange((ev, session) => { setTimeout(() => { applyUser(session ? session.user : null); }, 0); });
+  sb.auth.onAuthStateChange((ev, session) => { if (ev === "PASSWORD_RECOVERY") { recovering = true; justSignedIn = true; } setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") renderOrchGate(); }, 0); });
   sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); }).catch(() => {});
 }
 
@@ -1144,20 +1172,72 @@ function netMsg(err) {
   const m = String((err && err.message) || err || "");
   return /fetch|network|failed|load/i.test(m) ? tr("auth_err_net") : tr("auth_err_send").replace("{m}", m);
 }
-$("authForm").addEventListener("submit", async e => {
-  e.preventDefault(); set("authErr", "");
+function authEmailOk() {
   const email = $("authEmail").value.trim();
-  if (!/^\S+@\S+\.\S+$/.test(email)) { set("authErr", tr("auth_err_email")); return; }
-  if (!sb) { set("authErr", tr("auth_err_lib")); return; }
-  $("authSend").disabled = true;
+  if (!/^\S+@\S+\.\S+$/.test(email)) { set("authErr", tr("auth_err_email")); return ""; }
+  if (!sb) { set("authErr", tr("auth_err_lib")); return ""; }
+  return email;
+}
+function authBusy(on) { ["authSignIn", "authCreate", "authForgot", "authSend"].forEach(id => { $(id).disabled = on; }); }
+function authClear() { set("authErr", ""); set("authInfo", ""); }
+$("authForm").addEventListener("submit", async e => {
+  e.preventDefault(); authClear();
+  const email = authEmailOk(); if (!email) return;
+  const pw = $("authPw").value;
+  if (!pw) { set("authErr", tr("auth_err_pw")); return; }
+  authBusy(true); justSignedIn = true;
+  let err = null;
+  try { const res = await sb.auth.signInWithPassword({email: email, password: pw}); err = res.error; } catch (x) { err = x; }
+  authBusy(false);
+  if (err) { justSignedIn = false; set("authErr", /invalid login/i.test(String(err.message || "")) ? tr("auth_err_cred") : netMsg(err)); }
+});
+$("authCreate").addEventListener("click", async () => {
+  authClear();
+  const email = authEmailOk(); if (!email) return;
+  const pw = $("authPw").value;
+  if (pw.length < 8) { set("authErr", tr("auth_err_pw")); return; }
+  authBusy(true); justSignedIn = true;
+  let err = null, res = null;
+  try { res = await sb.auth.signUp({email: email, password: pw, options: {emailRedirectTo: location.origin + location.pathname}}); err = res.error; } catch (x) { err = x; }
+  authBusy(false);
+  if (err) { justSignedIn = false; set("authErr", netMsg(err)); return; }
+  if (!(res.data && res.data.session)) { justSignedIn = false; set("authInfo", tr("auth_confirm").replace("{e}", email)); }
+});
+$("authForgot").addEventListener("click", async () => {
+  authClear();
+  const email = authEmailOk(); if (!email) return;
+  authBusy(true);
+  let err = null;
+  try { const res = await sb.auth.resetPasswordForEmail(email, {redirectTo: location.origin + location.pathname}); err = res.error; } catch (x) { err = x; }
+  authBusy(false);
+  if (err) { set("authErr", netMsg(err)); return; }
+  set("authInfo", tr("auth_reset_sent").replace("{e}", email));
+});
+$("authSend").addEventListener("click", async () => {
+  authClear();
+  const email = authEmailOk(); if (!email) return;
+  authBusy(true);
   let err = null;
   try {
     const res = await sb.auth.signInWithOtp({email: email, options: {shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname}});
     err = res.error;
   } catch (x) { err = x; }
-  $("authSend").disabled = false;
+  authBusy(false);
   if (err) { set("authErr", netMsg(err)); return; }
   pendingEmail = email; $("authStep1").hidden = true; $("authStep2").hidden = false; renderAcct();
+});
+$("setPw").addEventListener("click", () => { pwOpen = true; set("pwErr", ""); set("pwOk", ""); $("pwNew").value = ""; renderOrchGate(); $("pwCard").scrollIntoView({block: "center"}); });
+$("pwCancel").addEventListener("click", () => { pwOpen = false; recovering = false; renderOrchGate(); if (user && !loaded && !loadFailed) loadMine(); });
+$("pwForm").addEventListener("submit", async e => {
+  e.preventDefault(); set("pwErr", ""); set("pwOk", "");
+  const pw = $("pwNew").value;
+  if (pw.length < 8) { set("pwErr", tr("auth_err_pw")); return; }
+  if (!sb) { set("pwErr", tr("auth_err_lib")); return; }
+  let err = null;
+  try { const res = await sb.auth.updateUser({password: pw}); err = res.error; } catch (x) { err = x; }
+  if (err) { set("pwErr", netMsg(err)); return; }
+  $("pwNew").value = ""; set("pwOk", tr("pw_ok")); recovering = false; renderOrchGate();
+  setTimeout(() => { pwOpen = false; renderOrchGate(); }, 2500);
 });
 $("codeForm").addEventListener("submit", async e => {
   e.preventDefault(); set("authCodeErr", "");
@@ -1168,7 +1248,7 @@ $("codeForm").addEventListener("submit", async e => {
   try { const res = await sb.auth.verifyOtp({email: pendingEmail, token: token, type: "email"}); err = res.error; } catch (x) { err = x; }
   if (err) { justSignedIn = false; set("authCodeErr", tr("auth_err_code")); }
 });
-$("authOther").addEventListener("click", () => { pendingEmail = ""; $("authStep1").hidden = false; $("authStep2").hidden = true; set("authErr", ""); });
+$("authOther").addEventListener("click", () => { pendingEmail = ""; $("authStep1").hidden = false; $("authStep2").hidden = true; authClear(); });
 $("signOut").addEventListener("click", async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} applyUser(null); });
 $("loadRetry").addEventListener("click", () => { if (user) loadMine(); });
 $("signBtn").addEventListener("click", () => showTool("orch", false, true));
