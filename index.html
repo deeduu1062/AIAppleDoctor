@@ -1,0 +1,1477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Apple Doctor: free tools and simple guidance for apple growers in Himachal Pradesh and Kashmir.">
+<title>Apple Doctor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Hind:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a deep-green orchard band up top with a live example season, then a record-keeping calculator (orchards, years, lots), a yearly totals table, a plain roadmap list, and the apple year as a 12-month grid. */
+:root{
+  --bg:#F1F5EE;--surface:#FFFFFF;--surface-2:#E6EDE2;--fg:#15251B;--muted:#4F6256;--line:#C9D6C5;
+  --brand:#1F4D34;--brand-bg:#1F4D34;--on-brand:#F1F5EE;--on-brand-soft:#B9D0C0;--on-brand-line:rgba(241,245,238,.25);
+  --apple:#B8321F;--on-apple:#FFFFFF;
+  --good:#16723F;--bad:#B3261E;
+  --seg-lab:#8A6A45;--seg-pack:#3E7B58;--seg-comm:#C28A1E;--seg-year:#5F7391;--seg-profit:#16723F;
+  --tree:rgba(241,245,238,.08);--tree-apple:rgba(210,80,60,.55);
+  --display:"Bricolage Grotesque","Hind",system-ui,sans-serif;
+  --body:"Hind",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1711;--surface:#15221A;--surface-2:#1C2D22;--fg:#E7F0E8;--muted:#9DB2A3;--line:#2B4033;
+    --brand:#8FD3A8;--brand-bg:#173325;--on-brand:#E7F0E8;--on-brand-soft:#A9C4B1;--on-brand-line:rgba(231,240,232,.22);
+    --apple:#CF4630;--on-apple:#FFFFFF;
+    --good:#5FCB8A;--bad:#FF8A7D;
+    --seg-lab:#B38D63;--seg-pack:#5DAE80;--seg-comm:#D9A441;--seg-year:#8398BA;--seg-profit:#5FCB8A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1711;--surface:#15221A;--surface-2:#1C2D22;--fg:#E7F0E8;--muted:#9DB2A3;--line:#2B4033;
+  --brand:#8FD3A8;--brand-bg:#173325;--on-brand:#E7F0E8;--on-brand-soft:#A9C4B1;--on-brand-line:rgba(231,240,232,.22);
+  --apple:#CF4630;--on-apple:#FFFFFF;
+  --good:#5FCB8A;--bad:#FF8A7D;
+  --seg-lab:#B38D63;--seg-pack:#5DAE80;--seg-comm:#D9A441;--seg-year:#8398BA;--seg-profit:#5FCB8A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.15}
+html[lang="hi"] h1,html[lang="hi"] h2,html[lang="hi"] h3{line-height:1.35}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--apple);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.section{padding-block:52px}
+.section h2{font-size:clamp(1.6rem,5vw,2.3rem);font-weight:800;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin-top:10px}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em;text-decoration:none;display:flex;align-items:center;gap:8px}
+.brand i{display:inline-block;width:14px;height:14px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--apple)}
+.nav{display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;font-size:.95rem}
+.nav a{text-decoration:none;color:var(--muted);padding:6px 0}
+.nav a:hover{color:var(--fg)}
+.lang{font:600 .9rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:7px 14px;border-radius:8px;cursor:pointer;min-height:38px}
+
+/* hero */
+.hero{background:var(--brand-bg);color:var(--on-brand);position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:1}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:36px;padding-block:44px 92px;align-items:center}
+.kicker{font:500 .8rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--on-brand-soft)}
+html[lang="hi"] .kicker{text-transform:none;letter-spacing:.02em;font-size:.9rem}
+.hero h1{font-size:clamp(2.2rem,8vw,4rem);font-weight:800;letter-spacing:-.02em;margin-top:14px}
+.greet{font-family:var(--display);font-weight:600;font-size:1.15rem;margin-top:16px;color:var(--on-brand)}
+.hero p.sub{color:var(--on-brand-soft);margin-top:12px;max-width:52ch}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:600 1rem var(--body);padding:13px 20px;border-radius:8px;text-decoration:none;border:1.5px solid transparent;cursor:pointer;min-height:48px;text-align:center}
+.btn.primary{background:var(--apple);color:var(--on-apple)}
+.btn.ghost{border-color:var(--on-brand-line);color:var(--on-brand);background:transparent}
+.btn.ghost:hover{border-color:var(--on-brand)}
+.sample{border:1px solid var(--on-brand-line);border-radius:12px;padding:20px;background:rgba(255,255,255,.05)}
+.sample .tag{font:500 .75rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--on-brand-soft)}
+html[lang="hi"] .sample .tag{text-transform:none;letter-spacing:.02em;font-size:.85rem}
+.sample .fig{font:500 clamp(2rem,9vw,2.8rem) var(--mono);margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.02em;overflow-wrap:anywhere}
+.sample .meta{color:var(--on-brand-soft);font-size:.95rem;margin-top:4px;font-variant-numeric:tabular-nums}
+.sample .note{margin-top:14px;padding-top:12px;border-top:1px dashed var(--on-brand-line);font-size:.85rem;color:var(--on-brand-soft)}
+.rows{position:absolute;left:0;right:0;bottom:0;display:block;z-index:0}
+
+/* calculator */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.tab{font:600 1rem var(--body);padding:10px 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);cursor:pointer;min-height:44px}
+.tab[aria-selected="true"]{background:var(--brand-bg);color:var(--on-brand);border-color:var(--brand-bg)}
+.status{margin-top:12px;font-size:.88rem;color:var(--muted);min-height:1.4em}
+.panel{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;margin-top:14px;align-items:start}
+.panel.single{grid-template-columns:minmax(0,1fr)}
+.panel[hidden]{display:none}
+fieldset{border:0;border-top:1px solid var(--line);margin:0 0 18px;padding:14px 0 0;min-width:0}
+legend{font:500 .8rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 10px 0 0}
+html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem;font-family:var(--body);font-weight:600}
+.hint{color:var(--muted);font-size:.9rem;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px}
+.field{min-width:0}
+.field label{display:block;font-size:.92rem;color:var(--muted);margin-bottom:5px;line-height:1.35}
+.field input,.field select{width:100%;min-height:46px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:500 1.05rem var(--mono);font-variant-numeric:tabular-nums}
+.field input[type="text"]{font-family:var(--body);font-weight:500}
+.field select{font-family:var(--body)}
+.actions{margin-top:6px}
+.link{font:600 .95rem var(--body);background:none;border:0;color:var(--brand);text-decoration:underline;cursor:pointer;padding:8px 0}
+.btn-s{font:600 .95rem var(--body);padding:9px 16px;min-height:42px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.btn-s.add{background:var(--brand-bg);color:var(--on-brand);border-color:var(--brand-bg)}
+.btn-s.danger{color:var(--bad);border-color:var(--bad)}
+
+/* record keeping */
+.pick{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.addrow{display:flex;gap:8px;align-items:flex-end;margin-top:12px}
+.addrow .field{flex:1}
+.manage{margin:14px 0 18px;border-top:1px solid var(--line);padding-top:8px}
+.manage summary{cursor:pointer;font-weight:600;padding:8px 0;color:var(--muted)}
+.manage .grid{margin-top:10px}
+.dels{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.confirm{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px;font-size:.95rem}
+.banner{margin-top:16px;padding:12px 14px;border:1px dashed var(--line);border-radius:8px;background:var(--surface-2);font-size:.92rem;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.headline{margin-top:18px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);display:flex;gap:6px 14px;flex-wrap:wrap;align-items:baseline;justify-content:space-between}
+.headline span{color:var(--muted);min-width:0}
+.headline b{font:500 1.5rem var(--mono);font-variant-numeric:tabular-nums}
+.headline.pos b{color:var(--good)}.headline.neg b{color:var(--bad)}
+.lotbox{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px;background:var(--surface)}
+.lothead{display:flex;gap:10px;align-items:flex-end;margin-bottom:12px}
+.lothead .field{flex:1}
+.lotmargin{margin-top:12px;color:var(--muted);font-size:.92rem}
+.lotmargin b{font:500 1rem var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.empty{margin-top:18px;padding:18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+
+.result{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;min-width:0}
+.big-label{font:500 .8rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+html[lang="hi"] .big-label{text-transform:none;letter-spacing:.02em;font-family:var(--body);font-size:.95rem;font-weight:600}
+.big{font:500 clamp(2rem,9vw,2.9rem) var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:4px;overflow-wrap:anywhere}
+.big.pos{color:var(--good)}.big.neg{color:var(--bad)}
+.persub{color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+dl{margin:18px 0 0;display:grid;gap:0}
+dl div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-top:1px solid var(--line)}
+dt{color:var(--muted)}
+dd{margin:0;font:500 1rem var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.result h4{font-size:1rem;margin-top:22px;font-weight:600}
+.legend{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px;font-size:.92rem}
+.legend li{display:flex;align-items:center;gap:10px;min-width:0}
+.legend b{width:12px;height:12px;border-radius:3px;flex:none}
+.legend em{font-style:normal;margin-left:auto;font:500 .92rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.legend span{min-width:0}
+
+/* year summary */
+.yblock{margin-top:8px}
+.yblock h4{font-family:var(--display);font-size:1.5rem;font-weight:800;margin-top:22px}
+.ystats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px;margin-top:10px}
+.ystats div{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);min-width:0}
+.ystats span{display:block;font-size:.85rem;color:var(--muted);line-height:1.3}
+.ystats b{display:block;font:500 1.15rem var(--mono);font-variant-numeric:tabular-nums;margin-top:4px;overflow-wrap:anywhere}
+.ystats .main{border-color:var(--fg)}
+.ystats .main b{font-size:1.4rem}
+.ystats .pos b{color:var(--good)}.ystats .neg b{color:var(--bad)}
+
+/* lots with grade lines */
+.grid.tight{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.linebox{border-top:1px dashed var(--line);padding-top:12px;margin-top:12px}
+.lothead + .linebox{margin-top:0}
+.checks{display:flex;gap:2px 20px;flex-wrap:wrap;margin-top:8px}
+.chk{display:flex;align-items:center;gap:8px;font-size:.95rem;min-height:40px;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:var(--brand-bg);flex:none}
+.linecalc{margin-top:6px;color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.linebox .link{padding:4px 0;font-size:.9rem}
+.lotbox > .btn-s{margin-top:10px}
+.lotsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:10px 14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.lotsum span{display:block;font-size:.8rem;color:var(--muted)}
+.lotsum b{font:500 .98rem var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.field input[type="date"]{font-family:var(--body);font-weight:500}
+
+/* yearly totals */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin-top:14px;background:var(--surface)}
+table.ledger{border-collapse:collapse;width:100%;min-width:420px;font-variant-numeric:tabular-nums}
+.ledger th,.ledger td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.ledger td{font:500 .98rem var(--mono)}
+.ledger th{font-weight:600;color:var(--muted);font-size:.92rem}
+.ledger th:first-child,.ledger td:first-child{text-align:left;font-family:var(--body)}
+.ledger tbody th{color:var(--fg)}
+.ledger tfoot th,.ledger tfoot td{border-top:2px solid var(--line);border-bottom:0;color:var(--fg)}
+.ledger tfoot th{font-weight:700}
+.ledger .pos{color:var(--good)}.ledger .neg{color:var(--bad)}.ledger .none{color:var(--muted)}
+.ybars{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
+.ybars li{display:grid;grid-template-columns:3.4rem minmax(0,1fr) auto;gap:12px;align-items:center}
+.ybars .yl{font:500 .95rem var(--mono)}
+.ybars .track{height:20px;border-radius:5px;background:var(--surface-2);overflow:hidden;display:block}
+.ybars .fill{display:block;height:100%}
+.ybars .fill.pos{background:var(--good)}.ybars .fill.neg{background:var(--bad)}
+.ybars .yv{font:500 .95rem var(--mono);text-align:right;white-space:nowrap}
+.ybars .ys{grid-column:2 / 4;color:var(--muted);font-size:.85rem;margin-top:-8px}
+.ysub{margin-top:26px;font-size:1.05rem;font-weight:600}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.vs div{border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.vs .t{font-size:.9rem;color:var(--muted)}
+.vs .n{font:500 clamp(1.1rem,5vw,1.5rem) var(--mono);font-variant-numeric:tabular-nums;margin-top:4px;overflow-wrap:anywhere}
+.vs .p{font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+.vs div.win{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.verdict{margin-top:16px;font-family:var(--display);font-weight:600;font-size:1.15rem}
+.fine{margin-top:12px;color:var(--muted);font-size:.88rem}
+
+/* hero card and accounts */
+.sample .lab{font-size:.9rem;color:var(--on-brand-soft);margin-top:12px}
+.sample .fig{margin-top:2px}
+.hrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.hrow span{display:block;font-size:.85rem;color:var(--on-brand-soft);line-height:1.3}
+.hrow b{display:block;font:500 1.3rem var(--mono);font-variant-numeric:tabular-nums;margin-top:3px;overflow-wrap:anywhere}
+.sample .meta{margin-top:12px}
+.authcard{border:1px solid var(--line);border-radius:12px;padding:22px;background:var(--surface);max-width:560px}
+.authcard h3{font-size:1.3rem;font-weight:800}
+.authcard > p,.authcard .sentmsg{color:var(--muted);margin-top:8px}
+.authcard form{display:grid;gap:12px;margin-top:16px}
+.authcard .field input{font-family:var(--body)}
+.autherr{color:var(--bad);font-size:.95rem;min-height:1.3em;margin:0}
+.acctbar{display:flex;gap:8px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:.95rem;color:var(--muted)}
+.acctbar span{min-width:0;overflow-wrap:anywhere}
+.stack{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--surface-2);margin-top:10px}
+.stack span{display:block;height:100%}
+
+/* top bar and tabs */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.topbar .top{padding-block:10px 4px}
+.tabbar{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin}
+.tabbar .tab{flex:none;white-space:nowrap;border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--muted);padding:10px 14px;min-height:46px;font:600 .98rem var(--body)}
+.tabbar .tab:hover{color:var(--fg)}
+.tabbar .tab[aria-selected="true"]{background:none;color:var(--fg);border-bottom-color:var(--apple)}
+#tools{scroll-margin-top:120px}
+
+/* tools */
+.tpanel{margin-top:24px;display:grid;gap:24px;max-width:880px}
+.tpanel[hidden]{display:none}
+.thead{display:flex;gap:8px 14px;align-items:center;flex-wrap:wrap}
+.thead h3{font-size:1.5rem;font-weight:800}
+.tpanel > p,.tpanel .sub2{color:var(--muted);max-width:64ch}
+.tpanel h4{font-size:1.05rem;font-weight:600}
+.tpanel .sub2{margin-top:4px;font-size:.95rem}
+.tcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:24px}
+.tlist{margin:10px 0 0;padding-left:1.25em;color:var(--muted);display:grid;gap:7px}
+.tnote{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--surface);color:var(--fg)!important}
+.linkrow{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap}
+.linkrow .sub2{margin-top:0}
+.stages{list-style:none;counter-reset:st;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.stages li{counter-increment:st;padding:12px 14px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--surface);min-width:0;display:grid;gap:3px;align-content:start}
+.stages li::before{content:counter(st);font:500 .78rem var(--mono);color:var(--muted)}
+.stages b{font-family:var(--display);font-weight:600;font-size:1.02rem;line-height:1.3}
+.stages span{color:var(--muted);font-size:.92rem;line-height:1.4}
+
+/* roadmap */
+.alt{background:var(--surface-2)}
+.plan{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--line)}
+.plan li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;padding:18px 0;border-bottom:1px solid var(--line)}
+.plan h3{font-size:1.15rem;font-weight:600}
+.plan p{color:var(--muted);max-width:60ch;margin-top:4px;font-size:.98rem}
+.pill{align-self:start;font:500 .78rem var(--mono);padding:4px 10px;border:1px solid var(--line);border-radius:6px;white-space:nowrap;color:var(--muted)}
+.pill.live{color:var(--good);border-color:var(--good)}
+html[lang="hi"] .pill{font-family:var(--body);font-weight:600;font-size:.85rem}
+
+/* calendar */
+.months{list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.months li{padding:14px 16px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0;position:relative;background:var(--surface)}
+.months .m{font:500 .78rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+html[lang="hi"] .months .m{text-transform:none;letter-spacing:.02em;font-family:var(--body);font-weight:600;font-size:.92rem}
+.months .th{font-family:var(--display);font-weight:600;font-size:1.05rem;margin-top:4px;line-height:1.3}
+.months li[aria-current="date"]{background:var(--brand-bg);color:var(--on-brand)}
+.months li[aria-current="date"] .m{color:var(--on-brand-soft)}
+.months .now{display:block;margin-top:8px;font:500 .75rem var(--mono);color:var(--on-brand-soft)}
+html[lang="hi"] .months .now{font-family:var(--body);font-size:.85rem}
+
+/* trust + join */
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:28px;margin-top:26px}
+.three h3{font-size:1.15rem;font-weight:600}
+.three p{color:var(--muted);margin-top:6px;font-size:.98rem}
+.join{background:var(--brand-bg);color:var(--on-brand)}
+.join h2{max-width:20ch}
+.join p{color:var(--on-brand-soft);max-width:56ch;margin-top:10px}
+.soc{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.soon{margin-top:18px;padding:12px 14px;border:1px dashed var(--on-brand-line);border-radius:8px;display:inline-block;font-size:.95rem}
+footer{padding-block:26px;color:var(--muted);font-size:.88rem}
+footer p{max-width:70ch}
+
+@media (max-width:820px){
+  .hero-grid{grid-template-columns:1fr;gap:28px;padding-block:32px 84px}
+  .panel{grid-template-columns:1fr}
+}
+@media (max-width:420px){
+  .vs{grid-template-columns:1fr}
+  .plan li{grid-template-columns:1fr}
+  .pick{grid-template-columns:1fr}
+  .lothead{flex-wrap:wrap}
+}
+</style>
+
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <header class="wrap top">
+    <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
+    <nav class="nav" aria-label="Account and language"><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
+  </header>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button></div></div>
+</div>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="kicker" data-i18n="hero_kicker"></p>
+        <h1 data-i18n="hero_h1"></h1>
+        <p class="greet">“Main hoon aapka apna Apple Doctor.”</p>
+        <p class="sub" data-i18n="hero_p"></p>
+        <div class="btns">
+          <a class="btn primary" href="#tools" data-i18n="hero_cta1"></a>
+          <a class="btn ghost" href="#join" data-i18n="hero_cta2"></a>
+        </div>
+      </div>
+      <div class="sample" aria-live="polite">
+        <p class="tag" id="hero_t" data-i18n="hero_card_t"></p>
+        <p class="lab" data-i18n="hc_net"></p>
+        <p class="fig" id="h_profit"></p>
+        <div class="hrow">
+          <div><span data-i18n="hc_ppb"></span><b id="h_ppb"></b></div>
+          <div><span data-i18n="ls_boxes"></span><b id="h_boxes"></b></div>
+        </div>
+        <p class="meta" id="h_meta"></p>
+        <p class="note" id="hero_n" data-i18n="hero_card_note"></p>
+      </div>
+    </div>
+  </div>
+  <svg class="rows" width="100%" height="64" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="tree" width="64" height="64" patternUnits="userSpaceOnUse">
+        <rect x="30" y="38" width="4" height="26" style="fill:var(--tree)"/>
+        <circle cx="32" cy="28" r="19" style="fill:var(--tree)"/>
+        <circle cx="25" cy="24" r="2.6" style="fill:var(--tree-apple)"/>
+        <circle cx="38" cy="30" r="2.6" style="fill:var(--tree-apple)"/>
+        <circle cx="31" cy="35" r="2.6" style="fill:var(--tree-apple)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="64" fill="url(#tree)"/>
+  </svg>
+</section>
+
+<section class="section" id="tools">
+  <div class="wrap">
+    <div class="tpanel" id="tp-calc" role="tabpanel" aria-labelledby="tt-calc">
+      <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
+      <p data-i18n="pc_p"></p>
+      <div class="panel">
+        <div>
+          <fieldset><legend data-i18n="pc_lines"></legend>
+            <p class="hint" data-i18n="pc_hint"></p>
+            <div id="qLines"></div>
+            <button class="btn-s" type="button" id="qAdd" data-i18n="line_add"></button>
+          </fieldset>
+          <div class="actions"><button class="link" type="button" id="qReset" data-i18n="reset"></button></div>
+        </div>
+        <div class="result">
+          <p class="big-label" data-i18n="ls_net"></p>
+          <p class="big" id="q_net"></p>
+          <p class="persub"><span id="q_ppb"></span> <span data-i18n="hero_card_per"></span></p>
+          <dl>
+            <div><dt data-i18n="ls_boxes"></dt><dd id="q_boxes"></dd></div>
+            <div><dt data-i18n="r_gross"></dt><dd id="q_gross"></dd></div>
+            <div><dt data-i18n="ls_exp"></dt><dd id="q_exp"></dd></div>
+          </dl>
+          <p class="fine" data-i18n="half_note"></p>
+        </div>
+      </div>
+      <h3 class="ysub" data-i18n="tab_cmp"></h3>
+      <div class="panel">
+        <div>
+          <div id="cmpForm"></div>
+          <div class="actions"><button class="link" type="button" id="cmpReset" data-i18n="reset"></button></div>
+        </div>
+        <div class="result">
+          <p class="big-label" data-i18n="x_title"></p>
+          <div class="vs">
+            <div id="vs_m"><p class="t" data-i18n="x_mandi"></p><p class="n" id="x_mnet"></p><p class="p" id="x_mper"></p></div>
+            <div id="vs_l"><p class="t" data-i18n="x_lad"></p><p class="n" id="x_lnet"></p><p class="p" id="x_lper"></p></div>
+          </div>
+          <p class="verdict" id="x_verdict"></p>
+          <p class="fine" data-i18n="x_note"></p>
+        </div>
+      </div>
+      <p class="tnote" data-i18n="pc_rec"></p>
+    </div>
+
+    <div class="tpanel" id="tp-diag" role="tabpanel" aria-labelledby="tt-diag" hidden>
+      <div class="thead"><h3 data-i18n="d_h"></h3><span class="pill" data-i18n="s_soon"></span></div>
+      <p data-i18n="d_p"></p>
+      <div class="tcols">
+        <div><h4 data-i18n="d_how_h"></h4><ol class="tlist"><li data-i18n="d_s1"></li><li data-i18n="d_s2"></li><li data-i18n="d_s3"></li></ol></div>
+        <div><h4 data-i18n="d_tips_h"></h4><ul class="tlist"><li data-i18n="d_t1"></li><li data-i18n="d_t2"></li><li data-i18n="d_t3"></li><li data-i18n="d_t4"></li></ul></div>
+      </div>
+      <p class="tnote" data-i18n="d_note"></p>
+    </div>
+
+    <div class="tpanel" id="tp-spray" role="tabpanel" aria-labelledby="tt-spray" hidden>
+      <div class="thead"><h3 data-i18n="sp_h"></h3><span class="pill live" data-i18n="s_guide"></span></div>
+      <p data-i18n="sp_p"></p>
+      <div class="linkrow">
+        <a class="btn primary" href="https://eudyan.hp.gov.in/Department/Portal/sprayschedule.aspx" target="_blank" rel="noopener" data-i18n="sp_link"></a>
+        <p class="sub2" data-i18n="sp_link_note"></p>
+      </div>
+      <div>
+        <h4 data-i18n="sp_stage_h"></h4>
+        <p class="sub2" data-i18n="sp_stage_p"></p>
+        <ol class="stages"><li><b data-i18n="st1"></b><span data-i18n="sd1"></span></li><li><b data-i18n="st2"></b><span data-i18n="sd2"></span></li><li><b data-i18n="st3"></b><span data-i18n="sd3"></span></li><li><b data-i18n="st4"></b><span data-i18n="sd4"></span></li><li><b data-i18n="st5"></b><span data-i18n="sd5"></span></li><li><b data-i18n="st6"></b><span data-i18n="sd6"></span></li><li><b data-i18n="st7"></b><span data-i18n="sd7"></span></li><li><b data-i18n="st8"></b><span data-i18n="sd8"></span></li><li><b data-i18n="st9"></b><span data-i18n="sd9"></span></li></ol>
+      </div>
+    </div>
+
+    <div class="tpanel" id="tp-cal" role="tabpanel" aria-labelledby="tt-cal" hidden>
+      <div class="thead"><h3 data-i18n="cal_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
+      <p data-i18n="cal_p"></p>
+      <ol class="months" id="months"></ol>
+    </div>
+
+    <div class="tpanel" id="tp-mandi" role="tabpanel" aria-labelledby="tt-mandi" hidden>
+      <div class="thead"><h3 data-i18n="m_h"></h3><span class="pill" data-i18n="s_soon"></span></div>
+      <p data-i18n="m_p"></p>
+      <div><h4 data-i18n="m_how_h"></h4><ul class="tlist"><li data-i18n="m_r1"></li><li data-i18n="m_r2"></li><li data-i18n="m_r3"></li><li data-i18n="m_r4"></li></ul></div>
+      <div class="linkrow">
+        <a class="btn primary" href="https://agmarknet.gov.in" target="_blank" rel="noopener" data-i18n="m_link"></a>
+        <p class="sub2" data-i18n="m_link_note"></p>
+      </div>
+    </div>
+
+    <div class="tpanel" id="tp-buy" role="tabpanel" aria-labelledby="tt-buy" hidden>
+      <div class="thead"><h3 data-i18n="b_h"></h3><span class="pill" data-i18n="s_later"></span></div>
+      <p data-i18n="b_p"></p>
+      <div class="tcols">
+        <div><h4 data-i18n="b_what_h"></h4><ul class="tlist"><li data-i18n="b_1"></li><li data-i18n="b_2"></li><li data-i18n="b_3"></li></ul></div>
+        <div><h4 data-i18n="b_safe_h"></h4><p class="sub2" data-i18n="b_safe"></p></div>
+      </div>
+      <p class="tnote" data-i18n="b_why"></p>
+    </div>
+
+    <div class="tpanel" id="tp-orch" role="tabpanel" aria-labelledby="tt-orch" hidden>
+      <div class="thead"><h3 data-i18n="tab_orch"></h3><span class="pill" id="orchPill"></span></div>
+      <p data-i18n="or_p"></p>
+
+      <div class="authcard" id="authCard">
+        <h3 data-i18n="auth_h"></h3>
+        <p data-i18n="auth_p"></p>
+        <div id="authStep1">
+          <form id="authForm" novalidate>
+            <div class="field"><label for="authEmail" data-i18n="auth_email"></label><input id="authEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false"></div>
+            <p class="autherr" id="authErr" role="alert"></p>
+            <button class="btn-s add" type="submit" id="authSend" data-i18n="auth_send"></button>
+          </form>
+        </div>
+        <div id="authStep2" hidden>
+          <p class="sentmsg" id="authSentMsg"></p>
+          <form id="codeForm" novalidate>
+            <div class="field"><label for="authCode" data-i18n="auth_code"></label><input id="authCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></div>
+            <p class="autherr" id="authCodeErr" role="alert"></p>
+            <div class="dels"><button class="btn-s add" type="submit" data-i18n="auth_verify"></button><button class="btn-s" type="button" id="authOther" data-i18n="auth_other"></button></div>
+          </form>
+        </div>
+      </div>
+
+      <div class="authcard" id="loadErr" hidden>
+        <h3 data-i18n="load_h"></h3>
+        <p class="autherr" id="loadErrMsg"></p>
+        <button class="btn-s add" type="button" id="loadRetry" data-i18n="load_retry"></button>
+      </div>
+
+      <div id="recApp" hidden>
+        <div class="acctbar"><span id="acct_email"></span><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div>
+        <p class="status" id="status" aria-live="polite"></p>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="rt-year" aria-selected="true" aria-controls="rp-year" type="button" data-i18n="tab_year"></button>
+          <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="tab_orch"></button>
+        </div>
+<div class="panel" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
+      <div>
+        <div class="pick">
+          <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
+          <div class="field"><label for="selYear" data-i18n="lbl_year"></label><select id="selYear"></select></div>
+        </div>
+        <div class="addrow">
+          <div class="field"><label for="newOrchard" data-i18n="ph_orchard"></label><input id="newOrchard" type="text" maxlength="60"></div>
+          <button class="btn-s add" type="button" data-act="addorch" data-i18n="add_btn"></button>
+        </div>
+        <div class="addrow">
+          <div class="field"><label for="newYear" data-i18n="ph_year"></label><input id="newYear" type="number" inputmode="numeric" min="2000" max="2100" step="1"></div>
+          <button class="btn-s add" type="button" data-act="addyear" data-i18n="add_btn"></button>
+        </div>
+        <div id="exBanner" class="banner" hidden>
+          <span data-i18n="ex_note"></span>
+          <button class="btn-s" type="button" data-act="clearex" data-i18n="ex_clear"></button>
+        </div>
+        <details class="manage" id="manage">
+          <summary data-i18n="manage"></summary>
+          <div class="grid">
+            <div class="field"><label for="oname" data-i18n="f_oname"></label><input id="oname" type="text" maxlength="60"></div>
+            <div class="field"><label for="otrees" data-i18n="f_trees"></label><input id="otrees" type="number" inputmode="numeric" min="0" step="1"></div>
+          </div>
+          <div class="dels" id="dels"></div>
+        </details>
+        <div class="headline" id="headline" hidden><span id="hl_label"></span><b id="hl_val"></b></div>
+        <div id="editor"></div>
+      </div>
+      <div class="result" id="resBox">
+        <p class="big-label" id="o_label"></p>
+        <p class="big" id="o_profit"></p>
+        <p class="persub"><span id="o_ppb"></span> <span data-i18n="hero_card_per"></span></p>
+        <dl>
+          <div><dt data-i18n="r_boxes"></dt><dd id="o_boxes"></dd></div>
+          <div><dt data-i18n="r_gross"></dt><dd id="o_rev"></dd></div>
+          
+          <div><dt data-i18n="r_lotexp"></dt><dd id="o_perbox"></dd></div>
+          <div><dt data-i18n="r_year"></dt><dd id="o_year"></dd></div>
+          <div><dt data-i18n="r_due"></dt><dd id="o_due"></dd></div>
+        </dl>
+        <h4 data-i18n="bar_title"></h4>
+        <div class="stack" id="bar" role="img" aria-label="Breakdown"></div>
+        <ul class="legend" id="legend"></ul>
+      </div>
+    </div>
+
+    <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year">
+      <div>
+        <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
+        <div id="yearDetail"></div>
+        <h3 class="ysub" data-i18n="y_h"></h3>
+        <div id="yearTable"></div>
+        <h3 class="ysub" data-i18n="y_chart"></h3>
+        <ul class="ybars" id="ybars"></ul>
+        <p class="fine" data-i18n="y_note"></p>
+      </div>
+    </div>
+
+    
+        <details class="manage" id="bk">
+          <summary data-i18n="bk_h"></summary>
+          <p class="hint" data-i18n="bk_p"></p>
+          <div class="dels"><button class="btn-s" type="button" id="bkDown" data-i18n="bk_down"></button><button class="btn-s" type="button" id="bkPick" data-i18n="bk_import"></button><input id="bkFile" type="file" accept=".json,application/json" hidden></div>
+          <p class="fine" id="bkMsg" role="status"></p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="coming">
+  <div class="wrap">
+    <h2 data-i18n="plan_h"></h2>
+    <p class="lede" data-i18n="plan_p"></p>
+    <ul class="plan">
+      <li><div><h3 data-i18n="p1_h"></h3><p data-i18n="p1_p"></p></div><span class="pill" data-i18n="s_next"></span></li>
+      <li><div><h3 data-i18n="p2_h"></h3><p data-i18n="p2_p"></p></div><span class="pill" data-i18n="s_plan"></span></li>
+      <li><div><h3 data-i18n="p3_h"></h3><p data-i18n="p3_p"></p></div><span class="pill" data-i18n="s_plan"></span></li>
+      <li><div><h3 data-i18n="p4_h"></h3><p data-i18n="p4_p"></p></div><span class="pill" data-i18n="s_plan"></span></li>
+      <li><div><h3 data-i18n="p5_h"></h3><p data-i18n="p5_p"></p></div><span class="pill" data-i18n="s_later"></span></li>
+      <li><div><h3 data-i18n="p6_h"></h3><p data-i18n="p6_p"></p></div><span class="pill" data-i18n="s_later"></span></li>
+      <li><div><h3 data-i18n="p7_h"></h3><p data-i18n="p7_p"></p></div><span class="pill" data-i18n="s_later"></span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2 data-i18n="trust_h"></h2>
+    <div class="three">
+      <div><h3 data-i18n="t1_h"></h3><p data-i18n="t1_p"></p></div>
+      <div><h3 data-i18n="t2_h"></h3><p data-i18n="t2_p"></p></div>
+      <div><h3 data-i18n="t3_h"></h3><p data-i18n="t3_p"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section join" id="join">
+  <div class="wrap">
+    <h2 data-i18n="join_h"></h2>
+    <p data-i18n="join_p"></p>
+    <div class="soc" id="soc"></div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p data-i18n="foot_note"></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script>
+/* Fill in your page links here and the buttons appear. Leave a value empty to hide it. */
+const SOCIAL = { facebook: "", instagram: "", whatsapp: "" };
+
+const T = {
+en: {
+  nav_calc:"Profit calculator", nav_plan:"What's coming", nav_cal:"Season calendar", nav_join:"Join",
+  hero_kicker:"For apple growers of Himachal and Kashmir",
+  hero_h1:"Your orchard's own doctor.",
+  hero_p:"Know what each box of apples really earns you. Free tools and simple guidance, starting with growers around Rohru and Chirgaon.",
+  hero_cta1:"Explore the tools", hero_cta2:"Join the grower community",
+  hero_card_t:"Example season", hero_card_note:"Example numbers. Open the calculator below to see the full record.",
+  hero_card_per:"per box", hero_boxes:"boxes sold",
+  calc_h:"Profit calculator",
+  calc_p:"Keep a record for each orchard and each year. Profit per orchard and per year works itself out. The first records are examples you can clear.",
+  tab_orch:"My orchards", tab_year:"Yearly profit", tab_cmp:"Mandi or ladhani?", reset:"Put back the example numbers",
+  lbl_orchard:"Orchard", lbl_year:"Year", add_btn:"Add", ph_orchard:"New orchard name", ph_year:"Add a year, for example 2026",
+  manage:"Rename, trees, delete", f_oname:"Orchard name", f_trees:"Number of trees (optional)",
+  del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
+  ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
+  empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No year yet for this orchard. Add a year above.",
+  lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
+  lot_margin:"Lot margin before yearly costs",
+  f_boxes:"Boxes sold", f_price:"Price per box (₹)", f_comm:"Commission (%)",
+  f_pick:"Picking and packing labour (thudan, bharan) per box (₹)", f_carton:"Cartons and packing material per box (₹)",
+  f_carriage:"Carriage to grading machine per box (₹)", f_grading:"Grading and packing charges per box (₹)", f_transport:"Transport to market per box (₹)",
+  g_year:"Yearly orchard costs",
+  f_spray:"Sprays and pesticides (₹)", f_fert:"Fertiliser and manure (₹)", f_labour:"Labour for the year (₹)",
+  f_prune:"Pruning (₹)", f_irrig:"Irrigation (₹)", f_other:"Other costs (₹)",
+  r_boxes:"Boxes sold", r_rev:"Sale amount", r_comm:"Commission", r_perbox:"Per-box costs", r_year:"Yearly orchard costs", r_cpb:"Cost per box",
+  head_profit:"Profit for {o}, {y}", head_loss:"Loss for {o}, {y}", r_profit:"Profit", r_loss:"Loss", bar_title:"Where the money goes",
+  seg_lab:"Picking and packing labour", seg_pack:"Cartons, grading, transport", seg_comm:"Commission", seg_year:"Yearly orchard costs", seg_profit:"Profit",
+  bar_aria:"How the sale amount is split",
+  y_h:"Profit by orchard and year", y_orch:"Orchard", y_total:"Total", y_all:"All orchards",
+  y_chart:"Overall profit, year by year", y_boxes:"boxes sold",
+  y_empty:"Add an orchard and a year first. Your totals will appear here.",
+  y_note:"Each figure is the sale amount minus commission, per-box costs and yearly orchard costs.",
+  st_cloud:"Saved to your account. Sign in on any device to see it.",
+  st_local:"Saved on this device only. Clearing the browser's data removes it.",
+  st_saving:"Saving…", st_err:"Could not save to your account. Your changes are still on this screen. Keep the page open and edit again to retry.",
+  x_title:"Money in hand after all costs", x_mandi:"Mandi sale", x_lad:"Ladhani offer", x_per:"per box",
+  c_shared:"Same in both", c_mandi:"Mandi sale", c_ladhani:"Ladhani (trader) offer",
+  f_cboxes:"Boxes", f_ckg:"Weight per box (kg)", f_cpick:"Picking labour per box (₹)",
+  f_mprice:"Mandi price per box (₹)", f_mcomm:"Commission (%)", f_mpack:"Cartons, packing and grading per box (₹)", f_mtrans:"Transport and unloading per box (₹)",
+  f_lprice:"Trader price per kg (₹)", f_lded:"Weight or quality deduction (%)", f_lcost:"Any other cost to you per box (₹)",
+  x_m:"Mandi gives you {x} more.", x_l:"Ladhani gives you {x} more.", x_same:"Both come out about the same.",
+  x_note:"The costs and deductions above are assumptions, so check them against your real bills. Payment delays and credit risk are not counted.",
+  plan_h:"What is coming next",
+  plan_p:"The calculator is live. The rest will be built in this order once growers confirm it is useful.",
+  s_live:"Live", s_plan:"Planned", s_later:"Later",
+  p1_h:"Saved records for each orchard", p1_p:"Record every lot you sell for each orchard and year, and see gross and net income. Saved in your own private account.",
+  p2_h:"Photo diagnosis", p2_p:"Upload a photo of a leaf, fruit or branch and get possible causes and safe next steps. It is an indication, not a final diagnosis.",
+  p3_h:"Ask Apple Doctor", p3_p:"Questions answered in simple Hindi, with the reasoning shown.",
+  p4_h:"Season calendar and spray schedule", p4_p:"Reminders matched to the stage your orchard is in.",
+  p5_h:"Weather and mandi rates", p5_p:"Always shown with the date, market and unit, and only when the data is reliable.",
+  p6_h:"Android app", p6_p:"All of this in one app, once the website and community show what growers need.",
+  cal_h:"The apple year, month by month", cal_p:"One topic a month in our videos and guides. This month is marked.", now:"This month",
+  trust_h:"How we work",
+  t1_h:"AI gives an indication", t1_p:"A photo result shows what it suggests, how sure it is, and when to ask a local horticulture expert. Spray advice follows official guidance and the product label.",
+  t2_h:"Dates and sources on everything", t2_p:"Rates and weather carry a date, a place and a unit. Old figures are never shown as live.",
+  t3_h:"Your records stay yours", t3_p:"No supplier pays to be recommended. Orchard records and photos are kept protected.",
+  join_h:"Be among the first 1,000 growers",
+  join_p:"Follow for short Hindi videos, send us your orchard questions and tell us what the app should do first.",
+  join_soon:"Our Facebook and Instagram pages are launching soon.",
+  foot_note:"General information for growers. It does not replace advice from a qualified horticulture expert or the label on any spray product.",
+  s_next:"Next", hero_note2:"Example numbers, to show what the profit tool will do.", nav_tools:"Tools", tools_h:"Tools for your orchard",
+  tools_p:"Four things growers asked for. The season calendar and spray stages are ready to read now, and the rest are being built. Each tab says which.",
+  tt_diag:"Disease diagnosis", tt_spray:"Spray schedule", tt_mandi:"Mandi rates", tt_buy:"Buy and sell",
+  s_soon:"Coming soon", s_calnow:"Calendar live",
+  d_h:"Photo diagnosis", d_p:"Take a photo of a leaf, fruit or branch and get the possible causes and safe next steps, in simple Hindi.",
+  d_how_h:"How it will work", d_s1:"Take clear photos of the leaf, fruit or branch.", d_s2:"Answer a few questions about the variety, the age of the tree, the stage and the place.", d_s3:"See the possible causes, how sure the app is, and what to do next.",
+  d_tips_h:"Photos that help, from today", d_t1:"Take it in daylight, close to the affected part.", d_t2:"Add one wider photo of the whole tree.", d_t3:"Write down when it started and how many trees have it.", d_t4:"Photograph it before you spray anything.",
+  d_note:"A photo result is an indication, not a final diagnosis, and it will say how sure it is. For a serious or fast-spreading problem, show a local horticulture officer or your nearest Krishi Vigyan Kendra (KVK).",
+  sp_h:"Spray schedule", sp_p:"What to spray, how much and when depends on the stage of the tree, your altitude and that year's weather. Apple Doctor will remind you by stage. The products and doses come from the official schedule, so please follow it and the label on the product.",
+  sp_stage_h:"Stages of the apple tree", sp_stage_p:"The stage your orchard is in decides the spray. Timing shifts from one orchard to another.",
+  st1:"Dormant", sd1:"Buds are closed and the tree is resting.",
+  st2:"Green tip", sd2:"Small green tips show on the buds.",
+  st3:"Pink bud", sd3:"Flower clusters open and the buds look pink.",
+  st4:"Full bloom", sd4:"Most flowers are open.",
+  st5:"Petal fall", sd5:"Petals drop and tiny fruit begin to show.",
+  st6:"Fruit set", sd6:"Small fruit are forming.",
+  st7:"Fruit development", sd7:"Fruit grows through summer and the rains.",
+  st8:"Before harvest", sd8:"The last weeks before picking.",
+  st9:"After harvest and leaf fall", sd9:"After picking, when leaves turn and drop.",
+  sp_link:"Open the official apple spray schedule", sp_link_note:"Himachal Pradesh Horticulture Department. Opens in a new tab.",
+  sp_cal_h:"Season calendar, month by month",
+  m_h:"Mandi rates", m_p:"See what apples are selling for, by grade, in the mandis near you, so you can decide where and when to sell.",
+  m_how_h:"How rates will be shown", m_r1:"Every rate shows the date, the mandi and the unit, per box or per kg.", m_r2:"A rate that is not recent is marked as old and never shown as today's.", m_r3:"Rates are a guide. What you get depends on your grade and the day.", m_r4:"Next to each rate, the profit tool will show what is left after your costs.",
+  m_link:"Open the Agmarknet portal", m_link_note:"Government of India market price portal. Opens in a new tab.",
+  b_h:"Buy and sell", b_p:"A place for growers to sell apples, and to buy or sell what an orchard needs, like cartons and packing material, tools and equipment, and to find labour.",
+  b_what_h:"What it will have", b_1:"Sell: list a lot with the grade, number of boxes and place.", b_2:"Buy: find packing material, tools and equipment near you.", b_3:"Talk directly with the other grower or buyer.",
+  b_safe_h:"Staying safe", b_safe:"At the start, Apple Doctor will not take payments or guarantee a deal. Check the buyer or seller yourself, and never pay in advance to someone you do not know.",
+  b_why:"This opens after more growers are using the other tools, so the listings are real and useful.",
+  p7_h:"Buy and sell", p7_p:"Listings for apples, packing material, tools and labour, opened once enough growers are on board.",
+  tt_calc:"Profit calculator", tt_cal:"Season calendar", s_guide:"Guide live",
+  pc_h:"Profit calculator", pc_p:"Add each grade or rate you sold. Gross is boxes × rate, and net income is gross minus expenses. Everything is worked out on your phone and nothing is sent anywhere.",
+  pc_lines:"Your sale", pc_hint:"The starting numbers are examples. Change them to yours.",
+  pc_rec:"To keep every lot for each orchard and see your total for each year, you will need to sign in. Sign-in is coming next, and your records will stay private to your account.",
+  tt_orch:"My orchards", hdr_signin:"Sign in", hdr_mine:"My orchards", s_signin:"Sign in needed", s_signedin:"Signed in",
+  or_p:"Create your own private account to keep your orchards, sale lots and yearly totals. Only you can see them, and they are there on any phone you sign in on.",
+  auth_h:"Sign in or create your account", auth_p:"Enter your email and we will send you a sign-in link. There is no password to remember. If you are new, the same step creates your account.",
+  auth_email:"Email address", auth_send:"Email me a sign-in link",
+  auth_sent:"We sent an email to {e}. Open it on this phone and tap the link. If it shows a 6-digit code instead, type the code below.",
+  auth_code:"6-digit code (if your email has one)", auth_verify:"Sign in with code", auth_other:"Use a different email",
+  auth_err_email:"Enter a valid email address.", auth_err_lib:"Sign-in could not load. Check your internet connection and refresh the page.",
+  auth_err_send:"We could not send the email: {m}",
+  auth_err_net:"Could not reach the sign-in service. Check your internet. Sign-in works only on the live website, not in a preview inside Claude.",
+  auth_err_code:"That code did not work. Check it and try again, or ask for a new email.",
+  auth_as:"Signed in as {e}", auth_out:"Sign out",
+  st_loading:"Loading your records…", load_h:"Could not load your records", load_retry:"Try again",
+  bk_h:"Backup and import", bk_p:"Download a copy of your records, or import orchards and years from a backup file. Anything with the same id is replaced, and example orchards are removed.",
+  bk_down:"Download backup", bk_import:"Import from file", bk_ok:"Imported.", bk_bad:"That file is not a valid backup.",
+  hc_net:"Net profit", hc_ppb:"Net per box", hc_gx:"Gross {g} · Expenses {e}",
+  lang_btn:"हिंदी", orchard_fallback:"Orchard", lot_fallback:"Lot",
+  calc_p:"Keep a record for each orchard and each year. Add every lot you sold with its boxes, rate and expense. Gross is boxes × rate, and net income is gross minus expenses.",
+  lot_help:"A lot is one sale. Inside it, add a line for each grade or rate.", half_note:"A half box counts as half a box when working out net per box.",
+  f_lname:"Lot name (for example Part 1)", f_grade:"Grade or note (optional)", f_date:"Sale date (optional)",
+  f_boxes:"Boxes", f_rate:"Rate per box (₹)", f_exp:"Expense per box (₹)", f_paidon:"Payment date (optional)",
+  f_half:"Half box", f_paid:"Payment received",
+  line_add:"Add another grade or rate", line_remove:"Remove line", lot_remove:"Remove lot", rm_sure:"Tap again to remove",
+  lc:"Gross {g} · Expenses {e} · Net {n}",
+  ls_boxes:"Boxes", ls_gross:"Gross", ls_exp:"Expenses", ls_net:"Net income", ls_ppb:"Net per box",
+  g_year:"Other yearly costs (optional)", costs_p:"Sprays, fertiliser, labour and so on for the whole year. These are taken off the net income.",
+  r_boxes:"Boxes sold", r_gross:"Gross (boxes × rate)", r_lotexp:"Lot expenses", r_year:"Other yearly costs", r_due:"Sale amount not yet received",
+  head_profit:"Net income for {o}, {y}", head_loss:"Loss for {o}, {y}", r_profit:"Net income", r_loss:"Loss",
+  seg_exp:"Lot expenses", seg_year:"Other yearly costs", seg_profit:"Net income",
+  y_note:"Each figure is gross (boxes × rate) minus lot expenses and any other yearly costs. Half boxes count as half when working out the per-box figure.",
+  y_sum:"Totals for each year", tab_year:"Yearly totals",
+  hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot."
+},
+hi: {
+  nav_calc:"मुनाफ़ा कैलकुलेटर", nav_plan:"आगे क्या आ रहा है", nav_cal:"सीज़न कैलेंडर", nav_join:"जुड़ें",
+  hero_kicker:"हिमाचल और कश्मीर के सेब बागवानों के लिए",
+  hero_h1:"आपके बाग़ का अपना डॉक्टर।",
+  hero_p:"जानिए कि हर पेटी सेब से असल में कितनी कमाई होती है। रोहड़ू और चिरगाँव के बागवानों से शुरुआत, मुफ़्त टूल और सरल जानकारी।",
+  hero_cta1:"टूल देखें", hero_cta2:"बागवान समुदाय से जुड़ें",
+  hero_card_t:"उदाहरण सीज़न", hero_card_note:"ये उदाहरण के आँकड़े हैं। पूरा रिकॉर्ड देखने के लिए नीचे कैलकुलेटर खोलें।",
+  hero_card_per:"प्रति पेटी", hero_boxes:"पेटियाँ बिकीं",
+  calc_h:"मुनाफ़ा कैलकुलेटर",
+  calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। हर बाग़ और हर साल का मुनाफ़ा अपने आप निकल आता है। शुरू के रिकॉर्ड उदाहरण हैं, जिन्हें आप हटा सकते हैं।",
+  tab_orch:"मेरे बाग़", tab_year:"साल भर का मुनाफ़ा", tab_cmp:"मंडी या लदानी?", reset:"उदाहरण वाले आँकड़े वापस लाएँ",
+  lbl_orchard:"बाग़", lbl_year:"साल", add_btn:"जोड़ें", ph_orchard:"नए बाग़ का नाम", ph_year:"साल जोड़ें, जैसे 2026",
+  manage:"नाम बदलें, पेड़, हटाएँ", f_oname:"बाग़ का नाम", f_trees:"पेड़ों की संख्या (वैकल्पिक)",
+  del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
+  ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
+  empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस बाग़ के लिए अभी कोई साल नहीं है। ऊपर साल जोड़ें।",
+  lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
+  lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
+  f_boxes:"बेची गई पेटियाँ", f_price:"प्रति पेटी भाव (₹)", f_comm:"कमीशन (%)",
+  f_pick:"तुड़ाई और भराई की मज़दूरी, प्रति पेटी (₹)", f_carton:"कार्टन और पैकिंग का सामान, प्रति पेटी (₹)",
+  f_carriage:"ग्रेडिंग मशीन तक भाड़ा, प्रति पेटी (₹)", f_grading:"ग्रेडिंग और पैकिंग शुल्क, प्रति पेटी (₹)", f_transport:"मंडी तक ढुलाई, प्रति पेटी (₹)",
+  g_year:"साल भर के बाग़ ख़र्च",
+  f_spray:"स्प्रे और कीटनाशक (₹)", f_fert:"खाद (₹)", f_labour:"साल भर की मज़दूरी (₹)",
+  f_prune:"छँटाई (₹)", f_irrig:"सिंचाई (₹)", f_other:"अन्य ख़र्च (₹)",
+  r_boxes:"बेची गई पेटियाँ", r_rev:"बिक्री की रक़म", r_comm:"कमीशन", r_perbox:"प्रति पेटी ख़र्च (कुल)", r_year:"साल भर के बाग़ ख़र्च", r_cpb:"प्रति पेटी लागत",
+  head_profit:"{o}, {y} का मुनाफ़ा", head_loss:"{o}, {y} का घाटा", r_profit:"मुनाफ़ा", r_loss:"घाटा", bar_title:"पैसा कहाँ जाता है",
+  seg_lab:"तुड़ाई और भराई मज़दूरी", seg_pack:"कार्टन, ग्रेडिंग, ढुलाई", seg_comm:"कमीशन", seg_year:"साल भर के बाग़ ख़र्च", seg_profit:"मुनाफ़ा",
+  bar_aria:"बिक्री की रक़म का बँटवारा",
+  y_h:"बाग़ और साल के हिसाब से मुनाफ़ा", y_orch:"बाग़", y_total:"कुल", y_all:"सभी बाग़",
+  y_chart:"सभी बाग़ों का साल-दर-साल मुनाफ़ा", y_boxes:"पेटियाँ बिकीं",
+  y_empty:"पहले एक बाग़ और साल जोड़ें। आपके कुल आँकड़े यहाँ दिखेंगे।",
+  y_note:"हर आँकड़ा बिक्री की रक़म में से कमीशन, प्रति पेटी ख़र्च और साल भर के बाग़ ख़र्च घटाकर निकाला गया है।",
+  st_cloud:"आपके खाते में सहेजा गया। किसी भी डिवाइस पर साइन इन करके देखें।",
+  st_local:"सिर्फ़ इस डिवाइस पर सहेजा गया। ब्राउज़र का डेटा मिटाने पर यह भी मिट जाएगा।",
+  st_saving:"सहेज रहे हैं…", st_err:"आपके खाते में सहेज नहीं सका। बदलाव इसी स्क्रीन पर हैं। पेज खुला रखें और दोबारा बदलाव करके कोशिश करें।",
+  x_title:"सारे ख़र्च के बाद हाथ में आई रक़म", x_mandi:"मंडी में बिक्री", x_lad:"लदानी का प्रस्ताव", x_per:"प्रति पेटी",
+  c_shared:"दोनों में समान", c_mandi:"मंडी में बिक्री", c_ladhani:"लदानी (व्यापारी) का प्रस्ताव",
+  f_cboxes:"पेटियाँ", f_ckg:"प्रति पेटी वज़न (किलो)", f_cpick:"तुड़ाई मज़दूरी प्रति पेटी (₹)",
+  f_mprice:"मंडी भाव प्रति पेटी (₹)", f_mcomm:"कमीशन (%)", f_mpack:"कार्टन, पैकिंग और ग्रेडिंग प्रति पेटी (₹)", f_mtrans:"ढुलाई और उतराई प्रति पेटी (₹)",
+  f_lprice:"व्यापारी का भाव प्रति किलो (₹)", f_lded:"वज़न या क्वालिटी कटौती (%)", f_lcost:"कोई और ख़र्च आपके ऊपर, प्रति पेटी (₹)",
+  x_m:"मंडी में {x} ज़्यादा मिलते हैं।", x_l:"लदानी में {x} ज़्यादा मिलते हैं।", x_same:"दोनों लगभग बराबर हैं।",
+  x_note:"ऊपर के ख़र्च और कटौतियाँ अनुमान हैं, इसलिए उन्हें अपने असली बिलों से मिलाएँ। भुगतान में देरी और उधार का जोखिम शामिल नहीं है।",
+  plan_h:"आगे क्या आ रहा है",
+  plan_p:"कैलकुलेटर चालू है। बाक़ी चीज़ें इसी क्रम में बनेंगी, जब बागवान बताएँगे कि वे काम की हैं।",
+  s_live:"चालू", s_plan:"योजना में", s_later:"बाद में",
+  p1_h:"हर बाग़ का सहेजा हुआ रिकॉर्ड", p1_p:"हर बाग़ और साल में बेचा गया हर लॉट दर्ज करें और कुल बिक्री व शुद्ध आय देखें। आपके अपने निजी खाते में सहेजा जाता है।",
+  p2_h:"फ़ोटो से पहचान", p2_p:"पत्ती, फल या टहनी की फ़ोटो डालें और संभावित कारण व सुरक्षित अगले क़दम पाएँ। यह संकेत है, पक्का निदान नहीं।",
+  p3_h:"सेब डॉक्टर से पूछें", p3_p:"आसान हिंदी में जवाब, कारण के साथ।",
+  p4_h:"सीज़न कैलेंडर और स्प्रे सूची", p4_p:"आपके बाग़ की अवस्था के हिसाब से याद दिलाना।",
+  p5_h:"मौसम और मंडी भाव", p5_p:"हमेशा तारीख़, मंडी और इकाई के साथ, और तभी जब आँकड़े भरोसेमंद हों।",
+  p6_h:"एंड्रॉइड ऐप", p6_p:"यह सब एक ऐप में, जब वेबसाइट और समुदाय से साफ़ हो जाए कि बागवानों को क्या चाहिए।",
+  cal_h:"सेब का साल, महीने दर महीने", cal_p:"हमारे वीडियो और गाइड में हर महीने एक विषय। इस महीने पर निशान है।", now:"इस महीने",
+  trust_h:"हम कैसे काम करते हैं",
+  t1_h:"AI संकेत देता है", t1_p:"फ़ोटो से क्या लगता है, कितना भरोसा है और कब स्थानीय बागवानी विशेषज्ञ से पूछना है, यह साफ़ बताया जाएगा। स्प्रे की सलाह सरकारी मार्गदर्शन और उत्पाद के लेबल के अनुसार होगी।",
+  t2_h:"हर जानकारी पर तारीख़ और स्रोत", t2_p:"भाव और मौसम के साथ तारीख़, जगह और इकाई होगी। पुराने आँकड़े कभी ताज़ा बनाकर नहीं दिखाए जाएँगे।",
+  t3_h:"आपका रिकॉर्ड आपका है", t3_p:"सिफ़ारिश के लिए कोई सप्लायर पैसे नहीं दे सकता। बाग़ का रिकॉर्ड और फ़ोटो सुरक्षित रखे जाएँगे।",
+  join_h:"पहले 1,000 बागवानों में शामिल हों",
+  join_p:"छोटे हिंदी वीडियो देखने के लिए जुड़ें, अपने बाग़ के सवाल भेजें और बताएँ कि ऐप में सबसे पहले क्या होना चाहिए।",
+  join_soon:"हमारे फ़ेसबुक और इंस्टाग्राम पेज जल्द शुरू हो रहे हैं।",
+  foot_note:"बागवानों के लिए सामान्य जानकारी। यह योग्य बागवानी विशेषज्ञ की सलाह या किसी स्प्रे उत्पाद के लेबल की जगह नहीं लेती।",
+  s_next:"अगला", hero_note2:"ये उदाहरण के आँकड़े हैं, यह दिखाने के लिए कि मुनाफ़ा टूल क्या करेगा।", nav_tools:"टूल", tools_h:"आपके बाग़ के लिए टूल",
+  tools_p:"बागवानों की माँगी हुई चार चीज़ें। सीज़न कैलेंडर और स्प्रे की अवस्थाएँ अभी पढ़ने के लिए तैयार हैं, बाक़ी बन रही हैं। हर टैब पर साफ़ लिखा है।",
+  tt_diag:"बीमारी की पहचान", tt_spray:"स्प्रे सूची", tt_mandi:"मंडी भाव", tt_buy:"ख़रीद और बिक्री",
+  s_soon:"जल्द आ रहा", s_calnow:"कैलेंडर चालू",
+  d_h:"फ़ोटो से पहचान", d_p:"पत्ती, फल या टहनी की फ़ोटो लें और आसान हिंदी में संभावित कारण और सुरक्षित अगले क़दम पाएँ।",
+  d_how_h:"यह कैसे काम करेगा", d_s1:"पत्ती, फल या टहनी की साफ़ फ़ोटो लें।", d_s2:"किस्म, पेड़ की उम्र, अवस्था और जगह के बारे में कुछ सवालों के जवाब दें।", d_s3:"संभावित कारण, ऐप को कितना भरोसा है और आगे क्या करना है, यह देखें।",
+  d_tips_h:"काम की फ़ोटो, आज से", d_t1:"दिन की रोशनी में, प्रभावित हिस्से के पास से फ़ोटो लें।", d_t2:"पूरे पेड़ की एक दूर से ली हुई फ़ोटो भी जोड़ें।", d_t3:"लिख लें कि समस्या कब शुरू हुई और कितने पेड़ों में है।", d_t4:"कोई भी स्प्रे करने से पहले फ़ोटो लें।",
+  d_note:"फ़ोटो से मिला नतीजा एक संकेत है, पक्का निदान नहीं, और यह बताएगा कि कितना भरोसा है। गंभीर या तेज़ी से फैलने वाली समस्या हो तो स्थानीय बागवानी अधिकारी या नज़दीकी कृषि विज्ञान केंद्र (KVK) को दिखाएँ।",
+  sp_h:"स्प्रे सूची", sp_p:"क्या स्प्रे करना है, कितना और कब, यह पेड़ की अवस्था, आपकी ऊँचाई और उस साल के मौसम पर निर्भर करता है। सेब डॉक्टर अवस्था के हिसाब से आपको याद दिलाएगा। दवाएँ और मात्रा सरकारी सूची से ली जाती हैं, इसलिए उसी का और दवा के लेबल का पालन करें।",
+  sp_stage_h:"सेब के पेड़ की अवस्थाएँ", sp_stage_p:"आपका बाग़ जिस अवस्था में है, उसी से स्प्रे तय होता है। समय एक बाग़ से दूसरे बाग़ में बदलता है।",
+  st1:"सुप्तावस्था", sd1:"कलियाँ बंद हैं और पेड़ आराम की अवस्था में है।",
+  st2:"ग्रीन टिप", sd2:"कलियों की नोक पर छोटा हरा हिस्सा दिखता है।",
+  st3:"पिंक बड", sd3:"फूलों के गुच्छे खुलने लगते हैं और कलियाँ गुलाबी दिखती हैं।",
+  st4:"पूरा फूल", sd4:"ज़्यादातर फूल खिल चुके होते हैं।",
+  st5:"पंखुड़ी झड़ना", sd5:"पंखुड़ियाँ झड़ती हैं और छोटे फल दिखने लगते हैं।",
+  st6:"फल बनना", sd6:"छोटे फल बन रहे होते हैं।",
+  st7:"फल का विकास", sd7:"गर्मी और बरसात में फल बढ़ता है।",
+  st8:"तुड़ाई से पहले", sd8:"तुड़ाई से पहले के आख़िरी कुछ हफ़्ते।",
+  st9:"तुड़ाई के बाद और पत्ते झड़ना", sd9:"तुड़ाई के बाद, जब पत्ते पीले होकर झड़ते हैं।",
+  sp_link:"सरकारी सेब स्प्रे सूची खोलें", sp_link_note:"हिमाचल प्रदेश बागवानी विभाग। नए टैब में खुलता है।",
+  sp_cal_h:"सीज़न कैलेंडर, महीने दर महीने",
+  m_h:"मंडी भाव", m_p:"देखें कि आपके पास की मंडियों में ग्रेड के हिसाब से सेब किस भाव बिक रहा है, ताकि आप तय कर सकें कि कहाँ और कब बेचना है।",
+  m_how_h:"भाव कैसे दिखाए जाएँगे", m_r1:"हर भाव के साथ तारीख़, मंडी और इकाई (प्रति पेटी या प्रति किलो) होगी।", m_r2:"जो भाव ताज़ा नहीं होगा उस पर पुराना लिखा होगा, उसे आज का भाव बताकर नहीं दिखाया जाएगा।", m_r3:"भाव सिर्फ़ मार्गदर्शन के लिए हैं। आपको जो मिलेगा वह आपके ग्रेड और उस दिन पर निर्भर है।", m_r4:"हर भाव के साथ मुनाफ़ा टूल दिखाएगा कि आपके ख़र्च के बाद क्या बचता है।",
+  m_link:"एगमार्कनेट पोर्टल खोलें", m_link_note:"भारत सरकार का मंडी भाव पोर्टल। नए टैब में खुलता है।",
+  b_h:"ख़रीद और बिक्री", b_p:"बागवानों के लिए सेब बेचने की जगह, और बाग़ की ज़रूरत की चीज़ें ख़रीदने-बेचने की जगह, जैसे कार्टन और पैकिंग का सामान, औज़ार और मशीनें, और मज़दूर ढूँढना।",
+  b_what_h:"इसमें क्या होगा", b_1:"बेचें: ग्रेड, पेटियों की संख्या और जगह के साथ लॉट डालें।", b_2:"ख़रीदें: अपने पास पैकिंग का सामान, औज़ार और मशीनें ढूँढें।", b_3:"दूसरे बागवान या ख़रीदार से सीधे बात करें।",
+  b_safe_h:"सुरक्षित रहें", b_safe:"शुरुआत में सेब डॉक्टर न भुगतान लेगा और न किसी सौदे की गारंटी देगा। ख़रीदार या विक्रेता को ख़ुद जाँचें, और अनजान व्यक्ति को कभी पहले से पैसे न दें।",
+  b_why:"यह तब खुलेगा जब ज़्यादा बागवान बाक़ी टूल इस्तेमाल करने लगेंगे, ताकि लिस्टिंग असली और काम की हों।",
+  p7_h:"ख़रीद और बिक्री", p7_p:"सेब, पैकिंग का सामान, औज़ार और मज़दूर की लिस्टिंग, जब काफ़ी बागवान जुड़ जाएँगे।",
+  tt_calc:"मुनाफ़ा कैलकुलेटर", tt_cal:"सीज़न कैलेंडर", s_guide:"गाइड चालू",
+  pc_h:"मुनाफ़ा कैलकुलेटर", pc_p:"जो ग्रेड या भाव बेचा, हर एक की पंक्ति जोड़ें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर। सारा हिसाब आपके फ़ोन पर ही होता है, कुछ भी कहीं भेजा नहीं जाता।",
+  pc_lines:"आपकी बिक्री", pc_hint:"शुरुआती संख्याएँ उदाहरण हैं। इन्हें अपनी संख्याओं से बदलें।",
+  pc_rec:"हर बाग़ का हर लॉट सहेजने और हर साल का कुल देखने के लिए आपको साइन इन करना होगा। साइन-इन अगला काम है, और आपका रिकॉर्ड सिर्फ़ आपके खाते में रहेगा।",
+  tt_orch:"मेरे बाग़", hdr_signin:"साइन इन", hdr_mine:"मेरे बाग़", s_signin:"साइन इन ज़रूरी", s_signedin:"साइन इन है",
+  or_p:"अपने बाग़, बिक्री के लॉट और साल भर के कुल सहेजने के लिए अपना निजी खाता बनाएँ। इन्हें सिर्फ़ आप देख सकते हैं, और जिस भी फ़ोन पर साइन इन करें वहाँ मिलेंगे।",
+  auth_h:"साइन इन करें या अपना खाता बनाएँ", auth_p:"अपना ईमेल डालें, हम आपको साइन-इन लिंक भेजेंगे। याद रखने के लिए कोई पासवर्ड नहीं। अगर आप नए हैं तो यही क़दम आपका खाता बना देता है।",
+  auth_email:"ईमेल पता", auth_send:"मुझे साइन-इन लिंक ईमेल करें",
+  auth_sent:"हमने {e} पर ईमेल भेजा है। इसे इसी फ़ोन पर खोलें और लिंक दबाएँ। अगर उसमें 6 अंकों का कोड दिखे, तो नीचे वही कोड डालें।",
+  auth_code:"6 अंकों का कोड (अगर ईमेल में हो)", auth_verify:"कोड से साइन इन करें", auth_other:"दूसरा ईमेल इस्तेमाल करें",
+  auth_err_email:"सही ईमेल पता डालें।", auth_err_lib:"साइन-इन लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।",
+  auth_err_send:"ईमेल नहीं भेजा जा सका: {m}",
+  auth_err_net:"साइन-इन सेवा से जुड़ नहीं सका। इंटरनेट जाँचें। साइन-इन सिर्फ़ चालू वेबसाइट पर काम करता है, Claude के अंदर के प्रीव्यू में नहीं।",
+  auth_err_code:"यह कोड काम नहीं किया। जाँचकर दोबारा डालें, या नया ईमेल मँगवाएँ।",
+  auth_as:"{e} से साइन इन", auth_out:"साइन आउट",
+  st_loading:"आपका रिकॉर्ड लोड हो रहा है…", load_h:"आपका रिकॉर्ड लोड नहीं हो सका", load_retry:"दोबारा कोशिश करें",
+  bk_h:"बैकअप और आयात", bk_p:"अपने रिकॉर्ड की कॉपी डाउनलोड करें, या बैकअप फ़ाइल से बाग़ और साल आयात करें। एक जैसी पहचान वाली चीज़ें बदल दी जाती हैं और उदाहरण वाले बाग़ हट जाते हैं।",
+  bk_down:"बैकअप डाउनलोड करें", bk_import:"फ़ाइल से आयात करें", bk_ok:"आयात हो गया।", bk_bad:"यह फ़ाइल सही बैकअप नहीं है।",
+  hc_net:"शुद्ध मुनाफ़ा", hc_ppb:"प्रति पेटी शुद्ध मुनाफ़ा", hc_gx:"कुल बिक्री {g} · ख़र्च {e}",
+  lang_btn:"English", orchard_fallback:"बाग़", lot_fallback:"लॉट",
+  calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। बेचे गए हर लॉट की पेटियाँ, भाव और ख़र्च डालें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर।",
+  lot_help:"एक लॉट यानी एक बिक्री। उसके अंदर हर ग्रेड या भाव के लिए एक पंक्ति जोड़ें।", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
+  f_lname:"लॉट का नाम (जैसे पार्ट 1)", f_grade:"ग्रेड या टिप्पणी (वैकल्पिक)", f_date:"बिक्री की तारीख़ (वैकल्पिक)",
+  f_boxes:"पेटियाँ", f_rate:"प्रति पेटी भाव (₹)", f_exp:"प्रति पेटी ख़र्च (₹)", f_paidon:"भुगतान की तारीख़ (वैकल्पिक)",
+  f_half:"आधी पेटी", f_paid:"भुगतान मिल गया",
+  line_add:"एक और ग्रेड या भाव जोड़ें", line_remove:"यह पंक्ति हटाएँ", lot_remove:"लॉट हटाएँ", rm_sure:"हटाने के लिए दोबारा दबाएँ",
+  lc:"कुल बिक्री {g} · ख़र्च {e} · शुद्ध आय {n}",
+  ls_boxes:"पेटियाँ", ls_gross:"कुल बिक्री", ls_exp:"ख़र्च", ls_net:"शुद्ध आय", ls_ppb:"प्रति पेटी शुद्ध आय",
+  g_year:"साल भर के अन्य ख़र्च (वैकल्पिक)", costs_p:"पूरे साल के स्प्रे, खाद, मज़दूरी आदि। ये शुद्ध आय में से घटाए जाते हैं।",
+  r_boxes:"बेची गई पेटियाँ", r_gross:"कुल बिक्री (पेटियाँ × भाव)", r_lotexp:"लॉट के ख़र्च", r_year:"साल भर के अन्य ख़र्च", r_due:"बिक्री की रक़म जो अभी नहीं मिली",
+  head_profit:"{o} की शुद्ध आय, {y}", head_loss:"{o} का घाटा, {y}", r_profit:"शुद्ध आय", r_loss:"घाटा",
+  seg_exp:"लॉट के ख़र्च", seg_year:"साल भर के अन्य ख़र्च", seg_profit:"शुद्ध आय",
+  y_note:"हर आँकड़ा कुल बिक्री (पेटियाँ × भाव) में से लॉट के ख़र्च और साल भर के अन्य ख़र्च घटाकर निकाला गया है। प्रति पेटी का आँकड़ा निकालते समय आधी पेटी आधी गिनी जाती है।",
+  y_sum:"हर साल का कुल हिसाब", tab_year:"साल भर के कुल",
+  hero_real_t:"आपकी शुद्ध आय, {y}", hero_real_note:"आपके रिकॉर्ड से। हर लॉट देखने के लिए नीचे कैलकुलेटर खोलें।"
+}};
+const MONTHS = {
+  en:["January","February","March","April","May","June","July","August","September","October","November","December"],
+  hi:["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"]};
+const THEMES = {
+  en:["Pruning and orchard planning","Sprays, rootstocks and soil","Bud break and early-season care","Bees, pollination and frost","Fruit thinning and calcium","Irrigation and pest monitoring","Monsoon orchard management","Fruit sizing and colour","Harvest preparation and picking","Post-harvest work and profit review","Soil and orchard health","Next-season planning"],
+  hi:["छँटाई और बाग़ की योजना","स्प्रे, रूटस्टॉक और मिट्टी","कली फूटना और शुरुआती देखभाल","मधुमक्खी, परागण और पाला","फल पतला करना और कैल्शियम","सिंचाई और कीट निगरानी","बरसात में बाग़ प्रबंधन","फल का आकार और रंग","तुड़ाई की तैयारी और तुड़ाई","तुड़ाई के बाद का काम और मुनाफ़े की समीक्षा","मिट्टी और बाग़ की सेहत","अगले सीज़न की योजना"]};
+
+
+const $ = id => document.getElementById(id);
+const set = (id, t) => { $(id).textContent = t; };
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let lang = "en";
+try {
+  const s = localStorage.getItem("ad-lang");
+  if (s === "hi" || s === "en") lang = s;
+  else if ((navigator.language || "").toLowerCase().startsWith("hi")) lang = "hi";
+} catch (e) {}
+const tr = k => T[lang][k];
+function renderHero() {
+  let b = 0, g = 0, e = 0;
+  EX.forEach(l => { b += l.boxes; g += l.boxes * l.rate; e += l.boxes * l.exp; });
+  const net = g - e;
+  set("hero_t", tr("hero_card_t"));
+  set("h_profit", inr(net));
+  set("h_ppb", inr(b ? net / b : 0));
+  set("h_boxes", fmtN(b));
+  set("h_meta", tr("hc_gx").replace("{g}", inr(g)).replace("{e}", inr(e)));
+  set("hero_n", tr("hero_note2"));
+}
+function renderMonths() {
+  const now = new Date().getMonth();
+  $("months").innerHTML = MONTHS[lang].map((m, i) =>
+    '<li' + (i === now ? ' aria-current="date"' : "") + '><span class="m">' + m + '</span><p class="th">' + THEMES[lang][i] + "</p>" +
+    (i === now ? '<span class="now">' + tr("now") + "</span>" : "") + "</li>").join("");
+}
+function renderSocial() {
+  const defs = [["facebook","Facebook"],["instagram","Instagram"],["whatsapp","WhatsApp"]];
+  const links = defs.filter(d => SOCIAL[d[0]]);
+  $("soc").innerHTML = links.length
+    ? links.map(d => '<a class="btn ghost" href="' + esc(SOCIAL[d[0]]) + '" target="_blank" rel="noopener">' + d[1] + "</a>").join("")
+    : '<p class="soon">' + tr("join_soon") + "</p>";
+}
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
+  $("langBtn").textContent = tr("lang_btn");
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate();
+}
+$("langBtn").addEventListener("click", () => {
+  lang = lang === "en" ? "hi" : "en";
+  try { localStorage.setItem("ad-lang", lang); } catch (e) {}
+  applyLang();
+});
+const numOf = v => { const n = parseFloat(v); return isFinite(n) && n > 0 ? n : 0; };
+const inr = n => { const r = Math.round(n); return (r < 0 ? "−" : "") + "₹" + Math.abs(r).toLocaleString("en-IN"); };
+const newId = () => Math.random().toString(36).slice(2, 9);
+const EX = [{boxes:100, rate:1800, exp:400}, {boxes:30, rate:900, exp:400}];
+
+/* ---- quick profit calculator: one line per grade or rate ---- */
+let qid = 0;
+const qDefault = () => { qid = 0; return EX.map(l => ({id:++qid, boxes:l.boxes, rate:l.rate, exp:l.exp, half:false})); };
+let Q = qDefault();
+function renderQLines() {
+  $("qLines").innerHTML = Q.map(l => {
+    const f = (k, lab) => '<div class="field"><label for="q' + l.id + k + '">' + tr(lab) + '</label><input id="q' + l.id + k + '" data-q="' + l.id + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + (l[k] || "") + '"></div>';
+    return '<div class="linebox"><div class="grid tight">' + f("boxes", "f_boxes") + f("rate", "f_rate") + f("exp", "f_exp") + '</div>' +
+      '<div class="checks"><label class="chk"><input type="checkbox" data-q="' + l.id + '" data-f="half"' + (l.half ? " checked" : "") + "> " + tr("f_half") + "</label>" +
+      (Q.length > 1 ? '<button class="link" type="button" data-qrm="' + l.id + '">' + tr("line_remove") + "</button>" : "") + "</div></div>";
+  }).join("");
+}
+function renderQ() {
+  let b = 0, eq = 0, g = 0, e = 0;
+  Q.forEach(l => { b += l.boxes; eq += l.half ? l.boxes / 2 : l.boxes; g += l.boxes * l.rate; e += l.boxes * l.exp; });
+  const net = g - e;
+  set("q_net", inr(net)); $("q_net").className = "big " + (net < 0 ? "neg" : "pos");
+  set("q_ppb", inr(eq ? net / eq : 0));
+  set("q_boxes", fmtN(b)); set("q_gross", inr(g)); set("q_exp", inr(e));
+}
+$("qLines").addEventListener("input", e => {
+  const t = e.target, id = +t.dataset.q; if (!id) return;
+  const l = Q.find(x => x.id === id); if (!l) return;
+  if (t.dataset.f === "half") l.half = t.checked; else l[t.dataset.f] = numOf(t.value);
+  renderQ();
+});
+$("qLines").addEventListener("click", e => {
+  const b = e.target.closest("[data-qrm]"); if (!b) return;
+  if (!b.dataset.armed) {
+    b.dataset.armed = "1"; b.textContent = tr("rm_sure");
+    setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = tr("line_remove"); } }, 3000);
+    return;
+  }
+  Q = Q.filter(x => x.id !== +b.dataset.qrm); renderQLines(); renderQ();
+});
+$("qAdd").addEventListener("click", () => {
+  const last = Q[Q.length - 1];
+  Q.push({id:++qid, boxes:0, rate:0, exp:last ? last.exp : 0, half:false});
+  renderQLines(); renderQ();
+});
+$("qReset").addEventListener("click", () => { Q = qDefault(); renderQLines(); renderQ(); });
+
+/* ---- mandi or ladhani ---- */
+const DEF = {cboxes:200, ckg:20, cpick:60, mprice:1800, mcomm:8, mpack:140, mtrans:70, lprice:80, lded:3, lcost:10};
+const CMP = [
+  {title:"c_shared", ids:["cboxes","ckg","cpick"]},
+  {title:"c_mandi", ids:["mprice","mcomm","mpack","mtrans"]},
+  {title:"c_ladhani", ids:["lprice","lded","lcost"]}];
+$("cmpForm").innerHTML = CMP.map(g =>
+  '<fieldset><legend data-i18n="' + g.title + '"></legend><div class="grid">' + g.ids.map(id =>
+    '<div class="field"><label for="' + id + '" data-i18n="f_' + id + '"></label><input id="' + id + '" type="number" inputmode="decimal" min="0" step="any" value="' + DEF[id] + '"></div>'
+  ).join("") + "</div></fieldset>").join("");
+const cnum = id => numOf($(id).value);
+const cpct = id => Math.min(cnum(id), 100) / 100;
+function renderCmp() {
+  const n = cnum("cboxes"), kg = cnum("ckg"), pick = cnum("cpick");
+  const m = n * (cnum("mprice") * (1 - cpct("mcomm")) - cnum("mpack") - cnum("mtrans") - pick);
+  const l = n * (kg * cnum("lprice") * (1 - cpct("lded")) - pick - cnum("lcost"));
+  set("x_mnet", inr(m)); set("x_lnet", inr(l));
+  set("x_mper", inr(n ? m / n : 0) + " " + tr("x_per"));
+  set("x_lper", inr(n ? l / n : 0) + " " + tr("x_per"));
+  const d = l - m;
+  $("vs_m").className = d < -1 ? "win" : ""; $("vs_l").className = d > 1 ? "win" : "";
+  set("x_verdict", Math.abs(d) < 1 ? tr("x_same") : tr(d > 0 ? "x_l" : "x_m").replace("{x}", inr(Math.abs(d))));
+}
+$("cmpForm").addEventListener("input", renderCmp);
+$("cmpReset").addEventListener("click", () => { Object.keys(DEF).forEach(id => { $(id).value = DEF[id]; }); renderCmp(); });
+
+/* ---------- records ---------- */
+const COST_KEYS = ["spray","fert","labour","prune","irrig","other"];
+const STORE = "ad-ledger2";
+const SEED = /*SEED*/null/*END*/;
+const fmtN = n => Math.round(n).toLocaleString("en-IN");
+
+function blankCosts() { const c = {}; COST_KEYS.forEach(k => { c[k] = 0; }); return c; }
+function blankLine(prev) { return {id:newId(), grade:"", date:"", boxes:0, rate:0, exp:prev ? (+prev.exp || 0) : 0, half:false, paid:false, paidOn:""}; }
+function blankLot(name, prev) { return {id:newId(), name:name || "", lines:[blankLine(prev)]}; }
+function ln(grade, boxes, rate, exp, half) { return {id:newId(), grade:grade, date:"", boxes:boxes, rate:rate, exp:exp, half:!!half, paid:true, paidOn:""}; }
+function makeSample() {
+  const c = (s, f, l, p, i, o) => ({spray:s, fert:f, labour:l, prune:p, irrig:i, other:o});
+  return {
+    v:2,
+    orchards:[{id:"ex1", name:"Example orchard A", trees:300, ex:true}, {id:"ex2", name:"Example orchard B", trees:150, ex:true}],
+    seasons:[
+      {id:"exs1", oid:"ex1", year:2024, costs:c(38000,22000,30000,12000,6000,8000), lots:[
+        {id:"exl1", name:"Lot 1", lines:[ln("A",120,1900,400), ln("B",30,1000,400)]},
+        {id:"exl2", name:"Lot 2", lines:[ln("A",90,1700,400), ln("B",20,900,400)]}]},
+      {id:"exs2", oid:"ex1", year:2025, costs:c(45000,24000,32000,12000,6000,9000), lots:[
+        {id:"exl3", name:"Lot 1", lines:[ln("A",160,2000,420), ln("B",40,1100,420)]},
+        {id:"exl4", name:"Lot 2", lines:[ln("A",70,1800,420), ln("B",10,900,420)]}]},
+      {id:"exs3", oid:"ex2", year:2024, costs:c(22000,14000,18000,8000,4000,4000), lots:[
+        {id:"exl5", name:"Lot 1", lines:[ln("A",80,1700,400), ln("B",20,900,400)]}]},
+      {id:"exs4", oid:"ex2", year:2025, costs:c(24000,15000,20000,8000,4000,5000), lots:[
+        {id:"exl6", name:"Lot 1", lines:[ln("A",100,1800,420), ln("B",30,1000,420)]}]}
+    ]};
+}
+function lineCalc(n) {
+  const b = +n.boxes || 0, r = +n.rate || 0, e = +n.exp || 0;
+  const gross = b * r, exp = b * e;
+  return {b, eq:n.half ? b / 2 : b, gross, exp, net:gross - exp};
+}
+function lotCalc(l) {
+  const t = {b:0, eq:0, gross:0, exp:0, net:0, due:0};
+  l.lines.forEach(n => { const c = lineCalc(n); t.b += c.b; t.eq += c.eq; t.gross += c.gross; t.exp += c.exp; t.net += c.net; if (!n.paid) t.due += c.gross; });
+  t.nppb = t.eq ? t.net / t.eq : 0;
+  return t;
+}
+function seasonCalc(se) {
+  const r = {boxes:0, eq:0, rev:0, lotExp:0, due:0};
+  se.lots.forEach(l => { const c = lotCalc(l); r.boxes += c.b; r.eq += c.eq; r.rev += c.gross; r.lotExp += c.exp; r.due += c.due; });
+  r.yearly = COST_KEYS.reduce((a, k) => a + (+se.costs[k] || 0), 0);
+  r.cost = r.lotExp + r.yearly;
+  r.profit = r.rev - r.cost;
+  r.ppb = r.eq ? r.profit / r.eq : 0;
+  r.cpb = r.eq ? r.cost / r.eq : 0;
+  return r;
+}
+function sanitize(o) {
+  if (!o || o.v !== 2 || !Array.isArray(o.orchards) || !Array.isArray(o.seasons)) return null;
+  o.orchards = o.orchards.filter(x => x && x.id);
+  o.seasons = o.seasons.filter(s => s && s.id && o.orchards.some(x => x.id === s.oid) && isFinite(+s.year)).map(s => {
+    s.year = Math.round(+s.year);
+    s.costs = Object.assign(blankCosts(), s.costs || {});
+    s.lots = (Array.isArray(s.lots) ? s.lots : []).filter(l => l && l.id).map(l => {
+      l.name = l.name || "";
+      l.lines = (Array.isArray(l.lines) ? l.lines : []).filter(n => n && n.id).map(n => Object.assign(blankLine(), n));
+      return l;
+    });
+    return s;
+  });
+  return o;
+}
+/* records typed into the first version of this page (one row per lot) are carried over */
+function migrate(old) {
+  if (!old || !Array.isArray(old.orchards) || !Array.isArray(old.seasons)) return null;
+  const keep = old.orchards.filter(x => x && x.id && !x.ex);
+  if (!keep.length) return null;
+  const ids = keep.map(x => x.id);
+  return {v:2, orchards:keep, seasons:old.seasons.filter(s => s && ids.indexOf(s.oid) >= 0).map(s => ({
+    id:s.id, oid:s.oid, year:s.year, costs:s.costs || blankCosts(),
+    lots:(s.lots || []).map(l => ({id:l.id, name:l.name || "", lines:[{id:newId(), grade:"", date:"", boxes:+l.boxes || 0, rate:+l.price || 0,
+      exp:(+l.pick || 0) + (+l.carton || 0) + (+l.carriage || 0) + (+l.grading || 0) + (+l.transport || 0) + (+l.price || 0) * Math.min(+l.comm || 0, 100) / 100,
+      half:false, paid:false, paidOn:""}]}))}))};
+}
+
+let S = makeSample();
+const sel = {o:null, y:null};
+let pendingDel = null;
+const seasonsOf = oid => S.orchards.length ? S.seasons.filter(s => s.oid === oid) : [];
+const curOrchard = () => S.orchards.find(x => x.id === sel.o) || null;
+const curSeason = () => S.seasons.find(s => s.oid === sel.o && s.year === sel.y) || null;
+function fixSel() {
+  if (!S.orchards.some(x => x.id === sel.o)) sel.o = S.orchards.length ? S.orchards[0].id : null;
+  const ys = seasonsOf(sel.o).map(s => s.year);
+  if (!ys.includes(sel.y)) sel.y = ys.length ? Math.max.apply(null, ys) : null;
+}
+fixSel();
+
+/* ---------- accounts and saving (Supabase) ---------- */
+const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
+const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
+let sb = null;
+try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
+let user = null, loaded = false, loadFailed = false, pendingEmail = "";
+let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink/.test(String(location.hash) + String(location.search));
+let saving = false, again = false, saveTimer = null, rev = 0, savedRev = 0;
+const isDirty = () => rev > savedRev;
+function setStatus(k) { $("status").textContent = tr(k); $("status").dataset.k = k; }
+function save() { if (!user || !loaded) return; rev++; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
+async function flush() {
+  if (!user || !sb || !loaded) return;
+  if (saving) { again = true; return; }
+  saving = true; setStatus("st_saving");
+  const r = rev, snapshot = JSON.parse(JSON.stringify(S));
+  let ok = true;
+  try {
+    const res = await sb.from("ledgers").upsert({user_id: user.id, data: snapshot, updated_at: new Date().toISOString()});
+    if (res.error) ok = false;
+  } catch (e) { ok = false; }
+  if (ok && savedRev < r) savedRev = r;
+  setStatus(ok ? "st_cloud" : "st_err");
+  saving = false;
+  if (ok && (again || isDirty())) { again = false; flush(); }
+}
+window.addEventListener("online", () => { if (isDirty()) flush(); });
+window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
+
+function renderAcct() {
+  set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
+  if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || ""));
+  if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail));
+}
+function renderOrchGate() {
+  const ready = !!(user && loaded);
+  $("authCard").hidden = !!user;
+  $("loadErr").hidden = !(user && !loaded && loadFailed);
+  $("recApp").hidden = !ready;
+  $("orchPill").className = "pill" + (user ? " live" : "");
+  set("orchPill", tr(user ? "s_signedin" : "s_signin"));
+  renderAcct();
+}
+function renderAll() { renderEditor(); renderResults(); renderSummary(); }
+
+async function loadMine() {
+  loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
+  let data = null, msg = "";
+  try {
+    const res = await sb.from("ledgers").select("data").eq("user_id", user.id).maybeSingle();
+    if (res.error) { loadFailed = true; msg = res.error.message || ""; }
+    else if (res.data) data = res.data.data;
+  } catch (e) { loadFailed = true; msg = String((e && e.message) || e); }
+  let parsed = null;
+  if (!loadFailed && data) { parsed = sanitize(data); if (!parsed) { loadFailed = true; msg = "Saved records were not recognised."; } }
+  if (loadFailed) { set("loadErrMsg", msg); renderOrchGate(); return; }
+  S = parsed || makeSample();
+  loaded = true; rev = 0; savedRev = 0; sel.o = null; sel.y = null; fixSel();
+  setStatus("st_cloud"); renderAll(); renderOrchGate();
+  if (justSignedIn) { justSignedIn = false; showTool("orch", false, true); }
+}
+async function applyUser(u) {
+  const changed = (u ? u.id : null) !== (user ? user.id : null);
+  user = u;
+  if (!u) {
+    S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = "";
+    $("authStep1").hidden = false; $("authStep2").hidden = true;
+    sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
+  }
+  if (changed) await loadMine();
+}
+if (sb) {
+  sb.auth.onAuthStateChange((ev, session) => { setTimeout(() => { applyUser(session ? session.user : null); }, 0); });
+  sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); }).catch(() => {});
+}
+
+function netMsg(err) {
+  const m = String((err && err.message) || err || "");
+  return /fetch|network|failed|load/i.test(m) ? tr("auth_err_net") : tr("auth_err_send").replace("{m}", m);
+}
+$("authForm").addEventListener("submit", async e => {
+  e.preventDefault(); set("authErr", "");
+  const email = $("authEmail").value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(email)) { set("authErr", tr("auth_err_email")); return; }
+  if (!sb) { set("authErr", tr("auth_err_lib")); return; }
+  $("authSend").disabled = true;
+  let err = null;
+  try {
+    const res = await sb.auth.signInWithOtp({email: email, options: {shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname}});
+    err = res.error;
+  } catch (x) { err = x; }
+  $("authSend").disabled = false;
+  if (err) { set("authErr", netMsg(err)); return; }
+  pendingEmail = email; $("authStep1").hidden = true; $("authStep2").hidden = false; renderAcct();
+});
+$("codeForm").addEventListener("submit", async e => {
+  e.preventDefault(); set("authCodeErr", "");
+  const token = $("authCode").value.replace(/\s/g, "");
+  if (!token || !sb) return;
+  justSignedIn = true;
+  let err = null;
+  try { const res = await sb.auth.verifyOtp({email: pendingEmail, token: token, type: "email"}); err = res.error; } catch (x) { err = x; }
+  if (err) { justSignedIn = false; set("authCodeErr", tr("auth_err_code")); }
+});
+$("authOther").addEventListener("click", () => { pendingEmail = ""; $("authStep1").hidden = false; $("authStep2").hidden = true; set("authErr", ""); });
+$("signOut").addEventListener("click", async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} applyUser(null); });
+$("loadRetry").addEventListener("click", () => { if (user) loadMine(); });
+$("signBtn").addEventListener("click", () => showTool("orch", false, true));
+
+/* ---- backup and import ---- */
+function bkMsg(k) { set("bkMsg", tr(k)); }
+$("bkDown").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(S)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "apple-doctor-records.json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+$("bkPick").addEventListener("click", () => $("bkFile").click());
+$("bkFile").addEventListener("change", async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    const parsed = sanitize(JSON.parse(await f.text()));
+    if (!parsed || !parsed.orchards.length) throw new Error("bad");
+    parsed.orchards.forEach(o => { const i = S.orchards.findIndex(x => x.id === o.id); if (i >= 0) S.orchards[i] = o; else S.orchards.push(o); });
+    parsed.seasons.forEach(s => { const i = S.seasons.findIndex(x => x.id === s.id); if (i >= 0) S.seasons[i] = s; else S.seasons.push(s); });
+    const ex = S.orchards.filter(x => x.ex).map(x => x.id);
+    S.orchards = S.orchards.filter(x => !x.ex); S.seasons = S.seasons.filter(s => ex.indexOf(s.oid) < 0);
+    fixSel(); save(); renderAll(); bkMsg("bk_ok");
+  } catch (err) { bkMsg("bk_bad"); }
+  e.target.value = "";
+});
+
+function showSub(w) {
+  ["year", "orch"].forEach(n => {
+    $("rp-" + n).hidden = n !== w;
+    $("rt-" + n).setAttribute("aria-selected", n === w ? "true" : "false");
+  });
+}
+$("rt-year").addEventListener("click", () => showSub("year"));
+$("rt-orch").addEventListener("click", () => showSub("orch"));
+
+/* ---------- orchards panel ---------- */
+function renderEditor() {
+  const o = curOrchard(), se = curSeason();
+  $("selOrchard").innerHTML = S.orchards.map(x => '<option value="' + esc(x.id) + '"' + (x.id === sel.o ? " selected" : "") + ">" + esc(x.name || tr("orchard_fallback")) + "</option>").join("");
+  $("selOrchard").disabled = !S.orchards.length;
+  const years = seasonsOf(sel.o).map(s => s.year).sort((a, b) => b - a);
+  $("selYear").innerHTML = years.map(y => '<option value="' + y + '"' + (y === sel.y ? " selected" : "") + ">" + y + "</option>").join("");
+  $("selYear").disabled = !years.length;
+  $("exBanner").hidden = !S.orchards.some(x => x.ex);
+  $("manage").hidden = !o;
+  if (o) { $("oname").value = o.name || ""; $("otrees").value = o.trees || ""; }
+  renderDels();
+
+  let h = "";
+  if (!o) h = '<p class="empty">' + tr("empty_orch") + "</p>";
+  else if (!se) h = '<p class="empty">' + tr("empty_year") + "</p>";
+  else {
+    h += "<fieldset><legend>" + tr("lots_h") + '</legend><p class="hint">' + tr("lot_help") + " " + tr("half_note") + "</p>";
+    se.lots.forEach(l => { h += lotHtml(l); });
+    h += '<button class="btn-s add" type="button" data-act="addlot">' + tr("lot_add") + "</button></fieldset>";
+    const hasC = COST_KEYS.some(k => +se.costs[k] > 0);
+    h += '<details class="manage"' + (hasC ? " open" : "") + "><summary>" + tr("g_year") + '</summary><p class="hint">' + tr("costs_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
+      '<div class="field"><label for="c_' + k + '">' + tr("f_" + k) + '</label><input id="c_' + k + '" data-cost="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + (se.costs[k] || "") + '"></div>'
+    ).join("") + "</div></details>";
+  }
+  $("editor").innerHTML = h;
+}
+function lineHtml(n) {
+  const id = "n_" + n.id;
+  const f = (k, type, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + tr(lab) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="' + type + '"' +
+    (type === "number" ? ' inputmode="decimal" min="0" step="any"' : (type === "text" ? ' maxlength="40"' : "")) + ' value="' + esc(v) + '"></div>';
+  const c = (k, lab) => '<label class="chk"><input type="checkbox" data-line="' + n.id + '" data-f="' + k + '"' + (n[k] ? " checked" : "") + "> " + tr(lab) + "</label>";
+  return '<div class="linebox"><div class="grid tight">' +
+    f("grade", "text", "f_grade", n.grade) + f("date", "date", "f_date", n.date) +
+    f("boxes", "number", "f_boxes", n.boxes || "") + f("rate", "number", "f_rate", n.rate || "") +
+    f("exp", "number", "f_exp", n.exp || "") + f("paidOn", "date", "f_paidon", n.paidOn) +
+    '</div><div class="checks">' + c("half", "f_half") + c("paid", "f_paid") + "</div>" +
+    '<p class="linecalc" data-lc="' + n.id + '"></p>' +
+    '<button class="link" type="button" data-act="rmline" data-id="' + n.id + '">' + tr("line_remove") + "</button></div>";
+}
+function lotHtml(l) {
+  return '<div class="lotbox"><div class="lothead"><div class="field"><label for="l_' + l.id + '_name">' + tr("f_lname") + '</label><input id="l_' + l.id + '_name" data-lot="' + l.id + '" data-f="name" type="text" maxlength="60" value="' + esc(l.name) + '"></div>' +
+    '<button class="btn-s" type="button" data-act="rmlot" data-id="' + l.id + '">' + tr("lot_remove") + "</button></div>" +
+    l.lines.map(n => lineHtml(n)).join("") +
+    '<button class="btn-s" type="button" data-act="addline" data-id="' + l.id + '">' + tr("line_add") + "</button>" +
+    '<div class="lotsum" data-lsum="' + l.id + '"></div></div>';
+}
+function renderDels() {
+  const o = curOrchard(), se = curSeason();
+  let h = "";
+  if (pendingDel && ((pendingDel === "orchard" && o) || (pendingDel === "year" && se))) {
+    h = '<div class="confirm"><span>' + tr("del_sure") + '</span><button class="btn-s danger" type="button" data-act="delyes">' + tr("del_yes") + '</button><button class="btn-s" type="button" data-act="delno">' + tr("del_no") + "</button></div>";
+  } else {
+    pendingDel = null;
+    if (o) h += '<button class="btn-s danger" type="button" data-act="delorch">' + tr("del_orchard") + "</button>";
+    if (se) h += '<button class="btn-s danger" type="button" data-act="delyear">' + tr("del_year") + "</button>";
+  }
+  $("dels").innerHTML = h;
+}
+function renderResults() {
+  const o = curOrchard(), se = curSeason();
+  const has = !!(o && se);
+  $("resBox").hidden = !has;
+  $("headline").hidden = !has;
+  if (!has) return;
+  const r = seasonCalc(se);
+  const loss = r.profit < 0;
+  set("hl_label", tr(loss ? "head_loss" : "head_profit").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", se.year));
+  set("hl_val", inr(r.profit));
+  $("headline").className = "headline " + (loss ? "neg" : "pos");
+  set("o_label", tr(loss ? "r_loss" : "r_profit") + " · " + se.year);
+  set("o_profit", inr(r.profit)); $("o_profit").className = "big " + (loss ? "neg" : "pos");
+  set("o_ppb", inr(r.ppb));
+  set("o_boxes", fmtN(r.boxes)); set("o_rev", inr(r.rev)); set("o_perbox", inr(r.lotExp));
+  set("o_year", inr(r.yearly)); set("o_due", inr(r.due));
+  const segs = [
+    {c:"--seg-pack", t:"seg_exp", v:r.lotExp}, {c:"--seg-year", t:"seg_year", v:r.yearly},
+    {c:"--seg-profit", t:"seg_profit", v:Math.max(r.profit, 0)}];
+  const total = Math.max(r.rev, r.cost) || 1;
+  $("bar").setAttribute("aria-label", tr("bar_aria"));
+  $("bar").innerHTML = segs.map(s => '<span style="width:' + (s.v / total * 100).toFixed(2) + '%;background:var(' + s.c + ')"></span>').join("");
+  $("legend").innerHTML = segs.map(s => '<li><b style="background:var(' + s.c + ')"></b><span>' + tr(s.t) + "</span><em>" + inr(s.v) + "</em></li>").join("");
+  const findLine = id => { for (const l of se.lots) { const n = l.lines.find(x => x.id === id); if (n) return n; } return null; };
+  document.querySelectorAll("[data-lc]").forEach(el => {
+    const n = findLine(el.getAttribute("data-lc")); if (!n) return;
+    const c = lineCalc(n);
+    el.textContent = tr("lc").replace("{g}", inr(c.gross)).replace("{e}", inr(c.exp)).replace("{n}", inr(c.net));
+  });
+  document.querySelectorAll("[data-lsum]").forEach(el => {
+    const l = se.lots.find(x => x.id === el.getAttribute("data-lsum")); if (!l) return;
+    const c = lotCalc(l);
+    el.innerHTML = [["ls_boxes", fmtN(c.b)], ["ls_gross", inr(c.gross)], ["ls_exp", inr(c.exp)], ["ls_net", inr(c.net)], ["ls_ppb", inr(c.nppb)]]
+      .map(p => "<div><span>" + tr(p[0]) + "</span><b>" + p[1] + "</b></div>").join("");
+  });
+}
+
+/* ---------- yearly totals ---------- */
+function renderYearDetail() {
+  const years = Array.from(new Set(S.seasons.map(s => s.year))).sort((a, b) => b - a);
+  const cls = n => (n < 0 ? "neg" : "pos");
+  $("yearDetail").innerHTML = years.map(y => {
+    const rows = S.orchards.map(o => {
+      const se = S.seasons.find(s => s.oid === o.id && s.year === y);
+      return se ? {o:o, r:seasonCalc(se)} : null;
+    }).filter(Boolean);
+    const t = {boxes:0, eq:0, rev:0, cost:0, due:0};
+    rows.forEach(x => { t.boxes += x.r.boxes; t.eq += x.r.eq; t.rev += x.r.rev; t.cost += x.r.cost; t.due += x.r.due; });
+    const net = t.rev - t.cost, ppb = t.eq ? net / t.eq : 0;
+    const stat = (k, v, c) => "<div" + (c ? ' class="main ' + c + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b></div>";
+    return '<div class="yblock"><h4>' + y + '</h4><div class="ystats">' +
+      stat("ls_gross", inr(t.rev)) + stat("ls_exp", inr(t.cost)) + stat("ls_net", inr(net), cls(net)) + stat("ls_ppb", inr(ppb)) + stat("r_due", inr(t.due)) + "</div>" +
+      '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("y_orch") + '</th><th scope="col">' + tr("ls_boxes") + '</th><th scope="col">' + tr("ls_gross") +
+      '</th><th scope="col">' + tr("ls_exp") + '</th><th scope="col">' + tr("ls_net") + "</th></tr></thead><tbody>" +
+      rows.map(x => '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + fmtN(x.r.boxes) + "</td><td>" + inr(x.r.rev) + "</td><td>" + inr(x.r.cost) +
+        '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td></tr>").join("") +
+      "</tbody></table></div></div>";
+  }).join("");
+}
+function renderSummary() {
+  renderYearDetail();
+  const years = Array.from(new Set(S.seasons.map(s => s.year))).sort((a, b) => a - b);
+  if (!S.orchards.length || !years.length) {
+    $("yearTable").innerHTML = '<p class="empty">' + tr("y_empty") + "</p>";
+    $("ybars").innerHTML = "";
+    return;
+  }
+  const cls = n => (n < 0 ? "neg" : "pos");
+  const tot = {}, boxes = {}; years.forEach(y => { tot[y] = 0; boxes[y] = 0; });
+  let h = '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("y_orch") + "</th>" +
+    years.map(y => '<th scope="col">' + y + "</th>").join("") + '<th scope="col">' + tr("y_total") + "</th></tr></thead><tbody>";
+  S.orchards.forEach(o => {
+    let rowTot = 0;
+    h += '<tr><th scope="row">' + esc(o.name || tr("orchard_fallback")) + "</th>";
+    years.forEach(y => {
+      const se = S.seasons.find(s => s.oid === o.id && s.year === y);
+      if (!se) { h += '<td class="none">–</td>'; return; }
+      const r = seasonCalc(se);
+      rowTot += r.profit; tot[y] += r.profit; boxes[y] += r.boxes;
+      h += '<td class="' + cls(r.profit) + '">' + inr(r.profit) + "</td>";
+    });
+    h += '<td class="' + cls(rowTot) + '">' + inr(rowTot) + "</td></tr>";
+  });
+  const grand = years.reduce((a, y) => a + tot[y], 0);
+  h += '</tbody><tfoot><tr><th scope="row">' + tr("y_all") + "</th>" +
+    years.map(y => '<td class="' + cls(tot[y]) + '">' + inr(tot[y]) + "</td>").join("") +
+    '<td class="' + cls(grand) + '">' + inr(grand) + "</td></tr></tfoot></table></div>";
+  $("yearTable").innerHTML = h;
+  const max = Math.max.apply(null, years.map(y => Math.abs(tot[y]))) || 1;
+  $("ybars").innerHTML = years.map(y =>
+    '<li><span class="yl">' + y + '</span><span class="track"><span class="fill ' + cls(tot[y]) + '" style="width:' + (Math.abs(tot[y]) / max * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(tot[y]) + "</span>" +
+    '<span class="ys">' + Math.round(boxes[y]).toLocaleString("en-IN") + " " + tr("y_boxes") + (boxes[y] ? " · " + inr(tot[y] / boxes[y]) + " " + tr("hero_card_per") : "") + "</span></li>").join("");
+}
+
+/* ---------- events ---------- */
+function findLineIn(se, id) { for (const l of se.lots) { const n = l.lines.find(x => x.id === id); if (n) return n; } return null; }
+function onEdit(e) {
+  const t = e.target, d = t.dataset;
+  if (d.line) {
+    const se = curSeason(); const n = se && findLineIn(se, d.line); if (!n) return;
+    if (d.f === "half" || d.f === "paid") n[d.f] = t.checked;
+    else if (d.f === "grade" || d.f === "date" || d.f === "paidOn") n[d.f] = t.value;
+    else n[d.f] = numOf(t.value);
+  } else if (d.lot) {
+    const se = curSeason(); const l = se && se.lots.find(x => x.id === d.lot); if (!l) return;
+    l.name = t.value;
+  } else if (d.cost) {
+    const se = curSeason(); if (!se) return;
+    se.costs[d.cost] = numOf(t.value);
+  } else if (t.id === "oname") {
+    const o = curOrchard(); if (!o) return;
+    o.name = t.value;
+    const opt = $("selOrchard").selectedOptions[0]; if (opt) opt.textContent = t.value || tr("orchard_fallback");
+  } else if (t.id === "otrees") {
+    const o = curOrchard(); if (!o) return;
+    o.trees = numOf(t.value);
+  } else return;
+  save(); renderResults(); renderSummary(); renderHero();
+}
+$("rp-orch").addEventListener("input", onEdit);
+$("rp-orch").addEventListener("change", e => { if (e.target.type === "checkbox") onEdit(e); });
+$("selOrchard").addEventListener("change", e => { sel.o = e.target.value; sel.y = null; pendingDel = null; fixSel(); renderAll(); });
+$("selYear").addEventListener("change", e => { sel.y = parseInt(e.target.value, 10); pendingDel = null; renderAll(); });
+$("rp-orch").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const act = b.dataset.act;
+  const thisYear = new Date().getFullYear();
+  if ((act === "rmlot" || act === "rmline") && !b.dataset.armed) {
+    b.dataset.armed = "1"; b.textContent = tr("rm_sure");
+    setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = tr(act === "rmlot" ? "lot_remove" : "line_remove"); } }, 3000);
+    return;
+  }
+  if (act === "addorch") {
+    const name = $("newOrchard").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.length + 1));
+    const o = {id:newId(), name, trees:0};
+    S.orchards.push(o);
+    const y = sel.y || thisYear;
+    S.seasons.push({id:newId(), oid:o.id, year:y, costs:blankCosts(), lots:[blankLot(tr("lot_fallback") + " 1")]});
+    sel.o = o.id; sel.y = y; $("newOrchard").value = "";
+  } else if (act === "addyear") {
+    if (!curOrchard()) return;
+    const y = Math.round(numOf($("newYear").value));
+    if (y < 2000 || y > 2100) return;
+    if (!S.seasons.some(s => s.oid === sel.o && s.year === y)) S.seasons.push({id:newId(), oid:sel.o, year:y, costs:blankCosts(), lots:[blankLot(tr("lot_fallback") + " 1")]});
+    sel.y = y; $("newYear").value = "";
+  } else if (act === "addlot") {
+    const se = curSeason(); if (!se) return;
+    const lastLot = se.lots[se.lots.length - 1];
+    const prev = lastLot && lastLot.lines[lastLot.lines.length - 1];
+    se.lots.push(blankLot(tr("lot_fallback") + " " + (se.lots.length + 1), prev));
+  } else if (act === "addline") {
+    const se = curSeason(); const l = se && se.lots.find(x => x.id === b.dataset.id); if (!l) return;
+    l.lines.push(blankLine(l.lines[l.lines.length - 1]));
+  } else if (act === "rmline") {
+    const se = curSeason(); if (!se) return;
+    se.lots.forEach(l => { l.lines = l.lines.filter(n => n.id !== b.dataset.id); });
+  } else if (act === "rmlot") {
+    const se = curSeason(); if (!se) return; se.lots = se.lots.filter(l => l.id !== b.dataset.id);
+  } else if (act === "delorch") { pendingDel = "orchard"; renderDels(); return; }
+  else if (act === "delyear") { pendingDel = "year"; renderDels(); return; }
+  else if (act === "delno") { pendingDel = null; renderDels(); return; }
+  else if (act === "delyes") {
+    if (pendingDel === "orchard") {
+      S.seasons = S.seasons.filter(s => s.oid !== sel.o);
+      S.orchards = S.orchards.filter(x => x.id !== sel.o); sel.o = null; sel.y = null;
+    } else if (pendingDel === "year") {
+      S.seasons = S.seasons.filter(s => !(s.oid === sel.o && s.year === sel.y)); sel.y = null;
+    }
+    pendingDel = null;
+  } else if (act === "clearex") {
+    const ids = S.orchards.filter(x => x.ex).map(x => x.id);
+    S.orchards = S.orchards.filter(x => !x.ex);
+    S.seasons = S.seasons.filter(s => !ids.includes(s.oid));
+  } else return;
+  fixSel(); save(); renderAll();
+});
+
+/* ---- top tabs ---- */
+const TT = ["calc","diag","spray","cal","mandi","buy","orch"];
+function showTool(w, focus, scroll) {
+  TT.forEach(n => {
+    $("tp-" + n).hidden = n !== w;
+    const b = $("tt-" + n);
+    b.setAttribute("aria-selected", n === w ? "true" : "false");
+    b.tabIndex = n === w ? 0 : -1;
+    if (n === w) {
+      if (focus) b.focus();
+      if (b.scrollIntoView) b.scrollIntoView({block:"nearest", inline:"nearest"});
+    }
+  });
+  if (scroll && $("tools").scrollIntoView) $("tools").scrollIntoView({block:"start"});
+}
+TT.forEach((n, i) => {
+  const b = $("tt-" + n);
+  b.addEventListener("click", () => showTool(n, false, true));
+  b.addEventListener("keydown", e => {
+    let j = -1;
+    if (e.key === "ArrowRight") j = (i + 1) % TT.length;
+    else if (e.key === "ArrowLeft") j = (i + TT.length - 1) % TT.length;
+    else if (e.key === "Home") j = 0;
+    else if (e.key === "End") j = TT.length - 1;
+    if (j >= 0) { e.preventDefault(); showTool(TT[j], true, false); }
+  });
+});
+showTool("calc");
+applyLang();
+</script>
+
+</body>
+</html>
