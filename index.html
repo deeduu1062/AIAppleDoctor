@@ -479,10 +479,10 @@ img{max-width:100%}
         <div class="acctbar"><span id="acct_email"></span><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div>
         <p class="status" id="status" aria-live="polite"></p>
         <div class="tabs" role="tablist">
-          <button class="tab" role="tab" id="rt-year" aria-selected="true" aria-controls="rp-year" type="button" data-i18n="tab_year"></button>
-          <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="tab_orch"></button>
+          <button class="tab" role="tab" id="rt-orch" aria-selected="true" aria-controls="rp-orch" type="button" data-i18n="tab_edit"></button>
+          <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="tab_year"></button>
         </div>
-<div class="panel" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
+<div class="panel" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch">
       <div>
         <div class="pick">
           <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
@@ -529,7 +529,7 @@ img{max-width:100%}
       </div>
     </div>
 
-    <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year">
+    <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year" hidden>
       <div>
         <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
         <div id="yearDetail"></div>
@@ -720,7 +720,7 @@ en: {
   head_profit:"Net income for {o}, {y}", head_loss:"Loss for {o}, {y}", r_profit:"Net income", r_loss:"Loss",
   seg_exp:"Lot expenses", seg_year:"Other yearly costs", seg_profit:"Net income",
   y_note:"Each figure is gross (boxes × rate) minus lot expenses and any other yearly costs. Half boxes count as half when working out the per-box figure.",
-  y_sum:"Totals for each year", tab_year:"Yearly totals",
+  y_sum:"Totals for each year", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
   hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot."
 },
 hi: {
@@ -845,7 +845,7 @@ hi: {
   head_profit:"{o} की शुद्ध आय, {y}", head_loss:"{o} का घाटा, {y}", r_profit:"शुद्ध आय", r_loss:"घाटा",
   seg_exp:"लॉट के ख़र्च", seg_year:"साल भर के अन्य ख़र्च", seg_profit:"शुद्ध आय",
   y_note:"हर आँकड़ा कुल बिक्री (पेटियाँ × भाव) में से लॉट के ख़र्च और साल भर के अन्य ख़र्च घटाकर निकाला गया है। प्रति पेटी का आँकड़ा निकालते समय आधी पेटी आधी गिनी जाती है।",
-  y_sum:"हर साल का कुल हिसाब", tab_year:"साल भर के कुल",
+  y_sum:"हर साल का कुल हिसाब", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
   hero_real_t:"आपकी शुद्ध आय, {y}", hero_real_note:"आपके रिकॉर्ड से। हर लॉट देखने के लिए नीचे कैलकुलेटर खोलें।"
 }};
 const MONTHS = {
@@ -1204,6 +1204,13 @@ function showSub(w) {
   });
 }
 $("rt-year").addEventListener("click", () => showSub("year"));
+$("rp-year").addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-act=editsel]");
+  if (!b) return;
+  sel.o = b.dataset.o; sel.y = +b.dataset.y;
+  renderAll(); showSub("orch");
+  window.scrollTo(0, 0);
+});
 $("rt-orch").addEventListener("click", () => showSub("orch"));
 
 /* ---------- orchards panel ---------- */
@@ -1309,7 +1316,7 @@ function renderYearDetail() {
   $("yearDetail").innerHTML = years.map(y => {
     const rows = S.orchards.map(o => {
       const se = S.seasons.find(s => s.oid === o.id && s.year === y);
-      return se ? {o:o, r:seasonCalc(se)} : null;
+      return se ? {o:o, y:y, r:seasonCalc(se)} : null;
     }).filter(Boolean);
     const t = {boxes:0, eq:0, rev:0, cost:0, due:0};
     rows.forEach(x => { t.boxes += x.r.boxes; t.eq += x.r.eq; t.rev += x.r.rev; t.cost += x.r.cost; t.due += x.r.due; });
@@ -1318,9 +1325,9 @@ function renderYearDetail() {
     return '<div class="yblock"><h4>' + y + '</h4><div class="ystats">' +
       stat("ls_gross", inr(t.rev)) + stat("ls_exp", inr(t.cost)) + stat("ls_net", inr(net), cls(net)) + stat("ls_ppb", inr(ppb)) + stat("r_due", inr(t.due)) + "</div>" +
       '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("y_orch") + '</th><th scope="col">' + tr("ls_boxes") + '</th><th scope="col">' + tr("ls_gross") +
-      '</th><th scope="col">' + tr("ls_exp") + '</th><th scope="col">' + tr("ls_net") + "</th></tr></thead><tbody>" +
+      '</th><th scope="col">' + tr("ls_exp") + '</th><th scope="col">' + tr("ls_net") + '</th><th scope="col"></th></tr></thead><tbody>' +
       rows.map(x => '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + fmtN(x.r.boxes) + "</td><td>" + inr(x.r.rev) + "</td><td>" + inr(x.r.cost) +
-        '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td></tr>").join("") +
+        '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + '</td><td><button class="btn-s" type="button" data-act="editsel" data-o="' + esc(x.o.id) + '" data-y="' + x.y + '">' + tr("edit_row") + "</button></td></tr>").join("") +
       "</tbody></table></div></div>";
   }).join("");
 }
