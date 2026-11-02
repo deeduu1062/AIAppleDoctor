@@ -117,6 +117,9 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .entryform{margin-top:14px;border-color:var(--brand-bg);box-shadow:inset 0 0 0 1px var(--brand-bg)}
 .entryform h4{font-size:1.1rem;font-weight:700;margin-bottom:10px}
 .entryform .dels{margin-top:12px}
+.entryform .linebox > .rowhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.entryform .rowhead b{font-size:.95rem}
+.entryform > .btn-s{margin-top:12px}
 .entrymsg{margin-top:10px;color:var(--good);font-weight:600;min-height:0}
 .addrow{display:flex;gap:8px;align-items:flex-end;margin-top:12px}
 .addrow .field{flex:1}
@@ -520,18 +523,9 @@ img{max-width:100%}
         <p class="entrymsg" id="entryMsg" role="status"></p>
         <form class="lotbox entryform" id="entryForm" novalidate hidden>
           <h4 id="ne_title"></h4>
-          <div class="grid tight">
-            <div class="field"><label for="ne_grade" data-i18n="f_type"></label><select id="ne_grade"></select></div>
-            <div class="field"><label for="ne_boxes" data-i18n="f_boxes"></label><input id="ne_boxes" type="number" inputmode="decimal" min="0" step="any"></div>
-            <div class="field"><label for="ne_rate" data-i18n="f_price"></label><input id="ne_rate" type="number" inputmode="decimal" min="0" step="any"></div>
-          </div>
-          <p class="subhead" data-i18n="exp_h"></p>
-          <div class="grid tight">
-            <div class="field"><label for="ne_tod" data-i18n="f_tod"></label><input id="ne_tod" type="number" inputmode="decimal" min="0" step="any"></div>
-            <div class="field"><label for="ne_grd" data-i18n="f_grd"></label><input id="ne_grd" type="number" inputmode="decimal" min="0" step="any"></div>
-            <div class="field"><label for="ne_car" data-i18n="f_car"></label><input id="ne_car" type="number" inputmode="decimal" min="0" step="any"></div>
-            <div class="field"><label for="ne_exp" data-i18n="f_oth"></label><input id="ne_exp" type="number" inputmode="decimal" min="0" step="any"></div>
-          </div>
+          <div id="ne_rows"></div>
+          <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button>
+          <div class="lotsum" id="ne_sum"></div>
           <p class="autherr" id="ne_err" role="alert"></p>
           <div class="dels"><button class="btn-s add" type="submit" data-i18n="ne_submit"></button><button class="btn-s" type="button" data-act="cancelentry" data-i18n="ne_cancel"></button></div>
         </form>
@@ -657,7 +651,7 @@ en: {
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
-  ne_h:"New entry: {o}, {y}", ne_submit:"Submit", ne_cancel:"Cancel", ne_err:"Choose a type, and enter the boxes and the sold price per box.", ne_ok:"Entry added to {o}, {y}.",
+  ne_h:"New lot: {o}, {y} ({l})", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"Lot saved to {o}, {y}.",
   lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
   lot_margin:"Lot margin before yearly costs",
   f_boxes:"Boxes sold", f_price:"Price per box (₹)", f_comm:"Commission (%)",
@@ -793,7 +787,7 @@ hi: {
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
-  ne_h:"नई एंट्री: {o}, {y}", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_err:"प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_ok:"{o}, {y} में एंट्री जुड़ गई।",
+  ne_h:"नया लॉट: {o}, {y} ({l})", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"लॉट {o}, {y} में सहेज लिया गया।",
   lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
   lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
   f_boxes:"बेची गई पेटियाँ", f_price:"प्रति पेटी भाव (₹)", f_comm:"कमीशन (%)",
@@ -1348,26 +1342,62 @@ function lastLineFor(oid, y) {
   for (const s of others) { const n = pick(s); if (n) return n; }
   return null;
 }
+let draft = [];
+const EXPK = ["tod", "grd", "car", "exp"];
+function neRow(prev) { const r = {grade:"", boxes:"", rate:""}; EXPK.forEach(k => { r[k] = prev && +prev[k] ? String(+prev[k]) : ""; }); return r; }
+const draftLine = r => Object.assign(blankLine(), {grade:r.grade, boxes:numOf(r.boxes), rate:numOf(r.rate), tod:numOf(r.tod), grd:numOf(r.grd), car:numOf(r.car), exp:numOf(r.exp)});
+const draftFilled = r => !!(r.grade || numOf(r.boxes) || numOf(r.rate));
+function rowHtml(r, i) {
+  const id = "ne" + i + "_";
+  const f = (k, lab) => '<div class="field"><label for="' + id + k + '">' + tr(lab) + '</label><input id="' + id + k + '" data-ne="' + i + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(r[k]) + '"></div>';
+  const typeSel = '<div class="field"><label for="' + id + 'grade">' + tr("f_type") + '</label><select id="' + id + 'grade" data-ne="' + i + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
+    GRADES.map(g => '<option value="' + esc(g) + '"' + (g === r.grade ? " selected" : "") + ">" + esc(tr(GRADE_KEY[g])) + "</option>").join("") + "</select></div>";
+  return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b>" +
+    (draft.length > 1 ? '<button class="link" type="button" data-act="nerm" data-i="' + i + '">' + tr("ne_rm") + "</button>" : "") + "</div>" +
+    '<div class="grid tight">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + "</div>" +
+    '<p class="subhead">' + tr("exp_h") + '</p><div class="grid tight">' + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + "</div>" +
+    '<p class="linecalc" data-nelc="' + i + '"></p></div>';
+}
+function renderDraft() { $("ne_rows").innerHTML = draft.map(rowHtml).join(""); updDraft(); }
+function updDraft() {
+  document.querySelectorAll("[data-nelc]").forEach(el => {
+    const r = draft[+el.dataset.nelc]; if (!r) return;
+    if (!draftFilled(r)) { el.textContent = ""; return; }
+    const c = lineCalc(draftLine(r));
+    el.textContent = tr("lc").replace("{g}", inr(c.gross)).replace("{e}", inr(c.exp)).replace("{p}", inr(c.epb)).replace("{n}", inr(c.net));
+  });
+  const c = lotCalc({lines: draft.filter(draftFilled).map(draftLine)});
+  $("ne_sum").innerHTML = [["ls_boxes", fmtN(c.b)], ["ls_gross", inr(c.gross)], ["ls_exp", inr(c.exp)], ["ls_net", inr(c.net)], ["ls_ppb", inr(c.nppb)]]
+    .map(p => "<div><span>" + tr(p[0]) + "</span><b>" + p[1] + "</b></div>").join("");
+}
 function openEntry() {
   const o = curOrchard(); if (!o || !sel.y) return;
-  const prev = lastLineFor(o.id, sel.y);
-  ["boxes", "rate"].forEach(k => { $("ne_" + k).value = ""; });
-  ["tod", "grd", "car", "exp"].forEach(k => { $("ne_" + k).value = prev && +prev[k] ? +prev[k] : ""; });
-  $("ne_grade").value = ""; set("ne_err", ""); set("entryMsg", "");
+  draft = [neRow(lastLineFor(o.id, sel.y))];
+  set("ne_err", ""); set("entryMsg", "");
   entryOpen = true; renderEditor();
-  $("ne_grade").focus();
+  $("ne0_grade").focus();
 }
+function onDraft(e) {
+  const t = e.target; if (t.dataset.ne == null) return;
+  const r = draft[+t.dataset.ne]; if (!r) return;
+  r[t.dataset.f] = t.value; set("ne_err", ""); updDraft();
+}
+$("entryForm").addEventListener("input", onDraft);
+$("entryForm").addEventListener("change", onDraft);
 $("entryForm").addEventListener("submit", e => {
   e.preventDefault(); set("ne_err", "");
   const o = curOrchard(); if (!o || !sel.y) return;
-  const grade = $("ne_grade").value, boxes = numOf($("ne_boxes").value), rate = numOf($("ne_rate").value);
-  if (!grade || !boxes || !rate) { set("ne_err", tr("ne_err")); return; }
+  const rows = [];
+  for (let i = 0; i < draft.length; i++) {
+    const r = draft[i]; if (!draftFilled(r)) continue;
+    if (!r.grade || !numOf(r.boxes) || !numOf(r.rate)) { set("ne_err", tr("ne_err").replace("{n}", i + 1)); const el = $("ne" + i + "_" + (!r.grade ? "grade" : !numOf(r.boxes) ? "boxes" : "rate")); if (el) el.focus(); return; }
+    rows.push(draftLine(r));
+  }
+  if (!rows.length) { set("ne_err", tr("ne_none")); return; }
   let se = curSeason();
   if (!se) { se = {id:newId(), oid:o.id, year:sel.y, costs:blankCosts(), lots:[]}; S.seasons.push(se); }
-  const line = Object.assign(blankLine(), {grade:grade, boxes:boxes, rate:rate,
-    tod:numOf($("ne_tod").value), grd:numOf($("ne_grd").value), car:numOf($("ne_car").value), exp:numOf($("ne_exp").value)});
-  se.lots.push({id:newId(), name:tr("lot_fallback") + " " + (se.lots.length + 1), lines:[line]});
-  entryOpen = false;
+  se.lots.push({id:newId(), name:tr("lot_fallback") + " " + (se.lots.length + 1), lines:rows});
+  entryOpen = false; draft = [];
   save(); renderAll();
   set("entryMsg", tr("ne_ok").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y));
 });
@@ -1390,9 +1420,9 @@ function renderEditor() {
   if (!o || addingO) entryOpen = false;
   $("entryForm").hidden = !entryOpen;
   if (entryOpen) {
-    set("ne_title", tr("ne_h").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y));
-    const gv = $("ne_grade").value;
-    $("ne_grade").innerHTML = '<option value="">' + tr("f_type_ph") + "</option>" + GRADES.map(g => '<option value="' + esc(g) + '"' + (g === gv ? " selected" : "") + ">" + esc(tr(GRADE_KEY[g])) + "</option>").join("");
+    const nl = (se ? se.lots.length : 0) + 1;
+    set("ne_title", tr("ne_h").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y).replace("{l}", tr("lot_fallback") + " " + nl));
+    renderDraft();
   }
   $("addOrchRow").hidden = !addingO;
 
@@ -1599,7 +1629,12 @@ $("rp-orch").addEventListener("click", e => {
     sel.o = o.id; sel.y = sel.y || thisYear; $("newOrchard").value = ""; addingO = false;
     save(); renderAll(); openEntry(); return;
   } else if (act === "openentry") { openEntry(); return; }
-  else if (act === "cancelentry") { entryOpen = false; renderEditor(); return; }
+  else if (act === "cancelentry") { entryOpen = false; draft = []; renderEditor(); return; }
+  else if (act === "nerow") {
+    draft.push(neRow(draft[draft.length - 1])); renderDraft();
+    const el = $("ne" + (draft.length - 1) + "_grade"); if (el) { el.focus(); el.scrollIntoView({block: "center"}); }
+    return;
+  } else if (act === "nerm") { draft.splice(+b.dataset.i, 1); renderDraft(); return; }
   else if (act === "addyear") {
     if (!curOrchard()) return;
     const y = sel.y;
