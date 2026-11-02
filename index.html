@@ -109,7 +109,10 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .btn-s.danger{color:var(--bad);border-color:var(--bad)}
 
 /* record keeping */
-.pick{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.pick{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;max-width:420px}
+.yearrow{display:flex;gap:8px}
+.yearrow select{flex:1;min-width:0}
+.yearrow .btn-s:disabled{opacity:.45;cursor:default}
 .addrow{display:flex;gap:8px;align-items:flex-end;margin-top:12px}
 .addrow .field{flex:1}
 .manage{margin:14px 0 18px;border-top:1px solid var(--line);padding-top:8px}
@@ -507,15 +510,11 @@ img{max-width:100%}
       <div>
         <div class="pick">
           <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
-          <div class="field"><label for="selYear" data-i18n="lbl_year"></label><select id="selYear"></select></div>
+          <div class="field"><label for="selYear" data-i18n="lbl_year"></label><div class="yearrow"><select id="selYear"></select><button class="btn-s add" type="button" id="addYearBtn" data-act="addyear" data-i18n="add_btn"></button></div></div>
         </div>
         <div class="addrow" id="addOrchRow" hidden>
           <div class="field"><label for="newOrchard" data-i18n="ph_orchard"></label><input id="newOrchard" type="text" maxlength="60"></div>
           <button class="btn-s add" type="button" data-act="addorch" data-i18n="add_btn"></button>
-        </div>
-        <div class="addrow" id="addYearRow" hidden>
-          <div class="field"><select id="newYear" aria-label="Year to add"></select></div>
-          <button class="btn-s add" type="button" data-act="addyear" data-i18n="add_btn"></button>
         </div>
         <div id="exBanner" class="banner" hidden>
           <span data-i18n="ex_note"></span>
@@ -634,7 +633,7 @@ en: {
   manage:"Rename, trees, delete", f_oname:"Orchard name", f_trees:"Number of trees (optional)",
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
-  empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No year yet for this orchard. Add a year above.",
+  empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No records for this year yet. Tap Add next to the year.",
   lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
   lot_margin:"Lot margin before yearly costs",
   f_boxes:"Boxes sold", f_price:"Price per box (₹)", f_comm:"Commission (%)",
@@ -769,7 +768,7 @@ hi: {
   manage:"नाम बदलें, पेड़, हटाएँ", f_oname:"बाग़ का नाम", f_trees:"पेड़ों की संख्या (वैकल्पिक)",
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
-  empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस बाग़ के लिए अभी कोई साल नहीं है। ऊपर साल जोड़ें।",
+  empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल का कोई रिकॉर्ड अभी नहीं है। साल के पास जोड़ें दबाएँ।",
   lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
   lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
   f_boxes:"बेची गई पेटियाँ", f_price:"प्रति पेटी भाव (₹)", f_comm:"कमीशन (%)",
@@ -1105,7 +1104,8 @@ const curSeason = () => S.seasons.find(s => s.oid === sel.o && s.year === sel.y)
 function fixSel() {
   if (!S.orchards.some(x => x.id === sel.o)) sel.o = S.orchards.length ? S.orchards[0].id : null;
   const ys = seasonsOf(sel.o).map(s => s.year);
-  if (!ys.includes(sel.y)) sel.y = ys.length ? Math.max.apply(null, ys) : null;
+  const ty = new Date().getFullYear();
+  if (!ys.includes(sel.y) && !(sel.y >= ty - 9 && sel.y <= ty)) sel.y = ys.length ? Math.max.apply(null, ys) : null;
 }
 fixSel();
 
@@ -1177,7 +1177,7 @@ async function applyUser(u) {
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
   if (!u) {
-    S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false; addingO = false; addingY = false;
+    S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false; addingO = false;
     $("authStep1").hidden = false; $("authStep2").hidden = true;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
@@ -1314,7 +1314,7 @@ $("rp-year").addEventListener("click", e => {
 $("rt-orch").addEventListener("click", () => showSub("orch"));
 
 /* ---------- orchards panel ---------- */
-let addingO = false, addingY = false;
+let addingO = false;
 function renderEditor() {
   const o = curOrchard(), se = curSeason();
   const noO = !S.orchards.length;
@@ -1322,17 +1322,16 @@ function renderEditor() {
   $("selOrchard").innerHTML = S.orchards.map(x => '<option value="' + esc(x.id) + '"' + (x.id === sel.o && !addingO ? " selected" : "") + ">" + esc(x.name || tr("orchard_fallback")) + "</option>").join("") +
     '<option value="__new"' + (addingO ? " selected" : "") + ">" + tr("opt_new_o") + "</option>";
   $("selOrchard").disabled = false;
-  const years = seasonsOf(sel.o).map(s => s.year).sort((a, b) => b - a);
-  const thisY = new Date().getFullYear(), free = [];
-  for (let i = 0; i < 10; i++) if (years.indexOf(thisY - i) < 0) free.push(thisY - i);
-  if (o && !years.length) addingY = true;
-  if (!free.length) addingY = false;
-  $("newYear").innerHTML = free.map(y => '<option value="' + y + '">' + y + "</option>").join("");
-  $("selYear").innerHTML = years.map(y => '<option value="' + y + '"' + (y === sel.y && !addingY ? " selected" : "") + ">" + y + "</option>").join("") +
-    (o && free.length ? '<option value="__new"' + (addingY ? " selected" : "") + ">" + tr("opt_new_y") + "</option>" : "");
-  $("selYear").disabled = !o;
+  const have = seasonsOf(sel.o).map(s => s.year);
+  const thisY = new Date().getFullYear(), yl = [];
+  for (let i = 0; i < 10; i++) yl.push(thisY - i);
+  have.forEach(y => { if (yl.indexOf(y) < 0) yl.push(y); });
+  yl.sort((a, b) => b - a);
+  if (o && yl.indexOf(sel.y) < 0) sel.y = have.length ? Math.max.apply(null, have) : thisY;
+  $("selYear").innerHTML = yl.map(y => '<option value="' + y + '"' + (y === sel.y ? " selected" : "") + ">" + y + (have.indexOf(y) >= 0 ? " ✓" : "") + "</option>").join("");
+  $("selYear").disabled = !o || addingO;
+  $("addYearBtn").disabled = !o || addingO || have.indexOf(sel.y) >= 0;
   $("addOrchRow").hidden = !addingO;
-  $("addYearRow").hidden = !(addingY && o && !addingO);
 
   $("exBanner").hidden = !S.orchards.some(x => x.ex);
   $("manage").hidden = !o;
@@ -1352,7 +1351,7 @@ function renderEditor() {
     ).join("") + "</div></details>";
   }
   $("editor").innerHTML = h;
-  $("editor").hidden = addingO || addingY;
+  $("editor").hidden = addingO;
 }
 function lineHtml(n) {
   const id = "n_" + n.id;
@@ -1514,14 +1513,12 @@ function onEdit(e) {
 $("rp-orch").addEventListener("input", onEdit);
 $("rp-orch").addEventListener("change", e => { if (e.target.type === "checkbox") onEdit(e); });
 $("selOrchard").addEventListener("change", e => {
-  pendingDel = null; addingY = false;
+  pendingDel = null;
   if (e.target.value === "__new") { addingO = true; renderAll(); $("newOrchard").focus(); return; }
   addingO = false; sel.o = e.target.value; sel.y = null; fixSel(); renderAll();
 });
 $("selYear").addEventListener("change", e => {
-  pendingDel = null;
-  if (e.target.value === "__new") { addingY = true; renderAll(); $("newYear").focus(); return; }
-  addingY = false; sel.y = parseInt(e.target.value, 10); renderAll();
+  pendingDel = null; sel.y = parseInt(e.target.value, 10); renderAll();
 });
 $("rp-orch").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b) return;
@@ -1538,13 +1535,13 @@ $("rp-orch").addEventListener("click", e => {
     S.orchards.push(o);
     const y = sel.y || thisYear;
     S.seasons.push({id:newId(), oid:o.id, year:y, costs:blankCosts(), lots:[blankLot(tr("lot_fallback") + " 1")]});
-    sel.o = o.id; sel.y = y; $("newOrchard").value = ""; addingO = false; addingY = false;
+    sel.o = o.id; sel.y = y; $("newOrchard").value = ""; addingO = false;
   } else if (act === "addyear") {
     if (!curOrchard()) return;
-    const y = Math.round(numOf($("newYear").value));
+    const y = sel.y;
     if (!(y >= 2000 && y <= 2100)) return;
     if (!S.seasons.some(s => s.oid === sel.o && s.year === y)) S.seasons.push({id:newId(), oid:sel.o, year:y, costs:blankCosts(), lots:[blankLot(tr("lot_fallback") + " 1")]});
-    sel.y = y; addingY = false;
+    sel.y = y;
   } else if (act === "addlot") {
     const se = curSeason(); if (!se) return;
     const lastLot = se.lots[se.lots.length - 1];
