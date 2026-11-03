@@ -535,6 +535,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .ledger.ygrid th,.ledger.ygrid td{padding:10px 22px}
 .ledger.ygrid td:last-child,.ledger.ygrid th:last-child{font-weight:700}
 .ledger.ygrid td.none{color:var(--muted)}
+.ledger.ytab tr.norec th,.ledger.ytab tr.norec td{color:var(--muted);font-weight:400}
 .dlacts{display:flex;gap:10px;flex-wrap:wrap}
 /* Dashboard extras */
 .duelist,.todolist,.locres,.wxwarn{list-style:none;margin:0;padding:0}
@@ -1959,7 +1960,11 @@ function renderOrchGate() {
   set("orchPill", tr(user ? "s_signedin" : "s_signin"));
   renderAcct();
 }
-function renderAll() { renderEditor(); renderResults(); renderSummary(); renderDash(); if (typeof renderExp === "function") renderExp(); }
+function dropEmptySeasons() {
+  const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
+  if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded) save(); }
+}
+function renderAll() { dropEmptySeasons(); renderEditor(); renderResults(); renderSummary(); renderDash(); if (typeof renderExp === "function") renderExp(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -2330,8 +2335,12 @@ function renderEditor() {
         '<span class="yy">' + y + '</span><span class="yfigs three">' + yfig(tr("ls_boxes"), fmtN(t.boxes), "", ' data-spyb="' + y + '"') + yfig(tr("dl_sales"), mny(t.rev), "", ' data-spyg="' + y + '"') +
         yfig(tr("ls_net"), mny(t.net), "ynet " + cls(t.net), ' data-spy="' + y + '"') + '</span><span class="ychev" aria-hidden="true"></span></button>';
       if (open) {
-        h += '<div class="ybody">' + ss.map(x => {
-          const oo = S.orchards.find(q => q.id === x.oid), r = seasonCalc(x), nl = x.lots.length, sn = r.rev - r.lotExp;
+        h += '<div class="ybody">' + S.orchards.map(oo => {
+          const x = seFor(oo.id, y);
+          if (!x) return '<section class="spo" id="spo-' + esc(oo.id) + "-" + y + '"><div class="spohead"><h5>' + esc(oo.name || tr("orchard_fallback")) + '</h5><span class="ymeta">' + tr("sp_nolots") +
+            '</span><b class="ynet">' + inr(0) + '</b></div><div class="spofoot"><span></span><button class="link" type="button" data-act="goexp" data-o="' + esc(oo.id) + '" data-y="' + y + '">' + tr("sp_yc_btn") +
+            '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + esc(oo.id) + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></section>";
+          const r = seasonCalc(x), nl = x.lots.length, sn = r.rev - r.lotExp;
           const lmax = Math.max.apply(null, x.lots.map(l => Math.abs(lotCalc(l).net)).concat([1]));
           const om = tr(nl === 1 ? "sp_meta1" : "sp_meta").replace("{n}", nl).replace("{b}", fmtN(r.boxes)).replace("{p}", inr(r.eq ? sn / r.eq : 0));
           return '<section class="spo" id="spo-' + esc(x.oid) + "-" + y + '"><div class="spohead"><h5>' + esc((oo && oo.name) || tr("orchard_fallback")) + '</h5><span class="ymeta">' + om +
@@ -3292,7 +3301,7 @@ $("dash").addEventListener("submit", e => {
   if (kind === "add") {
     const nm = $("dn_new").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.filter(x => !x.ex).length + 1));
     const no = {id: newId(), name: nm, trees: numOf($("dn_newtrees").value)};
-    S.orchards.push(no); ensureSeason(no.id, curHYear()); spOpen.add(curHYear()); dashAdd = false; detOpen.add(no.id); dashView = no.id; dashYear = null; profEdit = true;
+    S.orchards.push(no); dashAdd = false; detOpen.add(no.id); dashView = no.id; dashYear = null; profEdit = true;
     fixSel(); save(); renderAll(); dashTop(); return;
   }
   if (!o) return;
@@ -3521,9 +3530,11 @@ function renderYearDetail() {
     if (open) {
       const head = ["y_orch", "y_gp", "y_yc", "ls_net"];
       h += '<div class="tablewrap"><table class="ledger sm ytab"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-        t.rows.map(x => '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + inr(x.r.rev - x.r.lotExp) + "</td><td>" + inr(x.r.yearly) +
-          '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td></tr>").join("") +
-        "</tbody>" + (n > 1 ? '<tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + inr(gp) + "</td><td>" + inr(t.yearly) + '</td><td class="' + cls(t.net) + '">' + inr(t.net) +
+        S.orchards.map(o => { const x = t.rows.find(q => q.o === o);
+          if (!x) return '<tr class="norec"><th scope="row">' + esc(o.name || tr("orchard_fallback")) + "</th><td>" + inr(0) + "</td><td>" + inr(0) + "</td><td>" + inr(0) + "</td></tr>";
+          return '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + inr(x.r.rev - x.r.lotExp) + "</td><td>" + inr(x.r.yearly) +
+          '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td></tr>"; }).join("") +
+        "</tbody>" + (S.orchards.length > 1 ? '<tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + inr(gp) + "</td><td>" + inr(t.yearly) + '</td><td class="' + cls(t.net) + '">' + inr(t.net) +
           "</td></tr></tfoot>" : "") + "</table></div>";
       h += '<div class="dlacts"><button class="btn-s" type="button" data-act="dlcsv" data-y="' + y + '">' + tr("dl_csv") + '</button><button class="btn-s" type="button" data-act="dlpdf" data-y="' + y + '">' + tr("dl_pdf") + "</button></div>";
     }
@@ -3676,7 +3687,7 @@ $("rp-orch").addEventListener("click", e => {
     const name = $("newOrchard").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.length + 1));
     const o = {id:newId(), name, trees:0};
     S.orchards.push(o);
-    sel.o = o.id; sel.y = sel.y || thisYear; ensureSeason(o.id, sel.y); $("newOrchard").value = ""; addingO = false;
+    sel.o = o.id; sel.y = sel.y || thisYear; $("newOrchard").value = ""; addingO = false;
     save(); renderAll(); openEntry(); return;
   } else if (act === "openentry") { openEntry(); return; }
   else if (act === "cancelentry") { entryOpen = false; draft = []; renderAll(); return; }
