@@ -7,7 +7,7 @@
 <title>Apple Doctor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Khand:wght@500;600;700&family=Hind:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Khand:wght@500;600;700&family=Hind:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
 <style>
 /* Layout: a deep-green orchard band up top with a live example season, then a record-keeping calculator (orchards, years, lots), a yearly totals table, a plain roadmap list, and the apple year as a 12-month grid. */
 :root{
@@ -528,6 +528,8 @@ legend{font-size:.95rem}
 .lotrow .editbox{margin-top:0}
 @media (max-width:560px){.lotrow .yhead{grid-template-columns:4rem minmax(0,1fr) 1rem}}
 /* Season Profit: years -> orchards -> lots */
+.ledger.lottable tfoot th,.ledger.lottable tfoot td{font-weight:700;color:var(--fg)}
+.ledger.lottable tfoot td.pos{color:var(--good)}.ledger.lottable tfoot td.neg{color:var(--bad)}
 .splist{margin-top:6px}
 .spo{display:grid;gap:8px;padding-top:12px}
 .spo + .spo{border-top:1px dashed var(--line)}
@@ -1949,7 +1951,7 @@ function lotTable(rows, acts) {
   const cls = n => (n < 0 ? "neg" : "pos");
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
   const head = ["ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"];
-  let h = '<div class="tablewrap"><table class="ledger sm"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + (acts ? '<th scope="col" class="acts"></th>' : "") + "</tr></thead><tbody>";
+  let h = '<div class="tablewrap"><table class="ledger sm lottable"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + (acts ? '<th scope="col" class="acts"></th>' : "") + "</tr></thead><tbody>";
   rows.forEach(x => {
     const c = lineCalc(x[1]);
     const ed = !!(acts && acts.isEd(x));
@@ -2018,7 +2020,7 @@ function renderEditor() {
   have.forEach(y => { if (yl.indexOf(y) < 0) yl.push(y); });
   yl.sort((a, b) => b - a);
   if (o && yl.indexOf(sel.y) < 0) sel.y = have.length ? Math.max.apply(null, have) : thisY;
-  $("selYear").innerHTML = yl.map(y => '<option value="' + y + '"' + (y === sel.y ? " selected" : "") + ">" + y + (have.indexOf(y) >= 0 ? " ✓" : "") + "</option>").join("");
+  $("selYear").innerHTML = yl.map(y => '<option value="' + y + '"' + (y === sel.y ? " selected" : "") + ">" + y + "</option>").join("");
   $("selYear").disabled = !o || addingO;
   $("addEntryBtn").disabled = !o || addingO;
   if (!o || addingO) entryOpen = false;
