@@ -496,7 +496,7 @@ legend{font-size:.95rem}
 .ynet{font:600 1.35rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ynet.pos{color:var(--good)}.ynet.neg{color:var(--bad)}
 .ychev{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-top:-4px;justify-self:center}
-.yrow.open .ychev{transform:rotate(-135deg);margin-top:4px}
+.yrow.open > .yhead > .ychev{transform:rotate(-135deg);margin-top:4px}
 @media (prefers-reduced-motion:no-preference){.ychev{transition:transform .15s}}
 .ybody{padding:4px 16px 16px;display:grid;gap:12px;border-top:1px solid var(--line)}
 .ybody .ystats{margin-top:10px}
@@ -527,6 +527,18 @@ legend{font-size:.95rem}
 .lotrow .lottab{margin-top:0}
 .lotrow .editbox{margin-top:0}
 @media (max-width:560px){.lotrow .yhead{grid-template-columns:4rem minmax(0,1fr) 1rem}}
+/* Season Profit: years -> orchards -> lots */
+.splist{margin-top:6px}
+.spo{display:grid;gap:8px;padding-top:12px}
+.spo + .spo{border-top:1px dashed var(--line)}
+.spohead{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr) auto;gap:4px 14px;align-items:baseline}
+.spohead h5{font:700 1.25rem var(--display);margin:0}
+.spohead .ynet{font-size:1.15rem}
+.spofoot{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:.9rem;color:var(--muted)}
+.spofoot .link{padding:2px 0;font-size:.9rem}
+.spofoot .btn-s{margin-left:auto;min-height:38px;padding:6px 12px;font-size:.9rem}
+.spo .lotrow{background:var(--bg)}
+@media (max-width:560px){.spohead{grid-template-columns:minmax(0,1fr) auto}.spohead .ymeta{grid-column:1/-1;grid-row:2}}
 /* Yearly expenses */
 .expick{max-width:520px}
 .excost{margin-top:14px}
@@ -704,6 +716,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
     
 <div class="panel single" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
       <div>
+        <p class="hint" data-i18n="sp_addhint"></p>
         <div class="pick">
           <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
           <div class="field yr"><label for="selYear" data-i18n="lbl_year"></label><select id="selYear"></select></div>
@@ -1143,7 +1156,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   hc_net:"Net profit", hc_ppb:"Net per box", hc_gx:"Gross {g} · Expenses {e}",
   lang_btn:"हिंदी", orchard_fallback:"Orchard", lot_fallback:"Lot",
   calc_p:"Keep a record for each orchard and each year. Add every lot you sold with its boxes, rate and expense. Gross is boxes × rate, and net income is gross minus expenses.",
-  lot_help:"Tap a lot to see its entries, then use Edit or Delete on any entry.", l_meta:"{e} entries, {b} boxes, {p} a box", l_meta1:"1 entry, {b} boxes, {p} a box", half_note:"A half box counts as half a box when working out net per box.",
+  lot_help:"Tap a lot to see its entries, then use Edit or Delete on any entry.", sp_addhint:"To add a new lot, choose the orchard and year, then tap Add.", sp_tap:"Tap a year to see each orchard's lots, then tap a lot to see its entries.", sp_meta:"{n} lots, {b} boxes, {p} net a box", sp_meta1:"1 lot, {b} boxes, {p} net a box", sp_nolots:"No lots for this year yet.", sp_yc2:"Yearly expenses {x}, already taken off.", sp_addlot:"＋ Add lot", sp_none:"No lots yet. Choose an orchard and year above, then tap Add.", l_meta:"{e} entries, {b} boxes, {p} a box", l_meta1:"1 entry, {b} boxes, {p} a box", half_note:"A half box counts as half a box when working out net per box.",
   f_lname:"Lot name (optional, for example the buyer or mandi)", f_grade:"Grade or note (optional)", f_date:"Sale date (optional)",
   f_boxes:"Boxes", f_rate:"Rate per box (₹)", f_exp:"Expense per box (₹)", f_paidon:"Payment date (optional)",
   f_half:"Half box", f_paid:"Payment received",
@@ -1334,7 +1347,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   hc_net:"शुद्ध मुनाफ़ा", hc_ppb:"प्रति पेटी शुद्ध मुनाफ़ा", hc_gx:"कुल बिक्री {g} · ख़र्च {e}",
   lang_btn:"English", orchard_fallback:"बाग़", lot_fallback:"लॉट",
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। बेचे गए हर लॉट की पेटियाँ, भाव और ख़र्च डालें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर।",
-  lot_help:"किसी लॉट की एंट्री देखने के लिए उस पर दबाएँ, फिर किसी भी एंट्री पर बदलें या हटाएँ दबाएँ।", l_meta:"{e} एंट्री, {b} पेटियाँ, {p} प्रति पेटी", l_meta1:"1 एंट्री, {b} पेटियाँ, {p} प्रति पेटी", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
+  lot_help:"किसी लॉट की एंट्री देखने के लिए उस पर दबाएँ, फिर किसी भी एंट्री पर बदलें या हटाएँ दबाएँ।", sp_addhint:"नया लॉट जोड़ने के लिए बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", sp_tap:"हर बाग़ के लॉट देखने के लिए किसी साल पर दबाएँ, फिर एंट्री देखने के लिए किसी लॉट पर दबाएँ।", sp_meta:"{n} लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_meta1:"1 लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_nolots:"इस साल का कोई लॉट अभी नहीं है।", sp_yc2:"साल भर के ख़र्च {x}, पहले ही घटाए गए।", sp_addlot:"＋ लॉट जोड़ें", sp_none:"अभी कोई लॉट नहीं है। ऊपर बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", l_meta:"{e} एंट्री, {b} पेटियाँ, {p} प्रति पेटी", l_meta1:"1 एंट्री, {b} पेटियाँ, {p} प्रति पेटी", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
   f_lname:"लॉट का नाम (वैकल्पिक, जैसे ख़रीदार या मंडी)", f_grade:"ग्रेड या टिप्पणी (वैकल्पिक)", f_date:"बिक्री की तारीख़ (वैकल्पिक)",
   f_boxes:"पेटियाँ", f_rate:"प्रति पेटी भाव (₹)", f_exp:"प्रति पेटी ख़र्च (₹)", f_paidon:"भुगतान की तारीख़ (वैकल्पिक)",
   f_half:"आधी पेटी", f_paid:"भुगतान मिल गया",
@@ -1870,8 +1883,11 @@ let addingO = false, entryOpen = false, editLine = null, newPos = null;
 const autoName = n => !n || /^(lot|part|लॉट|पार्ट)\s*\d+$/i.test(String(n).trim());
 const lotNo = i => tr("lot_fallback") + " " + (i + 1);
 const lineBlank = n => !(+n.boxes || +n.rate || n.grade);
+const lotSeason = id => S.seasons.find(x => x.lots.some(l => l.id === id)) || null;
+const lineSeason = id => S.seasons.find(x => x.lots.some(l => l.lines.some(n => n.id === id))) || null;
+let spOpen = new Set();
 function closeEditLine() {
-  const se = curSeason();
+  const se = editLine ? lotSeason(editLine.lot) : null;
   if (editLine && se) {
     const l = se.lots.find(x => x.id === editLine.lot);
     if (l) l.lines = l.lines.filter(n => !(n.id === editLine.line && lineBlank(n)));
@@ -1973,6 +1989,7 @@ $("entryForm").addEventListener("submit", e => {
   if (!se) { se = {id:newId(), oid:o.id, year:sel.y, costs:blankCosts(), lots:[]}; S.seasons.push(se); }
   const at = newPos && newPos <= se.lots.length ? newPos - 1 : se.lots.length;
   se.lots.splice(at, 0, {id:newId(), name:"", lines:rows});
+  spOpen.add(se.year);
   entryOpen = false; draft = [];
   save(); renderAll();
   set("entryMsg", tr("ne_ok").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y).replace("{l}", lotNo(at)));
@@ -1994,7 +2011,7 @@ function renderEditor() {
   $("selYear").disabled = !o || addingO;
   $("addEntryBtn").disabled = !o || addingO;
   if (!o || addingO) entryOpen = false;
-  if (editLine && !(se && se.lots.some(l => l.id === editLine.lot && l.lines.some(n => n.id === editLine.line)))) editLine = null;
+  if (editLine) { const es = lotSeason(editLine.lot); if (!(es && es.lots.some(l => l.id === editLine.lot && l.lines.some(n => n.id === editLine.line)))) editLine = null; }
   $("entryForm").hidden = !entryOpen;
   if (entryOpen) { $("resBox").hidden = true; $("headline").hidden = true; }
   if (entryOpen) {
@@ -2012,18 +2029,39 @@ function renderEditor() {
   renderDels();
 
   let h = "";
-  if (!o) h = '<p class="empty">' + tr("empty_orch") + "</p>";
-  else if (!se) h = '<p class="empty">' + tr("empty_year") + "</p>";
+  const years = Array.from(new Set(S.seasons.map(x => x.year))).sort((x, y) => y - x);
+  if (!S.orchards.length) h = '<p class="empty">' + tr("empty_orch") + "</p>";
+  else if (!years.length) h = '<p class="empty">' + tr("sp_none") + "</p>";
   else {
-    h += "<fieldset><legend>" + tr("lots_h") + '</legend><p class="hint">' + tr("lot_help") + " " + tr("half_note") + '</p>';
-    const lmax = Math.max.apply(null, se.lots.map(l => Math.abs(lotCalc(l).net)).concat([1]));
-    h += '<div class="ylist lotlist">';
-    se.lots.forEach((l, i) => { h += lotHtml(l, i, se.lots.length, lmax); });
+    const cls = n => (n < 0 ? "neg" : "pos");
+    const yr = {}; years.forEach(y => {
+      const ss = S.orchards.map(oo => seFor(oo.id, y)).filter(Boolean);
+      const t = {net: 0, boxes: 0, eq: 0}; ss.forEach(x => { const r = seasonCalc(x); t.net += r.profit; t.boxes += r.boxes; t.eq += r.eq; });
+      yr[y] = {ss, t};
+    });
+    const ymax = Math.max.apply(null, years.map(y => Math.abs(yr[y].t.net))) || 1;
+    h += '<p class="hint">' + tr("sp_tap") + " " + tr("half_note") + '</p><div class="ylist splist">';
+    years.forEach(y => {
+      const t = yr[y].t, ss = yr[y].ss, open = spOpen.has(y) || !!(editLine && ss.some(x => x === lotSeason(editLine.lot)));
+      const meta = tr(ss.length === 1 ? "y_meta1" : "y_meta").replace("{n}", ss.length).replace("{b}", fmtN(t.boxes)).replace("{p}", inr(t.eq ? t.net / t.eq : 0));
+      h += '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="sptoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
+        '<span class="yy">' + y + '</span><span class="ymid"><span class="ymeta">' + meta + '</span><span class="ybar"><span class="fill ' + cls(t.net) + '" style="width:' +
+        (Math.abs(t.net) / ymax * 100).toFixed(1) + '%"></span></span></span><span class="ynet ' + cls(t.net) + '" data-spy="' + y + '">' + inr(t.net) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+      if (open) {
+        h += '<div class="ybody">' + ss.map(x => {
+          const oo = S.orchards.find(q => q.id === x.oid), r = seasonCalc(x), nl = x.lots.length;
+          const lmax = Math.max.apply(null, x.lots.map(l => Math.abs(lotCalc(l).net)).concat([1]));
+          const om = tr(nl === 1 ? "sp_meta1" : "sp_meta").replace("{n}", nl).replace("{b}", fmtN(r.boxes)).replace("{p}", inr(r.ppb));
+          return '<section class="spo" id="spo-' + esc(x.oid) + "-" + y + '"><div class="spohead"><h5>' + esc((oo && oo.name) || tr("orchard_fallback")) + '</h5><span class="ymeta">' + om +
+            '</span><b class="ynet ' + cls(r.profit) + '" data-spnet="' + esc(x.id) + '">' + inr(r.profit) + "</b></div>" +
+            (nl ? '<div class="ylist lotlist">' + x.lots.map((l, i) => lotHtml(l, i, nl, lmax)).join("") + "</div>" : '<p class="hint">' + tr("sp_nolots") + "</p>") +
+            '<div class="spofoot"><span>' + tr("sp_yc2").replace("{x}", inr(r.yearly)) + '</span><button class="link" type="button" data-act="goexp" data-o="' + esc(x.oid) + '" data-y="' + y + '">' + tr("sp_yc_btn") +
+            '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + esc(x.oid) + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></section>";
+        }).join("") + "</div>";
+      }
+      h += "</div>";
+    });
     h += "</div>";
-    h += "</fieldset>";
-    const rY = seasonCalc(se);
-    h += '<div class="banner excost"><span>' + tr("sp_yc").replace("{o}", esc(o.name || tr("orchard_fallback"))).replace("{y}", se.year).replace("{x}", inr(rY.yearly)) +
-      '</span><button class="btn-s" type="button" data-act="goexp">' + tr("sp_yc_btn") + "</button></div>";
   }
   $("editor").innerHTML = h;
   $("editor").hidden = addingO;
@@ -2084,8 +2122,8 @@ function renderResults() {
   const o = curOrchard(), se = curSeason();
   const has = !!(o && se);
   $("resBox").hidden = true;
-  $("headline").hidden = !has || entryOpen;
-  if (!has) return;
+  $("headline").hidden = true;
+  if (!has) { refreshLotBits(); return; }
   const r = seasonCalc(se);
   const loss = r.profit < 0;
   set("hl_label", tr(loss ? "head_loss" : "head_profit").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", se.year));
@@ -2103,20 +2141,22 @@ function renderResults() {
   $("bar").setAttribute("aria-label", tr("bar_aria"));
   $("bar").innerHTML = segs.map(s => '<span style="width:' + (s.v / total * 100).toFixed(2) + '%;background:var(' + s.c + ')"></span>').join("");
   $("legend").innerHTML = segs.map(s => '<li><b style="background:var(' + s.c + ')"></b><span>' + tr(s.t) + "</span><em>" + inr(s.v) + "</em></li>").join("");
-  const findLine = id => { for (const l of se.lots) { const n = l.lines.find(x => x.id === id); if (n) return n; } return null; };
-  document.querySelectorAll("[data-lc]").forEach(el => {
-    const n = findLine(el.getAttribute("data-lc")); if (!n) return;
-    const c = lineCalc(n);
-    el.textContent = tr("lc").replace("{g}", inr(c.gross)).replace("{e}", inr(c.exp)).replace("{p}", inr(c.epb)).replace("{n}", inr(c.net));
-  });
-  const lmax = Math.max.apply(null, se.lots.map(l => Math.abs(lotCalc(l).net)).concat([1]));
-  document.querySelectorAll("[data-lhead]").forEach(el => { const i = +el.dataset.lhead, l = se.lots[i]; if (l && l.id === el.dataset.id) el.innerHTML = lotHeadInner(l, i, lmax); });
+  refreshLotBits();
+}
+
+function refreshLotBits() {
+  const info = {}; S.seasons.forEach(x => x.lots.forEach((l, i) => { info[l.id] = {l, i, se: x}; }));
+  const mx = {};
+  const seMax = x => (mx[x.id] != null ? mx[x.id] : (mx[x.id] = Math.max.apply(null, x.lots.map(l => Math.abs(lotCalc(l).net)).concat([1]))));
+  document.querySelectorAll("[data-lhead]").forEach(el => { const f = info[el.dataset.id]; if (f) el.innerHTML = lotHeadInner(f.l, f.i, seMax(f.se)); });
   document.querySelectorAll("[data-lsum]").forEach(el => {
-    const l = se.lots.find(x => x.id === el.getAttribute("data-lsum")); if (!l) return;
+    const f = info[el.getAttribute("data-lsum")]; if (!f) return; const l = f.l;
     const shown = l.lines.filter(n => +n.boxes || +n.rate || (editLine && editLine.line === n.id));
     el.innerHTML = shown.length ? lotTable(shown.map((n, i) => [i + 1, n]), {isEd: x => !!(editLine && editLine.line === x[1].id),
       attr: (x, k) => 'data-act="s' + k + '" data-lot="' + esc(l.id) + '" data-id="' + esc(x[1].id) + '"'}) : '<p class="hint">' + tr("ne_none_lot") + "</p>";
   });
+  document.querySelectorAll("[data-spnet]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spnet); if (!x) return; const v = seasonCalc(x).profit; el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
+  document.querySelectorAll("[data-spy]").forEach(el => { const y = +el.dataset.spy, v = S.seasons.filter(q => q.year === y).reduce((a, q) => a + seasonCalc(q).profit, 0); el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
 }
 
 /* ---------- My orchards dashboard and orchard pages ---------- */
@@ -2430,8 +2470,9 @@ function renderDash() {
 function dashTop() { const t = $("tp-orch"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"}); }
 function goSeason(oid, year) {
   closeEditLine(); entryOpen = false; addingO = false; pendingDel = null; set("entryMsg", "");
-  sel.o = oid; sel.y = year; fixSel(); renderAll();
+  sel.o = oid; sel.y = year; spOpen.add(year); fixSel(); renderAll();
   tabPicked = true; showTool("calc", false, true); showSub("orch");
+  const blk = $("spo-" + oid + "-" + year); if (blk && blk.scrollIntoView) blk.scrollIntoView({block: "start"});
 }
 function shrinkPhoto(file) {
   return new Promise((ok, bad) => {
@@ -2760,12 +2801,12 @@ function findLineIn(se, id) { for (const l of se.lots) { const n = l.lines.find(
 function onEdit(e) {
   const t = e.target, d = t.dataset;
   if (d.line) {
-    const se = curSeason(); const n = se && findLineIn(se, d.line); if (!n) return;
+    const se = lineSeason(d.line); const n = se && findLineIn(se, d.line); if (!n) return;
     if (d.f === "half" || d.f === "paid") n[d.f] = t.checked;
     else if (d.f === "grade" || d.f === "date" || d.f === "paidOn") n[d.f] = t.value;
     else n[d.f] = numOf(t.value);
   } else if (d.lot) {
-    const se = curSeason(); const l = se && se.lots.find(x => x.id === d.lot); if (!l) return;
+    const se = lotSeason(d.lot); const l = se && se.lots.find(x => x.id === d.lot); if (!l) return;
     l.name = t.value;
   } else if (d.cost) {
     const se = curSeason(); if (!se) return;
@@ -2848,19 +2889,25 @@ $("rp-orch").addEventListener("click", e => {
     se.lots.push(blankLot(tr("lot_fallback") + " " + (se.lots.length + 1), prev));
   } else if (act === "addline") {
     closeEditLine();
-    const se = curSeason(); const l = se && se.lots.find(x => x.id === b.dataset.id); if (!l) return;
+    const se = lotSeason(b.dataset.id); const l = se && se.lots.find(x => x.id === b.dataset.id); if (!l) return;
     const filled = l.lines.filter(n => !lineBlank(n)), nl = blankLine(filled[filled.length - 1], "");
     if (filled.length) nl.exp = +filled[filled.length - 1].exp || 0;
     l.lines.push(nl); editLine = {lot: l.id, line: nl.id};
     fixSel(); save(); renderAll(); const el = $("n_" + nl.id + "_grade"); if (el) el.focus(); return;
   } else if (act === "goexp") {
-    exO = sel.o; exY = sel.y; exEdit = null; renderExp(); showSub("exp"); window.scrollTo(0, 0); return;
+    exO = b.dataset.o || sel.o; exY = +(b.dataset.y || sel.y); exEdit = null; renderExp(); showSub("exp"); window.scrollTo(0, 0); return;
+  } else if (act === "sptoggle") {
+    const y = +b.dataset.y;
+    if (spOpen.has(y)) { spOpen.delete(y); const es = editLine ? lotSeason(editLine.lot) : null; if (es && es.year === y) closeEditLine(); } else spOpen.add(y);
+    renderAll(); const nb = document.querySelector('[data-act=sptoggle][data-y="' + y + '"]'); if (nb) nb.focus(); return;
+  } else if (act === "addlotfor") {
+    closeEditLine(); addingO = false; sel.o = b.dataset.o; sel.y = +b.dataset.y; fixSel(); openEntry(); window.scrollTo(0, 0); return;
   } else if (act === "lottoggle") {
     const id = b.dataset.id;
     if (lotOpen.has(id) || (editLine && editLine.lot === id)) { lotOpen.delete(id); if (editLine && editLine.lot === id) closeEditLine(); } else lotOpen.add(id);
     renderAll(); const nb = document.querySelector('[data-act=lottoggle][data-id="' + id + '"]'); if (nb) nb.focus(); return;
   } else if (act === "lotup" || act === "lotdown") {
-    const se = curSeason(); if (!se) return;
+    const se = lotSeason(b.dataset.id); if (!se) return;
     const i = se.lots.findIndex(x => x.id === b.dataset.id), j = act === "lotup" ? i - 1 : i + 1;
     if (i < 0 || j < 0 || j >= se.lots.length) return;
     const t = se.lots[i]; se.lots[i] = se.lots[j]; se.lots[j] = t;
@@ -2870,7 +2917,7 @@ $("rp-orch").addEventListener("click", e => {
   } else if (act === "sdone") {
     closeEditLine();
   } else if (act === "sdel") {
-    const se = curSeason(); const l = se && se.lots.find(x => x.id === b.dataset.lot); if (!l) return;
+    const se = lotSeason(b.dataset.lot); const l = se && se.lots.find(x => x.id === b.dataset.lot); if (!l) return;
     l.lines = l.lines.filter(n => n.id !== b.dataset.id);
     if (editLine && editLine.line === b.dataset.id) editLine = null;
     if (!l.lines.some(n => !lineBlank(n))) se.lots = se.lots.filter(x => x.id !== l.id);
@@ -2878,7 +2925,7 @@ $("rp-orch").addEventListener("click", e => {
     const se = curSeason(); if (!se) return;
     se.lots.forEach(l => { l.lines = l.lines.filter(n => n.id !== b.dataset.id); });
   } else if (act === "rmlot") {
-    const se = curSeason(); if (!se) return; se.lots = se.lots.filter(l => l.id !== b.dataset.id);
+    const se = lotSeason(b.dataset.id); if (!se) return; se.lots = se.lots.filter(l => l.id !== b.dataset.id);
   } else if (act === "delorch") { pendingDel = "orchard"; renderDels(); return; }
   else if (act === "delyear") { pendingDel = "year"; renderDels(); return; }
   else if (act === "delno") { pendingDel = null; renderDels(); return; }
