@@ -480,6 +480,45 @@ legend{font-size:.95rem}
 </style>
 
 <style>
+/* Yearly net profit: a row per year that opens to every orchard's details */
+.ylist{display:grid;gap:10px;margin-top:6px}
+.yrow{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.yrow.open{border-color:var(--fg)}
+.yhead{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:4.2rem minmax(0,1fr) auto 1.2rem;gap:6px 16px;align-items:center;padding:14px 16px;cursor:pointer;color:var(--fg)}
+.yhead:focus-visible{outline:3px solid var(--apple);outline-offset:-3px}
+.yhead:hover{background:var(--surface-2)}
+.yy{font:700 1.6rem var(--display);line-height:1}
+.ymid{display:grid;gap:6px;min-width:0}
+.ymeta{font-size:.9rem;color:var(--muted)}
+.ybar{display:block;height:10px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.ybar .fill{display:block;height:100%;border-radius:0 4px 4px 0}
+.ybar .fill.pos{background:var(--good)}.ybar .fill.neg{background:var(--bad)}
+.ynet{font:600 1.35rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ynet.pos{color:var(--good)}.ynet.neg{color:var(--bad)}
+.ychev{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-top:-4px;justify-self:center}
+.yrow.open .ychev{transform:rotate(-135deg);margin-top:4px}
+@media (prefers-reduced-motion:no-preference){.ychev{transition:transform .15s}}
+.ybody{padding:4px 16px 16px;display:grid;gap:12px;border-top:1px solid var(--line)}
+.ybody .ystats{margin-top:10px}
+#tp-calc.tpanel{max-width:none;grid-template-columns:minmax(0,1fr)}
+#rp-quick .panel{max-width:1040px}
+#rp-quick > p{max-width:70ch}
+.ybody .ystats{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+.ystats .main b{white-space:nowrap}
+.ledger.ytab{min-width:820px}
+.ledger.ytab thead th{white-space:normal;vertical-align:bottom;line-height:1.25}
+.ledger.ytab th,.ledger.ytab td{padding:7px 9px}
+.ytab th[scope=row]{vertical-align:top}
+.ytab .yon{display:block}
+.ytab .yacts{display:flex;gap:10px;margin-top:2px}
+.ytab .yacts .link{padding:0;font-size:.82rem;font-weight:600}
+@media (max-width:560px){
+  .yhead{grid-template-columns:3.4rem minmax(0,1fr) 1rem}
+  .yy{font-size:1.35rem}
+  .ynet{grid-column:2;grid-row:1;font-size:1.2rem}
+  .ymid{grid-column:1/3;grid-row:2}
+  .ychev{grid-column:3;grid-row:1}
+}
 /* Orchard pages: profile, insights, season diary. Grade colours validated for colour-blind separation in light and dark. */
 :root{--g-a:#B11F24;--g-b:#E09A1A;--g-rg:#6A4FB3;--g-gift:#2F7A34;--g-none:#BDB3A6}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-a:#C23A3A;--g-b:#C4851C;--g-rg:#8B74DC;--g-gift:#3F9A45;--g-none:#5E5248}}
@@ -631,11 +670,10 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
     <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year" hidden>
       <div>
         <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
-        <div id="yearDetail"></div>
+        <p class="hint" data-i18n="y_tap"></p>
+        <div class="ylist" id="yearDetail"></div>
         <h3 class="ysub" data-i18n="y_h"></h3>
         <div id="yearTable"></div>
-        <h3 class="ysub" data-i18n="y_chart"></h3>
-        <ul class="ybars" id="ybars"></ul>
         <p class="fine" data-i18n="y_note"></p>
       </div>
     </div>
@@ -1079,8 +1117,8 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   r_boxes:"Boxes sold", r_gross:"Gross (boxes × rate)", r_lotexp:"Lot expenses", r_year:"Other yearly costs", r_due:"Sale amount not yet received",
   head_profit:"Net income for {o}, {y}", head_loss:"Loss for {o}, {y}", r_profit:"Net income", r_loss:"Loss",
   seg_exp:"Lot expenses", seg_year:"Other yearly costs", seg_profit:"Net income",
-  y_note:"Each figure is gross (boxes × rate) minus lot expenses and any other yearly costs. Half boxes count as half when working out the per-box figure.",
-  y_sum:"Totals for each year", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
+  y_note:"Net income is gross (boxes × rate) minus per-box expenses and yearly costs, including costs from the season diary. Half boxes count as half when working out the per-box figure.",
+  y_sum:"Net profit by year", y_tap:"Tap a year to see every orchard's details for that season.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly costs", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
   hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot."
 },
 hi: {
@@ -1261,8 +1299,8 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   r_boxes:"बेची गई पेटियाँ", r_gross:"कुल बिक्री (पेटियाँ × भाव)", r_lotexp:"लॉट के ख़र्च", r_year:"साल भर के अन्य ख़र्च", r_due:"बिक्री की रक़म जो अभी नहीं मिली",
   head_profit:"{o} की शुद्ध आय, {y}", head_loss:"{o} का घाटा, {y}", r_profit:"शुद्ध आय", r_loss:"घाटा",
   seg_exp:"लॉट के ख़र्च", seg_year:"साल भर के अन्य ख़र्च", seg_profit:"शुद्ध आय",
-  y_note:"हर आँकड़ा कुल बिक्री (पेटियाँ × भाव) में से लॉट के ख़र्च और साल भर के अन्य ख़र्च घटाकर निकाला गया है। प्रति पेटी का आँकड़ा निकालते समय आधी पेटी आधी गिनी जाती है।",
-  y_sum:"हर साल का कुल हिसाब", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
+  y_note:"शुद्ध आय यानी कुल बिक्री (पेटियाँ × भाव) में से प्रति पेटी ख़र्च और साल भर के ख़र्च घटाकर, जिसमें सीज़न डायरी के ख़र्च भी शामिल हैं। प्रति पेटी आँकड़ा निकालते समय आधी पेटी आधी गिनी जाती है।",
+  y_sum:"साल-दर-साल शुद्ध मुनाफ़ा", y_tap:"उस सीज़न में हर बाग़ का पूरा ब्योरा देखने के लिए किसी साल पर दबाएँ।", y_meta:"{n} बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_meta1:"1 बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_pbe:"प्रति पेटी ख़र्च (कुल)", y_yc:"साल भर के ख़र्च", y_sp:"सीज़न का मुनाफ़ा", y_op:"बाग़ का पन्ना", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
   hero_real_t:"आपकी शुद्ध आय, {y}", hero_real_note:"आपके रिकॉर्ड से। हर लॉट देखने के लिए नीचे कैलकुलेटर खोलें।"
 }};
 const MONTHS = {
@@ -1765,6 +1803,10 @@ $("rt-quick").addEventListener("click", () => showSub("quick"));
 $("pcSignIn").addEventListener("click", () => { tabPicked = true; showTool("orch", false, true); });
 $("rt-year").addEventListener("click", () => showSub("year"));
 $("rp-year").addEventListener("click", e => {
+  const t = e.target.closest && e.target.closest("[data-act=ytoggle]");
+  if (t) { const y = +t.dataset.y; if (yOpen.has(y)) yOpen.delete(y); else yOpen.add(y); renderYearDetail(); const nb = document.querySelector('[data-act=ytoggle][data-y="' + y + '"]'); if (nb) nb.focus(); return; }
+  const op = e.target.closest && e.target.closest("[data-act=orchpage]");
+  if (op) { dashView = op.dataset.o; dashYear = +op.dataset.y; profEdit = false; diaryEdit = null; tabPicked = true; renderDash(); showTool("orch", false, true); return; }
   const b = e.target.closest && e.target.closest("[data-act=editsel]");
   if (!b) return;
   closeEditLine(); entryOpen = false; sel.o = b.dataset.o; sel.y = +b.dataset.y;
@@ -2310,7 +2352,7 @@ function orchardPage(o) {
     profileHtml(o) + "</div></div>" +
     '<div class="oacts2"><button class="btn-s add" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("d_open") +
     '</button><button class="btn-s" type="button" data-dact="note">' + tr("dy_add") + "</button></div>" +
-    '<div class="oyear field"><label for="o_year">' + tr("o_season") + '</label><select id="o_year">' + yrs.map(y => '<option value="' + y + '"' + (y === dashYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>" +
+    '<div class="oyear field"><label for="o_season">' + tr("o_season") + '</label><select id="o_season">' + yrs.map(y => '<option value="' + y + '"' + (y === dashYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>" +
     insightsHtml(o, dashYear) + dueHtml(o) + yearsHtml(o) + diaryHtml(o) + "</div>";
   return h;
 }
@@ -2348,7 +2390,7 @@ $("dash").addEventListener("click", e => {
   const a = b.dataset.dact, oid = b.dataset.o, o = S.orchards.find(x => x.id === (oid || dashView));
   if (a === "view") { dashView = oid; dashYear = null; profEdit = false; diaryEdit = null; renderDash(); dashTop(); }
   else if (a === "back") { dashView = null; profEdit = false; diaryEdit = null; renderDash(); dashTop(); }
-  else if (a === "year") { dashYear = +b.dataset.y; renderDash(); const y = $("o_year"); if (y) y.scrollIntoView({block: "start"}); }
+  else if (a === "year") { dashYear = +b.dataset.y; renderDash(); const y = $("o_season"); if (y) y.scrollIntoView({block: "start"}); }
   else if (a === "open") {
     const ys = S.seasons.filter(se => se.oid === oid).map(se => se.year);
     goSeason(oid, dashView === oid && ys.indexOf(dashYear) >= 0 ? dashYear : ys.length ? Math.max.apply(null, ys) : thisYear());
@@ -2386,7 +2428,7 @@ $("dash").addEventListener("click", e => {
 });
 $("dash").addEventListener("change", async e => {
   const t = e.target;
-  if (t.id === "o_year") { dashYear = +t.value; renderDash(); return; }
+  if (t.id === "o_season") { dashYear = +t.value; renderDash(); return; }
   if (t.id === "d_kind") { syncStage(); return; }
   if (t.id === "o_photo_in") {
     const f = t.files && t.files[0], o = S.orchards.find(x => x.id === dashView); if (!f || !o) return;
@@ -2423,33 +2465,49 @@ $("dash").addEventListener("submit", e => {
 });
 
 /* ---------- yearly totals ---------- */
+let yOpen = new Set();
 function renderYearDetail() {
-  const years = Array.from(new Set(S.seasons.map(s => s.year))).sort((a, b) => b - a);
+  const years = Array.from(new Set(S.seasons.map(x => x.year))).sort((a, b) => b - a);
   const cls = n => (n < 0 ? "neg" : "pos");
+  const sum = y => {
+    const rows = S.orchards.map(o => { const se = seFor(o.id, y); return se ? {o, se, r: seasonCalc(se), g: gradeSplit(se)} : null; }).filter(Boolean);
+    const t = {boxes: 0, eq: 0, rev: 0, lot: 0, yearly: 0, cost: 0, due: 0, a: 0};
+    rows.forEach(x => { t.boxes += x.r.boxes; t.eq += x.r.eq; t.rev += x.r.rev; t.lot += x.r.lotExp; t.yearly += x.r.yearly; t.cost += x.r.cost; t.due += x.r.due; t.a += x.g.a.b; });
+    t.net = t.rev - t.cost; t.rows = rows; return t;
+  };
+  const all = {}; years.forEach(y => { all[y] = sum(y); });
+  const max = Math.max.apply(null, years.map(y => Math.abs(all[y].net))) || 1;
+  if (!years.length) { $("yearDetail").innerHTML = '<p class="empty">' + tr("y_empty") + "</p>"; return; }
   $("yearDetail").innerHTML = years.map(y => {
-    const rows = S.orchards.map(o => {
-      const se = S.seasons.find(s => s.oid === o.id && s.year === y);
-      return se ? {o:o, y:y, r:seasonCalc(se)} : null;
-    }).filter(Boolean);
-    const t = {boxes:0, eq:0, rev:0, cost:0, due:0};
-    rows.forEach(x => { t.boxes += x.r.boxes; t.eq += x.r.eq; t.rev += x.r.rev; t.cost += x.r.cost; t.due += x.r.due; });
-    const net = t.rev - t.cost, ppb = t.eq ? net / t.eq : 0;
-    const stat = (k, v, c) => "<div" + (c ? ' class="main ' + c + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b></div>";
-    return '<div class="yblock"><h4>' + y + '</h4><div class="ystats">' +
-      stat("ls_gross", inr(t.rev)) + stat("ls_exp", inr(t.cost)) + stat("ls_net", inr(net), cls(net)) + stat("ls_ppb", inr(ppb)) + stat("r_due", inr(t.due)) + "</div>" +
-      '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("y_orch") + '</th><th scope="col">' + tr("ls_boxes") + '</th><th scope="col">' + tr("ls_gross") +
-      '</th><th scope="col">' + tr("ls_exp") + '</th><th scope="col">' + tr("ls_net") + '</th><th scope="col"></th></tr></thead><tbody>' +
-      rows.map(x => '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + fmtN(x.r.boxes) + "</td><td>" + inr(x.r.rev) + "</td><td>" + inr(x.r.cost) +
-        '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + '</td><td><button class="btn-s" type="button" data-act="editsel" data-o="' + esc(x.o.id) + '" data-y="' + x.y + '">' + tr("edit_row") + "</button></td></tr>").join("") +
-      "</tbody></table></div></div>";
+    const t = all[y], open = yOpen.has(y), n = t.rows.length, prev = all[y - 1];
+    const meta = tr(n === 1 ? "y_meta1" : "y_meta").replace("{n}", n).replace("{b}", fmtN(t.boxes)).replace("{p}", inr(t.eq ? t.net / t.eq : 0));
+    let h = '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="ytoggle" data-y="' + y + '" aria-expanded="' + open + '" aria-controls="yb' + y + '">' +
+      '<span class="yy">' + y + '</span><span class="ymid"><span class="ymeta">' + meta + '</span><span class="ybar"><span class="fill ' + cls(t.net) + '" style="width:' +
+      (Math.abs(t.net) / max * 100).toFixed(1) + '%"></span></span></span><span class="ynet ' + cls(t.net) + '">' + inr(t.net) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+    h += '<div class="ybody" id="yb' + y + '"' + (open ? "" : " hidden") + ">";
+    if (open) {
+      const stat = (k, v, c, sub) => "<div" + (c ? ' class="' + c + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
+      const chg = prev ? tr(t.net >= prev.net ? "d_up" : "d_down").replace("{x}", inr(Math.abs(t.net - prev.net))).replace("{y}", y - 1) : "";
+      h += '<div class="ystats">' + stat("ls_gross", inr(t.rev)) + stat("y_pbe", inr(t.lot)) + stat("y_yc", inr(t.yearly)) + stat("ls_net", inr(t.net), "main " + cls(t.net), chg) +
+        stat("ls_ppb", inr(t.eq ? t.net / t.eq : 0)) + stat("k_avg", inr(t.boxes ? t.rev / t.boxes : 0)) + stat("k_ash", pct(t.a, t.boxes)) + stat("r_due", inr(t.due)) + "</div>";
+      const head = ["y_orch", "ls_boxes", "k_avg", "ls_gross", "y_pbe", "y_yc", "ls_net", "ls_ppb", "k_ash", "r_due"];
+      h += '<div class="tablewrap"><table class="ledger sm ytab"><thead><tr>' + head.map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
+        t.rows.map(x => '<tr><th scope="row"><span class="yon">' + esc(x.o.name || tr("orchard_fallback")) + '</span><span class="yacts"><button class="link" type="button" data-act="editsel" data-o="' + esc(x.o.id) + '" data-y="' + y + '">' + tr("y_sp") +
+          '</button><button class="link" type="button" data-act="orchpage" data-o="' + esc(x.o.id) + '" data-y="' + y + '">' + tr("y_op") + "</button></span></th><td>" + fmtN(x.r.boxes) + "</td><td>" + inr(x.r.boxes ? x.r.rev / x.r.boxes : 0) + "</td><td>" + inr(x.r.rev) +
+          "</td><td>" + inr(x.r.lotExp) + "</td><td>" + inr(x.r.yearly) + '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td><td>" + inr(x.r.ppb) + "</td><td>" + pct(x.g.a.b, x.r.boxes) +
+          "</td><td>" + inr(x.r.due) + "</td></tr>").join("") +
+        "</tbody>" + (n > 1 ? '<tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + fmtN(t.boxes) + "</td><td>" + inr(t.boxes ? t.rev / t.boxes : 0) + "</td><td>" + inr(t.rev) + "</td><td>" + inr(t.lot) +
+          "</td><td>" + inr(t.yearly) + '</td><td class="' + cls(t.net) + '">' + inr(t.net) + "</td><td>" + inr(t.eq ? t.net / t.eq : 0) + "</td><td>" + pct(t.a, t.boxes) + "</td><td>" + inr(t.due) +
+          "</td></tr></tfoot>" : "") + "</table></div>";
+    }
+    return h + "</div></div>";
   }).join("");
 }
 function renderSummary() {
   renderYearDetail();
   const years = Array.from(new Set(S.seasons.map(s => s.year))).sort((a, b) => a - b);
   if (!S.orchards.length || !years.length) {
-    $("yearTable").innerHTML = '<p class="empty">' + tr("y_empty") + "</p>";
-    $("ybars").innerHTML = "";
+    $("yearTable").innerHTML = "";
     return;
   }
   const cls = n => (n < 0 ? "neg" : "pos");
@@ -2473,10 +2531,6 @@ function renderSummary() {
     years.map(y => '<td class="' + cls(tot[y]) + '">' + inr(tot[y]) + "</td>").join("") +
     '<td class="' + cls(grand) + '">' + inr(grand) + "</td></tr></tfoot></table></div>";
   $("yearTable").innerHTML = h;
-  const max = Math.max.apply(null, years.map(y => Math.abs(tot[y]))) || 1;
-  $("ybars").innerHTML = years.map(y =>
-    '<li><span class="yl">' + y + '</span><span class="track"><span class="fill ' + cls(tot[y]) + '" style="width:' + (Math.abs(tot[y]) / max * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(tot[y]) + "</span>" +
-    '<span class="ys">' + Math.round(boxes[y]).toLocaleString("en-IN") + " " + tr("y_boxes") + (boxes[y] ? " · " + inr(tot[y] / boxes[y]) + " " + tr("hero_card_per") : "") + "</span></li>").join("");
 }
 
 /* ---------- events ---------- */
