@@ -120,8 +120,10 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .entryform .linebox > .rowhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
 .entryform .rowhead b{font-size:.95rem}
 .entryform > .btn-s{margin-top:12px}
-.erow{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(6,minmax(0,1fr));gap:8px;align-items:end}
+.erow{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(7,minmax(0,1fr));gap:8px;align-items:end}
 .erow .field label{font-size:.8rem;margin-bottom:3px;line-height:1.2}
+.warn{margin:8px 0 0;display:grid;gap:4px}.warn:empty{display:none}
+.warn span{display:block;padding:6px 10px;border-left:3px solid var(--warn,#C4851C);background:color-mix(in srgb,var(--warn,#C4851C) 12%,transparent);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--fg)}
 .lotbox .field input,.lotbox .field select{min-height:38px;padding:5px 8px;font-size:.95rem}
 .lotbox .linebox{padding-top:8px;margin-top:8px}
 .lotbox .lothead{margin-bottom:4px}
@@ -210,14 +212,14 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .lotbox{container-type:inline-size}
 @media (max-width:640px){
   .erow{grid-template-columns:repeat(12,minmax(0,1fr))}
-  .erow>.field:nth-child(-n+3){grid-column:span 4}
-  .erow>.field:nth-child(n+4){grid-column:span 3}
+  .erow>.field:nth-child(-n+6){grid-column:span 4}
+  .erow>.field:nth-child(n+7){grid-column:span 6}
   .erow .field label{font-size:.74rem}
 }
 @container (max-width:680px){
   .erow{grid-template-columns:repeat(12,minmax(0,1fr))}
-  .erow>.field:nth-child(-n+3){grid-column:span 4}
-  .erow>.field:nth-child(n+4){grid-column:span 3}
+  .erow>.field:nth-child(-n+6){grid-column:span 4}
+  .erow>.field:nth-child(n+7){grid-column:span 6}
   .erow .field label{font-size:.74rem}
 }
 .entrymsg{margin-top:10px;color:var(--good);font-weight:600;min-height:0}
@@ -507,6 +509,7 @@ legend{font-size:.95rem}
 .ystats .main b{white-space:nowrap}
 .hynote{margin:0 0 4px;padding:8px 12px;border-left:4px solid var(--brand-bg);border-radius:0 8px 8px 0;background:var(--surface-2);color:var(--fg);font-size:.95rem;font-weight:500;max-width:62ch}
 #rp-year .hynote,#rp-orch .hynote{margin-bottom:22px}
+.dlacts{display:flex;gap:10px;flex-wrap:wrap}
 #rp-year h3[data-i18n="y_sum"]{margin-bottom:18px}
 table.ledger.ytab{min-width:0;width:100%}
 .ledger.ytab thead th{background:var(--surface-2);color:var(--muted);font-weight:600;font-size:.86rem;border-bottom:1px solid var(--line)}
@@ -1044,7 +1047,12 @@ en: {
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
-  ne_h:"New lot: {o}, {y}", ne_pos:"Save as", ne_end:"{l} (at the end)", lot_up:"Move up", lot_down:"Move down", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"{l} saved to {o}, {y}.",
+  ne_h:"New lot: {o}, {y}", ne_pos:"Save as", ne_end:"{l} (at the end)", lot_up:"Move up", lot_down:"Move down", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box. Commission is a % of the sale amount.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"{l} saved to {o}, {y}.",
+  w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
+  w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
+  w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
+  dl_csv:"Download for Excel", dl_pdf:"Print or save as PDF", dl_title:"Apple Doctor: harvest year {y}", dl_sum:"Summary by orchard", dl_exp:"Yearly expenses by category", dl_lots:"Sales by lot",
+  dl_sales:"Gross sales", dl_lot:"Lot", dl_price:"Price per box", dl_date:"Sale date", dl_paid:"Paid", dl_yes:"Yes", dl_no:"No", dl_total:"Total", dl_made:"Made on {d}",
   lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
   lot_margin:"Lot margin before yearly expenses",
   f_boxes:"Boxes sold", f_price:"Price per box (₹)", f_comm:"Commission (%)",
@@ -1207,7 +1215,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   line_add:"Add another grade or rate", line_remove:"Remove line", lot_remove:"Remove lot", rm_sure:"Tap again to remove",
   lc:"Gross {g} · Expenses {e} ({p} per box) · Net {n}",
   f_type:"Type", f_type_ph:"Choose type", f_price:"Sold price per box (₹)", exp_h:"Expenses (₹ per box)",
-  f_tod:"Todan/Bharan", f_grd:"Grading/Packing", f_car:"Carriage", f_oth:"Other expense",
+  f_tod:"Todan/Bharan", f_grd:"Grading/Packing", f_car:"Carriage", f_oth:"Other expense", f_com:"Commission %", lc_com:"Commission",
   more_h:"More: sale date, half box, payment", opt_new_o:"＋ Add new orchard", opt_new_y:"＋ Add new year",
   g_a:"A Grade", g_b:"B Grade", g_rg:"Red Gold", g_gift:"Gift",
   ls_boxes:"Boxes", ls_gross:"Gross", ls_exp:"Expenses", ls_net:"Net income", ls_ppb:"Net per box",
@@ -1235,7 +1243,12 @@ hi: {
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
-  ne_h:"नया लॉट: {o}, {y}", ne_pos:"किस नंबर पर सहेजें", ne_end:"{l} (आख़िर में)", lot_up:"ऊपर करें", lot_down:"नीचे करें", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"{l} {o}, {y} में सहेज लिया गया।",
+  ne_h:"नया लॉट: {o}, {y}", ne_pos:"किस नंबर पर सहेजें", ne_end:"{l} (आख़िर में)", lot_up:"ऊपर करें", lot_down:"नीचे करें", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं। कमीशन बिक्री की रक़म का % है।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"{l} {o}, {y} में सहेज लिया गया।",
+  w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
+  w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
+  w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
+  dl_csv:"एक्सेल के लिए डाउनलोड करें", dl_pdf:"प्रिंट करें या PDF में सहेजें", dl_title:"Apple Doctor: फ़सल वर्ष {y}", dl_sum:"बाग़ के हिसाब से सार", dl_exp:"श्रेणी के हिसाब से साल भर के ख़र्च", dl_lots:"लॉट के हिसाब से बिक्री",
+  dl_sales:"कुल बिक्री", dl_lot:"लॉट", dl_price:"प्रति पेटी भाव", dl_date:"बिक्री की तारीख़", dl_paid:"भुगतान मिला", dl_yes:"हाँ", dl_no:"नहीं", dl_total:"कुल", dl_made:"{d} को बनाया गया",
   lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
   lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
   f_boxes:"बेची गई पेटियाँ", f_price:"प्रति पेटी भाव (₹)", f_comm:"कमीशन (%)",
@@ -1398,7 +1411,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   line_add:"एक और ग्रेड या भाव जोड़ें", line_remove:"यह पंक्ति हटाएँ", lot_remove:"लॉट हटाएँ", rm_sure:"हटाने के लिए दोबारा दबाएँ",
   lc:"कुल बिक्री {g} · ख़र्च {e} ({p} प्रति पेटी) · शुद्ध आय {n}",
   f_type:"प्रकार", f_type_ph:"प्रकार चुनें", f_price:"बिक्री भाव प्रति पेटी (₹)", exp_h:"ख़र्च (₹ प्रति पेटी)",
-  f_tod:"तुड़ान/भराई", f_grd:"ग्रेडिंग/पैकिंग", f_car:"ढुलाई", f_oth:"अन्य ख़र्च",
+  f_tod:"तुड़ान/भराई", f_grd:"ग्रेडिंग/पैकिंग", f_car:"ढुलाई", f_oth:"अन्य ख़र्च", f_com:"कमीशन %", lc_com:"कमीशन",
   more_h:"और: बिक्री की तारीख़, आधी पेटी, भुगतान", opt_new_o:"＋ नया बाग़ जोड़ें", opt_new_y:"＋ नया साल जोड़ें",
   g_a:"ए ग्रेड", g_b:"बी ग्रेड", g_rg:"रेड गोल्ड", g_gift:"गिफ़्ट",
   ls_boxes:"पेटियाँ", ls_gross:"कुल बिक्री", ls_exp:"ख़र्च", ls_net:"शुद्ध आय", ls_ppb:"प्रति पेटी शुद्ध आय",
@@ -1563,7 +1576,7 @@ function blankCosts() { const c = {}; COST_KEYS.forEach(k => { c[k] = 0; }); ret
 const GRADES = ["A Grade", "B Grade", "Red Gold", "Gift"];
 const GRADE_KEY = {"A Grade":"g_a", "B Grade":"g_b", "Red Gold":"g_rg", "Gift":"g_gift"};
 const pv = (prev, k) => (prev ? (+prev[k] || 0) : 0);
-function blankLine(prev, grade) { return {id:newId(), grade:grade || "", date:"", boxes:0, rate:0, tod:pv(prev, "tod"), grd:pv(prev, "grd"), car:pv(prev, "car"), exp:0, half:false, paid:false, paidOn:""}; }
+function blankLine(prev, grade) { return {id:newId(), grade:grade || "", date:"", boxes:0, rate:0, tod:pv(prev, "tod"), grd:pv(prev, "grd"), car:pv(prev, "car"), exp:0, com:pv(prev, "com"), half:false, paid:false, paidOn:""}; }
 function blankLot(name, prev) { return {id:newId(), name:name || "", lines:GRADES.map(g => blankLine(prev, g))}; }
 function ln(grade, boxes, rate, exp, half) { return {id:newId(), grade:grade, date:"", boxes:boxes, rate:rate, exp:exp, half:!!half, paid:true, paidOn:""}; }
 function makeSample() {
@@ -1587,8 +1600,8 @@ function makeSample() {
 function lineCalc(n) {
   const b = +n.boxes || 0, r = +n.rate || 0;
   const e = (+n.tod || 0) + (+n.grd || 0) + (+n.car || 0) + (+n.exp || 0);
-  const gross = b * r, exp = b * e;
-  return {b, eq:n.half ? b / 2 : b, gross, exp, epb:e, net:gross - exp};
+  const gross = b * r, com = gross * Math.min(Math.max(+n.com || 0, 0), 100) / 100, exp = b * e + com;
+  return {b, eq:n.half ? b / 2 : b, gross, exp, com, epb:b ? exp / b : e, net:gross - exp};
 }
 function lotCalc(l) {
   const t = {b:0, eq:0, gross:0, exp:0, net:0, due:0};
@@ -1910,6 +1923,8 @@ $("rt-quick").addEventListener("click", () => showSub("quick"));
 $("pcSignIn").addEventListener("click", () => { tabPicked = true; showTool("orch", false, true); });
 $("rt-year").addEventListener("click", () => showSub("year"));
 $("rp-year").addEventListener("click", e => {
+  const dl = e.target.closest && e.target.closest("[data-act=dlcsv],[data-act=dlpdf]");
+  if (dl) { if (dl.dataset.act === "dlcsv") yearCsv(+dl.dataset.y); else yearPrint(+dl.dataset.y); return; }
   const t = e.target.closest && e.target.closest("[data-act=ytoggle]");
   if (t) { const y = +t.dataset.y; if (yOpen.has(y)) yOpen.delete(y); else yOpen.add(y); renderYearDetail(); const nb = document.querySelector('[data-act=ytoggle][data-y="' + y + '"]'); if (nb) nb.focus(); return; }
   const op = e.target.closest && e.target.closest("[data-act=orchpage]");
@@ -1948,9 +1963,9 @@ function lastLineFor(oid, y) {
 }
 const wb = t => esc(t).replace(/\//g, "/<wbr>");
 let draft = [];
-const EXPK = ["tod", "grd", "car", "exp"];
+const EXPK = ["tod", "grd", "car", "exp", "com"];
 function neRow(prev) { const r = {grade:"", boxes:"", rate:""}; EXPK.forEach(k => { r[k] = prev && +prev[k] ? String(+prev[k]) : ""; }); return r; }
-const draftLine = r => Object.assign(blankLine(), {grade:r.grade, boxes:numOf(r.boxes), rate:numOf(r.rate), tod:numOf(r.tod), grd:numOf(r.grd), car:numOf(r.car), exp:numOf(r.exp)});
+const draftLine = r => Object.assign(blankLine(), {grade:r.grade, boxes:numOf(r.boxes), rate:numOf(r.rate), tod:numOf(r.tod), grd:numOf(r.grd), car:numOf(r.car), exp:numOf(r.exp), com:numOf(r.com)});
 const draftFilled = r => !!(r.grade || numOf(r.boxes) || numOf(r.rate));
 function rowHtml(r, i) {
   const id = "ne" + i + "_";
@@ -1958,7 +1973,8 @@ function rowHtml(r, i) {
   const typeSel = '<div class="field"><label for="' + id + 'grade">' + tr("f_type") + '</label><select id="' + id + 'grade" data-ne="' + i + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
     GRADES.map(g => '<option value="' + esc(g) + '"' + (g === r.grade ? " selected" : "") + ">" + esc(tr(GRADE_KEY[g])) + "</option>").join("") + "</select></div>";
   return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b></div>" +
-    '<div class="erow">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + "</div></div>";
+    '<div class="erow">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + f("com", "f_com") + "</div>" +
+    '<p class="warn" id="ne_warn" role="status"></p></div>';
 }
 let editIdx = 0;
 const rowOk = r => !!(r.grade && numOf(r.boxes) && numOf(r.rate));
@@ -1999,7 +2015,36 @@ function lotTable(rows, acts) {
   }
   return h + "</table></div>";
 }
+/* Warnings for entries that look unusual for this orchard (never blocks saving) */
+const median = a => { if (!a.length) return 0; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+function oddWarn(oid, n, skipId) {
+  const out = [], b = +n.boxes || 0, r = +n.rate || 0, com = +n.com || 0;
+  const pool = []; S.seasons.forEach(x => x.lots.forEach(l => l.lines.forEach(q => { if (q.id !== skipId && +q.boxes > 0 && +q.rate > 0) pool.push({o: x.oid, g: gradeKey(q.grade), b: +q.boxes, r: +q.rate}); })));
+  if (r > 0) {
+    const gk = gradeKey(n.grade);
+    let same = pool.filter(q => q.o === oid && q.g === gk);
+    if (same.length < 3) same = pool.filter(q => q.g === gk);
+    let f = 2;
+    if (same.length < 3) { same = pool.filter(q => q.o === oid); f = 3; }
+    const m = same.length >= 3 ? median(same.map(q => q.r)) : 0;
+    if (m && (r < m / f || r > m * f)) out.push(tr("w_rate").replace("{x}", inr(r)).replace("{m}", inr(m)));
+    else if (r > 10000) out.push(tr("w_rate_hi").replace("{x}", inr(r)));
+  }
+  if (b > 0) {
+    const own = pool.filter(q => q.o === oid), m = own.length >= 3 ? median(own.map(q => q.b)) : 0;
+    if ((m && b > m * 4 && b > 50) || b > 2000) out.push(tr(m ? "w_boxes" : "w_boxes2").replace("{n}", fmtN(b)).replace("{m}", fmtN(Math.round(m))));
+  }
+  if (r > 0 && b > 0) { const c = lineCalc(n); if (c.epb > r) out.push(tr("w_exp").replace("{e}", inr(c.epb)).replace("{p}", inr(r))); }
+  if (com > 20) out.push(tr("w_com").replace("{c}", fmtD(com)));
+  return out;
+}
+const warnHtml = w => w.map(x => "<span>" + esc(x) + "</span>").join("");
+function updNeWarn() { const el = $("ne_warn"), o = curOrchard(), r = draft[editIdx]; if (el) el.innerHTML = o && r ? warnHtml(oddWarn(o.id, draftLine(r))) : ""; }
+function updLineWarn() {
+  document.querySelectorAll("[data-lwarn]").forEach(el => { const id = el.dataset.lwarn, se = lineSeason(id), n = se && findLineIn(se, id); el.innerHTML = n ? warnHtml(oddWarn(se.oid, n, id)) : ""; });
+}
 function updDraft() {
+  updNeWarn();
   const rows = [];
   draft.forEach((r, i) => { if (draftFilled(r)) rows.push([i + 1, draftLine(r)]); });
   $("ne_sum").innerHTML = lotTable(rows, {isEd: x => x[0] - 1 === editIdx, attr: (x, k) => 'data-act="' + (k === "edit" ? "nedit" : "nedel") + '" data-i="' + (x[0] - 1) + '"'});
@@ -2109,6 +2154,7 @@ function renderEditor() {
   }
   $("editor").innerHTML = h;
   $("editor").hidden = addingO;
+  updLineWarn();
 }
 function lineHtml(n) {
   const id = "n_" + n.id;
@@ -2122,7 +2168,8 @@ function lineHtml(n) {
   const more = !!(n.date || n.paidOn || n.half || n.paid);
   return '<div class="linebox"><div class="erow">' + typeSel +
     f("boxes", "number", "f_boxes", n.boxes || "") + f("rate", "number", "f_price", n.rate || "") +
-    f("tod", "number", "f_tod", n.tod || "") + f("grd", "number", "f_grd", n.grd || "") + f("car", "number", "f_car", n.car || "") + f("exp", "number", "f_oth", n.exp || "") + "</div>" +
+    f("tod", "number", "f_tod", n.tod || "") + f("grd", "number", "f_grd", n.grd || "") + f("car", "number", "f_car", n.car || "") + f("exp", "number", "f_oth", n.exp || "") + f("com", "number", "f_com", n.com || "") + "</div>" +
+    '<p class="warn" data-lwarn="' + n.id + '" role="status"></p>' +
     '<details class="manage moreline"' + (more ? " open" : "") + "><summary>" + tr("more_h") + '</summary><div class="grid tight">' + f("date", "date", "f_date", n.date) + f("paidOn", "date", "f_paidon", n.paidOn) +
     '</div><div class="checks">' + c("half", "f_half") + c("paid", "f_paid") + "</div></details>" +
     "</div>";
@@ -2206,7 +2253,7 @@ const DIARY_KINDS = [["work", ["spray", "fert", "prune", "irrig", "labour", "too
   ["dates", ["flower", "hstart", "hend"]], ["other", ["problem", "note"]]];
 const TIMELINE_KINDS = ["flower", "hstart", "hend", "hail", "frost", "drought", "rain", "snow", "problem"];
 const ROOTS = ["seedling", "m9", "mm106", "m7", "mm111", "other"], IRR = ["rain", "drip", "sprink", "tank", "other"], HAIL = ["yes", "part", "no"];
-const LINE_COSTS = [["tod", "f_tod"], ["grd", "f_grd"], ["car", "f_car"], ["exp", "lc_oth"]];
+const LINE_COSTS = [["tod", "f_tod"], ["grd", "f_grd"], ["car", "f_car"], ["exp", "lc_oth"], ["com", "lc_com"]];
 const dcls = n => (n < 0 ? "neg" : "pos");
 const thisYear = () => new Date().getFullYear();
 /* Harvest year: 1 November to 31 October, named after the harvest it ends with (1 Nov 2025 - 31 Oct 2026 = 2026). */
@@ -2399,7 +2446,7 @@ function insightsHtml(o, Y) {
   const costTab = x => {
     const t = {}; if (!x) return null;
     LINE_COSTS.forEach(([k]) => { t[k] = 0; });
-    x.lots.forEach(l => l.lines.forEach(n => LINE_COSTS.forEach(([k]) => { t[k] += (+n.boxes || 0) * (+n[k] || 0); })));
+    x.lots.forEach(l => l.lines.forEach(n => LINE_COSTS.forEach(([k]) => { t[k] += k === "com" ? lineCalc(n).com : (+n.boxes || 0) * (+n[k] || 0); })));
     const rr = seasonCalc(x); COST_KEYS.forEach(k => { t["y_" + k] = (+x.costs[k] || 0) + rr.dcosts[k]; });
     return t;
   };
@@ -2560,7 +2607,9 @@ $("dash").addEventListener("click", e => {
       return;
     }
     if (a === "ddel") {
+      const gone = o && (o.diary || []).find(d => d.id === b.dataset.id);
       if (o) o.diary = (o.diary || []).filter(d => d.id !== b.dataset.id);
+      if (gone) pruneSeason(o.id, hYear(gone.date));
       if (diaryEdit === b.dataset.id) diaryEdit = null;
     } else {
       S.seasons = S.seasons.filter(se => se.oid !== oid); S.orchards = S.orchards.filter(x => x.id !== oid);
@@ -2606,7 +2655,10 @@ $("dash").addEventListener("submit", e => {
     const date = $("d_date").value, k = $("d_kind").value;
     if (!date || !k) { set("d_err", tr("dy_err")); return; }
     const entry = {id: diaryEdit || newId(), date: date, kind: k, text: $("d_text").value.trim(), cost: numOf($("d_cost").value), stage: k === "spray" ? $("d_stage").value : ""};
+    const old = (o.diary || []).find(d => d.id === entry.id);
     o.diary = (o.diary || []).filter(d => d.id !== entry.id).concat([entry]);
+    if (entry.cost > 0) ensureSeason(o.id, hYear(entry.date));
+    if (old) pruneSeason(o.id, hYear(old.date));
     diaryEdit = null;
   }
   fixSel(); save(); renderAll();
@@ -2817,9 +2869,76 @@ function renderYearDetail() {
           '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td></tr>").join("") +
         "</tbody>" + (n > 1 ? '<tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + inr(gp) + "</td><td>" + inr(t.yearly) + '</td><td class="' + cls(t.net) + '">' + inr(t.net) +
           "</td></tr></tfoot>" : "") + "</table></div>";
+      h += '<div class="dlacts"><button class="btn-s" type="button" data-act="dlcsv" data-y="' + y + '">' + tr("dl_csv") + '</button><button class="btn-s" type="button" data-act="dlpdf" data-y="' + y + '">' + tr("dl_pdf") + "</button></div>";
     }
     return h + "</div></div>";
   }).join("");
+}
+/* ---------- harvest-year summary: download for Excel (CSV) or print / save as PDF ---------- */
+function yearSummary(y) {
+  const rows = [], lots = [], exp = [];
+  S.orchards.forEach(o => {
+    const se = seFor(o.id, y); if (!se) return;
+    const r = seasonCalc(se), name = o.name || tr("orchard_fallback");
+    rows.push({name, boxes: r.boxes, sales: r.rev, pbe: r.lotExp, gp: r.rev - r.lotExp, yearly: r.yearly, net: r.profit, due: r.due});
+    const c = {}; COST_KEYS.forEach(k => { c[k] = (+se.costs[k] || 0) + r.dcosts[k]; });
+    exp.push({name, c, total: r.yearly});
+    se.lots.forEach((l, i) => l.lines.forEach(n => {
+      if (!(+n.boxes || +n.rate)) return;
+      const lc = lineCalc(n);
+      lots.push({name, lot: lotNo(i) + (autoName(l.name) ? "" : " (" + l.name + ")"), type: (GRADE_KEY[n.grade] ? tr(GRADE_KEY[n.grade]) : n.grade) || "–",
+        boxes: lc.b, rate: +n.rate || 0, gross: lc.gross, exp: lc.exp, net: lc.net, date: n.date || "", paid: !!n.paid});
+    }));
+  });
+  const sum = k => rows.reduce((a, r) => a + r[k], 0);
+  const tot = {name: tr("y_all"), boxes: sum("boxes"), sales: sum("sales"), pbe: sum("pbe"), gp: sum("gp"), yearly: sum("yearly"), net: sum("net"), due: sum("due")};
+  const etot = {name: tr("y_all"), c: {}, total: exp.reduce((a, e) => a + e.total, 0)}; COST_KEYS.forEach(k => { etot.c[k] = exp.reduce((a, e) => a + e.c[k], 0); });
+  return {y, title: tr("dl_title").replace("{y}", y), range: tr("hy_range").replace("{a}", y - 1).replace("{b}", y), rows, tot, exp, etot, lots};
+}
+const SUM_HEAD = ["y_orch", "ls_boxes", "dl_sales", "y_pbe", "y_gp", "y_yc", "ls_net", "k_due"];
+const sumCells = r => [r.name, r.boxes, r.sales, r.pbe, r.gp, r.yearly, r.net, r.due];
+const LOT_HEAD = ["y_orch", "dl_lot", "f_type", "ls_boxes", "dl_price", "ls_gross", "ls_exp", "ls_net", "dl_date", "dl_paid"];
+const lotCells = (l, num) => [l.name, l.lot, l.type, l.boxes, num(l.rate), num(l.gross), num(l.exp), num(l.net), l.date, tr(l.paid ? "dl_yes" : "dl_no")];
+function yearCsv(y) {
+  const d = yearSummary(y), R = n => Math.round(n);
+  const q = v => { const t = String(v); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+  const out = [[d.title], [d.range], [], [tr("dl_sum")], SUM_HEAD.map(tr)];
+  d.rows.concat([d.tot]).forEach(r => out.push(sumCells(r).map((v, i) => (i ? R(v) : v))));
+  out.push([], [tr("dl_exp")], ["y_orch"].concat(COST_KEYS.map(k => "yc_" + k), ["dl_total"]).map(tr));
+  d.exp.concat([d.etot]).forEach(e => out.push([e.name].concat(COST_KEYS.map(k => R(e.c[k])), [R(e.total)])));
+  out.push([], [tr("dl_lots")], LOT_HEAD.map(tr));
+  d.lots.forEach(l => out.push(lotCells(l, R)));
+  const csv = "\ufeff" + out.map(r => r.map(q).join(",")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv;charset=utf-8"}));
+  a.download = "apple-doctor-harvest-year-" + y + ".csv";
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function yearPrint(y) {
+  const d = yearSummary(y);
+  const tbl = (head, body, foot, cls) => "<table" + (cls ? ' class="' + cls + '"' : "") + "><thead><tr>" + head.map(h => "<th>" + esc(h) + "</th>").join("") + "</tr></thead><tbody>" +
+    body.map(r => "<tr>" + r.map((v, i) => (i ? "<td>" : "<th>") + esc(v) + (i ? "</td>" : "</th>")).join("") + "</tr>").join("") + "</tbody>" +
+    (foot ? "<tfoot><tr>" + foot.map((v, i) => (i ? "<td>" : "<th>") + esc(v) + (i ? "</td>" : "</th>")).join("") + "</tr></tfoot>" : "") + "</table>";
+  const money = r => sumCells(r).map((v, i) => (i === 0 ? v : i === 1 ? fmtN(v) : inr(v)));
+  const ex = e => [e.name].concat(COST_KEYS.map(k => inr(e.c[k])), [inr(e.total)]);
+  const made = new Date().toLocaleDateString(dloc(), {day: "numeric", month: "long", year: "numeric"});
+  const html = '<!doctype html><html lang="' + lang + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.title) + "</title><style>" +
+    "body{font:14px/1.45 system-ui,'Noto Sans Devanagari',sans-serif;color:#2a1d14;background:#fff;margin:24px}h1{font-size:22px;margin:0 0 2px;color:#8f1a1e}h2{font-size:16px;margin:22px 0 6px}" +
+    ".sub{color:#6b5a4c;margin:0 0 4px}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{border-bottom:1px solid #e3d9cc;padding:6px 8px;text-align:right;white-space:nowrap}" +
+    "th:first-child,td:first-child{text-align:left}thead th{background:#f3ece2;color:#5a4a3c;font-weight:600}tfoot th,tfoot td{font-weight:700;border-top:2px solid #2a1d14;background:#f3ece2}" +
+    "tbody th{font-weight:600}.lots th:nth-child(2),.lots td:nth-child(2),.lots th:nth-child(3),.lots td:nth-child(3){text-align:left}.wide{overflow-x:auto}.noprint{margin:0 0 16px}.noprint button{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid #2f6b2f;background:#2f6b2f;color:#fff;cursor:pointer}" +
+    "@media print{.noprint{display:none}body{margin:12mm}h2{break-after:avoid}tr{break-inside:avoid}}</style></head><body>" +
+    '<div class="noprint"><button type="button" onclick="window.print()">' + esc(tr("dl_pdf")) + "</button></div>" +
+    "<h1>" + esc(d.title) + '</h1><p class="sub">' + esc(d.range) + '</p><p class="sub">' + esc(tr("dl_made").replace("{d}", made)) + "</p>" +
+    "<h2>" + esc(tr("dl_sum")) + '</h2><div class="wide">' + tbl(SUM_HEAD.map(tr), d.rows.map(money), d.rows.length > 1 ? money(d.tot) : null) + "</div>" +
+    "<h2>" + esc(tr("dl_exp")) + '</h2><div class="wide">' + tbl(["y_orch"].concat(COST_KEYS.map(k => "yc_" + k), ["dl_total"]).map(tr), d.exp.map(ex), d.exp.length > 1 ? ex(d.etot) : null) + "</div>" +
+    (d.lots.length ? "<h2>" + esc(tr("dl_lots")) + '</h2><div class="wide">' + tbl(LOT_HEAD.map(tr), d.lots.map(l => lotCells(l, inr).map((v, i) => (i === 3 ? fmtN(v) : i === 8 && v ? fmtDay(v, true) : v))), null, "lots") + "</div>" : "") +
+    "</body></html>";
+  const w = window.open("", "_blank");
+  if (!w) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], {type: "text/html"})); a.download = "apple-doctor-harvest-year-" + y + ".html"; a.click(); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+  setTimeout(() => { try { w.focus(); w.print(); } catch (e) {} }, 400);
 }
 function renderSummary() {
   renderYearDetail();
@@ -2860,6 +2979,7 @@ function onEdit(e) {
     if (d.f === "half" || d.f === "paid") n[d.f] = t.checked;
     else if (d.f === "grade" || d.f === "date" || d.f === "paidOn") n[d.f] = t.value;
     else n[d.f] = numOf(t.value);
+    updLineWarn();
   } else if (d.lot) {
     const se = lotSeason(d.lot); const l = se && se.lots.find(x => x.id === d.lot); if (!l) return;
     l.name = t.value;
