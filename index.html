@@ -478,6 +478,90 @@ legend{font-size:.95rem}
 .months li[aria-current="date"] .m,.months .now{color:#FFE3DE}
 .tabbar .tab[aria-selected="true"]{color:var(--apple)}
 </style>
+
+<style>
+/* Orchard pages: profile, insights, season diary. Grade colours validated for colour-blind separation in light and dark. */
+:root{--g-a:#B11F24;--g-b:#E09A1A;--g-rg:#6A4FB3;--g-gift:#2F7A34;--g-none:#BDB3A6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-a:#C23A3A;--g-b:#C4851C;--g-rg:#8B74DC;--g-gift:#3F9A45;--g-none:#5E5248}}
+:root[data-theme="dark"]{--g-a:#C23A3A;--g-b:#C4851C;--g-rg:#8B74DC;--g-gift:#3F9A45;--g-none:#5E5248}
+.gc-a{background:var(--g-a)}.gc-b{background:var(--g-b)}.gc-rg{background:var(--g-rg)}.gc-gift{background:var(--g-gift)}.gc-none{background:var(--g-none)}
+.ocard .ofacts1{color:var(--muted);font-size:.9rem;margin:-6px 0 0}
+.osec{border-top:1px solid var(--line);padding-top:18px;display:grid;gap:10px;min-width:0}
+.osec h4{font-size:1.3rem;font-weight:700}
+.osec .hint{margin:0}
+.osec .fine{margin:0}
+.ystats.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.opage{display:grid;gap:20px;min-width:0}
+.obar .link{padding:4px 0;font-size:1rem}
+.ohead{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:22px;align-items:start}
+.ophoto{margin:0;display:grid;gap:6px}
+.ophoto img,.ophoto .nophoto{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.ophoto .nophoto{background:repeating-linear-gradient(90deg,rgba(70,45,25,.05) 0 2px,transparent 2px 9px),var(--kraft);position:relative}
+.ophoto .nophoto::after{content:"";position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-30px 0 0 -23px;border-radius:48% 48% 52% 52%/58% 58% 42% 42%;background:var(--apple);opacity:.85}
+.ophoto figcaption{display:flex;gap:14px;flex-wrap:wrap}
+.ophoto figcaption .link{padding:2px 0;font-size:.9rem}
+.ophoto .autherr:empty{display:none}
+.oinfo{display:grid;gap:12px;min-width:0}
+.otitle{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap}
+.otitle h3{font-size:clamp(1.8rem,6vw,2.5rem);font-weight:700;color:var(--apple);line-height:1}
+dl.pfacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr));gap:10px 18px;margin:0}
+dl.pfacts div{display:block;border:0;padding:0}
+dl.pfacts dt{font-size:.82rem;color:var(--muted)}
+dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
+.pform,.dform{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:10px 12px;align-items:end}
+.pform .wide,.dform .wide{grid-column:1/-1}
+.pform .field label,.dform .field label{font-size:.85rem;margin-bottom:3px}
+.pform .field input,.pform .field select,.dform .field input,.dform .field select{min-height:42px;font-size:1rem}
+.pform .dels,.dform .dels{margin-top:2px;align-items:center}
+.pform .link.del{color:var(--bad);margin-left:auto}
+.dform .autherr:empty{display:none}
+.oacts2{display:flex;gap:8px;flex-wrap:wrap}
+.oyear{max-width:200px}
+.oyear label{font-size:.85rem;margin-bottom:3px}
+.tl{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.tl li{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.9rem;background:var(--surface);max-width:100%}
+.tl li b{font-weight:600;margin-right:4px}
+.tl .tlt{color:var(--muted);margin-left:6px}
+.tl li.k-hail,.tl li.k-frost,.tl li.k-drought,.tl li.k-rain,.tl li.k-snow,.tl li.k-problem{border-color:var(--apple)}
+.glegend{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem;color:var(--muted)}
+.glegend li{display:flex;align-items:center;gap:6px}
+.glegend i,.ledger .sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
+.ledger .sw{margin-right:8px;vertical-align:-1px}
+.gmix,.pbars{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.gmix li{display:grid;grid-template-columns:3.2rem minmax(0,1fr) 4.5rem;gap:10px;align-items:center}
+.gmix .yl,.gmix .yv,.pbars .yl,.pbars .yv{font:500 .9rem var(--mono)}
+.gmix .yv,.pbars .yv{text-align:right;white-space:nowrap}
+.gstack{display:flex;gap:2px;height:18px;min-width:0}
+.gstack span{display:block;min-width:3px;height:100%}
+.gstack span:first-child{border-radius:4px 0 0 4px}
+.gstack span:last-child{border-radius:0 4px 4px 0}
+.gstack span:only-child{border-radius:4px}
+.pbars li{display:grid;grid-template-columns:6.5rem minmax(0,1fr) 5.5rem;gap:4px 10px;align-items:center}
+.pbars .yl{font-family:var(--body)}
+.pbars .track{height:14px;border-radius:4px;background:var(--surface-2);overflow:hidden;display:block}
+.pbars .fill{display:block;height:100%;background:var(--brand-bg);border-radius:0 4px 4px 0}
+.pbars .ys{grid-column:2/4;color:var(--muted);font-size:.82rem;margin-top:-4px}
+.ledger.sm th[scope=row] .link{padding:0;font-size:inherit}
+.dlist .subhead{margin:8px 0 2px}
+.dlist ul{list-style:none;margin:0;padding:0}
+.dlist li{display:grid;grid-template-columns:5rem minmax(0,1fr) auto auto;gap:4px 12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)}
+.dlist li.editing{background:var(--surface-2)}
+.dlist .dd{font:500 .9rem var(--mono);color:var(--muted)}
+.dlist .dt{display:flex;flex-direction:column;min-width:0}
+.dlist .dt span{color:var(--muted);font-size:.92rem;overflow-wrap:anywhere}
+.dlist .dt small{font-weight:500;color:var(--muted)}
+.dlist .dc{font:500 .92rem var(--mono);white-space:nowrap}
+.dlist .da{display:flex;gap:12px}
+.dlist .da .link{padding:2px 0;font-size:.88rem}
+.dlist .da .link.del{color:var(--bad)}
+@media (max-width:640px){
+  .ohead{grid-template-columns:1fr}
+  .ophoto{max-width:320px}
+  .dlist li{grid-template-columns:4.5rem minmax(0,1fr) auto}
+  .dlist .da{grid-column:2/4}
+  .pbars li{grid-template-columns:5rem minmax(0,1fr) 4.8rem}
+}
+</style>
 </head>
 <body>
 <div class="topbar">
@@ -911,6 +995,36 @@ en: {
   pc_h:"Profit calculator", pc_p:"Add each grade or rate you sold. Gross is boxes × rate, and net income is gross minus expenses. Everything is worked out on your phone and nothing is sent anywhere.",
   pc_lines:"Your sale", pc_hint:"The starting numbers are examples. Change them to yours.",
   pc_rec:"To save every lot for each orchard and see your totals by year, sign in and use Season Profit. Your records stay private to your account.",
+o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_season:"Season", o_photo_add:"Add photo", o_photo_chg:"Change photo", o_photo_rm:"Remove photo",
+  o_photo_alt:"Photo of {o} orchard", o_photo_err:"That photo could not be read. Try a JPG or PNG.", o_spray_link:"Open the spray schedule",
+  o_noprof:"Add the location, varieties and more so this page tells the whole story of the orchard.", o_nosales:"No sales recorded for {y} yet.",
+  p_village:"Village or location", p_alt:"Altitude (metres)", p_area:"Area (bigha)", p_var:"Varieties", p_var_ph:"For example Royal Delicious, Gala", p_root:"Rootstock",
+  p_planted:"Planting year", p_irr:"Irrigation", p_hail:"Hail net", p_age:"{n} years old", p_m:"{n} m", p_bigha:"{n} bigha",
+  r_seedling:"Seedling", r_m9:"M9", r_mm106:"MM106", r_m7:"M7", r_mm111:"MM111", r_other:"Other",
+  i_rain:"Rain-fed", i_drip:"Drip", i_sprink:"Sprinkler", i_tank:"Tank or pipe", i_other:"Other",
+  h_yes:"Yes, whole orchard", h_part:"Part of the orchard", h_no:"No",
+  k_net:"Net income", k_npt:"Net per tree", k_bpt:"Boxes per tree", k_avg:"Average price per box", k_ash:"A Grade share", k_due:"Not yet received",
+  k_addtrees:"Add the number of trees in Edit profile", k_addtrees2:"Add the number of trees in Edit profile to see costs per tree.", k_ofb:"{n} of {m} boxes", k_ofb2:"{n} boxes",
+  s_timeline:"Season timeline", s_tl_none:"Add flowering, harvest and weather notes in the season diary to see the season laid out here.",
+  s_grades:"Grade mix", s_grades_p:"Share of boxes in each grade, year by year. The table is for the season chosen above.",
+  gk_a:"A Grade", gk_b:"B Grade", gk_rg:"Red Gold", gk_gift:"Gift", gk_none:"Other or not set",
+  gt_grade:"Grade", gt_boxes:"Boxes", gt_share:"Share", gt_avg:"Average price", gt_gross:"Gross", gt_note:"Grades typed another way (such as C, 7 or Less Colour) are counted under Other or not set.",
+  s_prices:"Prices", s_best:"Best lot", s_low:"Lowest lot", s_byMonth:"Average price by month of sale", s_nodates:"Add sale dates to your entries (under More) to compare early and late prices.",
+  s_money:"Where the money goes", m_item:"Cost", m_total:"Total", m_pb:"Per box", m_pt:"Per tree", m_all:"All costs", m_none:"No costs recorded for this season.",
+  lc_oth:"Other per-box expense", yc_spray:"Sprays and pesticides", yc_fert:"Fertiliser and manure", yc_labour:"Labour", yc_prune:"Pruning", yc_irrig:"Irrigation", yc_other:"Other yearly costs",
+  s_due:"Money still to come", s_due_none:"Nothing pending. Every sale is marked as paid.", d_year:"Year", d_lot:"Lot", d_amt:"Amount", d_sold:"Sold on", d_wait:"Waiting",
+  d_days:"{n} days", d_tot:"Total pending", d_due_note:"Mark a sale as paid in Season Profit (Edit, then More) once the money arrives.",
+  s_years:"Year by year", y_costs:"Costs",
+  s_diary:"Season diary", s_diary_p:"Note sprays, fertiliser, weather and key dates as the season goes. Costs you add here are counted in that year's net income.",
+  dy_add:"Add diary note", dy_pick:"Choose", dy_date:"Date", dy_kind:"What", dy_stage:"Tree stage", dy_cost:"Cost (₹, optional)", dy_text:"Details",
+  dy_text_ph:"For example product and dose, or what you saw", dy_save:"Save note", dy_update:"Update note", dy_edit:"Edit", dy_del:"Delete", dy_sure:"Tap again",
+  dy_none:"No notes yet.", dy_err:"Choose a date and what happened.",
+  dg_work:"Work", dg_weather:"Weather", dg_dates:"Season dates", dg_other:"Other",
+  dk_spray:"Spray", dk_fert:"Fertiliser or manure", dk_prune:"Pruning", dk_irrig:"Irrigation", dk_labour:"Labour or other work",
+  dk_hail:"Hail", dk_frost:"Frost", dk_drought:"Dry spell", dk_rain:"Heavy rain or storm", dk_snow:"Snow",
+  dk_flower:"Flowering", dk_hstart:"Harvest started", dk_hend:"Harvest finished", dk_problem:"Problem noticed", dk_note:"Note",
+  cmp_h:"Orchards side by side, {y}", cmp_o:"Orchard", cmp_note:"Per-tree figures need the number of trees, which you can add in each orchard's profile.",
+  costs_diary:"Another {x} for {y} comes from the season diary and is added automatically.",
   pt_year:"Yearly net profit", pt_season:"Season Profit", pt_quick:"Quick calculator",
   pg_h:"Sign in to see your own records", pg_p:"Season Profit and Yearly net profit use the lots you save in your private account. The quick calculator works without signing in.", pg_btn:"Sign in",
   d_orchards:"Orchards", d_trees:"Trees", d_net:"Net income, {y}", d_boxes:"Boxes sold, {y}", d_ppb:"Net per box, {y}", d_due:"Not yet received, {y}",
@@ -1063,6 +1177,36 @@ hi: {
   pc_h:"मुनाफ़ा कैलकुलेटर", pc_p:"जो ग्रेड या भाव बेचा, हर एक की पंक्ति जोड़ें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर। सारा हिसाब आपके फ़ोन पर ही होता है, कुछ भी कहीं भेजा नहीं जाता।",
   pc_lines:"आपकी बिक्री", pc_hint:"शुरुआती संख्याएँ उदाहरण हैं। इन्हें अपनी संख्याओं से बदलें।",
   pc_rec:"हर बाग़ का हर लॉट सहेजने और साल भर के कुल देखने के लिए साइन इन करें और सीज़न का मुनाफ़ा इस्तेमाल करें। आपका रिकॉर्ड सिर्फ़ आपके खाते में रहता है।",
+o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_editp:"जानकारी बदलें", o_season:"सीज़न", o_photo_add:"फ़ोटो जोड़ें", o_photo_chg:"फ़ोटो बदलें", o_photo_rm:"फ़ोटो हटाएँ",
+  o_photo_alt:"{o} बाग़ की फ़ोटो", o_photo_err:"यह फ़ोटो पढ़ी नहीं जा सकी। JPG या PNG फ़ोटो आज़माएँ।", o_spray_link:"स्प्रे सूची खोलें",
+  o_noprof:"जगह, किस्में और बाक़ी जानकारी जोड़ें, ताकि इस पन्ने पर बाग़ की पूरी तस्वीर दिखे।", o_nosales:"{y} की कोई बिक्री अभी दर्ज नहीं है।",
+  p_village:"गाँव या जगह", p_alt:"ऊँचाई (मीटर)", p_area:"रक़बा (बीघा)", p_var:"किस्में", p_var_ph:"जैसे रॉयल डिलीशियस, गाला", p_root:"रूटस्टॉक",
+  p_planted:"लगाने का साल", p_irr:"सिंचाई", p_hail:"ओला जाली", p_age:"{n} साल पुराना", p_m:"{n} मीटर", p_bigha:"{n} बीघा",
+  r_seedling:"सीडलिंग", r_m9:"M9", r_mm106:"MM106", r_m7:"M7", r_mm111:"MM111", r_other:"अन्य",
+  i_rain:"बारिश पर निर्भर", i_drip:"ड्रिप", i_sprink:"स्प्रिंकलर", i_tank:"टंकी या पाइप", i_other:"अन्य",
+  h_yes:"हाँ, पूरे बाग़ में", h_part:"बाग़ के कुछ हिस्से में", h_no:"नहीं",
+  k_net:"शुद्ध आय", k_npt:"प्रति पेड़ शुद्ध आय", k_bpt:"प्रति पेड़ पेटियाँ", k_avg:"प्रति पेटी औसत भाव", k_ash:"ए ग्रेड का हिस्सा", k_due:"अभी नहीं मिला",
+  k_addtrees:"जानकारी बदलें में पेड़ों की संख्या डालें", k_addtrees2:"प्रति पेड़ ख़र्च देखने के लिए जानकारी बदलें में पेड़ों की संख्या डालें।", k_ofb:"{m} में से {n} पेटियाँ", k_ofb2:"{n} पेटियाँ",
+  s_timeline:"सीज़न की झलक", s_tl_none:"सीज़न डायरी में फूल, तुड़ाई और मौसम की बातें लिखें, तो सीज़न यहाँ क्रम से दिखेगा।",
+  s_grades:"ग्रेड का मेल", s_grades_p:"साल-दर-साल हर ग्रेड में पेटियों का हिस्सा। तालिका ऊपर चुने गए सीज़न की है।",
+  gk_a:"ए ग्रेड", gk_b:"बी ग्रेड", gk_rg:"रेड गोल्ड", gk_gift:"गिफ़्ट", gk_none:"अन्य या दर्ज नहीं",
+  gt_grade:"ग्रेड", gt_boxes:"पेटियाँ", gt_share:"हिस्सा", gt_avg:"औसत भाव", gt_gross:"कुल बिक्री", gt_note:"जो ग्रेड किसी और तरह लिखे गए हैं (जैसे C, 7 या कम रंग), वे अन्य या दर्ज नहीं में गिने गए हैं।",
+  s_prices:"भाव", s_best:"सबसे अच्छा लॉट", s_low:"सबसे कम भाव वाला लॉट", s_byMonth:"बिक्री के महीने के हिसाब से औसत भाव", s_nodates:"शुरुआती और देर के भाव की तुलना के लिए एंट्री में बिक्री की तारीख़ डालें (और में)।",
+  s_money:"पैसा कहाँ जाता है", m_item:"ख़र्च", m_total:"कुल", m_pb:"प्रति पेटी", m_pt:"प्रति पेड़", m_all:"सारे ख़र्च", m_none:"इस सीज़न का कोई ख़र्च दर्ज नहीं है।",
+  lc_oth:"प्रति पेटी अन्य ख़र्च", yc_spray:"स्प्रे और कीटनाशक", yc_fert:"खाद", yc_labour:"मज़दूरी", yc_prune:"छँटाई", yc_irrig:"सिंचाई", yc_other:"साल भर के अन्य ख़र्च",
+  s_due:"जो पैसा अभी आना है", s_due_none:"कुछ बाक़ी नहीं है। हर बिक्री का भुगतान मिल गया है।", d_year:"साल", d_lot:"लॉट", d_amt:"रक़म", d_sold:"बिक्री की तारीख़", d_wait:"इंतज़ार",
+  d_days:"{n} दिन", d_tot:"कुल बाक़ी", d_due_note:"पैसा मिलने पर सीज़न का मुनाफ़ा में (बदलें, फिर और) भुगतान मिल गया पर निशान लगाएँ।",
+  s_years:"साल-दर-साल", y_costs:"ख़र्च",
+  s_diary:"सीज़न डायरी", s_diary_p:"सीज़न के दौरान स्प्रे, खाद, मौसम और ख़ास तारीख़ें लिखते जाएँ। यहाँ डाले गए ख़र्च उस साल की शुद्ध आय में गिने जाते हैं।",
+  dy_add:"डायरी में लिखें", dy_pick:"चुनें", dy_date:"तारीख़", dy_kind:"क्या हुआ", dy_stage:"पेड़ की अवस्था", dy_cost:"ख़र्च (₹, वैकल्पिक)", dy_text:"विवरण",
+  dy_text_ph:"जैसे दवा का नाम और मात्रा, या जो देखा", dy_save:"सहेजें", dy_update:"बदलाव सहेजें", dy_edit:"बदलें", dy_del:"हटाएँ", dy_sure:"दोबारा दबाएँ",
+  dy_none:"अभी कुछ नहीं लिखा गया है।", dy_err:"तारीख़ और क्या हुआ, दोनों चुनें।",
+  dg_work:"काम", dg_weather:"मौसम", dg_dates:"सीज़न की तारीख़ें", dg_other:"अन्य",
+  dk_spray:"स्प्रे", dk_fert:"खाद", dk_prune:"छँटाई", dk_irrig:"सिंचाई", dk_labour:"मज़दूरी या अन्य काम",
+  dk_hail:"ओले", dk_frost:"पाला", dk_drought:"सूखा", dk_rain:"भारी बारिश या तूफ़ान", dk_snow:"बर्फ़",
+  dk_flower:"फूल आए", dk_hstart:"तुड़ाई शुरू", dk_hend:"तुड़ाई ख़त्म", dk_problem:"समस्या दिखी", dk_note:"नोट",
+  cmp_h:"सभी बाग़ एक साथ, {y}", cmp_o:"बाग़", cmp_note:"प्रति पेड़ आँकड़ों के लिए पेड़ों की संख्या चाहिए, जो हर बाग़ की जानकारी में डाली जा सकती है।",
+  costs_diary:"{y} के {x} और सीज़न डायरी से आते हैं और अपने आप जुड़ जाते हैं।",
   pt_year:"सालाना शुद्ध मुनाफ़ा", pt_season:"सीज़न का मुनाफ़ा", pt_quick:"झटपट हिसाब",
   pg_h:"अपना रिकॉर्ड देखने के लिए साइन इन करें", pg_p:"सीज़न का मुनाफ़ा और सालाना शुद्ध मुनाफ़ा आपके निजी खाते में सहेजे गए लॉट से बनते हैं। झटपट हिसाब बिना साइन इन के चलता है।", pg_btn:"साइन इन",
   d_orchards:"बाग़", d_trees:"पेड़", d_net:"शुद्ध आय, {y}", d_boxes:"बिकी पेटियाँ, {y}", d_ppb:"प्रति पेटी शुद्ध आय, {y}", d_due:"अभी नहीं मिला, {y}",
@@ -1249,6 +1393,23 @@ $("cmpReset").addEventListener("click", () => { Object.keys(DEF).forEach(id => {
 
 /* ---------- records ---------- */
 const COST_KEYS = ["spray","fert","labour","prune","irrig","other"];
+const DIARY_COST = {spray:"spray", fert:"fert", prune:"prune", irrig:"irrig", labour:"labour"};
+const GK = ["a", "b", "rg", "gift", "none"];
+function gradeKey(g) {
+  const t = String(g || "").trim().toLowerCase();
+  if (/^a( grade)?$/.test(t)) return "a";
+  if (/^b( grade)?$/.test(t)) return "b";
+  if (t === "red gold") return "rg";
+  if (t === "gift") return "gift";
+  return "none";
+}
+function diaryCosts(oid, year) {
+  const c = blankCosts(), o = S.orchards.find(x => x.id === oid);
+  ((o && o.diary) || []).forEach(d => {
+    if (+d.cost > 0 && String(d.date || "").slice(0, 4) === String(year)) c[DIARY_COST[d.kind] || "other"] += +d.cost;
+  });
+  return c;
+}
 const STORE = "ad-ledger2";
 const SEED = /*SEED*/null/*END*/;
 const fmtN = n => Math.round(n).toLocaleString("en-IN");
@@ -1293,7 +1454,10 @@ function lotCalc(l) {
 function seasonCalc(se) {
   const r = {boxes:0, eq:0, rev:0, lotExp:0, due:0};
   se.lots.forEach(l => { const c = lotCalc(l); r.boxes += c.b; r.eq += c.eq; r.rev += c.gross; r.lotExp += c.exp; r.due += c.due; });
-  r.yearly = COST_KEYS.reduce((a, k) => a + (+se.costs[k] || 0), 0);
+  r.manual = COST_KEYS.reduce((a, k) => a + (+se.costs[k] || 0), 0);
+  r.dcosts = diaryCosts(se.oid, se.year);
+  r.diary = COST_KEYS.reduce((a, k) => a + r.dcosts[k], 0);
+  r.yearly = r.manual + r.diary;
   r.cost = r.lotExp + r.yearly;
   r.profit = r.rev - r.cost;
   r.ppb = r.eq ? r.profit / r.eq : 0;
@@ -1465,7 +1629,7 @@ async function applyUser(u) {
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
   if (!u) {
-    curSub = "quick"; dashEdit = null; dashAdd = false;
+    curSub = "quick"; dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false; addingO = false;
     $("authStep1").hidden = false; $("authStep2").hidden = true;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
@@ -1763,7 +1927,9 @@ function renderEditor() {
     se.lots.forEach((l, i) => { h += lotHtml(l, i, se.lots.length); });
     h += "</fieldset>";
     const hasC = COST_KEYS.some(k => +se.costs[k] > 0);
-    h += '<details class="manage"' + (hasC ? " open" : "") + "><summary>" + tr("g_year") + '</summary><p class="hint">' + tr("costs_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
+    const dSum = COST_KEYS.reduce((a, k) => a + diaryCosts(se.oid, se.year)[k], 0);
+    h += '<details class="manage"' + (hasC || dSum ? " open" : "") + "><summary>" + tr("g_year") + '</summary><p class="hint">' + tr("costs_p") +
+      (dSum ? " " + tr("costs_diary").replace("{x}", inr(dSum)).replace("{y}", se.year) : "") + '</p><div class="grid">' + COST_KEYS.map(k =>
       '<div class="field"><label for="c_' + k + '">' + tr("f_" + k) + '</label><input id="c_' + k + '" data-cost="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + (se.costs[k] || "") + '"></div>'
     ).join("") + "</div></details>";
   }
@@ -1848,104 +2014,410 @@ function renderResults() {
   });
 }
 
-/* ---------- My orchards dashboard ---------- */
-let dashEdit = null, dashAdd = false;
-function renderDash() {
-  const el = $("dash"); if (!el) return;
-  const cls = n => (n < 0 ? "neg" : "pos");
-  const years = Array.from(new Set(S.seasons.map(s => s.year))).sort((a, b) => b - a);
+/* ---------- My orchards dashboard and orchard pages ---------- */
+let dashEdit = null, dashAdd = false, dashView = null, dashYear = null, profEdit = false, diaryEdit = null;
+const DIARY_KINDS = [["work", ["spray", "fert", "prune", "irrig", "labour"]], ["weather", ["hail", "frost", "drought", "rain", "snow"]],
+  ["dates", ["flower", "hstart", "hend"]], ["other", ["problem", "note"]]];
+const TIMELINE_KINDS = ["flower", "hstart", "hend", "hail", "frost", "drought", "rain", "snow", "problem"];
+const ROOTS = ["seedling", "m9", "mm106", "m7", "mm111", "other"], IRR = ["rain", "drip", "sprink", "tank", "other"], HAIL = ["yes", "part", "no"];
+const LINE_COSTS = [["tod", "f_tod"], ["grd", "f_grd"], ["car", "f_car"], ["exp", "lc_oth"]];
+const dcls = n => (n < 0 ? "neg" : "pos");
+const thisYear = () => new Date().getFullYear();
+const dloc = () => (lang === "hi" ? "hi-IN" : "en-IN");
+const fmtD = n => (+n || 0).toLocaleString("en-IN", {maximumFractionDigits: 2});
+const pct = (a, b) => (b ? Math.round(a / b * 100) + "%" : "–");
+const todayIso = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const fmtDay = (iso, withYear) => {
+  if (!iso) return "–";
+  const d = new Date(String(iso).slice(0, 10) + "T00:00:00");
+  return isNaN(d) ? "–" : d.toLocaleDateString(dloc(), {day: "numeric", month: "short", year: withYear ? "numeric" : undefined});
+};
+const seFor = (oid, y) => S.seasons.find(x => x.oid === oid && x.year === y) || null;
+const lotLabel = (l, i) => lotNo(i) + (autoName(l.name) ? "" : " (" + l.name + ")");
+function gradeSplit(se) {
+  const g = {}; GK.forEach(k => { g[k] = {b: 0, gross: 0}; });
+  if (se) se.lots.forEach(l => l.lines.forEach(n => { const k = gradeKey(n.grade), b = +n.boxes || 0; g[k].b += b; g[k].gross += b * (+n.rate || 0); }));
+  return g;
+}
+function orchardFacts(o) {
+  const P = o.profile || {}, f = [];
+  if (P.village) f.push(P.village);
+  if (+P.alt) f.push(tr("p_m").replace("{n}", fmtN(+P.alt)));
+  if (P.var) f.push(P.var);
+  return f.join(", ");
+}
+
+function dashOverview() {
+  const years = Array.from(new Set(S.seasons.map(x => x.year))).sort((a, b) => b - a);
   const LY = years[0];
   let h = "";
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
   if (S.orchards.length) {
     const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
-    const t = {net:0, boxes:0, eq:0, due:0}; let prev = null;
+    const t = {net: 0, boxes: 0, eq: 0, due: 0}; let prev = null;
     S.seasons.forEach(se => {
       if (se.year === LY) { const r = seasonCalc(se); t.net += r.profit; t.boxes += r.boxes; t.eq += r.eq; t.due += r.due; }
-      if (se.year === LY - 1) { prev = (prev || 0) + seasonCalc(se).profit; }
+      if (se.year === LY - 1) prev = (prev || 0) + seasonCalc(se).profit;
     });
     const tile = (lab, val, extra, sub) => "<div" + (extra ? ' class="' + extra + '"' : "") + "><span>" + lab + "</span><b>" + val + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
     const chg = prev == null ? "" : tr(t.net >= prev ? "d_up" : "d_down").replace("{x}", inr(Math.abs(t.net - prev))).replace("{y}", LY - 1);
     h += '<div class="ystats">' + tile(tr("d_orchards"), fmtN(S.orchards.length)) + tile(tr("d_trees"), trees ? fmtN(trees) : "–") +
-      (LY ? tile(tr("d_net").replace("{y}", LY), inr(t.net), "main " + cls(t.net), chg) + tile(tr("d_boxes").replace("{y}", LY), fmtN(t.boxes)) +
+      (LY ? tile(tr("d_net").replace("{y}", LY), inr(t.net), "main " + dcls(t.net), chg) + tile(tr("d_boxes").replace("{y}", LY), fmtN(t.boxes)) +
         tile(tr("d_ppb").replace("{y}", LY), inr(t.eq ? t.net / t.eq : 0)) + tile(tr("d_due").replace("{y}", LY), inr(t.due)) : "") + "</div>";
   }
   h += '<div class="ocards">' + S.orchards.map(o => {
-    const name = esc(o.name || tr("orchard_fallback"));
-    const head = "<header><h4>" + name + "</h4>" + (+o.trees ? '<span class="otrees">' + tr("d_treesn").replace("{n}", fmtN(+o.trees)) + "</span>" : "") + "</header>";
-    if (dashEdit === o.id) {
-      return '<article class="ocard">' + head + '<form data-dform="edit" data-o="' + esc(o.id) + '">' +
-        '<div class="field"><label for="dn_name">' + tr("f_oname") + '</label><input id="dn_name" type="text" maxlength="60" value="' + esc(o.name) + '"></div>' +
-        '<div class="field"><label for="dn_trees">' + tr("f_trees") + '</label><input id="dn_trees" type="number" inputmode="numeric" min="0" step="1" value="' + (+o.trees || "") + '"></div>' +
-        '<div class="dels"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button></div>" +
-        '<button class="link del" type="button" data-dact="del" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></form></article>";
-    }
+    const name = esc(o.name || tr("orchard_fallback")), facts = orchardFacts(o);
+    const head = "<header><h4>" + name + "</h4>" + (+o.trees ? '<span class="otrees">' + tr("d_treesn").replace("{n}", fmtN(+o.trees)) + "</span>" : "") + "</header>" +
+      (facts ? '<p class="ofacts1">' + esc(facts) + "</p>" : "");
     const ss = S.seasons.filter(se => se.oid === o.id).map(se => ({y: se.year, r: seasonCalc(se)})).sort((a, b) => b.y - a.y);
     let body = "";
     if (ss.length) {
-      const L = ss[0], P = ss[1], best = ss.reduce((a, b) => (b.r.profit > a.r.profit ? b : a));
-      body += '<p class="olbl">' + tr("d_latest").replace("{y}", L.y) + '</p><p class="onet ' + cls(L.r.profit) + '">' + inr(L.r.profit) + "</p>";
+      const L = ss[0], P = ss[1], best = ss.reduce((a, c) => (c.r.profit > a.r.profit ? c : a));
+      body += '<p class="olbl">' + tr("d_latest").replace("{y}", L.y) + '</p><p class="onet ' + dcls(L.r.profit) + '">' + inr(L.r.profit) + "</p>";
       if (P) body += '<p class="ochg">' + tr(L.r.profit >= P.r.profit ? "d_up" : "d_down").replace("{x}", inr(Math.abs(L.r.profit - P.r.profit))).replace("{y}", P.y) + "</p>";
       body += '<dl class="ostats"><div><dt>' + tr("ls_boxes") + "</dt><dd>" + fmtN(L.r.boxes) + "</dd></div><div><dt>" + tr("ls_ppb") + "</dt><dd>" + inr(L.r.ppb) + "</dd></div><div><dt>" +
         (L.r.due > 0 ? tr("r_due") + "</dt><dd>" + inr(L.r.due) : tr("ls_gross") + "</dt><dd>" + inr(L.r.rev)) + "</dd></div></dl>";
       if (ss.length > 1) {
         const max = Math.max.apply(null, ss.map(x => Math.abs(x.r.profit))) || 1;
-        body += '<ul class="ybars">' + ss.slice().reverse().map(x => '<li><span class="yl">' + x.y + '</span><span class="track"><span class="fill ' + cls(x.r.profit) + '" style="width:' +
+        body += '<ul class="ybars">' + ss.slice().reverse().map(x => '<li><span class="yl">' + x.y + '</span><span class="track"><span class="fill ' + dcls(x.r.profit) + '" style="width:' +
           (Math.abs(x.r.profit) / max * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(x.r.profit) + "</span></li>").join("") + "</ul>";
       }
       body += '<p class="ohint">' + (ss.length === 1 ? tr("d_season1") : tr("d_seasons").replace("{n}", ss.length)) +
         (ss.length > 1 ? ". " + tr("d_best").replace("{y}", best.y).replace("{x}", inr(best.r.profit)) : "") + "</p>";
     } else body += '<p class="ohint">' + tr("d_nosales") + "</p>";
     const act = (a, k, main) => '<button class="btn-s' + (main ? " add" : "") + '" type="button" data-dact="' + a + '" data-o="' + esc(o.id) + '">' + tr(k) + "</button>";
-    return '<article class="ocard">' + head + body + '<div class="oacts">' + (ss.length ? act("open", "d_open", true) + act("addsale", "d_addsale") : act("addsale", "d_addsale", true)) + act("edit", "d_edit") + "</div></article>";
+    return '<article class="ocard">' + head + body + '<div class="oacts">' + act("view", "o_view", true) + act("addsale", "d_addsale") + (ss.length ? act("open", "pt_season") : "") + "</div></article>";
   }).join("");
   h += '<article class="ocard addc">' + (dashAdd
     ? '<form data-dform="add"><div class="field"><label for="dn_new">' + tr("f_oname") + '</label><input id="dn_new" type="text" maxlength="60"></div>' +
       '<div class="field"><label for="dn_newtrees">' + tr("f_trees") + '</label><input id="dn_newtrees" type="number" inputmode="numeric" min="0" step="1"></div>' +
       '<div class="dels"><button class="btn-s add" type="submit">' + tr("add_btn") + '</button><button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button></div></form>"
     : "<p>" + tr(S.orchards.length ? "d_addp" : "d_first") + '</p><div><button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button></div>") + "</article></div>";
-  el.innerHTML = h;
+
+  // orchards side by side for the latest year
+  const rows = LY ? S.orchards.map(o => ({o, se: seFor(o.id, LY)})).filter(x => x.se) : [];
+  if (rows.length > 1) {
+    h += '<section class="osec"><h4>' + tr("cmp_h").replace("{y}", LY) + '</h4><div class="tablewrap"><table class="ledger sm"><thead><tr>' +
+      ["cmp_o", "ls_boxes", "k_bpt", "k_avg", "k_ash", "ls_net", "k_npt"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+      rows.map(x => {
+        const r = seasonCalc(x.se), g = gradeSplit(x.se), tr_ = +x.o.trees;
+        return '<tr><th scope="row"><button class="link" type="button" data-dact="view" data-o="' + esc(x.o.id) + '">' + esc(x.o.name || tr("orchard_fallback")) + "</button></th><td>" +
+          fmtN(r.boxes) + "</td><td>" + (tr_ ? fmtD(r.boxes / tr_) : "–") + "</td><td>" + inr(r.boxes ? r.rev / r.boxes : 0) + "</td><td>" + pct(g.a.b, r.boxes) +
+          '</td><td class="' + dcls(r.profit) + '">' + inr(r.profit) + "</td><td>" + (tr_ ? inr(r.profit / tr_) : "–") + "</td></tr>";
+      }).join("") + '</tbody></table></div><p class="fine">' + tr("cmp_note") + "</p></section>";
+  }
+  return h;
 }
+
+function profileHtml(o) {
+  const P = o.profile || {}, trees = +o.trees;
+  if (profEdit) {
+    const opt = (list, pre, v) => '<option value="">–</option>' + list.map(k => '<option value="' + k + '"' + (k === v ? " selected" : "") + ">" + tr(pre + k) + "</option>").join("");
+    const fld = (id, lab, inner, wide) => '<div class="field' + (wide ? " wide" : "") + '"><label for="' + id + '">' + tr(lab) + "</label>" + inner + "</div>";
+    const inp = (id, type, v, extra) => '<input id="' + id + '" type="' + type + '"' + (extra || "") + ' value="' + esc(v == null ? "" : v) + '">';
+    return '<form class="pform" data-dform="prof">' +
+      fld("p_name", "f_oname", inp("p_name", "text", o.name, ' maxlength="60"')) +
+      fld("p_village", "p_village", inp("p_village", "text", P.village, ' maxlength="80"')) +
+      fld("p_alt", "p_alt", inp("p_alt", "number", P.alt || "", ' inputmode="numeric" min="0" step="1"')) +
+      fld("p_area", "p_area", inp("p_area", "number", P.area || "", ' inputmode="decimal" min="0" step="any"')) +
+      fld("p_trees", "f_trees", inp("p_trees", "number", trees || "", ' inputmode="numeric" min="0" step="1"')) +
+      fld("p_planted", "p_planted", inp("p_planted", "number", P.planted || "", ' inputmode="numeric" min="1950" max="' + thisYear() + '" step="1"')) +
+      fld("p_var", "p_var", inp("p_var", "text", P.var, ' maxlength="120" placeholder="' + esc(tr("p_var_ph")) + '"'), true) +
+      fld("p_root", "p_root", '<select id="p_root">' + opt(ROOTS, "r_", P.root) + "</select>") +
+      fld("p_irr", "p_irr", '<select id="p_irr">' + opt(IRR, "i_", P.irr) + "</select>") +
+      fld("p_hail", "p_hail", '<select id="p_hail">' + opt(HAIL, "h_", P.hail) + "</select>") +
+      '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-dact="pcancel">' + tr("d_cancel") +
+      '</button><button class="link del" type="button" data-dact="del" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></div></form>";
+  }
+  const f = [];
+  const add = (k, v) => { if (v) f.push("<div><dt>" + tr(k) + "</dt><dd>" + v + "</dd></div>"); };
+  add("p_village", esc(P.village));
+  add("p_alt", +P.alt ? tr("p_m").replace("{n}", fmtN(+P.alt)) : "");
+  add("p_area", +P.area ? tr("p_bigha").replace("{n}", fmtD(P.area)) : "");
+  add("d_trees", trees ? fmtN(trees) : "");
+  add("p_var", esc(P.var));
+  add("p_root", P.root ? tr("r_" + P.root) : "");
+  add("p_planted", +P.planted ? P.planted + " (" + tr("p_age").replace("{n}", Math.max(0, thisYear() - +P.planted)) + ")" : "");
+  add("p_irr", P.irr ? tr("i_" + P.irr) : "");
+  add("p_hail", P.hail ? tr("h_" + P.hail) : "");
+  return (f.length ? '<dl class="pfacts">' + f.join("") + "</dl>" : "") + (f.length < 4 ? '<p class="hint">' + tr("o_noprof") + "</p>" : "");
+}
+
+function insightsHtml(o, Y) {
+  const se = seFor(o.id, Y), trees = +o.trees;
+  let h = "";
+  if (!se || !se.lots.some(l => l.lines.some(n => +n.boxes))) {
+    h += '<p class="empty">' + tr("o_nosales").replace("{y}", Y) + '</p>';
+  } else {
+    const r = seasonCalc(se), g = gradeSplit(se);
+    const tile = (lab, val, extra, sub) => "<div" + (extra ? ' class="' + extra + '"' : "") + "><span>" + tr(lab) + "</span><b>" + val + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
+    const noT = tr("k_addtrees");
+    h += '<div class="ystats">' + tile("k_net", inr(r.profit), "main " + dcls(r.profit)) +
+      tile("k_npt", trees ? inr(r.profit / trees) : "–", "", trees ? "" : noT) + tile("k_bpt", trees ? fmtD(r.boxes / trees) : "–", "", trees ? "" : noT) +
+      tile("k_avg", inr(r.boxes ? r.rev / r.boxes : 0)) + tile("k_ash", pct(g.a.b, r.boxes), "", tr("k_ofb").replace("{n}", fmtN(g.a.b)).replace("{m}", fmtN(r.boxes))) +
+      tile("k_due", inr(r.due)) + "</div>";
+  }
+  // season timeline from the diary
+  const tl = ((o.diary || []).filter(d => String(d.date).slice(0, 4) === String(Y) && TIMELINE_KINDS.indexOf(d.kind) >= 0)).sort((a, b) => (a.date < b.date ? -1 : 1));
+  h += '<section class="osec"><h4>' + tr("s_timeline") + "</h4>" + (tl.length
+    ? '<ol class="tl">' + tl.map(d => '<li class="k-' + d.kind + '"><b>' + fmtDay(d.date) + "</b> " + tr("dk_" + d.kind) + (d.text ? '<span class="tlt">' + esc(d.text) + "</span>" : "") + "</li>").join("") + "</ol>"
+    : '<p class="hint">' + tr("s_tl_none") + "</p>") + "</section>";
+  if (!se) return h;
+  const r = seasonCalc(se), g = gradeSplit(se);
+
+  // grade mix, year by year
+  const ss = S.seasons.filter(x => x.oid === o.id).sort((a, b) => a.year - b.year);
+  const used = GK.filter(k => ss.some(x => gradeSplit(x)[k].b > 0));
+  h += '<section class="osec"><h4>' + tr("s_grades") + '</h4><p class="hint">' + tr("s_grades_p") + "</p>";
+  if (used.length) {
+    h += '<ul class="glegend">' + used.map(k => '<li><i class="gc-' + k + '"></i>' + tr("gk_" + k) + "</li>").join("") + "</ul>" +
+      '<ul class="gmix">' + ss.map(x => {
+        const gs = gradeSplit(x), tot = GK.reduce((a, k) => a + gs[k].b, 0);
+        if (!tot) return "";
+        return '<li><span class="yl">' + x.year + '</span><span class="gstack" role="img" aria-label="' + esc(used.map(k => tr("gk_" + k) + " " + pct(gs[k].b, tot)).join(", ")) + '">' +
+          used.filter(k => gs[k].b).map(k => '<span class="gc-' + k + '" style="flex:' + gs[k].b + '" title="' + esc(tr("gk_" + k) + ": " + fmtN(gs[k].b) + " (" + pct(gs[k].b, tot) + ")") + '"></span>').join("") +
+          '</span><span class="yv">' + fmtN(tot) + "</span></li>";
+      }).join("") + "</ul>";
+    h += '<div class="tablewrap"><table class="ledger sm"><thead><tr>' + ["gt_grade", "gt_boxes", "gt_share", "gt_avg", "gt_gross"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") +
+      "</tr></thead><tbody>" + GK.filter(k => g[k].b).map(k => '<tr><th scope="row"><i class="sw gc-' + k + '"></i>' + tr("gk_" + k) + "</th><td>" + fmtN(g[k].b) + "</td><td>" + pct(g[k].b, r.boxes) +
+      "</td><td>" + inr(g[k].gross / g[k].b) + "</td><td>" + inr(g[k].gross) + "</td></tr>").join("") + "</tbody></table></div>" +
+      '<p class="fine">' + tr("gt_note").replace("{y}", Y) + "</p>";
+  }
+  h += "</section>";
+
+  // prices
+  h += '<section class="osec"><h4>' + tr("s_prices") + "</h4>";
+  const lots = se.lots.map((l, i) => { const c = lotCalc(l); return {l, i, b: c.b, avg: c.b ? c.gross / c.b : 0}; }).filter(x => x.b);
+  if (lots.length > 1) {
+    const best = lots.reduce((a, c) => (c.avg > a.avg ? c : a)), low = lots.reduce((a, c) => (c.avg < a.avg ? c : a));
+    h += '<div class="ystats two"><div><span>' + tr("s_best") + "</span><b>" + inr(best.avg) + '</b><span class="sub">' + esc(lotLabel(best.l, best.i)) + ", " + tr("k_ofb2").replace("{n}", fmtN(best.b)) + "</span></div>" +
+      "<div><span>" + tr("s_low") + "</span><b>" + inr(low.avg) + '</b><span class="sub">' + esc(lotLabel(low.l, low.i)) + ", " + tr("k_ofb2").replace("{n}", fmtN(low.b)) + "</span></div></div>";
+  }
+  const months = {};
+  se.lots.forEach(l => l.lines.forEach(n => { const b = +n.boxes || 0; if (!n.date || !b) return; const m = n.date.slice(0, 7); months[m] = months[m] || {b: 0, g: 0}; months[m].b += b; months[m].g += b * (+n.rate || 0); }));
+  const mk = Object.keys(months).sort();
+  if (mk.length) {
+    const mx = Math.max.apply(null, mk.map(m => months[m].g / months[m].b)) || 1;
+    h += '<p class="subhead">' + tr("s_byMonth") + '</p><ul class="pbars">' + mk.map(m => {
+      const v = months[m].g / months[m].b, nm = new Date(m + "-01T00:00:00").toLocaleDateString(dloc(), {month: "long"});
+      return '<li><span class="yl">' + nm + '</span><span class="track"><span class="fill" style="width:' + (v / mx * 100).toFixed(1) + '%" title="' + esc(inr(v) + ", " + tr("k_ofb2").replace("{n}", fmtN(months[m].b))) +
+        '"></span></span><span class="yv">' + inr(v) + '</span><span class="ys">' + tr("k_ofb2").replace("{n}", fmtN(months[m].b)) + "</span></li>";
+    }).join("") + "</ul>";
+  } else h += '<p class="hint">' + tr("s_nodates") + "</p>";
+  h += "</section>";
+
+  // where the money goes
+  const costTab = x => {
+    const t = {}; if (!x) return null;
+    LINE_COSTS.forEach(([k]) => { t[k] = 0; });
+    x.lots.forEach(l => l.lines.forEach(n => LINE_COSTS.forEach(([k]) => { t[k] += (+n.boxes || 0) * (+n[k] || 0); })));
+    const rr = seasonCalc(x); COST_KEYS.forEach(k => { t["y_" + k] = (+x.costs[k] || 0) + rr.dcosts[k]; });
+    return t;
+  };
+  const cur = costTab(se), prevSe = seFor(o.id, Y - 1), prv = costTab(prevSe);
+  const keys = LINE_COSTS.map(([k, lab]) => [k, lab]).concat(COST_KEYS.map(k => ["y_" + k, "yc_" + k]));
+  const shown = keys.filter(([k]) => cur[k] || (prv && prv[k]));
+  h += '<section class="osec"><h4>' + tr("s_money") + "</h4>";
+  if (shown.length) {
+    const tot = shown.reduce((a, [k]) => a + cur[k], 0), ptot = prv ? shown.reduce((a, [k]) => a + prv[k], 0) : 0;
+    h += '<div class="tablewrap"><table class="ledger sm"><thead><tr><th scope="col">' + tr("m_item") + '</th><th scope="col">' + tr("m_total") + '</th><th scope="col">' + tr("m_pb") +
+      '</th><th scope="col">' + tr("m_pt") + "</th>" + (prv ? '<th scope="col">' + (Y - 1) + "</th>" : "") + "</tr></thead><tbody>" +
+      shown.map(([k, lab]) => '<tr><th scope="row">' + tr(lab) + "</th><td>" + inr(cur[k]) + "</td><td>" + (r.eq ? inr(cur[k] / r.eq) : "–") + "</td><td>" + (trees ? inr(cur[k] / trees) : "–") + "</td>" +
+        (prv ? "<td>" + inr(prv[k]) + "</td>" : "") + "</tr>").join("") +
+      '</tbody><tfoot><tr><th scope="row">' + tr("m_all") + "</th><td>" + inr(tot) + "</td><td>" + (r.eq ? inr(tot / r.eq) : "–") + "</td><td>" + (trees ? inr(tot / trees) : "–") + "</td>" +
+      (prv ? "<td>" + inr(ptot) + "</td>" : "") + "</tr></tfoot></table></div>" + (trees ? "" : '<p class="fine">' + tr("k_addtrees2") + "</p>");
+  } else h += '<p class="hint">' + tr("m_none") + "</p>";
+  h += "</section>";
+  return h;
+}
+
+function dueHtml(o) {
+  const rows = [], now = new Date(todayIso() + "T00:00:00");
+  S.seasons.filter(x => x.oid === o.id).forEach(x => x.lots.forEach((l, i) => l.lines.forEach(n => {
+    const gross = (+n.boxes || 0) * (+n.rate || 0);
+    if (!n.paid && gross > 0) rows.push({y: x.year, l, i, n, gross, days: n.date ? Math.max(0, Math.round((now - new Date(n.date + "T00:00:00")) / 864e5)) : null});
+  })));
+  rows.sort((a, b) => a.y - b.y || (a.n.date || "9") .localeCompare(b.n.date || "9"));
+  let h = '<section class="osec"><h4>' + tr("s_due") + "</h4>";
+  if (!rows.length) return h + '<p class="hint">' + tr("s_due_none") + "</p></section>";
+  const tot = rows.reduce((a, x) => a + x.gross, 0);
+  h += '<div class="tablewrap"><table class="ledger sm"><thead><tr>' + ["d_year", "d_lot", "f_type", "ls_boxes", "d_amt", "d_sold", "d_wait"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map(x => '<tr><th scope="row">' + x.y + '</th><td class="t">' + esc(lotLabel(x.l, x.i)) + '</td><td class="t">' + esc((GRADE_KEY[x.n.grade] ? tr(GRADE_KEY[x.n.grade]) : x.n.grade) || "–") + "</td><td>" + fmtN(+x.n.boxes) +
+      "</td><td>" + inr(x.gross) + "</td><td>" + fmtDay(x.n.date, true) + "</td><td>" + (x.days == null ? "–" : tr("d_days").replace("{n}", fmtN(x.days))) + "</td></tr>").join("") +
+    '</tbody><tfoot><tr><th scope="row" colspan="4">' + tr("d_tot") + "</th><td>" + inr(tot) + '</td><td colspan="2"></td></tr></tfoot></table></div>' +
+    '<p class="fine">' + tr("d_due_note") + "</p></section>";
+  return h;
+}
+
+function yearsHtml(o) {
+  const ss = S.seasons.filter(x => x.oid === o.id).sort((a, b) => b.year - a.year), trees = +o.trees;
+  if (!ss.length) return "";
+  return '<section class="osec"><h4>' + tr("s_years") + '</h4><div class="tablewrap"><table class="ledger sm"><thead><tr>' +
+    ["d_year", "ls_boxes", "k_bpt", "k_avg", "k_ash", "ls_gross", "y_costs", "ls_net", "k_npt"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    ss.map(x => {
+      const r = seasonCalc(x), g = gradeSplit(x);
+      return '<tr><th scope="row"><button class="link" type="button" data-dact="year" data-y="' + x.year + '">' + x.year + "</button></th><td>" + fmtN(r.boxes) + "</td><td>" + (trees ? fmtD(r.boxes / trees) : "–") +
+        "</td><td>" + inr(r.boxes ? r.rev / r.boxes : 0) + "</td><td>" + pct(g.a.b, r.boxes) + "</td><td>" + inr(r.rev) + "</td><td>" + inr(r.cost) + '</td><td class="' + dcls(r.profit) + '">' + inr(r.profit) +
+        "</td><td>" + (trees ? inr(r.profit / trees) : "–") + "</td></tr>";
+    }).join("") + "</tbody></table></div></section>";
+}
+
+function diaryHtml(o) {
+  const all = (o.diary || []).slice().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const ed = diaryEdit ? all.find(d => d.id === diaryEdit) : null;
+  const v = ed || {date: todayIso(), kind: "", text: "", cost: "", stage: ""};
+  const kindSel = '<select id="d_kind"><option value="">' + tr("dy_pick") + "</option>" + DIARY_KINDS.map(([gk, ks]) => '<optgroup label="' + esc(tr("dg_" + gk)) + '">' +
+    ks.map(k => '<option value="' + k + '"' + (k === v.kind ? " selected" : "") + ">" + tr("dk_" + k) + "</option>").join("") + "</optgroup>").join("") + "</select>";
+  const stageSel = '<select id="d_stage"><option value="">–</option>' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '"' + ("st" + i === v.stage ? " selected" : "") + ">" + tr("st" + i) + "</option>").join("") + "</select>";
+  let h = '<section class="osec" id="diarySec"><h4>' + tr("s_diary") + '</h4><p class="hint">' + tr("s_diary_p") + "</p>" +
+    '<form class="dform" data-dform="diary">' +
+    '<div class="field"><label for="d_date">' + tr("dy_date") + '</label><input id="d_date" type="date" value="' + esc(v.date) + '"></div>' +
+    '<div class="field"><label for="d_kind">' + tr("dy_kind") + "</label>" + kindSel + "</div>" +
+    '<div class="field" id="d_stagewrap"><label for="d_stage">' + tr("dy_stage") + "</label>" + stageSel + "</div>" +
+    '<div class="field"><label for="d_cost">' + tr("dy_cost") + '</label><input id="d_cost" type="number" inputmode="decimal" min="0" step="any" value="' + esc(+v.cost ? v.cost : "") + '"></div>' +
+    '<div class="field wide"><label for="d_text">' + tr("dy_text") + '</label><input id="d_text" type="text" maxlength="200" placeholder="' + esc(tr("dy_text_ph")) + '" value="' + esc(v.text) + '"></div>' +
+    '<p class="autherr wide" id="d_err" role="alert"></p>' +
+    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr(ed ? "dy_update" : "dy_save") + "</button>" + (ed ? '<button class="btn-s" type="button" data-dact="dcancel">' + tr("d_cancel") + "</button>" : "") +
+    '<button class="link" type="button" data-dact="spray">' + tr("o_spray_link") + "</button></div></form>";
+  if (!all.length) return h + '<p class="hint">' + tr("dy_none") + "</p></section>";
+  let yr = null;
+  h += '<div class="dlist">';
+  all.forEach(d => {
+    const y = String(d.date).slice(0, 4);
+    if (y !== yr) { if (yr !== null) h += "</ul>"; yr = y; h += '<p class="subhead">' + esc(y) + "</p><ul>"; }
+    h += '<li' + (d.id === diaryEdit ? ' class="editing"' : "") + '><span class="dd">' + fmtDay(d.date) + '</span><span class="dt"><b>' + tr("dk_" + d.kind) + "</b>" +
+      (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : "") + (d.text ? "<span>" + esc(d.text) + "</span>" : "") + "</span>" +
+      '<span class="dc">' + (+d.cost ? inr(+d.cost) : "") + '</span><span class="da"><button class="link" type="button" data-dact="dedit" data-id="' + esc(d.id) + '">' + tr("dy_edit") +
+      '</button><button class="link del" type="button" data-dact="ddel" data-id="' + esc(d.id) + '">' + tr("dy_del") + "</button></span></li>";
+  });
+  return h + "</ul></div></section>";
+}
+
+function orchardPage(o) {
+  const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
+    .concat((o.diary || []).map(d => +String(d.date).slice(0, 4)).filter(y => y > 1900)))).sort((a, b) => b - a);
+  if (!yrs.length) yrs.push(thisYear());
+  if (yrs.indexOf(dashYear) < 0) {
+    const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year);
+    dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0];
+  }
+  const photo = o.photo ? '<img src="' + o.photo + '" alt="' + esc(tr("o_photo_alt").replace("{o}", o.name || "")) + '">' : '<span class="nophoto" aria-hidden="true"></span>';
+  let h = '<div class="opage"><div class="obar"><button class="link" type="button" data-dact="back">' + tr("o_back") + "</button></div>" +
+    '<div class="ohead"><figure class="ophoto">' + photo + '<figcaption><button class="link" type="button" data-dact="photo">' + tr(o.photo ? "o_photo_chg" : "o_photo_add") + "</button>" +
+    (o.photo ? '<button class="link" type="button" data-dact="photorm">' + tr("o_photo_rm") + "</button>" : "") + '<input type="file" id="o_photo_in" accept="image/*" hidden></figcaption>' +
+    '<p class="autherr" id="o_photo_err" role="alert"></p></figure>' +
+    '<div class="oinfo"><div class="otitle"><h3>' + esc(o.name || tr("orchard_fallback")) + "</h3>" + (profEdit ? "" : '<button class="btn-s" type="button" data-dact="prof">' + tr("o_editp") + "</button>") + "</div>" +
+    profileHtml(o) + "</div></div>" +
+    '<div class="oacts2"><button class="btn-s add" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("d_open") +
+    '</button><button class="btn-s" type="button" data-dact="note">' + tr("dy_add") + "</button></div>" +
+    '<div class="oyear field"><label for="o_year">' + tr("o_season") + '</label><select id="o_year">' + yrs.map(y => '<option value="' + y + '"' + (y === dashYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>" +
+    insightsHtml(o, dashYear) + dueHtml(o) + yearsHtml(o) + diaryHtml(o) + "</div>";
+  return h;
+}
+
+function syncStage() { const k = $("d_kind"), w = $("d_stagewrap"); if (k && w) w.hidden = k.value !== "spray"; }
+function renderDash() {
+  const el = $("dash"); if (!el) return;
+  if (dashView && !S.orchards.some(o => o.id === dashView)) { dashView = null; profEdit = false; diaryEdit = null; }
+  el.innerHTML = dashView ? orchardPage(S.orchards.find(o => o.id === dashView)) : dashOverview();
+  syncStage();
+}
+function dashTop() { const t = $("tp-orch"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"}); }
 function goSeason(oid, year) {
   closeEditLine(); entryOpen = false; addingO = false; pendingDel = null; set("entryMsg", "");
   sel.o = oid; sel.y = year; fixSel(); renderAll();
   tabPicked = true; showTool("calc", false, true); showSub("orch");
 }
+function shrinkPhoto(file) {
+  return new Promise((ok, bad) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 720 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      let q = 0.75, d = c.toDataURL("image/jpeg", q);
+      while (d.length > 160000 && q > 0.35) { q -= 0.1; d = c.toDataURL("image/jpeg", q); }
+      ok(d);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); bad(); };
+    img.src = url;
+  });
+}
 $("dash").addEventListener("click", e => {
   const b = e.target.closest("[data-dact]"); if (!b) return;
-  const a = b.dataset.dact, oid = b.dataset.o, ty = new Date().getFullYear();
-  if (a === "open") {
+  const a = b.dataset.dact, oid = b.dataset.o, o = S.orchards.find(x => x.id === (oid || dashView));
+  if (a === "view") { dashView = oid; dashYear = null; profEdit = false; diaryEdit = null; renderDash(); dashTop(); }
+  else if (a === "back") { dashView = null; profEdit = false; diaryEdit = null; renderDash(); dashTop(); }
+  else if (a === "year") { dashYear = +b.dataset.y; renderDash(); const y = $("o_year"); if (y) y.scrollIntoView({block: "start"}); }
+  else if (a === "open") {
     const ys = S.seasons.filter(se => se.oid === oid).map(se => se.year);
-    goSeason(oid, ys.length ? Math.max.apply(null, ys) : ty);
-  } else if (a === "addsale") { goSeason(oid, ty); openEntry(); }
-  else if (a === "edit") { dashEdit = oid; dashAdd = false; renderDash(); const i = $("dn_name"); if (i) i.focus(); }
-  else if (a === "add") { dashAdd = true; dashEdit = null; renderDash(); $("dn_new").focus(); }
-  else if (a === "cancel") { dashEdit = null; dashAdd = false; renderDash(); }
-  else if (a === "del") {
+    goSeason(oid, dashView === oid && ys.indexOf(dashYear) >= 0 ? dashYear : ys.length ? Math.max.apply(null, ys) : thisYear());
+  } else if (a === "addsale") { goSeason(oid, thisYear()); openEntry(); }
+  else if (a === "add") { dashAdd = true; renderDash(); $("dn_new").focus(); }
+  else if (a === "cancel") { dashAdd = false; renderDash(); }
+  else if (a === "prof") { profEdit = true; renderDash(); const i = $("p_village"); if (i) i.focus(); }
+  else if (a === "pcancel") { profEdit = false; renderDash(); }
+  else if (a === "note") { diaryEdit = null; renderDash(); const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); }
+  else if (a === "spray") { tabPicked = true; showTool("spray", false, true); }
+  else if (a === "photo") { const i = $("o_photo_in"); if (i) i.click(); }
+  else if (a === "photorm") { if (o) { delete o.photo; save(); renderDash(); } }
+  else if (a === "dedit") { diaryEdit = b.dataset.id; renderDash(); const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); }
+  else if (a === "dcancel") { diaryEdit = null; renderDash(); }
+  else if (a === "ddel" || a === "del") {
     if (!b.dataset.armed) {
-      b.dataset.armed = "1"; b.textContent = tr("d_delsure");
-      setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = tr("d_del"); } }, 4000);
+      const back = b.textContent; b.dataset.armed = "1"; b.textContent = tr(a === "del" ? "d_delsure" : "dy_sure");
+      setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = back; } }, 4000);
       return;
     }
-    S.seasons = S.seasons.filter(se => se.oid !== oid); S.orchards = S.orchards.filter(x => x.id !== oid);
-    if (sel.o === oid) { sel.o = null; sel.y = null; }
-    dashEdit = null; fixSel(); save(); renderAll();
+    if (a === "ddel") {
+      if (o) o.diary = (o.diary || []).filter(d => d.id !== b.dataset.id);
+      if (diaryEdit === b.dataset.id) diaryEdit = null;
+    } else {
+      S.seasons = S.seasons.filter(se => se.oid !== oid); S.orchards = S.orchards.filter(x => x.id !== oid);
+      if (sel.o === oid) { sel.o = null; sel.y = null; }
+      dashView = null; profEdit = false;
+    }
+    fixSel(); save(); renderAll();
   } else if (a === "clearex") {
     const ids = S.orchards.filter(x => x.ex).map(x => x.id);
     S.orchards = S.orchards.filter(x => !x.ex); S.seasons = S.seasons.filter(se => ids.indexOf(se.oid) < 0);
     fixSel(); save(); renderAll();
   }
 });
+$("dash").addEventListener("change", async e => {
+  const t = e.target;
+  if (t.id === "o_year") { dashYear = +t.value; renderDash(); return; }
+  if (t.id === "d_kind") { syncStage(); return; }
+  if (t.id === "o_photo_in") {
+    const f = t.files && t.files[0], o = S.orchards.find(x => x.id === dashView); if (!f || !o) return;
+    try { o.photo = await shrinkPhoto(f); save(); renderDash(); }
+    catch (x) { set("o_photo_err", tr("o_photo_err")); }
+  }
+});
 $("dash").addEventListener("submit", e => {
   const f = e.target.closest("[data-dform]"); if (!f) return;
   e.preventDefault();
-  if (f.dataset.dform === "edit") {
-    const o = S.orchards.find(x => x.id === f.dataset.o); if (!o) return;
-    const nm = $("dn_name").value.trim(); if (nm) o.name = nm;
-    o.trees = numOf($("dn_trees").value); dashEdit = null;
-  } else {
+  const kind = f.dataset.dform, o = S.orchards.find(x => x.id === dashView);
+  if (kind === "add") {
     const nm = $("dn_new").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.filter(x => !x.ex).length + 1));
-    S.orchards.push({id: newId(), name: nm, trees: numOf($("dn_newtrees").value)}); dashAdd = false;
+    const no = {id: newId(), name: nm, trees: numOf($("dn_newtrees").value)};
+    S.orchards.push(no); dashAdd = false; dashView = no.id; dashYear = null; profEdit = true;
+    fixSel(); save(); renderAll(); dashTop(); return;
+  }
+  if (!o) return;
+  if (kind === "prof") {
+    const val = id => $(id).value.trim(), nm = val("p_name");
+    if (nm) o.name = nm;
+    o.trees = numOf($("p_trees").value);
+    o.profile = {village: val("p_village"), alt: numOf($("p_alt").value), area: numOf($("p_area").value), var: val("p_var"),
+      root: $("p_root").value, planted: numOf($("p_planted").value), irr: $("p_irr").value, hail: $("p_hail").value};
+    profEdit = false;
+  } else if (kind === "diary") {
+    const date = $("d_date").value, k = $("d_kind").value;
+    if (!date || !k) { set("d_err", tr("dy_err")); return; }
+    const entry = {id: diaryEdit || newId(), date: date, kind: k, text: $("d_text").value.trim(), cost: numOf($("d_cost").value), stage: k === "spray" ? $("d_stage").value : ""};
+    o.diary = (o.diary || []).filter(d => d.id !== entry.id).concat([entry]);
+    diaryEdit = null;
   }
   fixSel(); save(); renderAll();
 });
