@@ -546,8 +546,11 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .ledger.olots td.t{text-align:left}
 .ledger.olots tr.lottot td{font-weight:700;color:var(--fg);background:color-mix(in srgb,var(--surface-2) 55%,transparent)}
 .ledger.olots tr.lottot td.pos{color:var(--good)}.ledger.olots tr.lottot td.neg{color:var(--bad)}
-.ledger.olots td.lacts{white-space:normal;font-weight:400;max-width:230px}
-.ledger.olots td.lacts .link{margin:0 10px 0 0;font-size:.84rem}
+.ledger.olots .lotc .lacts{display:grid;justify-items:start;gap:2px;margin-top:8px}
+.ledger.olots .lotc .lacts .link{padding:2px 0;margin:0;font:500 .8rem var(--body);white-space:nowrap}
+.ledger.olots .lotc .lacts .link.del{color:var(--bad)}
+.spo,.spo > *{min-width:0}
+@media (max-width:560px){.ledger.olots td.acts,.ledger.olots th.acts{position:static;box-shadow:none;background:transparent}.ledger.olots .lotc{min-width:0}}
 .ledger.olots td.none{text-align:left;color:var(--muted)}
 .ledger.olots tfoot th,.ledger.olots tfoot td{border-top:3px double var(--fg)}
 #rp-year h3[data-i18n="y_sum"]{margin-bottom:18px}
@@ -2242,7 +2245,11 @@ function orchLotsTable(se) {
   let h = '<div class="tablewrap"><table class="ledger sm lottable olots"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th scope="col" class="acts"></th></tr></thead>';
   se.lots.forEach((l, i) => {
     const shown = l.lines.filter(n => +n.boxes || +n.rate || (editLine && editLine.line === n.id)), lc = lotCalc(l);
-    const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + "</th>";
+    const lotActs = '<span class="lacts"><button class="link" type="button" data-act="addline" data-id="' + esc(l.id) + '">' + tr("l_addtype") + "</button>" +
+      (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + esc(l.id) + '">' + tr("lot_up") + "</button>" : "") +
+      (i < nl - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + esc(l.id) + '">' + tr("lot_down") + "</button>" : "") +
+      '<button class="link del" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">' + tr("lot_remove") + "</button></span>";
+    const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + lotActs + "</th>";
     h += '<tbody class="lotgrp">';
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
     shown.forEach((n, k) => {
@@ -2253,10 +2260,7 @@ function orchLotsTable(se) {
         '<button class="link del" type="button" data-act="sdel" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_del") + "</button></td></tr>";
     });
     h += '<tr class="lottot"><td colspan="2">' + tr("ne_tot") + "</td><td>" + fmtN(lc.b) + "</td><td>" + inr(lc.gross) + "</td><td>" + inr(lc.exp) + '</td><td class="' + cls(lc.net) + '">' + inr(lc.net) +
-      "</td><td>" + inr(lc.nppb) + '</td><td class="acts lacts"><button class="link" type="button" data-act="addline" data-id="' + esc(l.id) + '">' + tr("l_addtype") + "</button>" +
-      (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + esc(l.id) + '">' + tr("lot_up") + "</button>" : "") +
-      (i < nl - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + esc(l.id) + '">' + tr("lot_down") + "</button>" : "") +
-      '<button class="link del" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">' + tr("lot_remove") + "</button></td></tr></tbody>";
+      "</td><td>" + inr(lc.nppb) + '</td><td class="acts"></td></tr></tbody>';
   });
   if (nl > 1) {
     const r = seasonCalc(se), net = r.rev - r.lotExp;
