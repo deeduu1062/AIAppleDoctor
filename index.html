@@ -1035,7 +1035,7 @@ en: {
   calc_h:"Profit calculator",
   calc_p:"Keep a record for each orchard and each year. Profit per orchard and per year works itself out. The first records are examples you can clear.",
   tab_orch:"My orchards", tab_year:"Yearly profit", tab_cmp:"Mandi or ladhani?", reset:"Put back the example numbers",
-  lbl_orchard:"Orchard", lbl_year:"Year", add_btn:"Add", ph_orchard:"New orchard name", ph_year:"Choose the year to add",
+  lbl_orchard:"Orchard", lbl_year:"Harvest year", add_btn:"Add", ph_orchard:"New orchard name", ph_year:"Choose the year to add",
   manage:"Delete this year", f_oname:"Orchard name", f_trees:"Number of trees (optional)",
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
@@ -1138,7 +1138,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   s_due:"Money still to come", s_due_none:"Nothing pending. Every sale is marked as paid.", d_year:"Year", d_lot:"Lot", d_amt:"Amount", d_sold:"Sold on", d_wait:"Waiting",
   d_days:"{n} days", d_tot:"Total pending", d_due_note:"Mark a sale as paid in Season Profit (Edit, then More) once the money arrives.",
   s_years:"Year by year", y_costs:"Costs",
-  s_diary:"Season diary", s_diary_p:"Note sprays, fertiliser, weather and key dates as the season goes. Costs you add here are counted in that year's net income and show in Yearly expenses.",
+  s_diary:"Season diary", s_diary_p:"Note sprays, fertiliser, weather and key dates as the season goes. Costs you add here are counted in that harvest year's net income (1 November to 31 October) and show in Yearly expenses.",
   dy_add:"Add diary note", dy_pick:"Choose", dy_date:"Date", dy_kind:"What", dy_stage:"Tree stage", dy_cost:"Cost (₹, optional)", dy_text:"Details",
   dy_text_ph:"For example product and dose, or what you saw", dy_save:"Save note", dy_update:"Update note", dy_edit:"Edit", dy_del:"Delete", dy_sure:"Tap again",
   dy_none:"No notes yet.", dy_err:"Choose a date and what happened.",
@@ -1148,10 +1148,10 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   dk_flower:"Flowering", dk_hstart:"Harvest started", dk_hend:"Harvest finished", dk_problem:"Problem noticed", dk_note:"Note",
   cmp_h:"Orchards side by side, {y}", cmp_o:"Orchard", cmp_note:"Per-tree figures need the number of trees, which you can add in each orchard's profile.",
   costs_diary:"Another {x} for {y} comes from the season diary and is added automatically.",
-  ex_years:"Expenses by year", ex_years_hint:"Tap a year to see that year's expenses for each orchard.", ex_ymeta:"{n} orchards, {e}", ex_ymeta1:"1 orchard, {e}", ex_ometa:"{e} entries", ex_ometa1:"1 entry", ex_ptree:"{x} a tree", ex_zero:"No expenses this year.", ex_yrcat:"By category, all orchards", pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that year's net income and also appear in the orchard's season diary.",
+  ex_years:"Expenses by harvest year", ex_years_hint:"A harvest year runs from 1 November to 31 October and is named after the harvest it ends with. So pruning or manure in November or December counts toward the next year's crop. Tap a harvest year to see each orchard's expenses.", ex_ymeta:"{n} orchards, {e}", ex_ymeta1:"1 orchard, {e}", ex_ometa:"{e} entries", ex_ometa1:"1 entry", ex_ptree:"{x} a tree", ex_zero:"No expenses this year.", ex_yrcat:"By category, all orchards", pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that harvest year's net income and also appear in the orchard's season diary.",
   ex_all:"All orchards, {y}", ex_entries:"Entries", ex_total:"Yearly expenses", ex_big:"Biggest cost", ex_bycat:"By category", ex_pluslump:"plus {x} in lump sums",
   ex_add:"Add expense", ex_upd:"Update expense", ex_cat:"Category", ex_amt:"Amount (₹)", ex_amt0:"Amount", ex_det:"Details (optional)", ex_det0:"Details",
-  ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved.",
+  ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved in harvest year {y}.", hy_label:"Harvest year {y}", hy_range:"1 Nov {a} to 31 Oct {b}.",
   ex_none:"No expenses entered for {o} in {y} yet.", ex_noent:"No entries for this year yet. Add the first one above.", ex_list:"Expenses entered", ex_enttot:"Total of entries",
   ex_lump:"Lump sums (optional)", ex_lump_p:"If you only know the total for the year, enter it here instead of separate entries. Amounts typed earlier under Other yearly expenses in Season Profit are kept here.",
   ex_noorch:"Add an orchard first in My orchards.",
@@ -1196,7 +1196,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   hc_net:"Net profit", hc_ppb:"Net per box", hc_gx:"Gross {g} · Expenses {e}",
   lang_btn:"हिंदी", orchard_fallback:"Orchard", lot_fallback:"Lot",
   calc_p:"Keep a record for each orchard and each year. Add every lot you sold with its boxes, rate and expense. Gross is boxes × rate, and net income is gross minus expenses.",
-  lot_help:"Tap a lot to see its entries, then use Edit or Delete on any entry.", sp_addhint:"To add a new lot, choose the orchard and year, then tap Add.", sp_tap:"Tap a year to see each orchard's lots and their entries.", sp_meta:"{n} lots, {b} boxes, {p} net a box", sp_meta1:"1 lot, {b} boxes, {p} net a box", sp_nolots:"No lots for this year yet.", sp_yc2:"Yearly expenses {x} are taken off in Yearly net profit.", sp_addlot:"＋ Add lot", sp_none:"No lots yet. Choose an orchard and year above, then tap Add.", l_meta:"{e} entries, {b} boxes, {p} a box", l_meta1:"1 entry, {b} boxes, {p} a box", half_note:"A half box counts as half a box when working out net per box.",
+  lot_help:"Tap a lot to see its entries, then use Edit or Delete on any entry.", sp_addhint:"To add a new lot, choose the orchard and year, then tap Add.", sp_tap:"Tap a harvest year to see each orchard's lots and their entries.", sp_meta:"{n} lots, {b} boxes, {p} net a box", sp_meta1:"1 lot, {b} boxes, {p} net a box", sp_nolots:"No lots for this year yet.", sp_yc2:"Yearly expenses {x} are taken off in Yearly net profit.", sp_addlot:"＋ Add lot", sp_none:"No lots yet. Choose an orchard and year above, then tap Add.", l_meta:"{e} entries, {b} boxes, {p} a box", l_meta1:"1 entry, {b} boxes, {p} a box", half_note:"A half box counts as half a box when working out net per box.",
   f_lname:"Lot name (optional, for example the buyer or mandi)", f_grade:"Grade or note (optional)", f_date:"Sale date (optional)",
   f_boxes:"Boxes", f_rate:"Rate per box (₹)", f_exp:"Expense per box (₹)", f_paidon:"Payment date (optional)",
   f_half:"Half box", f_paid:"Payment received",
@@ -1212,7 +1212,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   head_profit:"Net income for {o}, {y}", head_loss:"Loss for {o}, {y}", r_profit:"Net income", r_loss:"Loss",
   seg_exp:"Lot expenses", seg_year:"Other yearly expenses", seg_profit:"Net income",
   y_note:"Net income here is the Season Profit net income minus yearly expenses (including lump sums and diary costs). Half boxes count as half when working out the per-box figure.",
-  y_sum:"Net profit by year", y_tap:"Tap a year to see every orchard's details for that season.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_gp:"Gross profit", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
+  y_sum:"Net profit by harvest year", y_tap:"Tap a harvest year to see every orchard's details. A harvest year runs from 1 November to 31 October.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_gp:"Gross profit", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
   hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot."
 },
 hi: {
@@ -1226,7 +1226,7 @@ hi: {
   calc_h:"मुनाफ़ा कैलकुलेटर",
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। हर बाग़ और हर साल का मुनाफ़ा अपने आप निकल आता है। शुरू के रिकॉर्ड उदाहरण हैं, जिन्हें आप हटा सकते हैं।",
   tab_orch:"मेरे बाग़", tab_year:"साल भर का मुनाफ़ा", tab_cmp:"मंडी या लदानी?", reset:"उदाहरण वाले आँकड़े वापस लाएँ",
-  lbl_orchard:"बाग़", lbl_year:"साल", add_btn:"जोड़ें", ph_orchard:"नए बाग़ का नाम", ph_year:"जोड़ने के लिए साल चुनें",
+  lbl_orchard:"बाग़", lbl_year:"फ़सल वर्ष", add_btn:"जोड़ें", ph_orchard:"नए बाग़ का नाम", ph_year:"जोड़ने के लिए साल चुनें",
   manage:"यह साल हटाएँ", f_oname:"बाग़ का नाम", f_trees:"पेड़ों की संख्या (वैकल्पिक)",
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
@@ -1329,7 +1329,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   s_due:"जो पैसा अभी आना है", s_due_none:"कुछ बाक़ी नहीं है। हर बिक्री का भुगतान मिल गया है।", d_year:"साल", d_lot:"लॉट", d_amt:"रक़म", d_sold:"बिक्री की तारीख़", d_wait:"इंतज़ार",
   d_days:"{n} दिन", d_tot:"कुल बाक़ी", d_due_note:"पैसा मिलने पर सीज़न का मुनाफ़ा में (बदलें, फिर और) भुगतान मिल गया पर निशान लगाएँ।",
   s_years:"साल-दर-साल", y_costs:"ख़र्च",
-  s_diary:"सीज़न डायरी", s_diary_p:"सीज़न के दौरान स्प्रे, खाद, मौसम और ख़ास तारीख़ें लिखते जाएँ। यहाँ डाले गए ख़र्च उस साल की शुद्ध आय में गिने जाते हैं और साल भर के ख़र्च में दिखते हैं।",
+  s_diary:"सीज़न डायरी", s_diary_p:"सीज़न के दौरान स्प्रे, खाद, मौसम और ख़ास तारीख़ें लिखते जाएँ। यहाँ डाले गए ख़र्च उस फ़सल वर्ष (1 नवंबर से 31 अक्टूबर) की शुद्ध आय में गिने जाते हैं और साल भर के ख़र्च में दिखते हैं।",
   dy_add:"डायरी में लिखें", dy_pick:"चुनें", dy_date:"तारीख़", dy_kind:"क्या हुआ", dy_stage:"पेड़ की अवस्था", dy_cost:"ख़र्च (₹, वैकल्पिक)", dy_text:"विवरण",
   dy_text_ph:"जैसे दवा का नाम और मात्रा, या जो देखा", dy_save:"सहेजें", dy_update:"बदलाव सहेजें", dy_edit:"बदलें", dy_del:"हटाएँ", dy_sure:"दोबारा दबाएँ",
   dy_none:"अभी कुछ नहीं लिखा गया है।", dy_err:"तारीख़ और क्या हुआ, दोनों चुनें।",
@@ -1339,10 +1339,10 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   dk_flower:"फूल आए", dk_hstart:"तुड़ाई शुरू", dk_hend:"तुड़ाई ख़त्म", dk_problem:"समस्या दिखी", dk_note:"नोट",
   cmp_h:"सभी बाग़ एक साथ, {y}", cmp_o:"बाग़", cmp_note:"प्रति पेड़ आँकड़ों के लिए पेड़ों की संख्या चाहिए, जो हर बाग़ की जानकारी में डाली जा सकती है।",
   costs_diary:"{y} के {x} और सीज़न डायरी से आते हैं और अपने आप जुड़ जाते हैं।",
-  ex_years:"साल-दर-साल ख़र्च", ex_years_hint:"किसी साल पर दबाएँ, तो उस साल हर बाग़ के ख़र्च दिखेंगे।", ex_ymeta:"{n} बाग़, {e}", ex_ymeta1:"1 बाग़, {e}", ex_ometa:"{e} एंट्री", ex_ometa1:"1 एंट्री", ex_ptree:"{x} प्रति पेड़", ex_zero:"इस साल कोई ख़र्च नहीं।", ex_yrcat:"मद के हिसाब से, सभी बाग़", pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस साल की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
+  ex_years:"फ़सल वर्ष के हिसाब से ख़र्च", ex_years_hint:"फ़सल वर्ष 1 नवंबर से 31 अक्टूबर तक चलता है और उसी साल की तुड़ाई के नाम से जाना जाता है। इसलिए नवंबर या दिसंबर की छँटाई या खाद अगले साल की फ़सल में गिनी जाती है। हर बाग़ के ख़र्च देखने के लिए किसी फ़सल वर्ष पर दबाएँ।", ex_ymeta:"{n} बाग़, {e}", ex_ymeta1:"1 बाग़, {e}", ex_ometa:"{e} एंट्री", ex_ometa1:"1 एंट्री", ex_ptree:"{x} प्रति पेड़", ex_zero:"इस साल कोई ख़र्च नहीं।", ex_yrcat:"मद के हिसाब से, सभी बाग़", pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस फ़सल वर्ष की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
   ex_all:"सभी बाग़, {y}", ex_entries:"एंट्री", ex_total:"साल भर के ख़र्च", ex_big:"सबसे बड़ा ख़र्च", ex_bycat:"किस मद में कितना", ex_pluslump:"और {x} एकमुश्त",
   ex_add:"ख़र्च जोड़ें", ex_upd:"ख़र्च बदलें", ex_cat:"मद", ex_amt:"रक़म (₹)", ex_amt0:"रक़म", ex_det:"विवरण (वैकल्पिक)", ex_det0:"विवरण",
-  ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च सहेज लिया गया।",
+  ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च फ़सल वर्ष {y} में सहेज लिया गया।", hy_label:"फ़सल वर्ष {y}", hy_range:"1 नवंबर {a} से 31 अक्टूबर {b}।",
   ex_none:"{y} में {o} का कोई ख़र्च अभी नहीं डाला गया है।", ex_noent:"इस साल की कोई एंट्री अभी नहीं है। ऊपर पहली एंट्री जोड़ें।", ex_list:"डाले गए ख़र्च", ex_enttot:"एंट्री का कुल",
   ex_lump:"एकमुश्त रक़म (वैकल्पिक)", ex_lump_p:"अगर सिर्फ़ साल भर का कुल पता है, तो अलग-अलग एंट्री की जगह यहाँ डालें। सीज़न का मुनाफ़ा में पहले साल भर के अन्य ख़र्च में डाली गई रक़म यहीं रखी गई है।",
   ex_noorch:"पहले मेरे बाग़ में एक बाग़ जोड़ें।",
@@ -1387,7 +1387,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   hc_net:"शुद्ध मुनाफ़ा", hc_ppb:"प्रति पेटी शुद्ध मुनाफ़ा", hc_gx:"कुल बिक्री {g} · ख़र्च {e}",
   lang_btn:"English", orchard_fallback:"बाग़", lot_fallback:"लॉट",
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। बेचे गए हर लॉट की पेटियाँ, भाव और ख़र्च डालें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर।",
-  lot_help:"किसी लॉट की एंट्री देखने के लिए उस पर दबाएँ, फिर किसी भी एंट्री पर बदलें या हटाएँ दबाएँ।", sp_addhint:"नया लॉट जोड़ने के लिए बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", sp_tap:"हर बाग़ के लॉट और उनकी एंट्री देखने के लिए किसी साल पर दबाएँ।", sp_meta:"{n} लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_meta1:"1 लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_nolots:"इस साल का कोई लॉट अभी नहीं है।", sp_yc2:"साल भर के ख़र्च {x} सालाना शुद्ध मुनाफ़ा में घटाए जाते हैं।", sp_addlot:"＋ लॉट जोड़ें", sp_none:"अभी कोई लॉट नहीं है। ऊपर बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", l_meta:"{e} एंट्री, {b} पेटियाँ, {p} प्रति पेटी", l_meta1:"1 एंट्री, {b} पेटियाँ, {p} प्रति पेटी", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
+  lot_help:"किसी लॉट की एंट्री देखने के लिए उस पर दबाएँ, फिर किसी भी एंट्री पर बदलें या हटाएँ दबाएँ।", sp_addhint:"नया लॉट जोड़ने के लिए बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", sp_tap:"हर बाग़ के लॉट और उनकी एंट्री देखने के लिए किसी फ़सल वर्ष पर दबाएँ।", sp_meta:"{n} लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_meta1:"1 लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_nolots:"इस साल का कोई लॉट अभी नहीं है।", sp_yc2:"साल भर के ख़र्च {x} सालाना शुद्ध मुनाफ़ा में घटाए जाते हैं।", sp_addlot:"＋ लॉट जोड़ें", sp_none:"अभी कोई लॉट नहीं है। ऊपर बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", l_meta:"{e} एंट्री, {b} पेटियाँ, {p} प्रति पेटी", l_meta1:"1 एंट्री, {b} पेटियाँ, {p} प्रति पेटी", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
   f_lname:"लॉट का नाम (वैकल्पिक, जैसे ख़रीदार या मंडी)", f_grade:"ग्रेड या टिप्पणी (वैकल्पिक)", f_date:"बिक्री की तारीख़ (वैकल्पिक)",
   f_boxes:"पेटियाँ", f_rate:"प्रति पेटी भाव (₹)", f_exp:"प्रति पेटी ख़र्च (₹)", f_paidon:"भुगतान की तारीख़ (वैकल्पिक)",
   f_half:"आधी पेटी", f_paid:"भुगतान मिल गया",
@@ -1403,7 +1403,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   head_profit:"{o} की शुद्ध आय, {y}", head_loss:"{o} का घाटा, {y}", r_profit:"शुद्ध आय", r_loss:"घाटा",
   seg_exp:"लॉट के ख़र्च", seg_year:"साल भर के अन्य ख़र्च", seg_profit:"शुद्ध आय",
   y_note:"यहाँ शुद्ध आय यानी सीज़न के मुनाफ़े की शुद्ध आय में से साल भर के ख़र्च (एकमुश्त रक़म और डायरी के ख़र्च समेत) घटाकर। प्रति पेटी आँकड़ा निकालते समय आधी पेटी आधी गिनी जाती है।",
-  y_sum:"साल-दर-साल शुद्ध मुनाफ़ा", y_tap:"उस सीज़न में हर बाग़ का पूरा ब्योरा देखने के लिए किसी साल पर दबाएँ।", y_meta:"{n} बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_meta1:"1 बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_pbe:"प्रति पेटी ख़र्च (कुल)", y_yc:"साल भर के ख़र्च", y_gp:"सकल मुनाफ़ा", y_sp:"सीज़न का मुनाफ़ा", y_op:"बाग़ का पन्ना", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
+  y_sum:"फ़सल वर्ष के हिसाब से शुद्ध मुनाफ़ा", y_tap:"हर बाग़ का ब्योरा देखने के लिए किसी फ़सल वर्ष पर दबाएँ। फ़सल वर्ष 1 नवंबर से 31 अक्टूबर तक चलता है।", y_meta:"{n} बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_meta1:"1 बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_pbe:"प्रति पेटी ख़र्च (कुल)", y_yc:"साल भर के ख़र्च", y_gp:"सकल मुनाफ़ा", y_sp:"सीज़न का मुनाफ़ा", y_op:"बाग़ का पन्ना", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
   hero_real_t:"आपकी शुद्ध आय, {y}", hero_real_note:"आपके रिकॉर्ड से। हर लॉट देखने के लिए नीचे कैलकुलेटर खोलें।"
 }};
 const MONTHS = {
@@ -1547,7 +1547,7 @@ function gradeKey(g) {
 function diaryCosts(oid, year) {
   const c = blankCosts(), o = S.orchards.find(x => x.id === oid);
   ((o && o.diary) || []).forEach(d => {
-    if (+d.cost > 0 && String(d.date || "").slice(0, 4) === String(year)) c[DIARY_COST[d.kind] || "other"] += +d.cost;
+    if (+d.cost > 0 && hYear(d.date) === +year) c[DIARY_COST[d.kind] || "other"] += +d.cost;
   });
   return c;
 }
@@ -2205,6 +2205,9 @@ const ROOTS = ["seedling", "m9", "mm106", "m7", "mm111", "other"], IRR = ["rain"
 const LINE_COSTS = [["tod", "f_tod"], ["grd", "f_grd"], ["car", "f_car"], ["exp", "lc_oth"]];
 const dcls = n => (n < 0 ? "neg" : "pos");
 const thisYear = () => new Date().getFullYear();
+/* Harvest year: 1 November to 31 October, named after the harvest it ends with (1 Nov 2025 - 31 Oct 2026 = 2026). */
+const hYear = iso => { const t = String(iso || ""), y = +t.slice(0, 4), m = +t.slice(5, 7); return y > 1900 ? (m >= 11 ? y + 1 : y) : 0; };
+const curHYear = () => hYear(todayIso());
 const dloc = () => (lang === "hi" ? "hi-IN" : "en-IN");
 const fmtD = n => (+n || 0).toLocaleString("en-IN", {maximumFractionDigits: 2});
 const pct = (a, b) => (b ? Math.round(a / b * 100) + "%" : "–");
@@ -2340,7 +2343,7 @@ function insightsHtml(o, Y) {
       tile("k_due", inr(r.due)) + "</div>";
   }
   // season timeline from the diary
-  const tl = ((o.diary || []).filter(d => String(d.date).slice(0, 4) === String(Y) && TIMELINE_KINDS.indexOf(d.kind) >= 0)).sort((a, b) => (a.date < b.date ? -1 : 1));
+  const tl = ((o.diary || []).filter(d => hYear(d.date) === +Y && TIMELINE_KINDS.indexOf(d.kind) >= 0)).sort((a, b) => (a.date < b.date ? -1 : 1));
   h += '<section class="osec"><h4>' + tr("s_timeline") + "</h4>" + (tl.length
     ? '<ol class="tl">' + tl.map(d => '<li class="k-' + d.kind + '"><b>' + fmtDay(d.date) + "</b> " + tr("dk_" + d.kind) + (d.text ? '<span class="tlt">' + esc(d.text) + "</span>" : "") + "</li>").join("") + "</ol>"
     : '<p class="hint">' + tr("s_tl_none") + "</p>") + "</section>";
@@ -2465,8 +2468,8 @@ function diaryHtml(o) {
   let yr = null;
   h += '<div class="dlist">';
   all.forEach(d => {
-    const y = String(d.date).slice(0, 4);
-    if (y !== yr) { if (yr !== null) h += "</ul>"; yr = y; h += '<p class="subhead">' + esc(y) + "</p><ul>"; }
+    const y = hYear(d.date);
+    if (y !== yr) { if (yr !== null) h += "</ul>"; yr = y; h += '<p class="subhead">' + tr("hy_label").replace("{y}", y) + "</p><ul>"; }
     h += '<li' + (d.id === diaryEdit ? ' class="editing"' : "") + '><span class="dd">' + fmtDay(d.date) + '</span><span class="dt"><b>' + tr("dk_" + d.kind) + "</b>" +
       (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : "") + (d.text ? "<span>" + esc(d.text) + "</span>" : "") + "</span>" +
       '<span class="dc">' + (+d.cost ? inr(+d.cost) : "") + '</span><span class="da"><button class="link" type="button" data-dact="dedit" data-id="' + esc(d.id) + '">' + tr("dy_edit") +
@@ -2477,7 +2480,7 @@ function diaryHtml(o) {
 
 function orchardPage(o) {
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
-    .concat((o.diary || []).map(d => +String(d.date).slice(0, 4)).filter(y => y > 1900)))).sort((a, b) => b - a);
+    .concat((o.diary || []).map(d => hYear(d.date)).filter(y => y > 1900)))).sort((a, b) => b - a);
   if (!yrs.length) yrs.push(thisYear());
   if (yrs.indexOf(dashYear) < 0) {
     const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year);
@@ -2620,7 +2623,7 @@ function pruneSeason(oid, y) {
   S.seasons = S.seasons.filter(x => x !== se);
 }
 function expEntries(o, y) {
-  return ((o && o.diary) || []).filter(d => +d.cost > 0 && String(d.date || "").slice(0, 4) === String(y)).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  return ((o && o.diary) || []).filter(d => +d.cost > 0 && hYear(d.date) === +y).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 function expTotals(o, y) {
   const se = seFor(o.id, y), cat = {}, ents = expEntries(o, y);
@@ -2634,8 +2637,8 @@ function fixExp() {
   if (!S.orchards.some(o => o.id === exO)) exO = S.orchards.some(o => o.id === sel.o) ? sel.o : (S.orchards[0] ? S.orchards[0].id : null);
 }
 function expYearsAll() {
-  const ys = new Set([thisYear()]);
-  S.orchards.forEach(o => (o.diary || []).forEach(d => { if (+d.cost > 0) { const y = +String(d.date).slice(0, 4); if (y > 1900) ys.add(y); } }));
+  const ys = new Set([curHYear()]);
+  S.orchards.forEach(o => (o.diary || []).forEach(d => { if (+d.cost > 0) { const y = hYear(d.date); if (y > 1900) ys.add(y); } }));
   S.seasons.forEach(x => { if (COST_KEYS.some(k => +x.costs[k] > 0)) ys.add(x.year); });
   return Array.from(ys).sort((a, b) => b - a);
 }
@@ -2677,7 +2680,7 @@ function renderExpList() {
   years.forEach(y => {
     const d = data[y], open = exOpen.has(y);
     const ent = tr(d.ents === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(d.ents));
-    const meta = !d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent);
+    const meta = tr("hy_range").replace("{a}", y - 1).replace("{b}", y) + " " + (!d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent));
     h += '<div class="yrow' + (open ? " open" : "") + '" id="exy-' + y + '"><button class="yhead" type="button" data-exact="ytoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
       '<span class="yy">' + y + '</span><span class="ymid"><span class="ymeta">' + meta + '</span><span class="ybar"><span class="fill ex" style="width:' + (d.total / ymax * 100).toFixed(1) +
       '%"></span></span></span><span class="ynet exn">' + inr(d.total) + '</span><span class="ychev" aria-hidden="true"></span></button>';
@@ -2760,7 +2763,7 @@ $("rp-exp").addEventListener("click", e => {
     const gone = (o.diary || []).find(d => d.id === b.dataset.id);
     o.diary = (o.diary || []).filter(d => d.id !== b.dataset.id);
     if (exEdit === b.dataset.id) exEdit = null;
-    if (gone) pruneSeason(o.id, +String(gone.date).slice(0, 4));
+    if (gone) pruneSeason(o.id, hYear(gone.date));
     expChanged(); renderExp();
   }
 });
@@ -2774,12 +2777,12 @@ $("rp-exp").addEventListener("submit", e => {
   const entry = Object.assign({}, old || {}, {id: exEdit || newId(), date: date, kind: kind, cost: cost, text: $("ex_text").value.trim(), stage: kind === "spray" ? $("ex_stage").value : ""});
   if (oldO) oldO.diary = (oldO.diary || []).filter(d => d.id !== entry.id);
   o.diary = (o.diary || []).filter(d => d.id !== entry.id).concat([entry]);
-  const y = +date.slice(0, 4);
+  const y = hYear(date);
   ensureSeason(o.id, y);
-  if (old) pruneSeason(oldO.id, +String(old.date).slice(0, 4));
+  if (old) pruneSeason(oldO.id, hYear(old.date));
   exEdit = null; exO = o.id; exOpen.add(y);
   expChanged(); renderExp();
-  set("ex_ok", tr("ex_saved"));
+  set("ex_ok", tr("ex_saved").replace("{y}", y));
   const k = $("ex_kind"); if (k) k.focus();
 });
 
