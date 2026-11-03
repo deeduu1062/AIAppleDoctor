@@ -133,6 +133,22 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .lothead2{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .lothead2 b{font-family:var(--display);font-size:1.05rem}
 .lothead2 .link.del{color:var(--bad);font-size:.88rem}
+.tpanel.adm{max-width:none;grid-template-columns:minmax(0,1fr)}
+.adm>*{min-width:0}
+#adErr:empty{display:none}
+#adBody .ystats{margin-top:0}
+.admbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.admbar .fine{margin:0}
+.admfind{max-width:340px;margin-top:18px}
+.admfind input{font-family:var(--body)!important}
+#adTable .tablewrap{margin-top:10px}
+#adTable .ledger{min-width:760px}
+#adTable .ledger td{font-family:var(--body);font-size:.92rem}
+#adTable .ledger td.n{font-family:var(--mono)}
+#adTable .ledger th[scope=row]{font-weight:600;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+#adTable .tag{display:inline-block;font-size:.8rem;font-weight:600;padding:1px 8px;border-radius:6px;border:1px solid var(--line);color:var(--muted)}
+#adTable .tag.ok{color:var(--good);border-color:var(--good)}
+#adTable .tag.me{color:var(--apple);border-color:var(--apple)}
 .possel{max-width:260px;margin-bottom:8px}
 .possel label{font-size:.8rem;margin-bottom:3px}
 .lothead2 .lotmv{display:flex;gap:14px;margin-left:auto}
@@ -434,7 +450,7 @@ legend{font-size:.95rem}
     <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
     <nav class="nav" aria-label="Account and language"><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
   </header>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-admin" aria-selected="false" aria-controls="tp-admin" type="button" data-i18n="tt_admin" hidden></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -559,6 +575,19 @@ legend{font-size:.95rem}
       <div class="linkrow">
         <a class="btn primary" href="https://agmarknet.gov.in" target="_blank" rel="noopener" data-i18n="m_link"></a>
         <p class="sub2" data-i18n="m_link_note"></p>
+      </div>
+    </div>
+
+    <div class="tpanel adm" id="tp-admin" role="tabpanel" aria-labelledby="tt-admin" hidden>
+      <div class="thead"><h3 data-i18n="ad_h"></h3><span class="pill" data-i18n="ad_pill"></span></div>
+      <p data-i18n="ad_p"></p>
+      <div class="admbar"><button class="btn-s add" type="button" id="adRefresh" data-i18n="ad_refresh"></button><span class="fine" id="adAt" role="status"></span></div>
+      <p class="autherr" id="adErr" role="alert"></p>
+      <div id="adBody" hidden>
+        <div class="ystats" id="adStats"></div>
+        <div class="admfind field"><label for="adFind" data-i18n="ad_find"></label><input id="adFind" type="search" autocomplete="off" spellcheck="false"></div>
+        <div id="adTable"></div>
+        <p class="fine" data-i18n="ad_note"></p>
       </div>
     </div>
 
@@ -840,6 +869,15 @@ en: {
   pc_h:"Profit calculator", pc_p:"Add each grade or rate you sold. Gross is boxes × rate, and net income is gross minus expenses. Everything is worked out on your phone and nothing is sent anywhere.",
   pc_lines:"Your sale", pc_hint:"The starting numbers are examples. Change them to yours.",
   pc_rec:"To keep every lot for each orchard and see your total for each year, you will need to sign in. Sign-in is coming next, and your records will stay private to your account.",
+  tt_admin:"Admin", ad_h:"Admin", ad_pill:"Only you can see this",
+  ad_p:"Everyone who has made an account, when they last signed in, and whether they are keeping records. Sale figures stay private to each grower.",
+  ad_refresh:"Refresh", ad_at:"Updated {t}", ad_loading:"Loading…", ad_find:"Find by email",
+  ad_total:"Accounts", ad_a7:"Signed in, last 7 days", ad_a30:"Signed in, last 30 days", ad_new7:"New this week", ad_rec:"Keeping records", ad_unconf:"Email not confirmed",
+  ad_email:"Email", ad_joined:"Joined", ad_last:"Last sign-in", ad_orch:"Orchards", ad_years:"Years", ad_lots:"Lots", ad_saved:"Last saved", ad_status:"Status",
+  ad_ok:"Confirmed", ad_no:"Not confirmed", ad_me:"You", ad_never:"Never", ad_today:"Today, {t}", ad_yday:"Yesterday, {t}", ad_none:"No accounts match.",
+  ad_note:"Last sign-in is the most recent time each person signed in. Orchards, years and lots leave out the example records.",
+  ad_err_setup:"The admin view is not set up yet. Run the admin SQL once in Supabase > SQL Editor (it is in the project notes), then tap Refresh.",
+  ad_err_deny:"This account is not an admin.", ad_err:"Could not load the admin view: {m}",
   tt_orch:"My orchards", hdr_signin:"Sign in", hdr_mine:"My orchards", s_signin:"Sign in needed", s_signedin:"Signed in",
   or_p:"Create your own private account to keep your orchards, sale lots and yearly totals. Only you can see them, and they are there on any phone you sign in on.",
   auth_h:"Sign in or create your account", auth_p:"Sign in with your email and password. New here? Choose a password and tap Create account. You can also ask for a sign-in link by email instead of using a password.",
@@ -976,6 +1014,15 @@ hi: {
   pc_h:"मुनाफ़ा कैलकुलेटर", pc_p:"जो ग्रेड या भाव बेचा, हर एक की पंक्ति जोड़ें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर। सारा हिसाब आपके फ़ोन पर ही होता है, कुछ भी कहीं भेजा नहीं जाता।",
   pc_lines:"आपकी बिक्री", pc_hint:"शुरुआती संख्याएँ उदाहरण हैं। इन्हें अपनी संख्याओं से बदलें।",
   pc_rec:"हर बाग़ का हर लॉट सहेजने और हर साल का कुल देखने के लिए आपको साइन इन करना होगा। साइन-इन अगला काम है, और आपका रिकॉर्ड सिर्फ़ आपके खाते में रहेगा।",
+  tt_admin:"एडमिन", ad_h:"एडमिन", ad_pill:"सिर्फ़ आप देख सकते हैं",
+  ad_p:"जिन्होंने भी खाता बनाया है, उन्होंने आख़िरी बार कब साइन इन किया, और क्या वे रिकॉर्ड रख रहे हैं। बिक्री के आँकड़े हर बागवान के अपने रहते हैं।",
+  ad_refresh:"ताज़ा करें", ad_at:"{t} पर ताज़ा किया", ad_loading:"लोड हो रहा है…", ad_find:"ईमेल से ढूँढें",
+  ad_total:"खाते", ad_a7:"पिछले 7 दिन में साइन इन", ad_a30:"पिछले 30 दिन में साइन इन", ad_new7:"इस हफ़्ते नए", ad_rec:"रिकॉर्ड रख रहे हैं", ad_unconf:"ईमेल की पुष्टि नहीं हुई",
+  ad_email:"ईमेल", ad_joined:"जुड़े", ad_last:"आख़िरी साइन इन", ad_orch:"बाग़", ad_years:"साल", ad_lots:"लॉट", ad_saved:"आख़िरी बार सहेजा", ad_status:"स्थिति",
+  ad_ok:"पुष्टि हुई", ad_no:"पुष्टि नहीं हुई", ad_me:"आप", ad_never:"कभी नहीं", ad_today:"आज, {t}", ad_yday:"कल, {t}", ad_none:"कोई खाता नहीं मिला।",
+  ad_note:"आख़िरी साइन इन यानी हर व्यक्ति ने सबसे हाल में कब साइन इन किया। बाग़, साल और लॉट में उदाहरण वाले रिकॉर्ड शामिल नहीं हैं।",
+  ad_err_setup:"एडमिन व्यू अभी सेट नहीं हुआ है। Supabase > SQL Editor में एडमिन SQL एक बार चलाएँ (यह प्रोजेक्ट नोट्स में है), फिर ताज़ा करें दबाएँ।",
+  ad_err_deny:"यह खाता एडमिन नहीं है।", ad_err:"एडमिन व्यू लोड नहीं हो सका: {m}",
   tt_orch:"मेरे बाग़", hdr_signin:"साइन इन", hdr_mine:"मेरे बाग़", s_signin:"साइन इन ज़रूरी", s_signedin:"साइन इन है",
   or_p:"अपने बाग़, बिक्री के लॉट और साल भर के कुल सहेजने के लिए अपना निजी खाता बनाएँ। इन्हें सिर्फ़ आप देख सकते हैं, और जिस भी फ़ोन पर साइन इन करें वहाँ मिलेंगे।",
   auth_h:"साइन इन करें या अपना खाता बनाएँ", auth_p:"अपने ईमेल और पासवर्ड से साइन इन करें। नए हैं? पासवर्ड चुनें और खाता बनाएँ दबाएँ। चाहें तो पासवर्ड की जगह ईमेल से साइन-इन लिंक भी मँगवा सकते हैं।",
@@ -1064,7 +1111,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); if (AD) renderAdmin();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -1271,11 +1318,63 @@ window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault
 
 function renderAcct() {
   $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user;
+  $("tt-admin").hidden = !isAdmin();
+  if (!isAdmin()) { AD = null; adLoaded = false; if (!$("tp-admin").hidden) showTool(user ? "orch" : "calc"); }
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || ""));
   if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail));
 }
 let recovering = false, pwOpen = false;
+
+/* ---------- admin (the real check is in the admin_overview function in Supabase) ---------- */
+const ADMIN_EMAILS = ["deeduu@gmail.com"];
+const isAdmin = () => !!(user && user.email && ADMIN_EMAILS.indexOf(user.email.toLowerCase()) >= 0);
+let AD = null, adBusy = false, adLoaded = false;
+function adWhen(iso) {
+  if (!iso) return tr("ad_never");
+  const d = new Date(iso), now = new Date(), loc = lang === "hi" ? "hi-IN" : "en-IN";
+  const t = d.toLocaleTimeString(loc, {hour: "2-digit", minute: "2-digit"});
+  const day = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(now) - day(d)) / 864e5);
+  if (diff === 0) return tr("ad_today").replace("{t}", t);
+  if (diff === 1) return tr("ad_yday").replace("{t}", t);
+  return d.toLocaleDateString(loc, {day: "numeric", month: "short", year: d.getFullYear() === now.getFullYear() ? undefined : "numeric"});
+}
+async function loadAdmin() {
+  if (!isAdmin() || !sb || adBusy) return;
+  adBusy = true; set("adErr", ""); set("adAt", tr("ad_loading")); $("adRefresh").disabled = true;
+  let res = null, err = null;
+  try { res = await sb.rpc("admin_overview"); err = res.error; } catch (x) { err = x; }
+  adBusy = false; $("adRefresh").disabled = false; set("adAt", "");
+  if (err) {
+    const m = String(err.message || err), code = String(err.code || "");
+    set("adErr", code === "PGRST202" || /could not find the function|does not exist/i.test(m) ? tr("ad_err_setup")
+      : code === "42501" || /not allowed|permission denied/i.test(m) ? tr("ad_err_deny") : tr("ad_err").replace("{m}", m));
+    return;
+  }
+  AD = res.data; adLoaded = true; renderAdmin();
+}
+function renderAdmin() {
+  if (!AD) { $("adBody").hidden = true; return; }
+  $("adBody").hidden = false;
+  set("adAt", tr("ad_at").replace("{t}", adWhen(AD.at)));
+  const st = (k, v, main) => "<div" + (main ? ' class="main"' : "") + "><span>" + tr(k) + "</span><b>" + fmtN(+v || 0) + "</b></div>";
+  $("adStats").innerHTML = st("ad_total", AD.total, true) + st("ad_a7", AD.active7) + st("ad_a30", AD.active30) + st("ad_new7", AD.new7) +
+    st("ad_rec", AD.withRecords) + st("ad_unconf", (+AD.total || 0) - (+AD.confirmed || 0));
+  const q = $("adFind").value.trim().toLowerCase();
+  const rows = (AD.users || []).filter(u => !q || String(u.email || "").toLowerCase().indexOf(q) >= 0);
+  if (!rows.length) { $("adTable").innerHTML = '<p class="empty">' + tr("ad_none") + "</p>"; return; }
+  const mine = (user && user.email || "").toLowerCase();
+  const head = ["ad_email", "ad_joined", "ad_last", "ad_orch", "ad_years", "ad_lots", "ad_saved", "ad_status"];
+  $("adTable").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map(u => '<tr><th scope="row">' + esc(u.email || "–") + (String(u.email || "").toLowerCase() === mine ? ' <span class="tag me">' + tr("ad_me") + "</span>" : "") + "</th>" +
+      "<td>" + adWhen(u.created_at) + "</td><td>" + adWhen(u.last_sign_in_at) + '</td><td class="n">' + fmtN(+u.orchards || 0) + '</td><td class="n">' + fmtN(+u.years || 0) +
+      '</td><td class="n">' + fmtN(+u.lots || 0) + "</td><td>" + (u.saved_at ? adWhen(u.saved_at) : "–") + "</td>" +
+      '<td><span class="tag' + (u.confirmed ? " ok" : "") + '">' + tr(u.confirmed ? "ad_ok" : "ad_no") + "</span></td></tr>").join("") +
+    "</tbody></table></div>";
+}
+$("adRefresh").addEventListener("click", loadAdmin);
+$("adFind").addEventListener("input", renderAdmin);
 function renderOrchGate() {
   const ready = !!(user && loaded) && !recovering;
   $("authCard").hidden = !!user;
@@ -1881,7 +1980,7 @@ $("rp-orch").addEventListener("click", e => {
 });
 
 /* ---- top tabs ---- */
-const TT = ["orch","calc","diag","spray","cal","mandi","buy"];
+const TT = ["orch","calc","diag","spray","cal","mandi","buy","admin"];
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -1894,17 +1993,19 @@ function showTool(w, focus, scroll) {
     }
   });
   if (scroll && $("tools").scrollIntoView) $("tools").scrollIntoView({block:"start"});
+  if (w === "admin" && !adLoaded) loadAdmin();
 }
 TT.forEach((n, i) => {
   const b = $("tt-" + n);
   b.addEventListener("click", () => { tabPicked = true; showTool(n, false, true); });
   b.addEventListener("keydown", e => {
+    const vis = TT.filter(t => !$("tt-" + t).hidden), k = vis.indexOf(n);
     let j = -1;
-    if (e.key === "ArrowRight") j = (i + 1) % TT.length;
-    else if (e.key === "ArrowLeft") j = (i + TT.length - 1) % TT.length;
+    if (e.key === "ArrowRight") j = (k + 1) % vis.length;
+    else if (e.key === "ArrowLeft") j = (k + vis.length - 1) % vis.length;
     else if (e.key === "Home") j = 0;
-    else if (e.key === "End") j = TT.length - 1;
-    if (j >= 0) { e.preventDefault(); showTool(TT[j], true, false); }
+    else if (e.key === "End") j = vis.length - 1;
+    if (j >= 0) { e.preventDefault(); showTool(vis[j], true, false); }
   });
 });
 showTool("calc");
