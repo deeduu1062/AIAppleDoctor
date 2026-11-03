@@ -540,6 +540,21 @@ legend{font-size:.95rem}
 .spo .lotrow{background:var(--bg)}
 @media (max-width:560px){.spohead{grid-template-columns:minmax(0,1fr) auto}.spohead .ymeta{grid-column:1/-1;grid-row:2}}
 /* Yearly expenses */
+.exformbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;display:grid;gap:10px}
+.exformbox h4{font-size:1.3rem;font-weight:700}
+.exlistbox{display:grid;gap:8px}
+.exlistbox > h4{font-size:1.3rem;font-weight:700;margin-top:6px}
+.exlistbox > .hint{margin:0}
+.ybar .fill.ex{background:var(--seg-pack)}
+.ynet.exn{color:var(--fg)}
+.exo .tablewrap{margin-top:0}
+.extab thead th:nth-child(2){text-align:left}
+.exo .exlump{margin:0;padding-top:4px}
+.exo .exlump summary{font-size:.9rem;padding:4px 0}
+.lotrow .lhead{cursor:default;grid-template-columns:4.6rem minmax(0,1fr) auto}
+.lotrow .lhead:hover{background:transparent}
+.lotrow .lhead .ychev{display:none}
+@media (max-width:560px){.lotrow .lhead{grid-template-columns:4rem minmax(0,1fr)}}
 .expick{max-width:520px}
 .excost{margin-top:14px}
 .pbars.excat li{grid-template-columns:minmax(0,13rem) minmax(0,1fr) 5.5rem}
@@ -768,12 +783,8 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 
       <div class="subpanel" id="rp-exp" role="tabpanel" aria-labelledby="rt-exp" hidden>
         <p class="hint" data-i18n="ex_p"></p>
-        <div class="pick expick">
-          <div class="field"><label for="exOrch" data-i18n="lbl_orchard"></label><select id="exOrch"></select></div>
-          <div class="field yr"><label for="exYear" data-i18n="lbl_year"></label><select id="exYear"></select></div>
-        </div>
-        <div id="exTop"></div>
-        <div id="exBody"></div>
+        <div class="exformbox" id="exForm"></div>
+        <div class="exlistbox" id="exList"></div>
       </div>
       <div class="subpanel" id="rp-quick" role="tabpanel" aria-labelledby="rt-quick">
       <p data-i18n="pc_p"></p>
@@ -1108,7 +1119,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   dk_flower:"Flowering", dk_hstart:"Harvest started", dk_hend:"Harvest finished", dk_problem:"Problem noticed", dk_note:"Note",
   cmp_h:"Orchards side by side, {y}", cmp_o:"Orchard", cmp_note:"Per-tree figures need the number of trees, which you can add in each orchard's profile.",
   costs_diary:"Another {x} for {y} comes from the season diary and is added automatically.",
-  pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that year's net income and also appear in the orchard's season diary.",
+  ex_years:"Expenses by year", ex_years_hint:"Tap a year to see that year's expenses for each orchard.", ex_ymeta:"{n} orchards, {e}", ex_ymeta1:"1 orchard, {e}", ex_ometa:"{e} entries", ex_ometa1:"1 entry", ex_ptree:"{x} a tree", ex_zero:"No expenses this year.", ex_yrcat:"By category, all orchards", pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that year's net income and also appear in the orchard's season diary.",
   ex_all:"All orchards, {y}", ex_entries:"Entries", ex_total:"Yearly expenses", ex_big:"Biggest cost", ex_bycat:"By category", ex_pluslump:"plus {x} in lump sums",
   ex_add:"Add expense", ex_upd:"Update expense", ex_cat:"Category", ex_amt:"Amount (₹)", ex_amt0:"Amount", ex_det:"Details (optional)", ex_det0:"Details",
   ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved.",
@@ -1156,7 +1167,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   hc_net:"Net profit", hc_ppb:"Net per box", hc_gx:"Gross {g} · Expenses {e}",
   lang_btn:"हिंदी", orchard_fallback:"Orchard", lot_fallback:"Lot",
   calc_p:"Keep a record for each orchard and each year. Add every lot you sold with its boxes, rate and expense. Gross is boxes × rate, and net income is gross minus expenses.",
-  lot_help:"Tap a lot to see its entries, then use Edit or Delete on any entry.", sp_addhint:"To add a new lot, choose the orchard and year, then tap Add.", sp_tap:"Tap a year to see each orchard's lots, then tap a lot to see its entries.", sp_meta:"{n} lots, {b} boxes, {p} net a box", sp_meta1:"1 lot, {b} boxes, {p} net a box", sp_nolots:"No lots for this year yet.", sp_yc2:"Yearly expenses {x}, already taken off.", sp_addlot:"＋ Add lot", sp_none:"No lots yet. Choose an orchard and year above, then tap Add.", l_meta:"{e} entries, {b} boxes, {p} a box", l_meta1:"1 entry, {b} boxes, {p} a box", half_note:"A half box counts as half a box when working out net per box.",
+  lot_help:"Tap a lot to see its entries, then use Edit or Delete on any entry.", sp_addhint:"To add a new lot, choose the orchard and year, then tap Add.", sp_tap:"Tap a year to see each orchard's lots and their entries.", sp_meta:"{n} lots, {b} boxes, {p} net a box", sp_meta1:"1 lot, {b} boxes, {p} net a box", sp_nolots:"No lots for this year yet.", sp_yc2:"Yearly expenses {x}, already taken off.", sp_addlot:"＋ Add lot", sp_none:"No lots yet. Choose an orchard and year above, then tap Add.", l_meta:"{e} entries, {b} boxes, {p} a box", l_meta1:"1 entry, {b} boxes, {p} a box", half_note:"A half box counts as half a box when working out net per box.",
   f_lname:"Lot name (optional, for example the buyer or mandi)", f_grade:"Grade or note (optional)", f_date:"Sale date (optional)",
   f_boxes:"Boxes", f_rate:"Rate per box (₹)", f_exp:"Expense per box (₹)", f_paidon:"Payment date (optional)",
   f_half:"Half box", f_paid:"Payment received",
@@ -1299,7 +1310,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   dk_flower:"फूल आए", dk_hstart:"तुड़ाई शुरू", dk_hend:"तुड़ाई ख़त्म", dk_problem:"समस्या दिखी", dk_note:"नोट",
   cmp_h:"सभी बाग़ एक साथ, {y}", cmp_o:"बाग़", cmp_note:"प्रति पेड़ आँकड़ों के लिए पेड़ों की संख्या चाहिए, जो हर बाग़ की जानकारी में डाली जा सकती है।",
   costs_diary:"{y} के {x} और सीज़न डायरी से आते हैं और अपने आप जुड़ जाते हैं।",
-  pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस साल की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
+  ex_years:"साल-दर-साल ख़र्च", ex_years_hint:"किसी साल पर दबाएँ, तो उस साल हर बाग़ के ख़र्च दिखेंगे।", ex_ymeta:"{n} बाग़, {e}", ex_ymeta1:"1 बाग़, {e}", ex_ometa:"{e} एंट्री", ex_ometa1:"1 एंट्री", ex_ptree:"{x} प्रति पेड़", ex_zero:"इस साल कोई ख़र्च नहीं।", ex_yrcat:"मद के हिसाब से, सभी बाग़", pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस साल की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
   ex_all:"सभी बाग़, {y}", ex_entries:"एंट्री", ex_total:"साल भर के ख़र्च", ex_big:"सबसे बड़ा ख़र्च", ex_bycat:"किस मद में कितना", ex_pluslump:"और {x} एकमुश्त",
   ex_add:"ख़र्च जोड़ें", ex_upd:"ख़र्च बदलें", ex_cat:"मद", ex_amt:"रक़म (₹)", ex_amt0:"रक़म", ex_det:"विवरण (वैकल्पिक)", ex_det0:"विवरण",
   ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च सहेज लिया गया।",
@@ -1347,7 +1358,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   hc_net:"शुद्ध मुनाफ़ा", hc_ppb:"प्रति पेटी शुद्ध मुनाफ़ा", hc_gx:"कुल बिक्री {g} · ख़र्च {e}",
   lang_btn:"English", orchard_fallback:"बाग़", lot_fallback:"लॉट",
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। बेचे गए हर लॉट की पेटियाँ, भाव और ख़र्च डालें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर।",
-  lot_help:"किसी लॉट की एंट्री देखने के लिए उस पर दबाएँ, फिर किसी भी एंट्री पर बदलें या हटाएँ दबाएँ।", sp_addhint:"नया लॉट जोड़ने के लिए बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", sp_tap:"हर बाग़ के लॉट देखने के लिए किसी साल पर दबाएँ, फिर एंट्री देखने के लिए किसी लॉट पर दबाएँ।", sp_meta:"{n} लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_meta1:"1 लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_nolots:"इस साल का कोई लॉट अभी नहीं है।", sp_yc2:"साल भर के ख़र्च {x}, पहले ही घटाए गए।", sp_addlot:"＋ लॉट जोड़ें", sp_none:"अभी कोई लॉट नहीं है। ऊपर बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", l_meta:"{e} एंट्री, {b} पेटियाँ, {p} प्रति पेटी", l_meta1:"1 एंट्री, {b} पेटियाँ, {p} प्रति पेटी", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
+  lot_help:"किसी लॉट की एंट्री देखने के लिए उस पर दबाएँ, फिर किसी भी एंट्री पर बदलें या हटाएँ दबाएँ।", sp_addhint:"नया लॉट जोड़ने के लिए बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", sp_tap:"हर बाग़ के लॉट और उनकी एंट्री देखने के लिए किसी साल पर दबाएँ।", sp_meta:"{n} लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_meta1:"1 लॉट, {b} पेटियाँ, {p} शुद्ध प्रति पेटी", sp_nolots:"इस साल का कोई लॉट अभी नहीं है।", sp_yc2:"साल भर के ख़र्च {x}, पहले ही घटाए गए।", sp_addlot:"＋ लॉट जोड़ें", sp_none:"अभी कोई लॉट नहीं है। ऊपर बाग़ और साल चुनें, फिर जोड़ें दबाएँ।", l_meta:"{e} एंट्री, {b} पेटियाँ, {p} प्रति पेटी", l_meta1:"1 एंट्री, {b} पेटियाँ, {p} प्रति पेटी", half_note:"प्रति पेटी शुद्ध आय निकालते समय आधी पेटी आधी गिनी जाती है।",
   f_lname:"लॉट का नाम (वैकल्पिक, जैसे ख़रीदार या मंडी)", f_grade:"ग्रेड या टिप्पणी (वैकल्पिक)", f_date:"बिक्री की तारीख़ (वैकल्पिक)",
   f_boxes:"पेटियाँ", f_rate:"प्रति पेटी भाव (₹)", f_exp:"प्रति पेटी ख़र्च (₹)", f_paidon:"भुगतान की तारीख़ (वैकल्पिक)",
   f_half:"आधी पेटी", f_paid:"भुगतान मिल गया",
@@ -1730,7 +1741,7 @@ async function applyUser(u) {
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
   if (!u) {
-    curSub = "quick"; exO = null; exY = null; exEdit = null; dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
+    curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); spOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false; addingO = false;
     $("authStep1").hidden = false; $("authStep2").hidden = true;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
@@ -2092,10 +2103,7 @@ function lotHeadInner(l, i, max) {
 }
 function lotHtml(l, i, cnt, max) {
   const n = editLine && editLine.lot === l.id ? l.lines.find(x => x.id === editLine.line) : null;
-  const open = lotOpen.has(l.id) || !!n;
-  let h = '<div class="yrow lotrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="lottoggle" data-id="' + l.id + '" data-lhead="' + i + '" aria-expanded="' + open + '">' +
-    lotHeadInner(l, i, max) + "</button>";
-  if (!open) return h + "</div>";
+  let h = '<div class="yrow lotrow open"><div class="yhead lhead" data-lhead="' + i + '" data-id="' + l.id + '">' + lotHeadInner(l, i, max) + "</div>";
   return h + '<div class="ybody lotbox"><div class="lotacts">' +
     (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + l.id + '">' + tr("lot_up") + "</button>" : "") +
     (i < cnt - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + l.id + '">' + tr("lot_down") + "</button>" : "") +
@@ -2595,59 +2603,25 @@ function expTotals(o, y) {
 }
 function fixExp() {
   if (!S.orchards.some(o => o.id === exO)) exO = S.orchards.some(o => o.id === sel.o) ? sel.o : (S.orchards[0] ? S.orchards[0].id : null);
-  if (!exY) exY = thisYear();
 }
-function expYears(o) {
-  const ys = [], ty = thisYear();
-  for (let i = 0; i < 10; i++) ys.push(ty - i);
-  S.seasons.filter(x => o && x.oid === o.id).forEach(x => { if (ys.indexOf(x.year) < 0) ys.push(x.year); });
-  ((o && o.diary) || []).forEach(d => { const y = +String(d.date).slice(0, 4); if (y > 1900 && ys.indexOf(y) < 0) ys.push(y); });
-  if (ys.indexOf(exY) < 0) ys.push(exY);
-  return ys.sort((a, b) => b - a);
+function expYearsAll() {
+  const ys = new Set([thisYear()]);
+  S.orchards.forEach(o => (o.diary || []).forEach(d => { if (+d.cost > 0) { const y = +String(d.date).slice(0, 4); if (y > 1900) ys.add(y); } }));
+  S.seasons.forEach(x => { if (COST_KEYS.some(k => +x.costs[k] > 0)) ys.add(x.year); });
+  return Array.from(ys).sort((a, b) => b - a);
 }
-function renderExpTop() {
-  const el = $("exTop"); if (!el) return;
+let exOpen = new Set();
+function renderExpForm() {
+  const el = $("exForm"); if (!el) return;
   fixExp();
-  const o = S.orchards.find(x => x.id === exO);
-  if (!o) { el.innerHTML = '<p class="empty">' + tr("ex_noorch") + "</p>"; return; }
-  let h = "";
-  // all orchards for the year
-  const rows = S.orchards.map(x => ({o: x, t: expTotals(x, exY)}));
-  const all = rows.reduce((a, r) => a + r.t.total, 0);
-  if (S.orchards.length > 1) {
-    h += '<section class="osec"><h4>' + tr("ex_all").replace("{y}", exY) + '</h4><div class="tablewrap"><table class="ledger sm"><thead><tr>' +
-      ["cmp_o", "ex_entries", "ex_total", "m_pt"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-      rows.map(r => '<tr' + (r.o.id === exO ? ' class="editing"' : "") + '><th scope="row"><button class="link" type="button" data-exsel="' + esc(r.o.id) + '">' + esc(r.o.name || tr("orchard_fallback")) +
-        "</button></th><td>" + fmtN(r.t.ents.length) + "</td><td>" + inr(r.t.total) + "</td><td>" + (+r.o.trees ? inr(r.t.total / +r.o.trees) : "–") + "</td></tr>").join("") +
-      '</tbody><tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + fmtN(rows.reduce((a, r) => a + r.t.ents.length, 0)) + "</td><td>" + inr(all) + "</td><td></td></tr></tfoot></table></div></section>";
-  }
-  // the chosen orchard
-  const t = expTotals(o, exY), trees = +o.trees, cats = Object.keys(t.cat).sort((a, b) => t.cat[b] - t.cat[a]);
-  h += '<section class="osec"><h4>' + esc(o.name || tr("orchard_fallback")) + ", " + exY + "</h4>";
-  if (!t.total) h += '<p class="hint">' + tr("ex_none").replace("{o}", esc(o.name || tr("orchard_fallback"))).replace("{y}", exY) + "</p>";
-  else {
-    const tile = (lab, val, extra, sub) => "<div" + (extra ? ' class="' + extra + '"' : "") + "><span>" + lab + "</span><b>" + val + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
-    h += '<div class="ystats">' + tile(tr("ex_total"), inr(t.total), "main") + tile(tr("m_pt"), trees ? inr(t.total / trees) : "–", "", trees ? "" : tr("k_addtrees")) +
-      tile(tr("ex_big"), inr(t.cat[cats[0]]), "", tr("dk_" + cats[0])) + tile(tr("ex_entries"), fmtN(t.ents.length), "", t.lump ? tr("ex_pluslump").replace("{x}", inr(t.lump)) : "") + "</div>";
-    const mx = t.cat[cats[0]] || 1;
-    h += '<p class="subhead">' + tr("ex_bycat") + '</p><ul class="pbars excat">' + cats.map(k => '<li><span class="yl">' + tr("dk_" + k) + '</span><span class="track"><span class="fill" style="width:' +
-      (t.cat[k] / mx * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(t.cat[k]) + '</span><span class="ys">' + pct(t.cat[k], t.total) + "</span></li>").join("") + "</ul>";
-  }
-  el.innerHTML = h + "</section>";
-}
-function renderExpBody() {
-  const el = $("exBody"); if (!el) return;
-  fixExp();
-  const o = S.orchards.find(x => x.id === exO);
-  $("exOrch").innerHTML = S.orchards.map(x => '<option value="' + esc(x.id) + '"' + (x.id === exO ? " selected" : "") + ">" + esc(x.name || tr("orchard_fallback")) + "</option>").join("");
-  $("exYear").innerHTML = expYears(o).map(y => '<option value="' + y + '"' + (y === exY ? " selected" : "") + ">" + y + "</option>").join("");
-  $("exOrch").disabled = $("exYear").disabled = !o;
-  if (!o) { el.innerHTML = ""; return; }
-  const ents = expEntries(o, exY), ed = exEdit ? ents.find(d => d.id === exEdit) || (o.diary || []).find(d => d.id === exEdit) : null;
-  const ty = thisYear(), defDate = exY === ty ? todayIso() : exY + "-01-01";
-  const v = ed || {date: defDate, kind: "", text: "", cost: "", stage: ""};
+  if (!S.orchards.length) { el.innerHTML = '<p class="empty">' + tr("ex_noorch") + "</p>"; return; }
+  let ed = null, edO = null;
+  if (exEdit) S.orchards.forEach(o => (o.diary || []).forEach(d => { if (d.id === exEdit) { ed = d; edO = o; } }));
+  if (exEdit && !ed) exEdit = null;
+  const v = ed || {date: todayIso(), kind: "", text: "", cost: "", stage: ""}, oid = edO ? edO.id : exO;
   const kinds = EXP_KINDS.slice(); if (v.kind && kinds.indexOf(v.kind) < 0) kinds.push(v.kind);
-  let h = '<section class="osec"><h4>' + tr(ed ? "ex_upd" : "ex_add") + '</h4><form class="dform" id="exForm">' +
+  el.innerHTML = '<h4>' + tr(ed ? "ex_upd" : "ex_add") + '</h4><form class="dform" id="exFormF">' +
+    '<div class="field"><label for="ex_orch">' + tr("lbl_orchard") + '</label><select id="ex_orch">' + S.orchards.map(o => '<option value="' + esc(o.id) + '"' + (o.id === oid ? " selected" : "") + ">" + esc(o.name || tr("orchard_fallback")) + "</option>").join("") + "</select></div>" +
     '<div class="field"><label for="ex_date">' + tr("dy_date") + '</label><input id="ex_date" type="date" value="' + esc(v.date) + '"></div>' +
     '<div class="field"><label for="ex_kind">' + tr("ex_cat") + '</label><select id="ex_kind"><option value="">' + tr("dy_pick") + "</option>" +
       kinds.map(k => '<option value="' + k + '"' + (k === v.kind ? " selected" : "") + ">" + tr("dk_" + k) + "</option>").join("") + "</select></div>" +
@@ -2657,73 +2631,125 @@ function renderExpBody() {
     '<div class="field wide"><label for="ex_text">' + tr("ex_det") + '</label><input id="ex_text" type="text" maxlength="200" placeholder="' + esc(tr("ex_det_ph")) + '" value="' + esc(v.text) + '"></div>' +
     '<p class="autherr wide" id="ex_err" role="alert"></p>' +
     '<div class="dels wide"><button class="btn-s add" type="submit">' + tr(ed ? "ex_upd" : "ex_add") + "</button>" + (ed ? '<button class="btn-s" type="button" data-exact="cancel">' + tr("d_cancel") + "</button>" : "") +
-    '<span class="fine" id="ex_ok" role="status"></span></div></form></section>';
-  h += '<section class="osec"><h4>' + tr("ex_list") + "</h4>";
-  if (!ents.length) h += '<p class="hint">' + tr("ex_noent") + "</p>";
-  else {
-    const tot = ents.reduce((a, d) => a + (+d.cost), 0);
-    h += '<div class="tablewrap"><table class="ledger sm extab"><thead><tr>' + ["dy_date", "ex_cat", "ex_amt0", ""].map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
-      ents.map(d => '<tr' + (d.id === exEdit ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(d.date) + '</th><td class="t">' + tr("dk_" + d.kind) + (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : "") +
-        (d.text ? '<span class="det">' + esc(d.text) + "</span>" : "") + "</td><td>" + inr(+d.cost) + '</td><td class="acts"><button class="link" type="button" data-exact="edit" data-id="' + esc(d.id) + '">' + tr("dy_edit") +
-        '</button><button class="link del" type="button" data-exact="del" data-id="' + esc(d.id) + '">' + tr("dy_del") + "</button></td></tr>").join("") +
-      '</tbody><tfoot><tr><th scope="row" colspan="2">' + tr("ex_enttot") + "</th><td>" + inr(tot) + '</td><td class="acts"></td></tr></tfoot></table></div>';
-  }
-  h += "</section>";
-  const se = seFor(o.id, exY), hasL = se && COST_KEYS.some(k => +se.costs[k] > 0);
-  h += '<details class="manage"' + (hasL ? " open" : "") + "><summary>" + tr("ex_lump") + '</summary><p class="hint">' + tr("ex_lump_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
-    '<div class="field"><label for="exl_' + k + '">' + tr("yc_" + k) + ' (₹)</label><input id="exl_' + k + '" data-exlump="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>'
-  ).join("") + "</div></details>";
-  el.innerHTML = h;
+    '<span class="fine" id="ex_ok" role="status"></span></div></form>';
   const k = $("ex_kind"), w = $("ex_stagewrap"); if (k && w) w.hidden = k.value !== "spray";
 }
-function renderExp() { renderExpTop(); renderExpBody(); }
-function expChanged() { save(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderHero(); renderExpTop(); }
+function renderExpList() {
+  const el = $("exList"); if (!el) return;
+  if (!S.orchards.length) { el.innerHTML = ""; return; }
+  const years = expYearsAll();
+  const data = {}; years.forEach(y => {
+    const rows = S.orchards.map(o => ({o, t: expTotals(o, y)}));
+    const cat = {}; rows.forEach(r => Object.keys(r.t.cat).forEach(k => { cat[k] = (cat[k] || 0) + r.t.cat[k]; }));
+    data[y] = {rows, cat, total: rows.reduce((a, r) => a + r.t.total, 0), ents: rows.reduce((a, r) => a + r.t.ents.length, 0), n: rows.filter(r => r.t.total).length};
+  });
+  const ymax = Math.max.apply(null, years.map(y => data[y].total)) || 1;
+  let h = '<h4>' + tr("ex_years") + '</h4><p class="hint">' + tr("ex_years_hint") + '</p><div class="ylist exlist">';
+  years.forEach(y => {
+    const d = data[y], open = exOpen.has(y);
+    const ent = tr(d.ents === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(d.ents));
+    const meta = !d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent);
+    h += '<div class="yrow' + (open ? " open" : "") + '" id="exy-' + y + '"><button class="yhead" type="button" data-exact="ytoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
+      '<span class="yy">' + y + '</span><span class="ymid"><span class="ymeta">' + meta + '</span><span class="ybar"><span class="fill ex" style="width:' + (d.total / ymax * 100).toFixed(1) +
+      '%"></span></span></span><span class="ynet exn">' + inr(d.total) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+    if (open) {
+      h += '<div class="ybody">';
+      const cats = Object.keys(d.cat).sort((a, b) => d.cat[b] - d.cat[a]);
+      if (cats.length) {
+        const mx = d.cat[cats[0]] || 1;
+        h += '<p class="subhead">' + tr("ex_yrcat") + '</p><ul class="pbars excat">' + cats.map(k => '<li><span class="yl">' + tr("dk_" + k) + '</span><span class="track"><span class="fill" style="width:' +
+          (d.cat[k] / mx * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(d.cat[k]) + '</span><span class="ys">' + pct(d.cat[k], d.total) + "</span></li>").join("") + "</ul>";
+      }
+      d.rows.forEach(r => {
+        const o = r.o, t = r.t, trees = +o.trees, se = seFor(o.id, y), hasL = se && COST_KEYS.some(k => +se.costs[k] > 0);
+        const om = !t.total ? "" : tr(t.ents.length === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(t.ents.length)) + (trees && t.total ? ", " + tr("ex_ptree").replace("{x}", inr(t.total / trees)) : "") +
+          (t.lump ? ", " + tr("ex_pluslump").replace("{x}", inr(t.lump)) : "");
+        h += '<section class="spo exo" id="exo-' + esc(o.id) + "-" + y + '"><div class="spohead"><h5>' + esc(o.name || tr("orchard_fallback")) + '</h5><span class="ymeta">' + om + '</span><b class="ynet exn">' + inr(t.total) + "</b></div>";
+        if (t.ents.length) {
+          h += '<div class="tablewrap"><table class="ledger sm extab"><thead><tr>' + ["dy_date", "ex_cat", "ex_amt0", ""].map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
+            t.ents.map(e => '<tr' + (e.id === exEdit ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(e.date) + '</th><td class="t">' + tr("dk_" + e.kind) + (e.kind === "spray" && e.stage ? " <small>(" + tr(e.stage) + ")</small>" : "") +
+              (e.text ? '<span class="det">' + esc(e.text) + "</span>" : "") + "</td><td>" + inr(+e.cost) + '</td><td class="acts"><button class="link" type="button" data-exact="edit" data-id="' + esc(e.id) + '">' + tr("dy_edit") +
+              '</button><button class="link del" type="button" data-exact="del" data-o="' + esc(o.id) + '" data-id="' + esc(e.id) + '">' + tr("dy_del") + "</button></td></tr>").join("") + "</tbody></table></div>";
+        } else if (!t.lump) h += '<p class="hint">' + tr("ex_zero") + "</p>";
+        h += '<details class="manage exlump"' + (hasL ? " open" : "") + "><summary>" + tr("ex_lump") + '</summary><p class="hint">' + tr("ex_lump_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
+          '<div class="field"><label for="exl_' + esc(o.id) + "_" + y + "_" + k + '">' + tr("yc_" + k) + ' (₹)</label><input id="exl_' + esc(o.id) + "_" + y + "_" + k + '" data-exlump="' + k + '" data-o="' + esc(o.id) + '" data-y="' + y +
+          '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>').join("") + "</div></details></section>";
+      });
+      h += "</div>";
+    }
+    h += "</div>";
+  });
+  el.innerHTML = h + "</div>";
+}
+function refreshExpTotals() {
+  // update year and orchard totals without redrawing the lump-sum boxes being typed in
+  document.querySelectorAll("#exList [data-exact=ytoggle]").forEach(b => {
+    const y = +b.dataset.y, tot = S.orchards.reduce((a, o) => a + expTotals(o, y).total, 0), n = b.querySelector(".ynet"); if (n) n.textContent = inr(tot);
+  });
+  document.querySelectorAll("#exList .exo").forEach(s2 => {
+    const m = s2.id.match(/^exo-(.+)-(\d{4})$/); if (!m) return;
+    const o = S.orchards.find(x => x.id === m[1]); if (!o) return;
+    const n = s2.querySelector(".spohead .ynet"); if (n) n.textContent = inr(expTotals(o, +m[2]).total);
+  });
+}
+function renderExp() { renderExpForm(); renderExpList(); }
+function expChanged() { save(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderHero(); }
+function expOpenAt(oid, y) {
+  exOpen.add(y); if (oid) exO = oid; exEdit = null; renderExp();
+  const t = $("exo-" + oid + "-" + y) || $("exy-" + y); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"});
+}
 $("rt-exp").addEventListener("click", () => { exEdit = null; renderExp(); showSub("exp"); });
 $("rp-exp").addEventListener("change", e => {
   const t = e.target;
-  if (t.id === "exOrch") { exO = t.value; exEdit = null; renderExp(); }
-  else if (t.id === "exYear") { exY = +t.value; exEdit = null; renderExp(); }
-  else if (t.id === "ex_kind") { const w = $("ex_stagewrap"); if (w) w.hidden = t.value !== "spray"; }
+  if (t.id === "ex_kind") { const w = $("ex_stagewrap"); if (w) w.hidden = t.value !== "spray"; }
+  else if (t.id === "ex_orch") exO = t.value;
 });
 $("rp-exp").addEventListener("input", e => {
   const t = e.target, k = t.dataset && t.dataset.exlump; if (!k) return;
-  const o = S.orchards.find(x => x.id === exO); if (!o) return;
+  const o = S.orchards.find(x => x.id === t.dataset.o), y = +t.dataset.y; if (!o) return;
   const v = numOf(t.value);
-  if (v) ensureSeason(o.id, exY).costs[k] = v;
-  else { const se = seFor(o.id, exY); if (se) { se.costs[k] = 0; pruneSeason(o.id, exY); } }
-  expChanged();
+  if (v) ensureSeason(o.id, y).costs[k] = v;
+  else { const se = seFor(o.id, y); if (se) { se.costs[k] = 0; pruneSeason(o.id, y); } }
+  expChanged(); refreshExpTotals();
 });
 $("rp-exp").addEventListener("click", e => {
-  const s2 = e.target.closest("[data-exsel]");
-  if (s2) { exO = s2.dataset.exsel; exEdit = null; renderExp(); return; }
   const b = e.target.closest("[data-exact]"); if (!b) return;
-  const a = b.dataset.exact, o = S.orchards.find(x => x.id === exO); if (!o) return;
-  if (a === "cancel") { exEdit = null; renderExpBody(); }
-  else if (a === "edit") { exEdit = b.dataset.id; renderExpBody(); const k = $("ex_kind"); if (k) { k.scrollIntoView({block: "center"}); k.focus(); } }
-  else if (a === "del") {
+  const a = b.dataset.exact;
+  if (a === "ytoggle") {
+    const y = +b.dataset.y; if (exOpen.has(y)) exOpen.delete(y); else exOpen.add(y);
+    renderExpList(); const nb = document.querySelector('#exList [data-exact=ytoggle][data-y="' + y + '"]'); if (nb) nb.focus(); return;
+  }
+  if (a === "cancel") { exEdit = null; renderExp(); return; }
+  if (a === "edit") { exEdit = b.dataset.id; renderExp(); const f = $("exForm"); if (f) f.scrollIntoView({block: "start"}); const c = $("ex_cost"); if (c) c.focus(); return; }
+  if (a === "del") {
     if (!b.dataset.armed) {
       const back = b.textContent; b.dataset.armed = "1"; b.textContent = tr("dy_sure");
       setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = back; } }, 4000);
       return;
     }
+    const o = S.orchards.find(x => x.id === b.dataset.o); if (!o) return;
+    const gone = (o.diary || []).find(d => d.id === b.dataset.id);
     o.diary = (o.diary || []).filter(d => d.id !== b.dataset.id);
     if (exEdit === b.dataset.id) exEdit = null;
-    pruneSeason(o.id, exY); renderExpBody(); expChanged();
+    if (gone) pruneSeason(o.id, +String(gone.date).slice(0, 4));
+    expChanged(); renderExp();
   }
 });
 $("rp-exp").addEventListener("submit", e => {
   e.preventDefault(); set("ex_err", "");
-  const o = S.orchards.find(x => x.id === exO); if (!o) return;
+  const o = S.orchards.find(x => x.id === $("ex_orch").value); if (!o) return;
   const date = $("ex_date").value, kind = $("ex_kind").value, cost = numOf($("ex_cost").value);
   if (!date || !kind || !cost) { set("ex_err", tr("ex_err")); return; }
-  const old = exEdit ? (o.diary || []).find(d => d.id === exEdit) : null;
+  let old = null, oldO = null;
+  if (exEdit) S.orchards.forEach(x => (x.diary || []).forEach(d => { if (d.id === exEdit) { old = d; oldO = x; } }));
   const entry = Object.assign({}, old || {}, {id: exEdit || newId(), date: date, kind: kind, cost: cost, text: $("ex_text").value.trim(), stage: kind === "spray" ? $("ex_stage").value : ""});
+  if (oldO) oldO.diary = (oldO.diary || []).filter(d => d.id !== entry.id);
   o.diary = (o.diary || []).filter(d => d.id !== entry.id).concat([entry]);
   const y = +date.slice(0, 4);
   ensureSeason(o.id, y);
-  if (old) pruneSeason(o.id, +String(old.date).slice(0, 4));
-  exEdit = null; exY = y;
-  renderExpBody(); expChanged();
+  if (old) pruneSeason(oldO.id, +String(old.date).slice(0, 4));
+  exEdit = null; exO = o.id; exOpen.add(y);
+  expChanged(); renderExp();
   set("ex_ok", tr("ex_saved"));
   const k = $("ex_kind"); if (k) k.focus();
 });
@@ -2895,7 +2921,7 @@ $("rp-orch").addEventListener("click", e => {
     l.lines.push(nl); editLine = {lot: l.id, line: nl.id};
     fixSel(); save(); renderAll(); const el = $("n_" + nl.id + "_grade"); if (el) el.focus(); return;
   } else if (act === "goexp") {
-    exO = b.dataset.o || sel.o; exY = +(b.dataset.y || sel.y); exEdit = null; renderExp(); showSub("exp"); window.scrollTo(0, 0); return;
+    showSub("exp"); expOpenAt(b.dataset.o || sel.o, +(b.dataset.y || sel.y)); return;
   } else if (act === "sptoggle") {
     const y = +b.dataset.y;
     if (spOpen.has(y)) { spOpen.delete(y); const es = editLine ? lotSeason(editLine.lot) : null; if (es && es.year === y) closeEditLine(); } else spOpen.add(y);
