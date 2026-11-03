@@ -536,6 +536,20 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .ledger.ygrid td:last-child,.ledger.ygrid th:last-child{font-weight:700}
 .ledger.ygrid td.none{color:var(--muted)}
 .dlacts{display:flex;gap:10px;flex-wrap:wrap}
+/* Season Profit: all lots of an orchard in one table */
+.ledger.olots .lotc{text-align:left;vertical-align:top;background:var(--surface-2);border-right:1px solid var(--line);font-family:var(--body);min-width:4.6rem}
+.ledger.olots .lotc b{display:block;font:700 1.02rem var(--display);color:var(--fg);white-space:nowrap}
+.ledger.olots .lotc small{display:block;font-weight:500;color:var(--muted);font-size:.8rem;white-space:normal;max-width:9rem}
+.ledger.olots tbody.lotgrp{border-top:2px solid var(--fg)}
+.ledger.olots thead + tbody.lotgrp{border-top:0}
+.ledger.olots td.eno{color:var(--muted);text-align:center;font-family:var(--mono)}
+.ledger.olots td.t{text-align:left}
+.ledger.olots tr.lottot td{font-weight:700;color:var(--fg);background:color-mix(in srgb,var(--surface-2) 55%,transparent)}
+.ledger.olots tr.lottot td.pos{color:var(--good)}.ledger.olots tr.lottot td.neg{color:var(--bad)}
+.ledger.olots td.lacts{white-space:normal;font-weight:400;max-width:230px}
+.ledger.olots td.lacts .link{margin:0 10px 0 0;font-size:.84rem}
+.ledger.olots td.none{text-align:left;color:var(--muted)}
+.ledger.olots tfoot th,.ledger.olots tfoot td{border-top:3px double var(--fg)}
 #rp-year h3[data-i18n="y_sum"]{margin-bottom:18px}
 table.ledger.ytab{min-width:0;width:100%}
 .ledger.ytab thead th{background:var(--surface-2);color:var(--muted);font-weight:600;font-size:.86rem;border-bottom:1px solid var(--line)}
@@ -1081,7 +1095,7 @@ en: {
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
-  ne_h:"New lot: {o}, {y}", ne_pos:"Save as", ne_end:"{l} (at the end)", lot_up:"Move up", lot_down:"Move down", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", exp_note:"Expenses are in ₹ per box. Commission is a % of the sale amount.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"{l} saved to {o}, {y}.",
+  ne_h:"New lot: {o}, {y}", ne_pos:"Save as", ne_end:"{l} (at the end)", lot_up:"Move up", lot_down:"Move down", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", sp_otot:"Orchard total", l_addtype:"＋ Add type", ne_editing2:"Editing {l}, entry {n}", exp_note:"Expenses are in ₹ per box. Commission is a % of the sale amount.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"{l} saved to {o}, {y}.",
   w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
   w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
   w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
@@ -1277,7 +1291,7 @@ hi: {
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
-  ne_h:"नया लॉट: {o}, {y}", ne_pos:"किस नंबर पर सहेजें", ne_end:"{l} (आख़िर में)", lot_up:"ऊपर करें", lot_down:"नीचे करें", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", exp_note:"ख़र्च ₹ प्रति पेटी में हैं। कमीशन बिक्री की रक़म का % है।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"{l} {o}, {y} में सहेज लिया गया।",
+  ne_h:"नया लॉट: {o}, {y}", ne_pos:"किस नंबर पर सहेजें", ne_end:"{l} (आख़िर में)", lot_up:"ऊपर करें", lot_down:"नीचे करें", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", sp_otot:"बाग़ का कुल", l_addtype:"＋ प्रकार जोड़ें", ne_editing2:"{l}, एंट्री {n} बदल रहे हैं", exp_note:"ख़र्च ₹ प्रति पेटी में हैं। कमीशन बिक्री की रक़म का % है।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"{l} {o}, {y} में सहेज लिया गया।",
   w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
   w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
   w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
@@ -2190,7 +2204,7 @@ function renderEditor() {
           const om = tr(nl === 1 ? "sp_meta1" : "sp_meta").replace("{n}", nl).replace("{b}", fmtN(r.boxes)).replace("{p}", inr(r.eq ? sn / r.eq : 0));
           return '<section class="spo" id="spo-' + esc(x.oid) + "-" + y + '"><div class="spohead"><h5>' + esc((oo && oo.name) || tr("orchard_fallback")) + '</h5><span class="ymeta">' + om +
             '</span><b class="ynet ' + cls(sn) + '" data-spnet="' + esc(x.id) + '">' + inr(sn) + "</b></div>" +
-            (nl ? '<div class="ylist lotlist">' + x.lots.map((l, i) => lotHtml(l, i, nl, lmax)).join("") + "</div>" : '<p class="hint">' + tr("sp_nolots") + "</p>") +
+            (nl ? '<div class="lottab" data-olots="' + esc(x.id) + '">' + orchLotsTable(x) + "</div>" + editBoxFor(x) : '<p class="hint">' + tr("sp_nolots") + "</p>") +
             '<div class="spofoot"><span>' + tr("sp_yc2").replace("{x}", inr(r.yearly)) + '</span><button class="link" type="button" data-act="goexp" data-o="' + esc(x.oid) + '" data-y="' + y + '">' + tr("sp_yc_btn") +
             '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + esc(x.oid) + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></section>";
         }).join("") + "</div>";
@@ -2220,6 +2234,46 @@ function lineHtml(n) {
     '<details class="manage moreline"' + (more ? " open" : "") + "><summary>" + tr("more_h") + '</summary><div class="grid tight">' + f("date", "date", "f_date", n.date) + f("paidOn", "date", "f_paidon", n.paidOn) +
     '</div><div class="checks">' + c("half", "f_half") + c("paid", "f_paid") + "</div></details>" +
     "</div>";
+}
+/* Season Profit: one table per orchard, every lot in it, Lot column on the left */
+function orchLotsTable(se) {
+  const cls = n => (n < 0 ? "neg" : "pos"), nl = se.lots.length;
+  const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
+  const head = ["dl_lot", "ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"];
+  let h = '<div class="tablewrap"><table class="ledger sm lottable olots"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th scope="col" class="acts"></th></tr></thead>';
+  se.lots.forEach((l, i) => {
+    const shown = l.lines.filter(n => +n.boxes || +n.rate || (editLine && editLine.line === n.id)), lc = lotCalc(l);
+    const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + "</th>";
+    h += '<tbody class="lotgrp">';
+    if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
+    shown.forEach((n, k) => {
+      const c = lineCalc(n), ed = !!(editLine && editLine.line === n.id);
+      h += "<tr" + (ed ? ' class="editing"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t">' + esc(gname(n.grade)) + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) +
+        "</td><td>" + inr(c.exp) + '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + '</td><td class="acts">' +
+        (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_edit") + "</button>") +
+        '<button class="link del" type="button" data-act="sdel" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_del") + "</button></td></tr>";
+    });
+    h += '<tr class="lottot"><td colspan="2">' + tr("ne_tot") + "</td><td>" + fmtN(lc.b) + "</td><td>" + inr(lc.gross) + "</td><td>" + inr(lc.exp) + '</td><td class="' + cls(lc.net) + '">' + inr(lc.net) +
+      "</td><td>" + inr(lc.nppb) + '</td><td class="acts lacts"><button class="link" type="button" data-act="addline" data-id="' + esc(l.id) + '">' + tr("l_addtype") + "</button>" +
+      (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + esc(l.id) + '">' + tr("lot_up") + "</button>" : "") +
+      (i < nl - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + esc(l.id) + '">' + tr("lot_down") + "</button>" : "") +
+      '<button class="link del" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">' + tr("lot_remove") + "</button></td></tr></tbody>";
+  });
+  if (nl > 1) {
+    const r = seasonCalc(se), net = r.rev - r.lotExp;
+    h += '<tfoot><tr><th scope="row" colspan="3">' + tr("sp_otot") + "</th><td>" + fmtN(r.boxes) + "</td><td>" + inr(r.rev) + "</td><td>" + inr(r.lotExp) + '</td><td class="' + cls(net) + '">' + inr(net) +
+      "</td><td>" + inr(r.eq ? net / r.eq : 0) + '</td><td class="acts"></td></tr></tfoot>';
+  }
+  return h + "</table></div>";
+}
+function editBoxFor(se) {
+  if (!editLine) return "";
+  const i = se.lots.findIndex(l => l.id === editLine.lot); if (i < 0) return "";
+  const l = se.lots[i], n = l.lines.find(x => x.id === editLine.line); if (!n) return "";
+  const k = l.lines.filter(q => +q.boxes || +q.rate || q.id === n.id).indexOf(n) + 1;
+  return '<div class="editbox"><p class="subhead">' + tr("ne_editing2").replace("{l}", lotNo(i)).replace("{n}", k) + "</p>" + lineHtml(n) +
+    '<div class="field lname"><label for="l_' + l.id + '_name">' + tr("f_lname") + '</label><input id="l_' + l.id + '_name" data-lot="' + l.id + '" data-f="name" type="text" maxlength="60" value="' + esc(autoName(l.name) ? "" : l.name) + '"></div>' +
+    '<div class="dels"><button class="btn-s add" type="button" data-act="sdone">' + tr("ne_done") + "</button></div></div>";
 }
 let lotOpen = new Set();
 function lotHeadInner(l, i, max) {
@@ -2290,6 +2344,7 @@ function refreshLotBits() {
     el.innerHTML = shown.length ? lotTable(shown.map((n, i) => [i + 1, n]), {isEd: x => !!(editLine && editLine.line === x[1].id),
       attr: (x, k) => 'data-act="s' + k + '" data-lot="' + esc(l.id) + '" data-id="' + esc(x[1].id) + '"'}) : '<p class="hint">' + tr("ne_none_lot") + "</p>";
   });
+  document.querySelectorAll("[data-olots]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.olots); if (x) el.innerHTML = orchLotsTable(x); });
   document.querySelectorAll("[data-spnet]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spnet); if (!x) return; const c = seasonCalc(x), v = c.rev - c.lotExp; el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
   document.querySelectorAll("[data-spy]").forEach(el => {
     const y = +el.dataset.spy, t = {net: 0, rev: 0, boxes: 0};
