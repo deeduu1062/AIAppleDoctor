@@ -589,6 +589,11 @@ details.dsec > summary h4{display:inline}
 .figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) 1.2rem;padding:10px 16px}
 .dname{display:flex;align-items:center;gap:12px;min-width:0}
 .dthumb{flex:none;width:52px;height:52px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:repeating-linear-gradient(90deg,rgba(70,45,25,.05) 0 2px,transparent 2px 9px),var(--kraft);position:relative}
+.dthumb svg{display:block;width:100%;height:100%}
+.ta-sky{fill:#F4E9D3}.ta-hill{fill:#9CC48A}.ta-trunk{fill:none;stroke:#7A4E2D;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ta-leaf{fill:#3E8E41}.ta-leaf2{fill:#58A85A}.ta-apple{fill:#C8262B}.ta-shine{fill:#fff;opacity:.7}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ta-sky{fill:#2B2119}:root:not([data-theme="light"]) .ta-hill{fill:#3D5C33}:root:not([data-theme="light"]) .ta-leaf{fill:#3F8A44}:root:not([data-theme="light"]) .ta-leaf2{fill:#4E9E52}:root:not([data-theme="light"]) .ta-trunk{stroke:#A0714A}}
+:root[data-theme="dark"] .ta-sky{fill:#2B2119}:root[data-theme="dark"] .ta-hill{fill:#3D5C33}:root[data-theme="dark"] .ta-leaf{fill:#3F8A44}:root[data-theme="dark"] .ta-leaf2{fill:#4E9E52}:root[data-theme="dark"] .ta-trunk{stroke:#A0714A}
 .dthumb:empty::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-11px 0 0 -10px;border-radius:48% 48% 52% 52%/58% 58% 42% 42%;background:var(--apple);opacity:.85}
 .dthumb img{width:100%;height:100%;object-fit:cover;display:block}
 .dtitle{display:grid;gap:2px;min-width:0}
@@ -2839,6 +2844,18 @@ const dayDiff = (a, b) => Math.round((new Date(b + "T00:00:00") - new Date(a + "
 const hasLoc = o => !!(o && o.profile && isFinite(+o.profile.lat) && isFinite(+o.profile.lon) && o.profile.lat !== "" && o.profile.lat != null);
 let xEdit = null, todoDone = null, locMode = null, locResults = null, labYear = null, detEdit = null;
 
+/* a small apple-tree picture for orchards without a photo; apples placed differently for each orchard */
+function treeArt(seed) {
+  let hsh = 0; for (let i = 0; i < seed.length; i++) hsh = (hsh * 31 + seed.charCodeAt(i)) >>> 0;
+  const rnd = () => { hsh = (hsh * 1103515245 + 12345) >>> 0; return (hsh >>> 8) / 16777216; };
+  const spots = [[17, 19], [26, 14], [34, 20], [21, 27], [31, 28], [27, 22], [14, 25], [38, 26], [24, 32], [35, 15]];
+  for (let i = spots.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = spots[i]; spots[i] = spots[j]; spots[j] = t; }
+  const n = 4 + Math.floor(rnd() * 3);
+  return '<svg viewBox="0 0 52 52" width="52" height="52" focusable="false"><rect width="52" height="52" class="ta-sky"/><path d="M0 44 Q26 36 52 44 V52 H0Z" class="ta-hill"/>' +
+    '<path d="M24.5 46 L25 34 Q24 30 21 28 M25.6 34 Q27 30 30 28 M25 46 L27.5 46 L26.6 33" class="ta-trunk"/>' +
+    '<circle cx="26" cy="21" r="13" class="ta-leaf"/><circle cx="17" cy="24" r="8" class="ta-leaf"/><circle cx="35" cy="24" r="8" class="ta-leaf"/><circle cx="22" cy="15" r="7" class="ta-leaf2"/>' +
+    spots.slice(0, n).map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="2.6" class="ta-apple"/><circle cx="' + (x - 0.8) + '" cy="' + (y - 0.9) + '" r=".8" class="ta-shine"/>').join("") + "</svg>";
+}
 /* Dashboard: one row per orchard (like the year rows in Profit calculator); tap to open its full details */
 let dashSel = null, detOpen = new Set();
 function detailsHtml() {
@@ -2858,8 +2875,8 @@ function detailsHtml() {
     const show = (k, pre) => { const v = get(k); if (k === "alt") return +v ? tr("p_m").replace("{n}", fmtN(+v)) : ""; if (k === "area") return +v ? tr("p_bigha").replace("{n}", fmtD(+v)) : "";
       if (k === "trees") return +v ? fmtN(+v) : ""; if (k === "planted") return +v ? v + " (" + tr("p_age").replace("{n}", Math.max(0, thisYear() - +v)) + ")" : ""; return pre ? (v ? tr(pre + v) : "") : esc(v || ""); };
     let r = '<div class="yrow' + (open ? " open" : "") + '" id="det-' + esc(o.id) + '"><button class="yhead" type="button" data-xact="dettoggle" data-o="' + esc(o.id) + '" aria-expanded="' + open + '">' +
-      '<span class="dname"><span class="dthumb" aria-hidden="true">' + (o.photo ? '<img src="' + o.photo + '" alt="">' : "") + '</span><span class="dtitle"><b>' + esc(o.name || tr("orchard_fallback")) + "</b><small>" +
-      ([P.village ? esc(P.village) : "", +P.alt ? tr("p_m").replace("{n}", fmtN(+P.alt)) : ""].filter(Boolean).join(", ") || tr("det_noplace")) + "</small></span></span>" +
+      '<span class="dname"><span class="dthumb" aria-hidden="true">' + (o.photo ? '<img src="' + o.photo + '" alt="">' : treeArt(o.id + (o.name || ""))) + '</span><span class="dtitle"><b>' + esc(o.name || tr("orchard_fallback")) + "</b>" +
+      (function () { const pl = [P.village ? esc(P.village) : "", +P.alt ? tr("p_m").replace("{n}", fmtN(+P.alt)) : ""].filter(Boolean).join(", "); return pl ? "<small>" + pl + "</small>" : ""; })() + "</span></span>" +
       '<span class="ychev" aria-hidden="true"></span></button>';
     if (!open) return r + "</div>";
     r += '<div class="ybody">';
