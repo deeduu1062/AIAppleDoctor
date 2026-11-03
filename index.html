@@ -509,6 +509,32 @@ legend{font-size:.95rem}
 .ystats .main b{white-space:nowrap}
 .hynote{margin:0 0 4px;padding:8px 12px;border-left:4px solid var(--brand-bg);border-radius:0 8px 8px 0;background:var(--surface-2);color:var(--fg);font-size:.95rem;font-weight:500;max-width:62ch}
 #rp-year .hynote,#rp-orch .hynote{margin-bottom:22px}
+.nshort{display:none}
+.yfigs.three{grid-template-columns:9rem 15rem minmax(10rem,max-content);column-gap:28px}
+.yfigs.exfigs{grid-template-columns:12rem 15rem minmax(10rem,max-content)}
+.yfig.ytext b{font:600 1rem var(--body);white-space:normal}
+.yfig.ynet{font:inherit;white-space:normal}
+.yfig.exn b{color:var(--fg)}
+/* sub-tabs as one segmented control */
+.tabs.pctabs{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);flex-wrap:nowrap;max-width:100%}
+.pctabs .tab{border:0;border-radius:0;border-right:1px solid var(--line);background:transparent;min-height:42px;padding:9px 16px;white-space:nowrap}
+.pctabs .tab:last-child{border-right:0}
+.pctabs .tab:hover{background:var(--surface-2)}
+.pctabs .tab[aria-selected="true"]{background:var(--brand-bg);color:var(--on-brand)}
+.pctabs .tab:focus-visible{outline:3px solid var(--apple);outline-offset:-3px}
+/* number boxes without spinner arrows */
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* save status next to the heading */
+.thead .status{margin:0;font-size:.88rem}
+.status.chip{padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--good);font-weight:600}
+.status.err{color:var(--bad)}
+/* profit by orchard and year grid */
+#yearTable table.ledger.ygrid{min-width:0;width:auto}
+#yearTable .tablewrap{width:fit-content;max-width:100%;border-radius:12px}
+.ledger.ygrid th,.ledger.ygrid td{padding:10px 22px}
+.ledger.ygrid td:last-child,.ledger.ygrid th:last-child{font-weight:700}
+.ledger.ygrid td.none{color:var(--muted)}
 .dlacts{display:flex;gap:10px;flex-wrap:wrap}
 #rp-year h3[data-i18n="y_sum"]{margin-bottom:18px}
 table.ledger.ytab{min-width:0;width:100%}
@@ -521,7 +547,7 @@ table.ledger.ytab{min-width:0;width:100%}
 #yearDetail .tablewrap{max-width:720px;margin-top:6px;border-radius:12px}
 .ledger.ytab tfoot th,.ledger.ytab tfoot td{font-weight:700;color:var(--fg)}
 .ledger.ytab tfoot td.pos{color:var(--good)}.ledger.ytab tfoot td.neg{color:var(--bad)}
-#yearDetail .yhead{grid-template-columns:4.2rem minmax(0,1fr) 1.2rem}
+.figrows > .yrow > .yhead{grid-template-columns:4.2rem minmax(0,1fr) 1.2rem}
 .yfigs{display:grid;grid-template-columns:minmax(8.5rem,max-content) 1.2rem minmax(8.5rem,max-content) 1.2rem minmax(9.5rem,max-content);gap:8px 10px;justify-content:start;align-items:end;min-width:0;padding-left:14px;border-left:1px solid var(--line)}
 .yfig{display:grid;gap:3px;text-align:left}
 .yfig > span{font-size:.82rem;color:var(--muted);white-space:nowrap}
@@ -537,10 +563,19 @@ table.ledger.ytab{min-width:0;width:100%}
   .ynet{grid-column:2;grid-row:1;font-size:1.2rem}
   .ymid{grid-column:1/3;grid-row:2}
   .ychev{grid-column:3;grid-row:1}
-  #yearDetail .yhead{grid-template-columns:3.4rem minmax(0,1fr) 1rem}
-  #yearDetail .yfigs{grid-column:1/3;grid-row:2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1.15fr);gap:6px;padding:10px 0 0;border-left:0;border-top:1px solid var(--line);align-items:end}
-  #yearDetail .yop{display:none}
-  #yearDetail .yfig.ynet{grid-column:auto;grid-row:auto}
+  .figrows > .yrow > .yhead{grid-template-columns:3.4rem minmax(0,1fr) 1rem}
+  .figrows .yfigs{grid-column:1/3;grid-row:2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1.15fr);gap:6px;padding:10px 0 0;border-left:0;border-top:1px solid var(--line);align-items:end}
+  .figrows .yop{display:none}
+  .figrows .yfig.ynet{grid-column:auto;grid-row:auto}
+  .figrows .yfigs.three{grid-template-columns:minmax(0,.8fr) minmax(0,1.1fr) minmax(0,1.1fr)}
+  .nfull{display:none}.nshort{display:inline}
+  .figrows .yfig.ywhen{display:none}
+  .figrows .yfigs.exfigs{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+  .yfig.ytext b{font-size:.92rem}
+  .tabs.pctabs{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .pctabs .tab{border-right:0;border-bottom:1px solid var(--line);padding:9px 8px;white-space:normal}
+  .pctabs .tab:nth-child(odd){border-right:1px solid var(--line)}
+  .pctabs .tab:nth-last-child(-n+2){border-bottom:0}
   .yfig > span{white-space:normal;font-size:.78rem;line-height:1.2}
   .yfig b{font-size:.98rem}.yfig.ynet b{font-size:1.05rem}
   #yearDetail .ybody{padding:4px 8px 12px}
@@ -737,8 +772,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 <section class="section" id="tools">
   <div class="wrap">
     <div class="tpanel" id="tp-calc" role="tabpanel" aria-labelledby="tt-calc">
-      <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
-      <p class="status" id="status" aria-live="polite" hidden></p>
+      <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pill live" data-i18n="s_live"></span><p class="status" id="status" aria-live="polite" hidden></p></div>
       <div class="tabs pctabs" role="tablist">
         <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="pt_year"></button>
         <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="pt_season"></button>
@@ -755,7 +789,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
         <p class="hynote" data-i18n="hy_note"></p>
         <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
         <p class="hint" data-i18n="y_tap"></p>
-        <div class="ylist" id="yearDetail"></div>
+        <div class="ylist figrows" id="yearDetail"></div>
         <h3 class="ysub" data-i18n="y_h"></h3>
         <div id="yearTable"></div>
         <p class="fine" data-i18n="y_note"></p>
@@ -1071,7 +1105,7 @@ en: {
   y_note:"Each figure is the sale amount minus commission, per-box costs and yearly orchard costs.",
   st_cloud:"Saved to your account. Sign in on any device to see it.",
   st_local:"Saved on this device only. Clearing the browser's data removes it.",
-  st_saving:"Saving…", st_err:"Could not save to your account. Your changes are still on this screen. Keep the page open and edit again to retry.",
+  st_saving:"Saving…", st_saved:"✓ Saved", st_err:"Could not save to your account. Your changes are still on this screen. Keep the page open and edit again to retry.",
   x_title:"Money in hand after all costs", x_mandi:"Mandi sale", x_lad:"Ladhani offer", x_per:"per box",
   c_shared:"Same in both", c_mandi:"Mandi sale", c_ladhani:"Ladhani (trader) offer",
   f_cboxes:"Boxes", f_ckg:"Weight per box (kg)", f_cpick:"Picking labour per box (₹)",
@@ -1160,7 +1194,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   dk_flower:"Flowering", dk_hstart:"Harvest started", dk_hend:"Harvest finished", dk_problem:"Problem noticed", dk_note:"Note",
   cmp_h:"Orchards side by side, {y}", cmp_o:"Orchard", cmp_note:"Per-tree figures need the number of trees, which you can add in each orchard's profile.",
   costs_diary:"Another {x} for {y} comes from the season diary and is added automatically.",
-  ex_years:"Expenses by harvest year", ex_years_hint:"A harvest year runs from 1 November to 31 October and is named after the harvest it ends with. So pruning or manure in November or December counts toward the next year's crop. Tap a harvest year to see each orchard's expenses.", ex_ymeta:"{n} orchards, {e}", ex_ymeta1:"1 orchard, {e}", ex_ometa:"{e} entries", ex_ometa1:"1 entry", ex_ptree:"{x} a tree", ex_zero:"No expenses this year.", ex_yrcat:"By category, all orchards", pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that harvest year's net income and also appear in the orchard's season diary.",
+  ex_years:"Expenses by harvest year", ex_years_hint:"Pruning or manure in November or December counts toward the next harvest year. Tap a harvest year to see each orchard's expenses.", ex_when:"Dates", ex_top:"Biggest expense", hy_range2:"Nov {a} to Oct {b}", ex_ymeta:"{n} orchards, {e}", ex_ymeta1:"1 orchard, {e}", ex_ometa:"{e} entries", ex_ometa1:"1 entry", ex_ptree:"{x} a tree", ex_zero:"No expenses this year.", ex_yrcat:"By category, all orchards", pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that harvest year's net income and also appear in the orchard's season diary.",
   ex_all:"All orchards, {y}", ex_entries:"Entries", ex_total:"Yearly expenses", ex_big:"Biggest cost", ex_bycat:"By category", ex_pluslump:"plus {x} in lump sums",
   ex_add:"Add expense", ex_upd:"Update expense", ex_cat:"Category", ex_amt:"Amount (₹)", ex_amt0:"Amount", ex_det:"Details (optional)", ex_det0:"Details",
   ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved in harvest year {y}.", hy_label:"Harvest year {y}", hy_note:"Harvest year is counted from 1 November to 31 October next year.", hy_range:"1 Nov {a} to 31 Oct {b}.",
@@ -1224,7 +1258,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   head_profit:"Net income for {o}, {y}", head_loss:"Loss for {o}, {y}", r_profit:"Net income", r_loss:"Loss",
   seg_exp:"Lot expenses", seg_year:"Other yearly expenses", seg_profit:"Net income",
   y_note:"Net income here is the Season Profit net income minus yearly expenses (including lump sums and diary costs). Half boxes count as half when working out the per-box figure.",
-  y_sum:"Net profit by harvest year", y_tap:"Tap a harvest year to see every orchard's details. A harvest year runs from 1 November to 31 October.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_gp:"Gross profit", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
+  y_sum:"Net profit by harvest year", y_tap:"Tap a harvest year to see every orchard's details.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_gp:"Gross profit", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
   hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot."
 },
 hi: {
@@ -1267,7 +1301,7 @@ hi: {
   y_note:"हर आँकड़ा बिक्री की रक़म में से कमीशन, प्रति पेटी ख़र्च और साल भर के बाग़ ख़र्च घटाकर निकाला गया है।",
   st_cloud:"आपके खाते में सहेजा गया। किसी भी डिवाइस पर साइन इन करके देखें।",
   st_local:"सिर्फ़ इस डिवाइस पर सहेजा गया। ब्राउज़र का डेटा मिटाने पर यह भी मिट जाएगा।",
-  st_saving:"सहेज रहे हैं…", st_err:"आपके खाते में सहेज नहीं सका। बदलाव इसी स्क्रीन पर हैं। पेज खुला रखें और दोबारा बदलाव करके कोशिश करें।",
+  st_saving:"सहेज रहे हैं…", st_saved:"✓ सहेजा गया", st_err:"आपके खाते में सहेज नहीं सका। बदलाव इसी स्क्रीन पर हैं। पेज खुला रखें और दोबारा बदलाव करके कोशिश करें।",
   x_title:"सारे ख़र्च के बाद हाथ में आई रक़म", x_mandi:"मंडी में बिक्री", x_lad:"लदानी का प्रस्ताव", x_per:"प्रति पेटी",
   c_shared:"दोनों में समान", c_mandi:"मंडी में बिक्री", c_ladhani:"लदानी (व्यापारी) का प्रस्ताव",
   f_cboxes:"पेटियाँ", f_ckg:"प्रति पेटी वज़न (किलो)", f_cpick:"तुड़ाई मज़दूरी प्रति पेटी (₹)",
@@ -1356,7 +1390,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   dk_flower:"फूल आए", dk_hstart:"तुड़ाई शुरू", dk_hend:"तुड़ाई ख़त्म", dk_problem:"समस्या दिखी", dk_note:"नोट",
   cmp_h:"सभी बाग़ एक साथ, {y}", cmp_o:"बाग़", cmp_note:"प्रति पेड़ आँकड़ों के लिए पेड़ों की संख्या चाहिए, जो हर बाग़ की जानकारी में डाली जा सकती है।",
   costs_diary:"{y} के {x} और सीज़न डायरी से आते हैं और अपने आप जुड़ जाते हैं।",
-  ex_years:"फ़सल वर्ष के हिसाब से ख़र्च", ex_years_hint:"फ़सल वर्ष 1 नवंबर से 31 अक्टूबर तक चलता है और उसी साल की तुड़ाई के नाम से जाना जाता है। इसलिए नवंबर या दिसंबर की छँटाई या खाद अगले साल की फ़सल में गिनी जाती है। हर बाग़ के ख़र्च देखने के लिए किसी फ़सल वर्ष पर दबाएँ।", ex_ymeta:"{n} बाग़, {e}", ex_ymeta1:"1 बाग़, {e}", ex_ometa:"{e} एंट्री", ex_ometa1:"1 एंट्री", ex_ptree:"{x} प्रति पेड़", ex_zero:"इस साल कोई ख़र्च नहीं।", ex_yrcat:"मद के हिसाब से, सभी बाग़", pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस फ़सल वर्ष की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
+  ex_years:"फ़सल वर्ष के हिसाब से ख़र्च", ex_years_hint:"नवंबर या दिसंबर की छँटाई या खाद अगले फ़सल वर्ष में गिनी जाती है। हर बाग़ के ख़र्च देखने के लिए किसी फ़सल वर्ष पर दबाएँ।", ex_when:"तारीख़ें", ex_top:"सबसे बड़ा ख़र्च", hy_range2:"नवंबर {a} से अक्टूबर {b}", ex_ymeta:"{n} बाग़, {e}", ex_ymeta1:"1 बाग़, {e}", ex_ometa:"{e} एंट्री", ex_ometa1:"1 एंट्री", ex_ptree:"{x} प्रति पेड़", ex_zero:"इस साल कोई ख़र्च नहीं।", ex_yrcat:"मद के हिसाब से, सभी बाग़", pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस फ़सल वर्ष की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
   ex_all:"सभी बाग़, {y}", ex_entries:"एंट्री", ex_total:"साल भर के ख़र्च", ex_big:"सबसे बड़ा ख़र्च", ex_bycat:"किस मद में कितना", ex_pluslump:"और {x} एकमुश्त",
   ex_add:"ख़र्च जोड़ें", ex_upd:"ख़र्च बदलें", ex_cat:"मद", ex_amt:"रक़म (₹)", ex_amt0:"रक़म", ex_det:"विवरण (वैकल्पिक)", ex_det0:"विवरण",
   ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च फ़सल वर्ष {y} में सहेज लिया गया।", hy_label:"फ़सल वर्ष {y}", hy_note:"फ़सल वर्ष 1 नवंबर से अगले साल 31 अक्टूबर तक गिना जाता है।", hy_range:"1 नवंबर {a} से 31 अक्टूबर {b}।",
@@ -1420,7 +1454,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   head_profit:"{o} की शुद्ध आय, {y}", head_loss:"{o} का घाटा, {y}", r_profit:"शुद्ध आय", r_loss:"घाटा",
   seg_exp:"लॉट के ख़र्च", seg_year:"साल भर के अन्य ख़र्च", seg_profit:"शुद्ध आय",
   y_note:"यहाँ शुद्ध आय यानी सीज़न के मुनाफ़े की शुद्ध आय में से साल भर के ख़र्च (एकमुश्त रक़म और डायरी के ख़र्च समेत) घटाकर। प्रति पेटी आँकड़ा निकालते समय आधी पेटी आधी गिनी जाती है।",
-  y_sum:"फ़सल वर्ष के हिसाब से शुद्ध मुनाफ़ा", y_tap:"हर बाग़ का ब्योरा देखने के लिए किसी फ़सल वर्ष पर दबाएँ। फ़सल वर्ष 1 नवंबर से 31 अक्टूबर तक चलता है।", y_meta:"{n} बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_meta1:"1 बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_pbe:"प्रति पेटी ख़र्च (कुल)", y_yc:"साल भर के ख़र्च", y_gp:"सकल मुनाफ़ा", y_sp:"सीज़न का मुनाफ़ा", y_op:"बाग़ का पन्ना", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
+  y_sum:"फ़सल वर्ष के हिसाब से शुद्ध मुनाफ़ा", y_tap:"हर बाग़ का ब्योरा देखने के लिए किसी फ़सल वर्ष पर दबाएँ।", y_meta:"{n} बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_meta1:"1 बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_pbe:"प्रति पेटी ख़र्च (कुल)", y_yc:"साल भर के ख़र्च", y_gp:"सकल मुनाफ़ा", y_sp:"सीज़न का मुनाफ़ा", y_op:"बाग़ का पन्ना", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
   hero_real_t:"आपकी शुद्ध आय, {y}", hero_real_note:"आपके रिकॉर्ड से। हर लॉट देखने के लिए नीचे कैलकुलेटर खोलें।"
 }};
 const MONTHS = {
@@ -1478,6 +1512,16 @@ $("langBtn").addEventListener("click", () => {
 });
 const numOf = v => { const n = parseFloat(v); return isFinite(n) && n > 0 ? n : 0; };
 const inr = n => { const r = Math.round(n); return (r < 0 ? "−" : "") + "₹" + Math.abs(r).toLocaleString("en-IN"); };
+/* short Indian form for tight spaces: ₹20.7 L / ₹1.2 Cr (Hindi: लाख / करोड़) */
+const shortInr = n => {
+  const a = Math.abs(Math.round(n)), sg = n < 0 ? "−" : "", hi = lang === "hi";
+  const t = (v, d) => v.toFixed(d).replace(/\.0$/, "");
+  if (a >= 1e7) return sg + "₹" + t(a / 1e7, a >= 1e8 ? 0 : 1) + (hi ? " करोड़" : " Cr");
+  if (a >= 1e5) return sg + "₹" + t(a / 1e5, a >= 1e6 ? 1 : 2).replace(/(\.\d)0$/, "$1") + (hi ? " लाख" : " L");
+  return inr(n);
+};
+const mny = n => '<span class="nfull">' + inr(n) + '</span><span class="nshort">' + shortInr(n) + "</span>";
+const yfig = (label, valHtml, c, attr) => '<span class="yfig' + (c ? " " + c : "") + '"><span>' + label + "</span><b" + (attr || "") + ">" + valHtml + "</b></span>";
 const newId = () => Math.random().toString(36).slice(2, 9);
 const EX = [{boxes:100, rate:1800, exp:400}, {boxes:30, rate:900, exp:400}];
 
@@ -1674,7 +1718,12 @@ let user = null, loaded = false, loadFailed = false, pendingEmail = "";
 let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink/.test(String(location.hash) + String(location.search));
 let saving = false, again = false, saveTimer = null, rev = 0, savedRev = 0;
 const isDirty = () => rev > savedRev;
-function setStatus(k) { ["status", "status2"].forEach(id => { $(id).textContent = tr(k); $(id).dataset.k = k; }); $("status").hidden = false; }
+function setStatus(k) {
+  let show = k;
+  if (k === "st_cloud") { let seen = false; try { seen = localStorage.getItem("ad_saved_seen") === "1"; if (!seen) localStorage.setItem("ad_saved_seen", "1"); } catch (e) { seen = false; } if (seen) show = "st_saved"; }
+  ["status", "status2"].forEach(id => { const el = $(id); el.textContent = tr(show); el.dataset.k = show; el.classList.toggle("chip", show === "st_saved" || show === "st_saving"); el.classList.toggle("err", k === "st_err"); });
+  $("status").hidden = false;
+}
 function save() { if (!user || !loaded) return; rev++; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
 async function flush() {
   if (!user || !sb || !loaded) return;
@@ -2125,17 +2174,15 @@ function renderEditor() {
     const cls = n => (n < 0 ? "neg" : "pos");
     const yr = {}; years.forEach(y => {
       const ss = S.orchards.map(oo => seFor(oo.id, y)).filter(Boolean);
-      const t = {net: 0, boxes: 0, eq: 0}; ss.forEach(x => { const r = seasonCalc(x); t.net += r.rev - r.lotExp; t.boxes += r.boxes; t.eq += r.eq; });
+      const t = {net: 0, boxes: 0, eq: 0, rev: 0}; ss.forEach(x => { const r = seasonCalc(x); t.net += r.rev - r.lotExp; t.boxes += r.boxes; t.eq += r.eq; t.rev += r.rev; });
       yr[y] = {ss, t};
     });
-    const ymax = Math.max.apply(null, years.map(y => Math.abs(yr[y].t.net))) || 1;
-    h += '<p class="hint">' + tr("sp_tap") + " " + tr("half_note") + '</p><div class="ylist splist">';
+    h += '<p class="hint">' + tr("sp_tap") + " " + tr("half_note") + '</p><div class="ylist splist figrows">';
     years.forEach(y => {
       const t = yr[y].t, ss = yr[y].ss, open = spOpen.has(y) || !!(editLine && ss.some(x => x === lotSeason(editLine.lot)));
-      const meta = tr(ss.length === 1 ? "y_meta1" : "y_meta").replace("{n}", ss.length).replace("{b}", fmtN(t.boxes)).replace("{p}", inr(t.eq ? t.net / t.eq : 0));
       h += '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="sptoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
-        '<span class="yy">' + y + '</span><span class="ymid"><span class="ymeta">' + meta + '</span><span class="ybar"><span class="fill ' + cls(t.net) + '" style="width:' +
-        (Math.abs(t.net) / ymax * 100).toFixed(1) + '%"></span></span></span><span class="ynet ' + cls(t.net) + '" data-spy="' + y + '">' + inr(t.net) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+        '<span class="yy">' + y + '</span><span class="yfigs three">' + yfig(tr("ls_boxes"), fmtN(t.boxes), "", ' data-spyb="' + y + '"') + yfig(tr("dl_sales"), mny(t.rev), "", ' data-spyg="' + y + '"') +
+        yfig(tr("ls_net"), mny(t.net), "ynet " + cls(t.net), ' data-spy="' + y + '"') + '</span><span class="ychev" aria-hidden="true"></span></button>';
       if (open) {
         h += '<div class="ybody">' + ss.map(x => {
           const oo = S.orchards.find(q => q.id === x.oid), r = seasonCalc(x), nl = x.lots.length, sn = r.rev - r.lotExp;
@@ -2244,7 +2291,13 @@ function refreshLotBits() {
       attr: (x, k) => 'data-act="s' + k + '" data-lot="' + esc(l.id) + '" data-id="' + esc(x[1].id) + '"'}) : '<p class="hint">' + tr("ne_none_lot") + "</p>";
   });
   document.querySelectorAll("[data-spnet]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spnet); if (!x) return; const c = seasonCalc(x), v = c.rev - c.lotExp; el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
-  document.querySelectorAll("[data-spy]").forEach(el => { const y = +el.dataset.spy, v = S.seasons.filter(q => q.year === y).reduce((a, q) => { const c = seasonCalc(q); return a + c.rev - c.lotExp; }, 0); el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
+  document.querySelectorAll("[data-spy]").forEach(el => {
+    const y = +el.dataset.spy, t = {net: 0, rev: 0, boxes: 0};
+    S.seasons.filter(q => q.year === y).forEach(q => { const c = seasonCalc(q); t.net += c.rev - c.lotExp; t.rev += c.rev; t.boxes += c.boxes; });
+    el.innerHTML = mny(t.net); el.parentNode.className = "yfig ynet " + (t.net < 0 ? "neg" : "pos");
+    const g = document.querySelector('[data-spyg="' + y + '"]'); if (g) g.innerHTML = mny(t.rev);
+    const b = document.querySelector('[data-spyb="' + y + '"]'); if (b) b.textContent = fmtN(t.boxes);
+  });
 }
 
 /* ---------- My orchards dashboard and orchard pages ---------- */
@@ -2731,15 +2784,16 @@ function renderExpList() {
     const cat = {}; rows.forEach(r => Object.keys(r.t.cat).forEach(k => { cat[k] = (cat[k] || 0) + r.t.cat[k]; }));
     data[y] = {rows, cat, total: rows.reduce((a, r) => a + r.t.total, 0), ents: rows.reduce((a, r) => a + r.t.ents.length, 0), n: rows.filter(r => r.t.total).length};
   });
-  const ymax = Math.max.apply(null, years.map(y => data[y].total)) || 1;
-  let h = '<h4>' + tr("ex_years") + '</h4><p class="hint">' + tr("ex_years_hint") + '</p><div class="ylist exlist">';
+  let h = '<h4>' + tr("ex_years") + '</h4><p class="hint">' + tr("ex_years_hint") + '</p><div class="ylist exlist figrows">';
   years.forEach(y => {
     const d = data[y], open = exOpen.has(y);
     const ent = tr(d.ents === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(d.ents));
-    const meta = tr("hy_range").replace("{a}", y - 1).replace("{b}", y) + " " + (!d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent));
+    const top = Object.keys(d.cat).sort((a, b) => d.cat[b] - d.cat[a])[0];
+    const who = !d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent);
     h += '<div class="yrow' + (open ? " open" : "") + '" id="exy-' + y + '"><button class="yhead" type="button" data-exact="ytoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
-      '<span class="yy">' + y + '</span><span class="ymid"><span class="ymeta">' + meta + '</span><span class="ybar"><span class="fill ex" style="width:' + (d.total / ymax * 100).toFixed(1) +
-      '%"></span></span></span><span class="ynet exn">' + inr(d.total) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+      '<span class="yy">' + y + '</span><span class="yfigs three exfigs">' + yfig(tr("ex_when"), tr("hy_range2").replace("{a}", y - 1).replace("{b}", y), "ytext ywhen") +
+      yfig(tr("ex_top"), top ? tr("dk_" + top) + " " + inr(d.cat[top]) : "–", "ytext") +
+      yfig(who, mny(d.total), "ynet exn") + '</span><span class="ychev" aria-hidden="true"></span></button>';
     if (open) {
       h += '<div class="ybody">';
       const cats = Object.keys(d.cat).sort((a, b) => d.cat[b] - d.cat[a]);
@@ -2857,9 +2911,9 @@ function renderYearDetail() {
   if (!years.length) { $("yearDetail").innerHTML = '<p class="empty">' + tr("y_empty") + "</p>"; return; }
   $("yearDetail").innerHTML = years.map(y => {
     const t = all[y], open = yOpen.has(y), n = t.rows.length;
-    const gp = t.rev - t.lot, fig = (k, v, c) => '<span class="yfig' + (c ? " " + c : "") + '"><span>' + tr(k) + "</span><b>" + v + "</b></span>";
+    const gp = t.rev - t.lot, fig = (k, v, c) => yfig(tr(k), v, c);
     let h = '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="ytoggle" data-y="' + y + '" aria-expanded="' + open + '" aria-controls="yb' + y + '">' +
-      '<span class="yy">' + y + '</span><span class="yfigs">' + fig("y_gp", inr(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", inr(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", inr(t.net), "ynet " + cls(t.net)) +
+      '<span class="yy">' + y + '</span><span class="yfigs">' + fig("y_gp", mny(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(t.net), "ynet " + cls(t.net)) +
       '</span><span class="ychev" aria-hidden="true"></span></button>';
     h += '<div class="ybody" id="yb' + y + '"' + (open ? "" : " hidden") + ">";
     if (open) {
@@ -2949,7 +3003,7 @@ function renderSummary() {
   }
   const cls = n => (n < 0 ? "neg" : "pos");
   const tot = {}, boxes = {}; years.forEach(y => { tot[y] = 0; boxes[y] = 0; });
-  let h = '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("y_orch") + "</th>" +
+  let h = '<div class="tablewrap"><table class="ledger ytab ygrid"><thead><tr><th scope="col">' + tr("y_orch") + "</th>" +
     years.map(y => '<th scope="col">' + y + "</th>").join("") + '<th scope="col">' + tr("y_total") + "</th></tr></thead><tbody>";
   S.orchards.forEach(o => {
     let rowTot = 0;
