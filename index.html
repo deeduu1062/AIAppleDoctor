@@ -3292,7 +3292,7 @@ $("dash").addEventListener("submit", e => {
   if (kind === "add") {
     const nm = $("dn_new").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.filter(x => !x.ex).length + 1));
     const no = {id: newId(), name: nm, trees: numOf($("dn_newtrees").value)};
-    S.orchards.push(no); dashAdd = false; detOpen.add(no.id); dashView = no.id; dashYear = null; profEdit = true;
+    S.orchards.push(no); ensureSeason(no.id, curHYear()); spOpen.add(curHYear()); dashAdd = false; detOpen.add(no.id); dashView = no.id; dashYear = null; profEdit = true;
     fixSel(); save(); renderAll(); dashTop(); return;
   }
   if (!o) return;
@@ -3676,7 +3676,7 @@ $("rp-orch").addEventListener("click", e => {
     const name = $("newOrchard").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.length + 1));
     const o = {id:newId(), name, trees:0};
     S.orchards.push(o);
-    sel.o = o.id; sel.y = sel.y || thisYear; $("newOrchard").value = ""; addingO = false;
+    sel.o = o.id; sel.y = sel.y || thisYear; ensureSeason(o.id, sel.y); $("newOrchard").value = ""; addingO = false;
     save(); renderAll(); openEntry(); return;
   } else if (act === "openentry") { openEntry(); return; }
   else if (act === "cancelentry") { entryOpen = false; draft = []; renderAll(); return; }
