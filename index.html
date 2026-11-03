@@ -505,7 +505,16 @@ legend{font-size:.95rem}
 #rp-quick > p{max-width:70ch}
 .ybody .ystats{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
 .ystats .main b{white-space:nowrap}
-.ledger.ytab{min-width:820px}
+table.ledger.ytab{min-width:0;width:100%}
+#yearDetail .tablewrap{max-width:660px}
+.ledger.ytab tfoot th,.ledger.ytab tfoot td{font-weight:700;color:var(--fg)}
+.ledger.ytab tfoot td.pos{color:var(--good)}.ledger.ytab tfoot td.neg{color:var(--bad)}
+#yearDetail .yhead{grid-template-columns:4.2rem minmax(0,1fr) 1.2rem}
+.yfigs{display:flex;flex-wrap:wrap;gap:6px 28px;justify-content:flex-end;align-items:baseline;min-width:0}
+.yfig{display:grid;gap:2px;text-align:right}
+.yfig > span{font-size:.85rem;color:var(--muted)}
+.yfig b{font:600 1.1rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--fg)}
+.yfig.ynet b{font-size:1.35rem}.yfig.ynet.pos b{color:var(--good)}.yfig.ynet.neg b{color:var(--bad)}
 .ledger.ytab thead th{white-space:normal;vertical-align:bottom;line-height:1.25}
 .ledger.ytab th,.ledger.ytab td{padding:7px 9px}
 
@@ -515,6 +524,12 @@ legend{font-size:.95rem}
   .ynet{grid-column:2;grid-row:1;font-size:1.2rem}
   .ymid{grid-column:1/3;grid-row:2}
   .ychev{grid-column:3;grid-row:1}
+  #yearDetail .yhead{grid-template-columns:3.4rem minmax(0,1fr) 1rem}
+  #yearDetail .yfigs{grid-column:2;grid-row:1;gap:6px 16px}
+  .yfig b{font-size:1rem}.yfig.ynet b{font-size:1.15rem}
+  #yearDetail .ybody{padding:4px 8px 12px}
+  .ledger.ytab th,.ledger.ytab td{padding:7px 5px;font-size:.84rem}
+  .ledger.ytab thead th{font-size:.8rem}
 }
 /* Season Profit: lots as rows that open */
 .lotlist{margin:4px 0 0}
@@ -1185,7 +1200,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   head_profit:"Net income for {o}, {y}", head_loss:"Loss for {o}, {y}", r_profit:"Net income", r_loss:"Loss",
   seg_exp:"Lot expenses", seg_year:"Other yearly expenses", seg_profit:"Net income",
   y_note:"Net income here is the Season Profit net income minus yearly expenses (including lump sums and diary costs). Half boxes count as half when working out the per-box figure.",
-  y_sum:"Net profit by year", y_tap:"Tap a year to see every orchard's details for that season.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
+  y_sum:"Net profit by year", y_tap:"Tap a year to see every orchard's details for that season.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_gp:"Gross profit", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
   hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot."
 },
 hi: {
@@ -1376,7 +1391,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   head_profit:"{o} की शुद्ध आय, {y}", head_loss:"{o} का घाटा, {y}", r_profit:"शुद्ध आय", r_loss:"घाटा",
   seg_exp:"लॉट के ख़र्च", seg_year:"साल भर के अन्य ख़र्च", seg_profit:"शुद्ध आय",
   y_note:"यहाँ शुद्ध आय यानी सीज़न के मुनाफ़े की शुद्ध आय में से साल भर के ख़र्च (एकमुश्त रक़म और डायरी के ख़र्च समेत) घटाकर। प्रति पेटी आँकड़ा निकालते समय आधी पेटी आधी गिनी जाती है।",
-  y_sum:"साल-दर-साल शुद्ध मुनाफ़ा", y_tap:"उस सीज़न में हर बाग़ का पूरा ब्योरा देखने के लिए किसी साल पर दबाएँ।", y_meta:"{n} बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_meta1:"1 बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_pbe:"प्रति पेटी ख़र्च (कुल)", y_yc:"साल भर के ख़र्च", y_sp:"सीज़न का मुनाफ़ा", y_op:"बाग़ का पन्ना", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
+  y_sum:"साल-दर-साल शुद्ध मुनाफ़ा", y_tap:"उस सीज़न में हर बाग़ का पूरा ब्योरा देखने के लिए किसी साल पर दबाएँ।", y_meta:"{n} बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_meta1:"1 बाग़, {b} पेटियाँ, {p} प्रति पेटी", y_pbe:"प्रति पेटी ख़र्च (कुल)", y_yc:"साल भर के ख़र्च", y_gp:"सकल मुनाफ़ा", y_sp:"सीज़न का मुनाफ़ा", y_op:"बाग़ का पन्ना", tab_year:"साल भर के कुल", tab_edit:"लॉट जोड़ें या बदलें", edit_row:"बदलें",
   hero_real_t:"आपकी शुद्ध आय, {y}", hero_real_note:"आपके रिकॉर्ड से। हर लॉट देखने के लिए नीचे कैलकुलेटर खोलें।"
 }};
 const MONTHS = {
@@ -2768,27 +2783,20 @@ function renderYearDetail() {
     t.net = t.rev - t.cost; t.rows = rows; return t;
   };
   const all = {}; years.forEach(y => { all[y] = sum(y); });
-  const max = Math.max.apply(null, years.map(y => Math.abs(all[y].net))) || 1;
   if (!years.length) { $("yearDetail").innerHTML = '<p class="empty">' + tr("y_empty") + "</p>"; return; }
   $("yearDetail").innerHTML = years.map(y => {
-    const t = all[y], open = yOpen.has(y), n = t.rows.length, prev = all[y - 1];
-    const meta = tr(n === 1 ? "y_meta1" : "y_meta").replace("{n}", n).replace("{b}", fmtN(t.boxes)).replace("{p}", inr(t.eq ? t.net / t.eq : 0));
+    const t = all[y], open = yOpen.has(y), n = t.rows.length;
+    const gp = t.rev - t.lot, fig = (k, v, c) => '<span class="yfig' + (c ? " " + c : "") + '"><span>' + tr(k) + "</span><b>" + v + "</b></span>";
     let h = '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="ytoggle" data-y="' + y + '" aria-expanded="' + open + '" aria-controls="yb' + y + '">' +
-      '<span class="yy">' + y + '</span><span class="ymid"><span class="ymeta">' + meta + '</span><span class="ybar"><span class="fill ' + cls(t.net) + '" style="width:' +
-      (Math.abs(t.net) / max * 100).toFixed(1) + '%"></span></span></span><span class="ynet ' + cls(t.net) + '">' + inr(t.net) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+      '<span class="yy">' + y + '</span><span class="yfigs">' + fig("y_gp", inr(gp)) + fig("y_yc", inr(t.yearly)) + fig("ls_net", inr(t.net), "ynet " + cls(t.net)) +
+      '</span><span class="ychev" aria-hidden="true"></span></button>';
     h += '<div class="ybody" id="yb' + y + '"' + (open ? "" : " hidden") + ">";
     if (open) {
-      const stat = (k, v, c, sub) => "<div" + (c ? ' class="' + c + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
-      const chg = prev ? tr(t.net >= prev.net ? "d_up" : "d_down").replace("{x}", inr(Math.abs(t.net - prev.net))).replace("{y}", y - 1) : "";
-      h += '<div class="ystats">' + stat("ls_gross", inr(t.rev)) + stat("y_yc", inr(t.yearly)) + stat("ls_net", inr(t.net), "main " + cls(t.net), chg) +
-        stat("ls_ppb", inr(t.eq ? t.net / t.eq : 0)) + stat("k_avg", inr(t.boxes ? t.rev / t.boxes : 0)) + stat("k_ash", pct(t.a, t.boxes)) + stat("r_due", inr(t.due)) + "</div>";
-      const head = ["y_orch", "ls_boxes", "k_avg", "ls_gross", "y_yc", "ls_net", "ls_ppb", "k_ash", "r_due"];
-      h += '<div class="tablewrap"><table class="ledger sm ytab"><thead><tr>' + head.map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
-        t.rows.map(x => '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + fmtN(x.r.boxes) + "</td><td>" + inr(x.r.boxes ? x.r.rev / x.r.boxes : 0) + "</td><td>" + inr(x.r.rev) +
-          "</td><td>" + inr(x.r.yearly) + '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td><td>" + inr(x.r.ppb) + "</td><td>" + pct(x.g.a.b, x.r.boxes) +
-          "</td><td>" + inr(x.r.due) + "</td></tr>").join("") +
-        "</tbody>" + (n > 1 ? '<tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + fmtN(t.boxes) + "</td><td>" + inr(t.boxes ? t.rev / t.boxes : 0) + "</td><td>" + inr(t.rev) +
-          "</td><td>" + inr(t.yearly) + '</td><td class="' + cls(t.net) + '">' + inr(t.net) + "</td><td>" + inr(t.eq ? t.net / t.eq : 0) + "</td><td>" + pct(t.a, t.boxes) + "</td><td>" + inr(t.due) +
+      const head = ["y_orch", "y_gp", "y_yc", "ls_net"];
+      h += '<div class="tablewrap"><table class="ledger sm ytab"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+        t.rows.map(x => '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + inr(x.r.rev - x.r.lotExp) + "</td><td>" + inr(x.r.yearly) +
+          '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td></tr>").join("") +
+        "</tbody>" + (n > 1 ? '<tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + inr(gp) + "</td><td>" + inr(t.yearly) + '</td><td class="' + cls(t.net) + '">' + inr(t.net) +
           "</td></tr></tfoot>" : "") + "</table></div>";
     }
     return h + "</div></div>";
