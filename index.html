@@ -2527,7 +2527,6 @@ function dashOverview() {
         tile(tr("d_ppb").replace("{y}", LY), inr(t.eq ? t.net / t.eq : 0)) + tile(tr("d_due").replace("{y}", LY), inr(t.due)) : "") +
       (function () { const td = todayIso(), HY = curHYear(), a = (HY - 1) + "-11-01", ly = (+td.slice(0, 4) - 1) + td.slice(4);
         return tile(tr("d_spent").replace("{d}", fmtDay(a, true)), inr(spentBetween(a, td)), "", tr("d_spent_ly").replace("{x}", inr(spentBetween((HY - 2) + "-11-01", ly)))); })() + "</div>";
-    h += dueSoonHtml();
     const wl = S.orchards.filter(hasLoc);
     h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
   }
