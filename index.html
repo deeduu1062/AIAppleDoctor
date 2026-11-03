@@ -578,16 +578,31 @@ details.dsec > summary::before{content:"";width:8px;height:8px;border-right:2px 
 details.dsec[open] > summary::before{transform:rotate(45deg)}
 details.dsec > summary h4{display:inline}
 .ledger.rectab th,.ledger.rectab td{padding:8px 10px}
-.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(7rem,max-content) minmax(0,1fr) 1.2rem}
-.detrows .yy{font-size:1.35rem;overflow-wrap:break-word;line-height:1.15;max-width:14rem}
-.detrows .yfigs.three{grid-template-columns:minmax(8rem,12rem) 8rem 7rem}
+.dethead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dethead h4{margin:0}
+.detrows > .yrow{border-left:4px solid var(--apple)}
+.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(12rem,17rem) minmax(0,1fr) 1.2rem;padding:12px 16px}
+.dname{display:flex;align-items:center;gap:12px;min-width:0}
+.dthumb{flex:none;width:52px;height:52px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:repeating-linear-gradient(90deg,rgba(70,45,25,.05) 0 2px,transparent 2px 9px),var(--kraft);position:relative}
+.dthumb:empty::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-11px 0 0 -10px;border-radius:48% 48% 52% 52%/58% 58% 42% 42%;background:var(--apple);opacity:.85}
+.dthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.dtitle{display:grid;gap:2px;min-width:0}
+.dtitle b{font:700 1.3rem var(--display);line-height:1.1;overflow-wrap:break-word}
+.dtitle small{color:var(--muted);font-size:.86rem}
+.detrows .yfigs.three{border-left:1px solid var(--line)}
+.dgroups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.dgrp{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--surface)}
+.dgrp h6{margin:0 0 4px;font:700 1rem var(--display);color:var(--apple)}
+.dgrp .detlist{display:block}
+.dgrp .detlist div:last-child{border-bottom:0}
+.detrows .yfigs.three{grid-template-columns:6rem minmax(9rem,14rem) minmax(9rem,14rem)}
 .detlist{margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:0 28px}
 .detlist div{display:grid;grid-template-columns:minmax(0,9rem) minmax(0,1fr);gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
 .detlist dt{color:var(--muted);font-size:.88rem}.detlist dd{margin:0;font-weight:500;overflow-wrap:anywhere}
 .detlist dd .link{padding:0;font-size:inherit}.detlist .none{color:var(--muted);font-weight:400}
 .detrows .ybody .oacts{display:flex;gap:8px;flex-wrap:wrap}
 .detrows .ybody form.detcard{margin-top:10px}
-@media (max-width:560px){.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.detrows .yy{grid-column:1;max-width:none}.detrows .yfigs.three{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr)}}
+@media (max-width:560px){.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.detrows .dname{grid-column:1}.detrows .yfigs.three{border-left:0}.detrows .yfigs.three{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr)}}
 .detpick{display:flex;gap:10px 14px;align-items:end;flex-wrap:wrap}
 .detpick .field{min-width:min(100%,260px)}
 .detpick select{min-height:44px;font-size:1.05rem;font-weight:600}
@@ -1202,7 +1217,7 @@ en: {
   lb_err:"Enter the date and worker, and the days and rate (or the amount paid).", lb_none:"No entries for this harvest year.", lb_sum:"Balance by worker (all years)", lb_earned:"Wages", lb_paid:"Paid",
   lb_bal:"Balance", lb_owe:"You owe {x}", lb_adv:"Advance {x}", lb_settled:"Settled", lb_inexp:"Includes {x} of wages from the labour register.",
   o_next:"Next: {t}, {d}", o_lastspray:"Last spray {n} days ago",
-  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_pick:"Orchard", det_tap:"Tap an orchard to see all its details.", det_tot2:"All {n} orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
+  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_pick:"Orchard", det_tap:"Tap an orchard to see all its details.", det_noplace:"Place not added yet", det_next:"Next task", det_lastspray:"Last spray", dg_place:"Place", dg_trees:"Trees", dg_care:"Care", det_tot2:"All {n} orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
   w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
   w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
   w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
@@ -1423,7 +1438,7 @@ hi: {
   lb_err:"तारीख़ और मज़दूर, और दिन व रेट (या दी गई रक़म) डालें।", lb_none:"इस फ़सल वर्ष की कोई एंट्री नहीं।", lb_sum:"हर मज़दूर का हिसाब (सभी साल)", lb_earned:"मज़दूरी", lb_paid:"दिया गया",
   lb_bal:"बाक़ी", lb_owe:"आपको देने हैं {x}", lb_adv:"एडवांस {x}", lb_settled:"हिसाब बराबर", lb_inexp:"इसमें मज़दूरी रजिस्टर की {x} मज़दूरी शामिल है।",
   o_next:"अगला: {t}, {d}", o_lastspray:"पिछला स्प्रे {n} दिन पहले",
-  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_pick:"बाग़", det_tap:"किसी बाग़ की पूरी जानकारी देखने के लिए उस पर दबाएँ।", det_tot2:"सभी {n} बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
+  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_pick:"बाग़", det_tap:"किसी बाग़ की पूरी जानकारी देखने के लिए उस पर दबाएँ।", det_noplace:"जगह अभी नहीं जोड़ी", det_next:"अगला काम", det_lastspray:"पिछला स्प्रे", dg_place:"जगह", dg_trees:"पेड़", dg_care:"देखभाल", det_tot2:"सभी {n} बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
   w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
   w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
   w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
@@ -2799,7 +2814,9 @@ function detailsHtml() {
     '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("add_btn") + '</button>' + (S.orchards.length ? '<button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button>" : "") + "</div></form>";
   if (!S.orchards.length) return h + "<p>" + tr("d_first") + "</p>" + addForm + "</section>";
   let tt = 0, ta = 0; S.orchards.forEach(x => { tt += +x.trees || 0; ta += +((x.profile || {}).area) || 0; });
-  h += '<p class="hint">' + tr("det_tap") + "</p>";
+  h = '<section class="osec" id="detSec"><div class="dethead"><h4>' + tr("det_h") + "</h4>" + (dashAdd ? "" : '<button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button>") + "</div>";
+  if (dashAdd) h += addForm;
+  h += '<p class="hint">' + tr("det_tap") + (S.orchards.length > 1 ? " " + tr("det_tot2").replace("{n}", fmtN(S.orchards.length)).replace("{t}", tt ? fmtN(tt) : "–").replace("{a}", ta ? fmtD(ta) : "–") : "") + "</p>";
   const fields = [["village", "p_village", "text"], ["alt", "p_alt", "number"], ["area", "p_area", "number"], ["trees", "f_trees", "number"], ["var", "p_var", "text"],
     ["root", "p_root", ROOTS, "r_"], ["planted", "p_planted", "number"], ["irr", "p_irr", IRR, "i_"], ["hail", "p_hail", HAIL, "h_"]];
   h += '<div class="ylist figrows detrows">' + S.orchards.map(o => {
@@ -2807,8 +2824,10 @@ function detailsHtml() {
     const show = (k, pre) => { const v = get(k); if (k === "alt") return +v ? tr("p_m").replace("{n}", fmtN(+v)) : ""; if (k === "area") return +v ? tr("p_bigha").replace("{n}", fmtD(+v)) : "";
       if (k === "trees") return +v ? fmtN(+v) : ""; if (k === "planted") return +v ? v + " (" + tr("p_age").replace("{n}", Math.max(0, thisYear() - +v)) + ")" : ""; return pre ? (v ? tr(pre + v) : "") : esc(v || ""); };
     let r = '<div class="yrow' + (open ? " open" : "") + '" id="det-' + esc(o.id) + '"><button class="yhead" type="button" data-xact="dettoggle" data-o="' + esc(o.id) + '" aria-expanded="' + open + '">' +
-      '<span class="yy">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs three">' + yfig(tr("p_village"), show("village") || "–", "ytext") + yfig(tr("p_alt"), show("alt") || "–") + yfig(tr("d_trees"), show("trees") || "–") +
-      '</span><span class="ychev" aria-hidden="true"></span></button>';
+      '<span class="dname"><span class="dthumb" aria-hidden="true">' + (o.photo ? '<img src="' + o.photo + '" alt="">' : "") + '</span><span class="dtitle"><b>' + esc(o.name || tr("orchard_fallback")) + "</b><small>" +
+      ([P.village ? esc(P.village) : "", +P.alt ? tr("p_m").replace("{n}", fmtN(+P.alt)) : ""].filter(Boolean).join(", ") || tr("det_noplace")) + "</small></span></span>" +
+      '<span class="yfigs three">' + yfig(tr("d_trees"), show("trees") || "–") + yfig(tr("p_var"), show("var") || "–", "ytext") +
+      yfig(tr("det_next"), (function () { const nt = nextTodo(o); return nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) : "–"; })(), "ytext") + '</span><span class="ychev" aria-hidden="true"></span></button>';
     if (!open) return r + "</div>";
     r += '<div class="ybody">';
     if (detEdit === o.id) {
@@ -2822,17 +2841,22 @@ function detailsHtml() {
         '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-xact="detcancel" data-o="' + esc(o.id) + '">' + tr("d_cancel") + "</button></div></form>";
     } else {
       const nt = nextTodo(o), lsp = lastSpray(o);
-      r += (nt ? '<p class="onext">' + tr("o_next").replace("{t}", tkName(nt.kind) + (nt.kind === "spray" && nt.stage ? " (" + tr(nt.stage) + ")" : "")).replace("{d}", fmtDay(nt.due)) + " " + dueChip(nt.due) + "</p>"
-          : lsp ? '<p class="onext">' + tr("o_lastspray").replace("{n}", fmtN(dayDiff(lsp.date, todayIso()))) + "</p>" : "") +
-        '<dl class="detlist">' + fields.map(([k, lab, t, pre]) => { const v = show(k, pre); return "<div><dt>" + tr(lab) + "</dt><dd>" + (v || '<span class="none">–</span>') + "</dd></div>"; }).join("") +
-        "<div><dt>" + tr("det_loc") + "</dt><dd>" + (hasLoc(o) ? tr("det_yes") : '<button class="link" type="button" data-xact="detloc" data-o="' + esc(o.id) + '">' + tr("det_set") + "</button>") + "</dd></div></dl>" +
+      r += '' +
+        (function () {
+          const row = (lab, v) => "<div><dt>" + lab + "</dt><dd>" + (v || '<span class="none">–</span>') + "</dd></div>";
+          const loc = hasLoc(o) ? tr("det_yes") : '<button class="link" type="button" data-xact="detloc" data-o="' + esc(o.id) + '">' + tr("det_set") + "</button>";
+          const grp = (k, rows) => '<section class="dgrp"><h6>' + tr(k) + '</h6><dl class="detlist">' + rows.join("") + "</dl></section>";
+          return '<div class="dgroups">' +
+            grp("dg_place", [row(tr("p_village"), show("village")), row(tr("p_alt"), show("alt")), row(tr("p_area"), show("area")), row(tr("det_loc"), loc)]) +
+            grp("dg_trees", [row(tr("d_trees"), show("trees")), row(tr("p_var"), show("var")), row(tr("p_root"), show("root", "r_")), row(tr("p_planted"), show("planted"))]) +
+            grp("dg_care", [row(tr("p_irr"), show("irr", "i_")), row(tr("p_hail"), show("hail", "h_")),
+              row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : ""), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "")]) + "</div>";
+        })() +
         '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + '</button><button class="btn-s add" type="button" data-dact="view" data-o="' + esc(o.id) + '">' + tr("o_view") +
         '</button><button class="btn-s" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + "</button></div>";
     }
     return r + "</div></div>";
   }).join("") + "</div>";
-  h += dashAdd ? addForm : '<div><button class="btn-s" type="button" data-dact="add">' + tr("d_add") + "</button></div>";
-  if (S.orchards.length > 1) h += '<p class="fine">' + tr("det_tot2").replace("{n}", fmtN(S.orchards.length)).replace("{t}", tt ? fmtN(tt) : "–").replace("{a}", ta ? fmtD(ta) : "–") + "</p>";
   return h + "</section>";
 }
 
