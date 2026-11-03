@@ -578,9 +578,11 @@ details.dsec > summary::before{content:"";width:8px;height:8px;border-right:2px 
 details.dsec[open] > summary::before{transform:rotate(45deg)}
 details.dsec > summary h4{display:inline}
 .ledger.rectab th,.ledger.rectab td{padding:8px 10px}
-.sumtiles{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));margin-bottom:4px}
-.sumtiles .vtile b{color:var(--good)}
-.sumtiles .muted b{color:var(--muted)}
+#sumSec .tablewrap{width:fit-content;max-width:100%}
+.ledger.sumtab{width:auto}
+.ledger.sumtab th,.ledger.sumtab td{padding:9px 16px}
+.ledger.sumtab thead th{white-space:nowrap}
+.ledger.sumtab td.un{color:var(--muted)}
 .dethead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .dethead h4{margin:0}
 .detrows > .yrow{border-left:4px solid var(--apple)}
@@ -1220,7 +1222,7 @@ en: {
   lb_err:"Enter the date and worker, and the days and rate (or the amount paid).", lb_none:"No entries for this harvest year.", lb_sum:"Balance by worker (all years)", lb_earned:"Wages", lb_paid:"Paid",
   lb_bal:"Balance", lb_owe:"You owe {x}", lb_adv:"Advance {x}", lb_settled:"Settled", lb_inexp:"Includes {x} of wages from the labour register.",
   o_next:"Next: {t}, {d}", o_lastspray:"Last spray {n} days ago",
-  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_pick:"Orchard", det_tap:"Tap an orchard to see all its details.", sum_trees:"Total trees", sum_area:"Total area", sum_var:"{v} trees", sum_unsplit:"Not split by variety", sum_hint:"To count trees by variety for an orchard with more than one variety, add its blocks (variety and trees) on the orchard page.", sum_hint0:"Trees by variety appear here when an orchard lists one variety, or when you add blocks (variety and trees) on the orchard page.", det_noplace:"Place not added yet", det_next:"Next task", det_lastspray:"Last spray", dg_place:"Place", dg_trees:"Trees", dg_care:"Care", det_tot2:"All {n} orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
+  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_pick:"Orchard", det_tap:"Tap an orchard to see all its details.", sum_h:"Overall summary", sum_p:"Trees by variety for each orchard.", sum_p0:"Area and trees for each orchard.", sum_all:"All {n} orchards", sum_trees:"Total trees", sum_area:"Total area", sum_var:"{v} trees", sum_unsplit:"Not split by variety", sum_hint:"Not split by variety: trees of an orchard that lists more than one variety. Add its blocks (variety and trees) on the orchard page to split them.", sum_hint0:"Trees by variety appear here when an orchard lists one variety, or when you add blocks (variety and trees) on the orchard page.", det_noplace:"Place not added yet", det_next:"Next task", det_lastspray:"Last spray", dg_place:"Place", dg_trees:"Trees", dg_care:"Care", det_tot2:"All {n} orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
   w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
   w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
   w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
@@ -1441,7 +1443,7 @@ hi: {
   lb_err:"तारीख़ और मज़दूर, और दिन व रेट (या दी गई रक़म) डालें।", lb_none:"इस फ़सल वर्ष की कोई एंट्री नहीं।", lb_sum:"हर मज़दूर का हिसाब (सभी साल)", lb_earned:"मज़दूरी", lb_paid:"दिया गया",
   lb_bal:"बाक़ी", lb_owe:"आपको देने हैं {x}", lb_adv:"एडवांस {x}", lb_settled:"हिसाब बराबर", lb_inexp:"इसमें मज़दूरी रजिस्टर की {x} मज़दूरी शामिल है।",
   o_next:"अगला: {t}, {d}", o_lastspray:"पिछला स्प्रे {n} दिन पहले",
-  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_pick:"बाग़", det_tap:"किसी बाग़ की पूरी जानकारी देखने के लिए उस पर दबाएँ।", sum_trees:"कुल पेड़", sum_area:"कुल रक़बा", sum_var:"{v} के पेड़", sum_unsplit:"किस्म के हिसाब से नहीं बँटे", sum_hint:"एक से ज़्यादा किस्म वाले बाग़ के पेड़ किस्म के हिसाब से गिनने के लिए, बाग़ के पन्ने पर उसके हिस्से (किस्म और पेड़) जोड़ें।", sum_hint0:"किस्म के हिसाब से पेड़ यहाँ तब दिखेंगे जब बाग़ में एक ही किस्म लिखी हो, या बाग़ के पन्ने पर हिस्से (किस्म और पेड़) जोड़ें।", det_noplace:"जगह अभी नहीं जोड़ी", det_next:"अगला काम", det_lastspray:"पिछला स्प्रे", dg_place:"जगह", dg_trees:"पेड़", dg_care:"देखभाल", det_tot2:"सभी {n} बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
+  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_pick:"बाग़", det_tap:"किसी बाग़ की पूरी जानकारी देखने के लिए उस पर दबाएँ।", sum_h:"कुल सार", sum_p:"हर बाग़ में किस्म के हिसाब से पेड़।", sum_p0:"हर बाग़ का रक़बा और पेड़।", sum_all:"सभी {n} बाग़", sum_trees:"कुल पेड़", sum_area:"कुल रक़बा", sum_var:"{v} के पेड़", sum_unsplit:"किस्म के हिसाब से नहीं बँटे", sum_hint:"किस्म के हिसाब से नहीं बँटे: उन बाग़ों के पेड़ जिनमें एक से ज़्यादा किस्म लिखी है। बाँटने के लिए बाग़ के पन्ने पर उसके हिस्से (किस्म और पेड़) जोड़ें।", sum_hint0:"किस्म के हिसाब से पेड़ यहाँ तब दिखेंगे जब बाग़ में एक ही किस्म लिखी हो, या बाग़ के पन्ने पर हिस्से (किस्म और पेड़) जोड़ें।", det_noplace:"जगह अभी नहीं जोड़ी", det_next:"अगला काम", det_lastspray:"पिछला स्प्रे", dg_place:"जगह", dg_trees:"पेड़", dg_care:"देखभाल", det_tot2:"सभी {n} बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
   w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
   w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
   w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
@@ -2551,29 +2553,34 @@ function orchardFacts(o) {
   return f.join(", ");
 }
 
-/* short summary at the top of the Dashboard: orchards, trees, area, trees by variety (from blocks, or a single listed variety) */
+/* overall summary table at the top of the Dashboard: per orchard area, trees and trees by variety (from blocks, or a single listed variety), with a total row */
 function farmSummaryHtml() {
   if (!S.orchards.length) return "";
-  let trees = 0, area = 0, unsplit = 0; const vars = {};
-  const addV = (name, n) => { const k = name.trim().toLowerCase(); if (!k || !(n > 0)) return; if (!vars[k]) vars[k] = {name: name.trim(), n: 0}; vars[k].n += n; };
-  S.orchards.forEach(o => {
-    const P = o.profile || {}, t = +o.trees || 0, bl = (o.blocks || []).filter(b => +b.trees > 0);
-    area += +P.area || 0;
+  const names = {}, rows = S.orchards.map(o => {
+    const P = o.profile || {}, t = +o.trees || 0, bl = (o.blocks || []).filter(b => +b.trees > 0), v = {};
+    const addV = (name, n) => { const k = name.trim().toLowerCase(); if (!k || !(n > 0)) return; if (!names[k]) names[k] = name.trim(); v[k] = (v[k] || 0) + n; };
+    let trees = t, un = 0;
     if (bl.length) {
       const bt = bl.reduce((a, b) => a + (+b.trees || 0), 0);
-      bl.forEach(b => { if ((b.var || "").trim()) addV(b.var, +b.trees); else unsplit += +b.trees; });
-      trees += Math.max(t, bt); if (t > bt) unsplit += t - bt;
+      bl.forEach(b => { if ((b.var || "").trim()) addV(b.var, +b.trees); else un += +b.trees; });
+      trees = Math.max(t, bt); if (t > bt) un += t - bt;
     } else {
-      trees += t;
-      const vs = (P.var || "").split(/[,;/]| and /).map(v => v.trim()).filter(Boolean);
-      if (t && vs.length === 1) addV(vs[0], t); else unsplit += t;
+      const vs = (P.var || "").split(/[,;/]| and /).map(x => x.trim()).filter(Boolean);
+      if (t && vs.length === 1) addV(vs[0], t); else un += t;
     }
+    return {o, area: +P.area || 0, trees, v, un};
   });
-  const tile = (lab, val, cls) => '<div' + (cls ? ' class="' + cls + '"' : "") + "><span>" + esc(lab) + "</span><b>" + val + "</b></div>";
-  const vl = Object.keys(vars).map(k => vars[k]).sort((a, b) => b.n - a.n);
-  return '<div class="ystats sumtiles">' + tile(tr("d_orchards"), fmtN(S.orchards.length)) + tile(tr("sum_trees"), trees ? fmtN(trees) : "–", "main") + tile(tr("sum_area"), area ? tr("p_bigha").replace("{n}", fmtD(area)) : "–") +
-    vl.map(v => tile(tr("sum_var").replace("{v}", v.name), fmtN(v.n), "vtile")).join("") + (unsplit && vl.length ? tile(tr("sum_unsplit"), fmtN(unsplit), "vtile muted") : "") + "</div>" +
-    (unsplit ? '<p class="fine">' + tr(vl.length ? "sum_hint" : "sum_hint0") + "</p>" : "");
+  const keys = Object.keys(names).sort((a, b) => rows.reduce((s2, r) => s2 + (r.v[b] || 0), 0) - rows.reduce((s2, r) => s2 + (r.v[a] || 0), 0));
+  const anyUn = rows.some(r => r.un), sum = f => rows.reduce((a, r) => a + f(r), 0);
+  const n = x => (x ? fmtN(x) : "–");
+  const head = '<th scope="col">' + tr("cmp_o") + '</th><th scope="col">' + tr("p_area") + '</th><th scope="col">' + tr("sum_trees") + "</th>" +
+    keys.map(k => '<th scope="col">' + esc(names[k]) + "</th>").join("") + (anyUn ? '<th scope="col">' + tr("sum_unsplit") + "</th>" : "");
+  const line = (lab, r) => '<th scope="row">' + lab + "</th><td>" + (r.area ? fmtD(r.area) : "–") + "</td><td>" + n(r.trees) + "</td>" + keys.map(k => "<td>" + n(r.v[k] || 0) + "</td>").join("") + (anyUn ? '<td class="un">' + n(r.un) + "</td>" : "");
+  const tot = {area: sum(r => r.area), trees: sum(r => r.trees), un: sum(r => r.un), v: {}}; keys.forEach(k => { tot.v[k] = sum(r => r.v[k] || 0); });
+  return '<section class="osec" id="sumSec"><h4>' + tr("sum_h") + '</h4><p class="hint">' + tr(keys.length ? "sum_p" : "sum_p0") + '</p><div class="tablewrap"><table class="ledger sm ytab sumtab"><thead><tr>' + head + "</tr></thead><tbody>" +
+    rows.map(r => "<tr>" + line(esc(r.o.name || tr("orchard_fallback")), r) + "</tr>").join("") + "</tbody>" +
+    (rows.length > 1 ? "<tfoot><tr>" + line(tr("sum_all").replace("{n}", fmtN(rows.length)), tot) + "</tr></tfoot>" : "") + "</table></div>" +
+    (anyUn ? '<p class="fine">' + tr("sum_hint") + "</p>" : "") + "</section>";
 }
 function dashOverview() {
   let h = farmSummaryHtml();
