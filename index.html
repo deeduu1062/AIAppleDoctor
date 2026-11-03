@@ -536,6 +536,53 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .ledger.ygrid td:last-child,.ledger.ygrid th:last-child{font-weight:700}
 .ledger.ygrid td.none{color:var(--muted)}
 .dlacts{display:flex;gap:10px;flex-wrap:wrap}
+/* Dashboard extras */
+.duelist,.todolist,.locres,.wxwarn{list-style:none;margin:0;padding:0}
+.duelist li,.todolist li{display:grid;grid-template-columns:9.5rem minmax(0,1fr) auto;gap:4px 14px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)}
+.duelist .dd,.todolist .dd{font:500 .9rem var(--mono);color:var(--muted)}
+.duelist .dt,.todolist .dt{display:flex;flex-direction:column;min-width:0;overflow-wrap:anywhere}
+.todolist .dt span{color:var(--muted);font-size:.92rem}
+.duelist .da,.todolist .da{display:flex;gap:12px;flex-wrap:wrap}
+.duelist .da .link,.todolist .da .link{padding:2px 0;font-size:.88rem}
+.duelist li.pay .dt{color:var(--fg)}
+.chip{display:inline-block;font:600 .74rem var(--body);font-style:normal;padding:1px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);margin-left:4px;white-space:nowrap}
+.chip.soon{background:color-mix(in srgb,#C4851C 18%,transparent);color:var(--fg)}
+.chip.late{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.todolist .donef{grid-column:1/-1;background:var(--surface-2);padding:10px;border-radius:8px}
+.todolist.done .dt b{font-weight:500;color:var(--muted)}
+.spraybox{border-left:4px solid var(--brand-bg);background:var(--surface-2);padding:10px 14px;border-radius:0 10px 10px 0;display:grid;gap:4px}
+.spraybox p{margin:0}
+.onext{margin:0;font-size:.9rem;color:var(--fg)}
+.omap{height:280px;border-radius:12px;border:1px solid var(--line);overflow:hidden;background:var(--surface-2);z-index:0}
+.omap.farm{height:340px}.omap.picking{cursor:crosshair;outline:3px solid var(--apple)}.omap.failed{height:auto;padding:10px}
+.locline{margin:0;font-weight:500}
+.okmsg{margin:0;color:var(--good);font-size:.9rem}.okmsg:empty,#loc_err:empty{display:none}
+.locres li{padding:4px 0}
+.wxwarn{display:grid;gap:4px}
+.wxwarn li{padding:6px 10px;border-left:3px solid #C4851C;background:color-mix(in srgb,#C4851C 12%,transparent);border-radius:0 6px 6px 0;font-size:.9rem}
+.wxwarn li.frost,.wxwarn li.hail{border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.wxok{margin:0;color:var(--good);font-size:.9rem}
+.ledger.wxtab td{text-align:center;font-family:var(--body);white-space:nowrap}
+.ledger.wxtab th[scope=col]{text-align:center}
+.ledger.wxtab .wd{display:block;font-size:.8rem;color:var(--muted)}
+.ledger.wxtab td b{display:block;font:600 .95rem var(--mono)}
+.ledger.wxtab .wr{display:block;font-size:.78rem;color:#2F6FA8}
+.ledger.wxtab{min-width:0}
+.osec > *,.opage > *{min-width:0}
+details.dsec{display:block;min-width:0}
+details.dsec > * + *{margin-top:10px}
+details.dsec > summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+details.dsec > summary::-webkit-details-marker{display:none}
+details.dsec > summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+details.dsec[open] > summary::before{transform:rotate(45deg)}
+details.dsec > summary h4{display:inline}
+.ledger.rectab th,.ledger.rectab td{padding:8px 10px}
+.ledger.rectab small.up{color:var(--good)}.ledger.rectab small.down{color:var(--bad)}
+.ledger.rectab small{font-size:.75rem;margin-left:4px}
+@media (max-width:640px){
+  .duelist li,.todolist li{grid-template-columns:minmax(0,1fr)}
+  .omap{height:240px}.omap.farm{height:280px}
+}
 /* Season Profit: all lots of an orchard in one table */
 .ledger.olots .lotc{text-align:left;vertical-align:top;background:var(--surface-2);border-right:1px solid var(--line);font-family:var(--body);min-width:4.6rem}
 .ledger.olots .lotc b{display:block;font:700 1.02rem var(--display);color:var(--fg);white-space:nowrap}
@@ -1091,13 +1138,37 @@ en: {
   hero_card_per:"per box", hero_boxes:"boxes sold",
   calc_h:"Profit calculator",
   calc_p:"Keep a record for each orchard and each year. Profit per orchard and per year works itself out. The first records are examples you can clear.",
-  tab_orch:"My orchards", tab_year:"Yearly profit", tab_cmp:"Mandi or ladhani?", reset:"Put back the example numbers",
+  tab_orch:"Dashboard", tab_year:"Yearly profit", tab_cmp:"Mandi or ladhani?", reset:"Put back the example numbers",
   lbl_orchard:"Orchard", lbl_year:"Harvest year", add_btn:"Add", ph_orchard:"New orchard name", ph_year:"Choose the year to add",
   manage:"Delete this year", f_oname:"Orchard name", f_trees:"Number of trees (optional)",
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
   ne_h:"New lot: {o}, {y}", ne_pos:"Save as", ne_end:"{l} (at the end)", lot_up:"Move up", lot_down:"Move down", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", sp_otot:"Orchard total", l_addtype:"＋ Add type", ne_editing2:"Editing {l}, entry {n}", exp_note:"Expenses are in ₹ per box. Commission is a % of the sale amount.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"{l} saved to {o}, {y}.",
+  d_spent:"Spent since {d}", d_spent_ly:"Same time last year: {x}",
+  ds_h:"Due soon", ds_p:"Tasks due in the next 14 days, and sales still not paid after 30 days.", ds_none:"Nothing due in the next 14 days.", ds_pay:"{l}, {y}: {x} not yet received",
+  ds_payd:"Waiting {n} days", ds_nodate:"No sale date", ds_wa_all:"Send this list on WhatsApp", ds_wa_head:"Apple Doctor reminder", wa:"WhatsApp", ics:"Add to calendar", late:"Overdue", today:"Today", inN:"In {n} days",
+  wx_h:"Weather, next 5 days", wx_none:"Set each orchard's location (open the orchard, then Location and weather) to see its weather here.", wx_load:"Loading weather…",
+  wx_err:"Weather could not be loaded. Check the internet connection and open the page again.", wx_src:"Forecast from Open-Meteo. Temperatures are highest / lowest of the day.",
+  wx_frost:"Frost risk {d}: down to {t}°C", wx_hail:"Hail possible {d}", wx_rain:"Heavy rain {d}: {mm} mm", wx_ok:"No frost, hail or heavy rain expected in the next 5 days.",
+  wc_clear:"Clear", wc_cloud:"Cloudy", wc_fog:"Fog", wc_rain:"Rain", wc_snow:"Snow", wc_shower:"Showers", wc_storm:"Thunderstorm", wc_hail:"Storm with hail",
+  map_h:"Your orchards on the map", map_none:"Set each orchard's location to see it on the map.", map_err:"The map could not be loaded. Check the internet connection.",
+  loc_h:"Location and weather", loc_set:"Location: {c}", loc_notset:"Location not set yet.", loc_gps:"Use my current location", loc_find:"Find village", loc_pick:"Pick on map",
+  loc_pickp:"Tap the map where the orchard is.", loc_rm:"Remove location", loc_q:"Village or town", loc_search:"Search", loc_noresult:"No place found. Try a nearby town.",
+  loc_gps_err:"Could not get your location. Allow location access, or search for the village.", loc_alt:"Altitude {n} m filled in from the map.", loc_gps_p:"Use my current location works best while standing in the orchard.",
+  wp_h:"Spray and work plan", wp_last:"Last spray: {d} ({s}), {n} days ago", wp_last0:"Last spray: {d}, {n} days ago", wp_nolast:"No spray recorded yet.", wp_next:"Next planned spray: {d}",
+  wp_nonext:"No spray planned.", wp_plan:"Plan next spray", wp_nextstage:"Next stage: {s}.", td_add:"Add a task", td_due:"Due date", td_kind:"Task", td_text:"Details (optional)", td_save:"Save task",
+  td_err:"Choose a due date and a task.", td_none:"No tasks planned.", td_done:"Done", td_doneh:"Done tasks ({n})", td_doneon:"Date done", td_cost:"Cost (₹, optional)", td_savedone:"Save",
+  td_hailnet:"Hail net work", td_note:"Marking a task done adds it to the season diary. A cost you enter counts in yearly expenses.",
+  bl_h:"Blocks", bl_p:"Parts of the orchard with their own variety, rootstock or planting year.", bl_name:"Block name", bl_name_ph:"For example Upper block", bl_trees:"Trees", bl_replant:"Replant in (year)",
+  bl_note:"Note", bl_add:"Add block", bl_save:"Save block", bl_none:"No blocks yet.", bl_total:"Total", bl_diff:"Blocks add up to {n} trees; the orchard profile says {m}.", bl_soon:"Replant soon", bl_err:"Enter a block name.",
+  sl_h:"Soil tests", sl_date:"Test date", sl_ph:"pH", sl_n:"N (kg/ha)", sl_p:"P (kg/ha)", sl_k:"K (kg/ha)", sl_oc:"Organic carbon (%)", sl_note:"Note or advice", sl_add:"Add soil test", sl_save:"Save test",
+  sl_none:"No soil tests yet.", sl_err:"Enter the test date.", sl_p2:"Arrows show the change since the test before.",
+  lb_h:"Labour register", lb_p:"Wages for work are counted as Labour in yearly expenses, so don't enter the same wages again in Yearly expenses.", lb_year:"Harvest year", lb_date:"Date", lb_name:"Worker",
+  lb_type:"Entry", lb_work:"Work (days × rate)", lb_pay:"Payment or advance", lb_days:"Days", lb_rate:"Rate per day (₹)", lb_amt:"Amount (₹)", lb_note:"Note", lb_save:"Save", lb_add:"Add to register",
+  lb_err:"Enter the date and worker, and the days and rate (or the amount paid).", lb_none:"No entries for this harvest year.", lb_sum:"Balance by worker (all years)", lb_earned:"Wages", lb_paid:"Paid",
+  lb_bal:"Balance", lb_owe:"You owe {x}", lb_adv:"Advance {x}", lb_settled:"Settled", lb_inexp:"Includes {x} of wages from the labour register.",
+  o_next:"Next: {t}, {d}", o_lastspray:"Last spray {n} days ago",
   w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
   w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
   w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
@@ -1216,7 +1287,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved in harvest year {y}.", hy_label:"Harvest year {y}", hy_note:"Harvest year is counted from 1 November to 31 October next year.", hy_range:"1 Nov {a} to 31 Oct {b}.",
   ex_none:"No expenses entered for {o} in {y} yet.", ex_noent:"No entries for this year yet. Add the first one above.", ex_list:"Expenses entered", ex_enttot:"Total of entries",
   ex_lump:"Lump sums (optional)", ex_lump_p:"If you only know the total for the year, enter it here instead of separate entries. Amounts typed earlier under Other yearly expenses in Season Profit are kept here.",
-  ex_noorch:"Add an orchard first in My orchards.",
+  ex_noorch:"Add an orchard first in the Dashboard.",
   sp_yc:"Yearly expenses for {o}, {y}: {x}. They are taken off the net income above.", sp_yc_btn:"Add or change in Yearly expenses",
   dk_tools:"Tools and equipment", dk_repair:"Repairs (fencing, hail net)", dk_xother:"Other expense",
   pt_year:"Yearly net profit", pt_season:"Season Profit", pt_quick:"Quick calculator",
@@ -1235,7 +1306,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   ad_note:"Last sign-in is the most recent time each person signed in. Orchards, years and lots leave out the example records.",
   ad_err_setup:"The admin view is not set up yet. Run the admin SQL once in Supabase > SQL Editor (it is in the project notes), then tap Refresh.",
   ad_err_deny:"This account is not an admin.", ad_err:"Could not load the admin view: {m}",
-  tt_orch:"My orchards", hdr_signin:"Sign in", hdr_mine:"My orchards", s_signin:"Sign in needed", s_signedin:"Signed in",
+  tt_orch:"Dashboard", hdr_signin:"Sign in", hdr_mine:"Dashboard", s_signin:"Sign in needed", s_signedin:"Signed in",
   or_p:"Create your own private account to keep your orchards, sale lots and yearly totals. Only you can see them, and they are there on any phone you sign in on.",
   auth_h:"Sign in or create your account", auth_p:"Sign in with your email and password. New here? Choose a password and tap Create account. You can also ask for a sign-in link by email instead of using a password.",
   auth_email:"Email address", auth_send:"Email me a sign-in link instead",
@@ -1287,13 +1358,37 @@ hi: {
   hero_card_per:"प्रति पेटी", hero_boxes:"पेटियाँ बिकीं",
   calc_h:"मुनाफ़ा कैलकुलेटर",
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। हर बाग़ और हर साल का मुनाफ़ा अपने आप निकल आता है। शुरू के रिकॉर्ड उदाहरण हैं, जिन्हें आप हटा सकते हैं।",
-  tab_orch:"मेरे बाग़", tab_year:"साल भर का मुनाफ़ा", tab_cmp:"मंडी या लदानी?", reset:"उदाहरण वाले आँकड़े वापस लाएँ",
+  tab_orch:"डैशबोर्ड", tab_year:"साल भर का मुनाफ़ा", tab_cmp:"मंडी या लदानी?", reset:"उदाहरण वाले आँकड़े वापस लाएँ",
   lbl_orchard:"बाग़", lbl_year:"फ़सल वर्ष", add_btn:"जोड़ें", ph_orchard:"नए बाग़ का नाम", ph_year:"जोड़ने के लिए साल चुनें",
   manage:"यह साल हटाएँ", f_oname:"बाग़ का नाम", f_trees:"पेड़ों की संख्या (वैकल्पिक)",
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
   ne_h:"नया लॉट: {o}, {y}", ne_pos:"किस नंबर पर सहेजें", ne_end:"{l} (आख़िर में)", lot_up:"ऊपर करें", lot_down:"नीचे करें", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", sp_otot:"बाग़ का कुल", l_addtype:"＋ प्रकार जोड़ें", ne_editing2:"{l}, एंट्री {n} बदल रहे हैं", exp_note:"ख़र्च ₹ प्रति पेटी में हैं। कमीशन बिक्री की रक़म का % है।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"{l} {o}, {y} में सहेज लिया गया।",
+  d_spent:"{d} से अब तक ख़र्च", d_spent_ly:"पिछले साल इसी समय तक: {x}",
+  ds_h:"जल्द करने वाले काम", ds_p:"अगले 14 दिनों के काम, और वे बिक्री जिनका पैसा 30 दिन बाद भी नहीं मिला।", ds_none:"अगले 14 दिनों में कुछ बाक़ी नहीं है।", ds_pay:"{l}, {y}: {x} अभी नहीं मिला",
+  ds_payd:"{n} दिन से इंतज़ार", ds_nodate:"बिक्री की तारीख़ नहीं", ds_wa_all:"यह सूची WhatsApp पर भेजें", ds_wa_head:"Apple Doctor याद दिलाना", wa:"WhatsApp", ics:"कैलेंडर में जोड़ें", late:"देर हो गई", today:"आज", inN:"{n} दिन में",
+  wx_h:"मौसम, अगले 5 दिन", wx_none:"यहाँ मौसम देखने के लिए हर बाग़ की जगह सेट करें (बाग़ खोलें, फिर जगह और मौसम)।", wx_load:"मौसम लोड हो रहा है…",
+  wx_err:"मौसम लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।", wx_src:"पूर्वानुमान Open-Meteo से। तापमान दिन का सबसे ज़्यादा / सबसे कम है।",
+  wx_frost:"पाले का ख़तरा {d}: {t}°C तक", wx_hail:"ओले पड़ सकते हैं {d}", wx_rain:"भारी बारिश {d}: {mm} मिमी", wx_ok:"अगले 5 दिनों में पाला, ओले या भारी बारिश की संभावना नहीं।",
+  wc_clear:"साफ़", wc_cloud:"बादल", wc_fog:"कोहरा", wc_rain:"बारिश", wc_snow:"बर्फ़", wc_shower:"बौछारें", wc_storm:"आँधी-तूफ़ान", wc_hail:"ओलों के साथ तूफ़ान",
+  map_h:"नक़्शे पर आपके बाग़", map_none:"नक़्शे पर देखने के लिए हर बाग़ की जगह सेट करें।", map_err:"नक़्शा लोड नहीं हो सका। इंटरनेट जाँचें।",
+  loc_h:"जगह और मौसम", loc_set:"जगह: {c}", loc_notset:"जगह अभी सेट नहीं है।", loc_gps:"मेरी अभी की जगह लें", loc_find:"गाँव खोजें", loc_pick:"नक़्शे पर चुनें",
+  loc_pickp:"नक़्शे पर वहाँ दबाएँ जहाँ बाग़ है।", loc_rm:"जगह हटाएँ", loc_q:"गाँव या क़स्बा", loc_search:"खोजें", loc_noresult:"कोई जगह नहीं मिली। पास का क़स्बा आज़माएँ।",
+  loc_gps_err:"आपकी जगह नहीं मिल सकी। जगह की अनुमति दें, या गाँव खोजें।", loc_alt:"ऊँचाई {n} मीटर नक़्शे से भरी गई।", loc_gps_p:"मेरी अभी की जगह बाग़ में खड़े होकर सबसे अच्छा काम करता है।",
+  wp_h:"स्प्रे और काम की योजना", wp_last:"पिछला स्प्रे: {d} ({s}), {n} दिन पहले", wp_last0:"पिछला स्प्रे: {d}, {n} दिन पहले", wp_nolast:"अभी कोई स्प्रे दर्ज नहीं है।", wp_next:"अगला तय स्प्रे: {d}",
+  wp_nonext:"कोई स्प्रे तय नहीं है।", wp_plan:"अगला स्प्रे तय करें", wp_nextstage:"अगली अवस्था: {s}।", td_add:"काम जोड़ें", td_due:"कब तक", td_kind:"काम", td_text:"विवरण (वैकल्पिक)", td_save:"काम सहेजें",
+  td_err:"तारीख़ और काम चुनें।", td_none:"कोई काम तय नहीं है।", td_done:"हो गया", td_doneh:"पूरे हुए काम ({n})", td_doneon:"किस दिन हुआ", td_cost:"ख़र्च (₹, वैकल्पिक)", td_savedone:"सहेजें",
+  td_hailnet:"ओला जाली का काम", td_note:"काम पूरा होने पर वह सीज़न डायरी में जुड़ जाता है। जो ख़र्च आप डालें, वह साल भर के ख़र्च में गिना जाता है।",
+  bl_h:"हिस्से (ब्लॉक)", bl_p:"बाग़ के वे हिस्से जिनकी किस्म, रूटस्टॉक या लगाने का साल अलग है।", bl_name:"हिस्से का नाम", bl_name_ph:"जैसे ऊपर वाला हिस्सा", bl_trees:"पेड़", bl_replant:"दोबारा लगाना (साल)",
+  bl_note:"नोट", bl_add:"हिस्सा जोड़ें", bl_save:"हिस्सा सहेजें", bl_none:"अभी कोई हिस्सा नहीं।", bl_total:"कुल", bl_diff:"हिस्सों में कुल {n} पेड़ हैं; बाग़ की जानकारी में {m} लिखे हैं।", bl_soon:"जल्द दोबारा लगाना", bl_err:"हिस्से का नाम डालें।",
+  sl_h:"मिट्टी की जाँच", sl_date:"जाँच की तारीख़", sl_ph:"pH", sl_n:"N (किग्रा/हे)", sl_p:"P (किग्रा/हे)", sl_k:"K (किग्रा/हे)", sl_oc:"जैविक कार्बन (%)", sl_note:"नोट या सलाह", sl_add:"मिट्टी जाँच जोड़ें", sl_save:"जाँच सहेजें",
+  sl_none:"अभी कोई मिट्टी जाँच नहीं।", sl_err:"जाँच की तारीख़ डालें।", sl_p2:"तीर पिछली जाँच से बदलाव दिखाते हैं।",
+  lb_h:"मज़दूरी रजिस्टर", lb_p:"काम की मज़दूरी साल भर के ख़र्च में मज़दूरी के रूप में गिनी जाती है, इसलिए वही मज़दूरी साल भर के ख़र्च में दोबारा न डालें।", lb_year:"फ़सल वर्ष", lb_date:"तारीख़", lb_name:"मज़दूर",
+  lb_type:"एंट्री", lb_work:"काम (दिन × रेट)", lb_pay:"भुगतान या एडवांस", lb_days:"दिन", lb_rate:"रोज़ का रेट (₹)", lb_amt:"रक़म (₹)", lb_note:"नोट", lb_save:"सहेजें", lb_add:"रजिस्टर में जोड़ें",
+  lb_err:"तारीख़ और मज़दूर, और दिन व रेट (या दी गई रक़म) डालें।", lb_none:"इस फ़सल वर्ष की कोई एंट्री नहीं।", lb_sum:"हर मज़दूर का हिसाब (सभी साल)", lb_earned:"मज़दूरी", lb_paid:"दिया गया",
+  lb_bal:"बाक़ी", lb_owe:"आपको देने हैं {x}", lb_adv:"एडवांस {x}", lb_settled:"हिसाब बराबर", lb_inexp:"इसमें मज़दूरी रजिस्टर की {x} मज़दूरी शामिल है।",
+  o_next:"अगला: {t}, {d}", o_lastspray:"पिछला स्प्रे {n} दिन पहले",
   w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
   w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
   w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
@@ -1412,7 +1507,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च फ़सल वर्ष {y} में सहेज लिया गया।", hy_label:"फ़सल वर्ष {y}", hy_note:"फ़सल वर्ष 1 नवंबर से अगले साल 31 अक्टूबर तक गिना जाता है।", hy_range:"1 नवंबर {a} से 31 अक्टूबर {b}।",
   ex_none:"{y} में {o} का कोई ख़र्च अभी नहीं डाला गया है।", ex_noent:"इस साल की कोई एंट्री अभी नहीं है। ऊपर पहली एंट्री जोड़ें।", ex_list:"डाले गए ख़र्च", ex_enttot:"एंट्री का कुल",
   ex_lump:"एकमुश्त रक़म (वैकल्पिक)", ex_lump_p:"अगर सिर्फ़ साल भर का कुल पता है, तो अलग-अलग एंट्री की जगह यहाँ डालें। सीज़न का मुनाफ़ा में पहले साल भर के अन्य ख़र्च में डाली गई रक़म यहीं रखी गई है।",
-  ex_noorch:"पहले मेरे बाग़ में एक बाग़ जोड़ें।",
+  ex_noorch:"पहले डैशबोर्ड में एक बाग़ जोड़ें।",
   sp_yc:"{o}, {y} के साल भर के ख़र्च: {x}। ये ऊपर की शुद्ध आय में से घटाए गए हैं।", sp_yc_btn:"साल भर के ख़र्च में जोड़ें या बदलें",
   dk_tools:"औज़ार और मशीनें", dk_repair:"मरम्मत (बाड़, ओला जाली)", dk_xother:"अन्य ख़र्च",
   pt_year:"सालाना शुद्ध मुनाफ़ा", pt_season:"सीज़न का मुनाफ़ा", pt_quick:"झटपट हिसाब",
@@ -1431,7 +1526,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   ad_note:"आख़िरी साइन इन यानी हर व्यक्ति ने सबसे हाल में कब साइन इन किया। बाग़, साल और लॉट में उदाहरण वाले रिकॉर्ड शामिल नहीं हैं।",
   ad_err_setup:"एडमिन व्यू अभी सेट नहीं हुआ है। Supabase > SQL Editor में एडमिन SQL एक बार चलाएँ (यह प्रोजेक्ट नोट्स में है), फिर ताज़ा करें दबाएँ।",
   ad_err_deny:"यह खाता एडमिन नहीं है।", ad_err:"एडमिन व्यू लोड नहीं हो सका: {m}",
-  tt_orch:"मेरे बाग़", hdr_signin:"साइन इन", hdr_mine:"मेरे बाग़", s_signin:"साइन इन ज़रूरी", s_signedin:"साइन इन है",
+  tt_orch:"डैशबोर्ड", hdr_signin:"साइन इन", hdr_mine:"डैशबोर्ड", s_signin:"साइन इन ज़रूरी", s_signedin:"साइन इन है",
   or_p:"अपने बाग़, बिक्री के लॉट और साल भर के कुल सहेजने के लिए अपना निजी खाता बनाएँ। इन्हें सिर्फ़ आप देख सकते हैं, और जिस भी फ़ोन पर साइन इन करें वहाँ मिलेंगे।",
   auth_h:"साइन इन करें या अपना खाता बनाएँ", auth_p:"अपने ईमेल और पासवर्ड से साइन इन करें। नए हैं? पासवर्ड चुनें और खाता बनाएँ दबाएँ। चाहें तो पासवर्ड की जगह ईमेल से साइन-इन लिंक भी मँगवा सकते हैं।",
   auth_email:"ईमेल पता", auth_send:"इसकी जगह साइन-इन लिंक ईमेल करें",
@@ -1626,6 +1721,7 @@ function diaryCosts(oid, year) {
   ((o && o.diary) || []).forEach(d => {
     if (+d.cost > 0 && hYear(d.date) === +year) c[DIARY_COST[d.kind] || "other"] += +d.cost;
   });
+  ((o && o.labour) || []).forEach(e => { if (e.type === "work" && hYear(e.date) === +year) c.labour += (+e.days || 0) * (+e.rate || 0); });
   return c;
 }
 const STORE = "ad-ledger2";
@@ -2395,7 +2491,8 @@ function orchardFacts(o) {
 }
 
 function dashOverview() {
-  const years = Array.from(new Set(S.seasons.map(x => x.year))).sort((a, b) => b - a);
+  const sold = se => se.lots.some(l => l.lines.some(n => +n.boxes > 0));
+  const years = Array.from(new Set(S.seasons.filter(sold).map(x => x.year))).sort((a, b) => b - a);
   const LY = years[0];
   let h = "";
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
@@ -2410,7 +2507,12 @@ function dashOverview() {
     const chg = prev == null ? "" : tr(t.net >= prev ? "d_up" : "d_down").replace("{x}", inr(Math.abs(t.net - prev))).replace("{y}", LY - 1);
     h += '<div class="ystats">' + tile(tr("d_orchards"), fmtN(S.orchards.length)) + tile(tr("d_trees"), trees ? fmtN(trees) : "–") +
       (LY ? tile(tr("d_net").replace("{y}", LY), inr(t.net), "main " + dcls(t.net), chg) + tile(tr("d_boxes").replace("{y}", LY), fmtN(t.boxes)) +
-        tile(tr("d_ppb").replace("{y}", LY), inr(t.eq ? t.net / t.eq : 0)) + tile(tr("d_due").replace("{y}", LY), inr(t.due)) : "") + "</div>";
+        tile(tr("d_ppb").replace("{y}", LY), inr(t.eq ? t.net / t.eq : 0)) + tile(tr("d_due").replace("{y}", LY), inr(t.due)) : "") +
+      (function () { const td = todayIso(), HY = curHYear(), a = (HY - 1) + "-11-01", ly = (+td.slice(0, 4) - 1) + td.slice(4);
+        return tile(tr("d_spent").replace("{d}", fmtDay(a, true)), inr(spentBetween(a, td)), "", tr("d_spent_ly").replace("{x}", inr(spentBetween((HY - 2) + "-11-01", ly)))); })() + "</div>";
+    h += dueSoonHtml();
+    const wl = S.orchards.filter(hasLoc);
+    h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
   }
   h += '<div class="ocards">' + S.orchards.map(o => {
     const name = esc(o.name || tr("orchard_fallback")), facts = orchardFacts(o);
@@ -2419,7 +2521,7 @@ function dashOverview() {
     const ss = S.seasons.filter(se => se.oid === o.id).map(se => ({y: se.year, r: seasonCalc(se)})).sort((a, b) => b.y - a.y);
     let body = "";
     if (ss.length) {
-      const L = ss[0], P = ss[1], best = ss.reduce((a, c) => (c.r.profit > a.r.profit ? c : a));
+      const li = Math.max(0, ss.findIndex(x => x.r.boxes > 0)), L = ss[li], P = ss[li + 1], best = ss.reduce((a, c) => (c.r.profit > a.r.profit ? c : a));
       body += '<p class="olbl">' + tr("d_latest").replace("{y}", L.y) + '</p><p class="onet ' + dcls(L.r.profit) + '">' + inr(L.r.profit) + "</p>";
       if (P) body += '<p class="ochg">' + tr(L.r.profit >= P.r.profit ? "d_up" : "d_down").replace("{x}", inr(Math.abs(L.r.profit - P.r.profit))).replace("{y}", P.y) + "</p>";
       body += '<dl class="ostats"><div><dt>' + tr("ls_boxes") + "</dt><dd>" + fmtN(L.r.boxes) + "</dd></div><div><dt>" + tr("ls_ppb") + "</dt><dd>" + inr(L.r.ppb) + "</dd></div><div><dt>" +
@@ -2432,6 +2534,9 @@ function dashOverview() {
       body += '<p class="ohint">' + (ss.length === 1 ? tr("d_season1") : tr("d_seasons").replace("{n}", ss.length)) +
         (ss.length > 1 ? ". " + tr("d_best").replace("{y}", best.y).replace("{x}", inr(best.r.profit)) : "") + "</p>";
     } else body += '<p class="ohint">' + tr("d_nosales") + "</p>";
+    const nt = nextTodo(o), lsp = lastSpray(o);
+    if (nt) body += '<p class="onext">' + tr("o_next").replace("{t}", tkName(nt.kind) + (nt.kind === "spray" && nt.stage ? " (" + tr(nt.stage) + ")" : "")).replace("{d}", fmtDay(nt.due)) + " " + dueChip(nt.due) + "</p>";
+    else if (lsp) body += '<p class="onext">' + tr("o_lastspray").replace("{n}", fmtN(dayDiff(lsp.date, todayIso()))) + "</p>";
     const act = (a, k, main) => '<button class="btn-s' + (main ? " add" : "") + '" type="button" data-dact="' + a + '" data-o="' + esc(o.id) + '">' + tr(k) + "</button>";
     return '<article class="ocard">' + head + body + '<div class="oacts">' + act("view", "o_view", true) + act("addsale", "d_addsale") + (ss.length ? act("open", "pt_season") : "") + "</div></article>";
   }).join("");
@@ -2440,6 +2545,7 @@ function dashOverview() {
       '<div class="field"><label for="dn_newtrees">' + tr("f_trees") + '</label><input id="dn_newtrees" type="number" inputmode="numeric" min="0" step="1"></div>' +
       '<div class="dels"><button class="btn-s add" type="submit">' + tr("add_btn") + '</button><button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button></div></form>"
     : "<p>" + tr(S.orchards.length ? "d_addp" : "d_first") + '</p><div><button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button></div>") + "</article></div>";
+  if (S.orchards.length) h += '<section class="osec"><h4>' + tr("map_h") + "</h4>" + (S.orchards.some(hasLoc) ? '<div class="omap farm" data-map="farm"></div>' : '<p class="hint">' + tr("map_none") + "</p>") + "</section>";
 
   // orchards side by side for the latest year
   const rows = LY ? S.orchards.map(o => ({o, se: seFor(o.id, LY)})).filter(x => x.se) : [];
@@ -2658,7 +2764,7 @@ function orchardPage(o) {
     '<div class="oacts2"><button class="btn-s add" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("d_open") +
     '</button><button class="btn-s" type="button" data-dact="note">' + tr("dy_add") + "</button></div>" +
     '<div class="oyear field"><label for="o_season">' + tr("o_season") + '</label><select id="o_season">' + yrs.map(y => '<option value="' + y + '"' + (y === dashYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>" +
-    insightsHtml(o, dashYear) + dueHtml(o) + yearsHtml(o) + diaryHtml(o) + "</div>";
+    locationHtml(o) + workHtml(o) + insightsHtml(o, dashYear) + dueHtml(o) + yearsHtml(o) + labourHtml(o) + blocksHtml(o) + soilHtml(o) + diaryHtml(o) + "</div>";
   return h;
 }
 
@@ -2666,8 +2772,9 @@ function syncStage() { const k = $("d_kind"), w = $("d_stagewrap"); if (k && w) 
 function renderDash() {
   const el = $("dash"); if (!el) return;
   if (dashView && !S.orchards.some(o => o.id === dashView)) { dashView = null; profEdit = false; diaryEdit = null; }
+  MAPS.forEach(m => { try { m.remove(); } catch (e) {} }); MAPS = [];
   el.innerHTML = dashView ? orchardPage(S.orchards.find(o => o.id === dashView)) : dashOverview();
-  syncStage();
+  syncStage(); mountMaps();
 }
 function dashTop() { const t = $("tp-orch"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"}); }
 function goSeason(oid, year) {
@@ -2691,9 +2798,412 @@ function shrinkPhoto(file) {
     img.src = url;
   });
 }
+/* ---------- Dashboard extras: location + map, weather, spray and work plan, blocks, soil tests, labour, reminders ---------- */
+const TODO_KINDS = ["spray", "fert", "prune", "irrig", "hailnet", "labour", "xother"];
+const TODO_DIARY = {spray: "spray", fert: "fert", prune: "prune", irrig: "irrig", hailnet: "repair", labour: "labour", xother: "xother"};
+const tkName = k => (k === "hailnet" ? tr("td_hailnet") : tr("dk_" + k));
+const addDays = (iso, n) => { const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const dayDiff = (a, b) => Math.round((new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 864e5);
+const hasLoc = o => !!(o && o.profile && isFinite(+o.profile.lat) && isFinite(+o.profile.lon) && o.profile.lat !== "" && o.profile.lat != null);
+let xEdit = null, todoDone = null, locMode = null, locResults = null, labYear = null;
+
+/* labour wages count as yearly expenses (Labour) in their harvest year */
+const labourWork = (o, y) => ((o && o.labour) || []).filter(e => e.type === "work" && hYear(e.date) === +y).reduce((a, e) => a + (+e.days || 0) * (+e.rate || 0), 0);
+
+/* spending since 1 November vs the same point last year (dated expenses and labour) */
+function spentBetween(a, b) {
+  let s = 0;
+  S.orchards.forEach(o => {
+    (o.diary || []).forEach(d => { if (+d.cost > 0 && d.date >= a && d.date <= b) s += +d.cost; });
+    (o.labour || []).forEach(e => { if (e.type === "work" && e.date >= a && e.date <= b) s += (+e.days || 0) * (+e.rate || 0); });
+  });
+  return s;
+}
+
+/* ---- reminders ---- */
+const waLink = text => "https://wa.me/?text=" + encodeURIComponent(text);
+function todoLine(o, x) { return (o.name || tr("orchard_fallback")) + ": " + tkName(x.kind) + (x.kind === "spray" && x.stage ? " (" + tr(x.stage) + ")" : "") + (x.text ? ", " + x.text : ""); }
+function dueChip(due) {
+  const n = dayDiff(todayIso(), due);
+  return n < 0 ? '<em class="chip late">' + tr("late") + "</em>" : n === 0 ? '<em class="chip soon">' + tr("today") + "</em>" : n <= 3 ? '<em class="chip soon">' + tr("inN").replace("{n}", n) + "</em>" : '<em class="chip">' + tr("inN").replace("{n}", n) + "</em>";
+}
+function dueSoonItems() {
+  const t = todayIso(), lim = addDays(t, 14), out = [];
+  S.orchards.forEach(o => (o.todos || []).forEach(x => { if (!x.done && x.due && x.due <= lim) out.push({k: "todo", o, x, date: x.due, text: todoLine(o, x)}); }));
+  const pays = [];
+  S.orchards.forEach(o => S.seasons.filter(se => se.oid === o.id).forEach(se => se.lots.forEach((l, i) => {
+    let amt = 0, d = ""; l.lines.forEach(n => { const g = (+n.boxes || 0) * (+n.rate || 0); if (!n.paid && g > 0) { amt += g; if (n.date && (!d || n.date < d)) d = n.date; } });
+    if (!(amt > 0)) return;
+    const days = d ? dayDiff(d, t) : null;
+    if (days == null ? se.year < curHYear() : days >= 30)
+      pays.push({k: "pay", o, date: d, days, amt, text: (o.name || tr("orchard_fallback")) + ": " + tr("ds_pay").replace("{l}", lotLabel(l, i)).replace("{y}", se.year).replace("{x}", inr(amt))});
+  })));
+  out.sort((a, b) => (a.date < b.date ? -1 : 1));
+  pays.sort((a, b) => (b.days == null ? 1e9 : b.days) - (a.days == null ? 1e9 : a.days));
+  return out.concat(pays);
+}
+function dueSoonHtml() {
+  const items = dueSoonItems();
+  let h = '<section class="osec"><h4>' + tr("ds_h") + '</h4><p class="hint">' + tr("ds_p") + "</p>";
+  if (!items.length) return h + '<p class="hint">' + tr("ds_none") + "</p></section>";
+  h += '<ul class="duelist">' + items.map(it => {
+    const when = it.k === "todo" ? fmtDay(it.date) + " " + dueChip(it.date) : (it.days == null ? tr("ds_nodate") : tr("ds_payd").replace("{n}", fmtN(it.days)));
+    const msg = tr("ds_wa_head") + ": " + it.text + (it.k === "todo" ? ", " + fmtDay(it.date, true) : "");
+    return '<li class="' + (it.k === "pay" ? "pay" : "") + '"><span class="dd">' + when + '</span><span class="dt">' + esc(it.text) + '</span><span class="da"><a class="link" href="' + waLink(msg) + '" target="_blank" rel="noopener">' + tr("wa") + "</a>" +
+      (it.k === "todo" ? '<button class="link" type="button" data-xact="ics" data-o="' + esc(it.o.id) + '" data-id="' + esc(it.x.id) + '">' + tr("ics") + "</button>" : "") + "</span></li>";
+  }).join("") + "</ul>";
+  const all = tr("ds_wa_head") + ":\n" + items.map(it => "- " + it.text + (it.k === "todo" ? ", " + fmtDay(it.date, true) : "")).join("\n");
+  return h + '<div class="dels"><a class="btn-s" href="' + waLink(all) + '" target="_blank" rel="noopener">' + tr("ds_wa_all") + "</a></div></section>";
+}
+function downloadIcs(o, x) {
+  const e2 = s => String(s).replace(/[\\,;]/g, m => "\\" + m).replace(/\n/g, "\\n");
+  const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+  const sum = "Apple Doctor: " + todoLine(o, x);
+  const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Apple Doctor//EN", "BEGIN:VEVENT", "UID:" + x.id + "@aiappledoctor", "DTSTAMP:" + stamp,
+    "DTSTART;VALUE=DATE:" + x.due.replace(/-/g, ""), "DTEND;VALUE=DATE:" + addDays(x.due, 1).replace(/-/g, ""), "SUMMARY:" + e2(sum), "DESCRIPTION:" + e2(sum),
+    "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + e2(sum), "TRIGGER:-PT15H", "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([ics], {type: "text/calendar"})); a.download = "apple-doctor-task-" + x.due + ".ics";
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+/* ---- weather (Open-Meteo, free, no account) ---- */
+const WX = {};
+const wxKey = o => (+o.profile.lat).toFixed(3) + "," + (+o.profile.lon).toFixed(3);
+function wxGet(o) {
+  const k = wxKey(o), c = WX[k];
+  if (c && (c.loading || Date.now() - c.at < 36e5)) return c;
+  WX[k] = {loading: true, at: Date.now()};
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=" + (+o.profile.lat) + "&longitude=" + (+o.profile.lon) +
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Asia%2FKolkata&forecast_days=5")
+    .then(r => (r.ok ? r.json() : Promise.reject())).then(j => { if (!j || !j.daily) throw 0; WX[k] = {at: Date.now(), d: j.daily}; refreshWx(); })
+    .catch(() => { WX[k] = {at: Date.now() - 33e5, err: true}; refreshWx(); });
+  return WX[k];
+}
+const wcWord = c => tr(c === 0 ? "wc_clear" : c <= 3 ? "wc_cloud" : c <= 48 ? "wc_fog" : c <= 67 ? "wc_rain" : c <= 77 ? "wc_snow" : c <= 82 ? "wc_shower" : c <= 86 ? "wc_snow" : c === 95 ? "wc_storm" : "wc_hail");
+const wxDay = iso => new Date(iso + "T00:00:00").toLocaleDateString(dloc(), {weekday: "short", day: "numeric"});
+function wxWarn(o, d) {
+  const w = [];
+  d.time.forEach((t, i) => {
+    const mn = d.temperature_2m_min[i], code = d.weather_code[i], rain = d.precipitation_sum[i];
+    if (mn != null && mn <= 0) w.push({c: "frost", t: tr("wx_frost").replace("{d}", wxDay(t)).replace("{t}", Math.round(mn))});
+    if (code === 96 || code === 99) w.push({c: "hail", t: tr("wx_hail").replace("{d}", wxDay(t))});
+    if (rain != null && rain >= 30) w.push({c: "rain", t: tr("wx_rain").replace("{d}", wxDay(t)).replace("{mm}", Math.round(rain))});
+  });
+  return w;
+}
+function wxCells(d) {
+  return d.time.map((t, i) => '<td><span class="wd">' + esc(wcWord(d.weather_code[i])) + '</span><b>' + Math.round(d.temperature_2m_max[i]) + "° / " + Math.round(d.temperature_2m_min[i]) + "°</b>" +
+    (d.precipitation_sum[i] >= 1 ? '<span class="wr">' + Math.round(d.precipitation_sum[i]) + " mm</span>" : "") + "</td>").join("");
+}
+function wxBlock(list, one) {
+  const ready = list.map(o => ({o, c: wxGet(o)}));
+  const first = ready.find(x => x.c.d);
+  if (!first) {
+    if (ready.some(x => x.c.loading)) return '<p class="hint">' + tr("wx_load") + "</p>";
+    return '<p class="hint">' + tr("wx_err") + "</p>";
+  }
+  let warns = [];
+  let h = '<div class="tablewrap"><table class="ledger sm wxtab"><thead><tr>' + (one ? "" : '<th scope="col">' + tr("cmp_o") + "</th>") +
+    first.c.d.time.map(t => '<th scope="col">' + esc(wxDay(t)) + "</th>").join("") + "</tr></thead><tbody>";
+  ready.forEach(x => {
+    h += "<tr>" + (one ? "" : '<th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th>");
+    if (x.c.d) { h += wxCells(x.c.d); wxWarn(x.o, x.c.d).forEach(w => { const f = warns.find(q => q.t === w.t); if (f) f.n.push(x.o.name || ""); else warns.push({c: w.c, t: w.t, n: [x.o.name || ""]}); }); }
+    else h += '<td colspan="' + first.c.d.time.length + '" class="t none">' + tr(x.c.loading ? "wx_load" : "wx_err") + "</td>";
+    h += "</tr>";
+  });
+  h += "</tbody></table></div>";
+  const wl = warns.length ? '<ul class="wxwarn">' + warns.map(w => '<li class="' + w.c + '">' + esc(w.t + (one ? "" : " (" + w.n.join(", ") + ")")) + "</li>").join("") + "</ul>" : '<p class="wxok">' + tr("wx_ok") + "</p>";
+  return wl + h + '<p class="fine">' + tr("wx_src") + "</p>";
+}
+function refreshWx() {
+  document.querySelectorAll("[data-wx]").forEach(el => {
+    const id = el.dataset.wx;
+    if (id === "dash") { const list = S.orchards.filter(hasLoc); el.innerHTML = list.length ? wxBlock(list, false) : '<p class="hint">' + tr("wx_none") + "</p>"; }
+    else { const o = S.orchards.find(x => x.id === id); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true); }
+  });
+}
+
+/* ---- maps (Leaflet + OpenStreetMap, loaded only when needed) ---- */
+let LP = null, MAPS = [];
+function loadLeaflet() {
+  if (window.L && window.L.map) return Promise.resolve(window.L);
+  if (LP) return LP;
+  LP = new Promise((ok, bad) => {
+    const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.appendChild(css);
+    const s = document.createElement("script"); s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    s.onload = () => ok(window.L); s.onerror = () => { LP = null; bad(); }; document.head.appendChild(s);
+  });
+  return LP;
+}
+function mountMaps() {
+  MAPS.forEach(m => { try { m.remove(); } catch (e) {} }); MAPS = [];
+  const els = document.querySelectorAll("[data-map]"); if (!els.length) return;
+  loadLeaflet().then(L => {
+    document.querySelectorAll("[data-map]").forEach(el => {
+      if (el._m) return;
+      const id = el.dataset.map, list = id === "farm" ? S.orchards.filter(hasLoc) : S.orchards.filter(o => o.id === id);
+      const o1 = id === "farm" ? null : list[0];
+      const m = L.map(el, {scrollWheelZoom: false, attributionControl: true});
+      el._m = m; MAPS.push(m);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom: 18, attribution: "© OpenStreetMap"}).addTo(m);
+      const pts = [];
+      list.forEach(o => {
+        if (!hasLoc(o)) return;
+        const p = [+o.profile.lat, +o.profile.lon]; pts.push(p);
+        L.circleMarker(p, {radius: 9, color: "#fff", weight: 2, fillColor: "#B11F24", fillOpacity: 1}).addTo(m)
+          .bindTooltip(esc(o.name || tr("orchard_fallback")) + (+o.profile.alt ? ", " + fmtN(+o.profile.alt) + " m" : ""), {permanent: id === "farm", direction: "top", offset: [0, -8]});
+      });
+      if (pts.length > 1) m.fitBounds(pts, {padding: [36, 36], maxZoom: 14});
+      else if (pts.length) m.setView(pts[0], 14);
+      else m.setView([31.2, 77.6], 8);
+      if (o1 && locMode === "map") m.on("click", ev => setLocation(o1, ev.latlng.lat, ev.latlng.lng, null, ""));
+      if (o1 && locMode === "map") el.classList.add("picking");
+    });
+  }).catch(() => document.querySelectorAll("[data-map]").forEach(el => { el.innerHTML = '<p class="hint">' + tr("map_err") + "</p>"; el.classList.add("failed"); }));
+}
+function setLocation(o, lat, lon, elev, label) {
+  o.profile = o.profile || {};
+  const P = o.profile; P.lat = Math.round(lat * 1e5) / 1e5; P.lon = Math.round(lon * 1e5) / 1e5;
+  if (label && !P.village) P.village = label;
+  locMode = null; locResults = null;
+  const done = e => { if (e != null && isFinite(e) && !(+P.alt)) { P.alt = Math.round(e); set("loc_msg", tr("loc_alt").replace("{n}", fmtN(P.alt))); } save(); renderDash(); if (e != null && P.alt === Math.round(e)) set("loc_msg", tr("loc_alt").replace("{n}", fmtN(P.alt))); };
+  if (elev != null && isFinite(elev)) done(elev);
+  else if (!(+P.alt)) fetch("https://api.open-meteo.com/v1/elevation?latitude=" + P.lat + "&longitude=" + P.lon).then(r => r.json()).then(j => done(j && j.elevation ? j.elevation[0] : null)).catch(() => done(null));
+  else done(null);
+}
+function locationHtml(o) {
+  const P = o.profile || {}, on = hasLoc(o);
+  let h = '<section class="osec" id="locSec"><h4>' + tr("loc_h") + "</h4>" +
+    '<p class="locline">' + (on ? tr("loc_set").replace("{c}", (+P.lat).toFixed(4) + ", " + (+P.lon).toFixed(4) + (+P.alt ? ", " + fmtN(+P.alt) + " m" : "")) : tr("loc_notset")) + "</p>" +
+    '<div class="oacts2"><button class="btn-s" type="button" data-xact="locgps">' + tr("loc_gps") + '</button><button class="btn-s" type="button" data-xact="locfind">' + tr("loc_find") +
+    '</button><button class="btn-s" type="button" data-xact="locmap">' + tr("loc_pick") + "</button>" + (on ? '<button class="link del" type="button" data-xact="locrm">' + tr("loc_rm") + "</button>" : "") + "</div>" +
+    '<p class="fine">' + tr("loc_gps_p") + '</p><p class="autherr" id="loc_err" role="alert"></p><p class="okmsg" id="loc_msg" role="status"></p>';
+  if (locMode === "find") {
+    h += '<form class="dform locform" data-xform="locsearch"><div class="field"><label for="loc_q">' + tr("loc_q") + '</label><input id="loc_q" type="search" maxlength="80" value="' + esc(P.village || "") + '"></div>' +
+      '<div class="dels"><button class="btn-s add" type="submit">' + tr("loc_search") + "</button></div></form>";
+    if (locResults) h += locResults.length ? '<ul class="locres">' + locResults.map((r, i) => '<li><button class="link" type="button" data-xact="locpick" data-i="' + i + '">' + esc(r.label) + "</button></li>").join("") + "</ul>"
+      : '<p class="hint">' + tr("loc_noresult") + "</p>";
+  }
+  if (locMode === "map") h += '<p class="hint">' + tr("loc_pickp") + "</p>";
+  if (on || locMode === "map") h += '<div class="omap" data-map="' + esc(o.id) + '"></div>';
+  if (on) h += '<h5 class="subhead">' + tr("wx_h") + '</h5><div data-wx="' + esc(o.id) + '">' + wxBlock([o], true) + "</div>";
+  return h + "</section>";
+}
+
+/* ---- spray and work plan ---- */
+const NEXT_STAGE = {st1: "st2", st2: "st3", st3: "st4", st4: "st5", st5: "st6", st6: "st7", st7: "st8", st8: "st9", st9: "st1"};
+function lastSpray(o) { const t = todayIso(); return (o.diary || []).filter(d => d.kind === "spray" && d.date <= t).sort((a, b) => (a.date < b.date ? 1 : -1))[0] || null; }
+function nextTodo(o, kind) { return (o.todos || []).filter(x => !x.done && (!kind || x.kind === kind)).sort((a, b) => (a.due < b.due ? -1 : 1))[0] || null; }
+function workHtml(o) {
+  const ls = lastSpray(o), ns = nextTodo(o, "spray"), ed = xEdit && xEdit.sec === "todo" ? xEdit : null;
+  let h = '<section class="osec" id="workSec"><h4>' + tr("wp_h") + '</h4><div class="spraybox">';
+  h += "<p>" + (ls ? tr(ls.stage ? "wp_last" : "wp_last0").replace("{d}", fmtDay(ls.date, true)).replace("{s}", ls.stage ? tr(ls.stage) : "").replace("{n}", fmtN(dayDiff(ls.date, todayIso()))) : tr("wp_nolast")) + "</p>";
+  if (ns) h += "<p><b>" + tr("wp_next").replace("{d}", fmtDay(ns.due, true)) + (ns.stage ? " (" + tr(ns.stage) + ")" : "") + "</b> " + dueChip(ns.due) + "</p>";
+  else h += "<p>" + tr("wp_nonext") + (ls && ls.stage ? " " + tr("wp_nextstage").replace("{s}", tr(NEXT_STAGE[ls.stage])) : "") + ' <button class="link" type="button" data-xact="plan">' + tr("wp_plan") + "</button></p>";
+  h += "</div>";
+  const v = ed && ed.v ? ed.v : null;
+  if (ed) {
+    h += '<form class="dform" data-xform="todo"><div class="field"><label for="td_due">' + tr("td_due") + '</label><input id="td_due" type="date" value="' + esc(v.due || "") + '"></div>' +
+      '<div class="field"><label for="td_kind">' + tr("td_kind") + '</label><select id="td_kind"><option value="">' + tr("dy_pick") + "</option>" + TODO_KINDS.map(k => '<option value="' + k + '"' + (k === v.kind ? " selected" : "") + ">" + tkName(k) + "</option>").join("") + "</select></div>" +
+      '<div class="field" id="td_stagewrap"' + (v.kind === "spray" ? "" : " hidden") + '><label for="td_stage">' + tr("dy_stage") + '</label><select id="td_stage"><option value="">–</option>' +
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '"' + ("st" + i === v.stage ? " selected" : "") + ">" + tr("st" + i) + "</option>").join("") + "</select></div>" +
+      '<div class="field wide"><label for="td_text">' + tr("td_text") + '</label><input id="td_text" type="text" maxlength="160" value="' + esc(v.text || "") + '"></div>' +
+      '<p class="autherr wide" id="td_err" role="alert"></p><div class="dels wide"><button class="btn-s add" type="submit">' + tr("td_save") + '</button><button class="btn-s" type="button" data-xact="cancel">' + tr("d_cancel") + "</button></div></form>";
+  } else h += '<div><button class="btn-s add" type="button" data-xact="todoadd">' + tr("td_add") + "</button></div>";
+  const open = (o.todos || []).filter(x => !x.done).sort((a, b) => (a.due < b.due ? -1 : 1)), done = (o.todos || []).filter(x => x.done).sort((a, b) => (a.doneOn < b.doneOn ? 1 : -1));
+  if (!open.length) h += '<p class="hint">' + tr("td_none") + "</p>";
+  else h += '<ul class="todolist">' + open.map(x => {
+    const msg = tr("ds_wa_head") + ": " + todoLine(o, x) + ", " + fmtDay(x.due, true);
+    let li = '<li><span class="dd">' + fmtDay(x.due) + " " + dueChip(x.due) + '</span><span class="dt"><b>' + tkName(x.kind) + "</b>" + (x.kind === "spray" && x.stage ? " <small>(" + tr(x.stage) + ")</small>" : "") + (x.text ? "<span>" + esc(x.text) + "</span>" : "") + "</span>" +
+      '<span class="da"><button class="link" type="button" data-xact="tododone" data-id="' + esc(x.id) + '">' + tr("td_done") + '</button><a class="link" href="' + waLink(msg) + '" target="_blank" rel="noopener">' + tr("wa") + "</a>" +
+      '<button class="link" type="button" data-xact="ics" data-o="' + esc(o.id) + '" data-id="' + esc(x.id) + '">' + tr("ics") + '</button><button class="link" type="button" data-xact="todoedit" data-id="' + esc(x.id) + '">' + tr("dy_edit") +
+      '</button><button class="link del" type="button" data-xact="tododel" data-id="' + esc(x.id) + '">' + tr("dy_del") + "</button></span>";
+    if (todoDone === x.id) li += '<form class="dform donef" data-xform="tododone" data-id="' + esc(x.id) + '"><div class="field"><label for="tdd_date">' + tr("td_doneon") + '</label><input id="tdd_date" type="date" value="' + todayIso() + '"></div>' +
+      '<div class="field"><label for="tdd_cost">' + tr("td_cost") + '</label><input id="tdd_cost" type="number" inputmode="decimal" min="0" step="any"></div><div class="dels"><button class="btn-s add" type="submit">' + tr("td_savedone") +
+      '</button><button class="btn-s" type="button" data-xact="donecancel">' + tr("d_cancel") + "</button></div></form>";
+    return li + "</li>";
+  }).join("") + "</ul>";
+  h += '<p class="fine">' + tr("td_note") + "</p>";
+  if (done.length) h += '<details class="manage"><summary>' + tr("td_doneh").replace("{n}", done.length) + '</summary><ul class="todolist done">' + done.map(x => '<li><span class="dd">' + fmtDay(x.doneOn || x.due) + '</span><span class="dt"><b>' + tkName(x.kind) + "</b>" +
+    (x.stage ? " <small>(" + tr(x.stage) + ")</small>" : "") + (x.text ? "<span>" + esc(x.text) + "</span>" : "") + '</span><span class="da"><button class="link del" type="button" data-xact="tododel" data-id="' + esc(x.id) + '">' + tr("dy_del") + "</button></span></li>").join("") + "</ul></details>";
+  return h + "</section>";
+}
+
+/* ---- blocks, soil tests, labour: small record tables with add / edit / delete ---- */
+function recForm(sec, fields, v, saveKey) {
+  return '<form class="dform" data-xform="' + sec + '">' + fields.map(f => {
+    const id = sec + "_" + f.k, val = v[f.k] == null ? "" : v[f.k];
+    const inner = f.sel ? '<select id="' + id + '">' + f.sel.map(([k, lab]) => '<option value="' + k + '"' + (String(k) === String(val) ? " selected" : "") + ">" + lab + "</option>").join("") + "</select>"
+      : '<input id="' + id + '" type="' + (f.t || "text") + '"' + (f.t === "number" ? ' inputmode="decimal" min="0" step="any"' : ' maxlength="' + (f.max || 80) + '"') + (f.list ? ' list="' + f.list + '"' : "") + (f.ph ? ' placeholder="' + esc(f.ph) + '"' : "") + ' value="' + esc(val) + '">';
+    return '<div class="field' + (f.wide ? " wide" : "") + '"' + (f.wrap ? ' id="' + f.wrap + '"' + (f.hide ? " hidden" : "") : "") + '><label for="' + id + '">' + f.lab + "</label>" + inner + "</div>";
+  }).join("") + '<p class="autherr wide" id="' + sec + '_err" role="alert"></p><div class="dels wide"><button class="btn-s add" type="submit">' + tr(saveKey) + '</button><button class="btn-s" type="button" data-xact="cancel">' + tr("d_cancel") + "</button></div></form>";
+}
+const recBtns = (sec, id) => '<td class="acts"><button class="link" type="button" data-xact="' + sec + 'edit" data-id="' + esc(id) + '">' + tr("dy_edit") + '</button><button class="link del" type="button" data-xact="' + sec + 'del" data-id="' + esc(id) + '">' + tr("dy_del") + "</button></td>";
+function blocksHtml(o) {
+  const L = o.blocks || [], ed = xEdit && xEdit.sec === "bl" ? xEdit : null, ty = thisYear();
+  let h = '<details class="osec dsec" id="blSec"' + (L.length || ed ? " open" : "") + "><summary><h4>" + tr("bl_h") + "</h4></summary>" + '<p class="hint">' + tr("bl_p") + "</p>";
+  if (L.length) {
+    const tot = L.reduce((a, b) => a + (+b.trees || 0), 0);
+    h += '<div class="tablewrap"><table class="ledger sm rectab"><thead><tr>' + ["bl_name", "p_var", "p_root", "bl_trees", "p_planted", "bl_replant", "bl_note"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th class="acts"></th></tr></thead><tbody>' +
+      L.map(b => "<tr" + (ed && ed.id === b.id ? ' class="editing"' : "") + '><th scope="row">' + esc(b.name) + '</th><td class="t">' + esc(b.var || "–") + '</td><td class="t">' + (b.root ? tr("r_" + b.root) : "–") + "</td><td>" + (+b.trees ? fmtN(+b.trees) : "–") + "</td><td>" +
+        (+b.planted ? b.planted + " <small>(" + tr("p_age").replace("{n}", Math.max(0, ty - +b.planted)) + ")</small>" : "–") + "</td><td>" + (+b.replant ? b.replant + (+b.replant <= ty + 1 ? ' <em class="chip soon">' + tr("bl_soon") + "</em>" : "") : "–") +
+        '</td><td class="t">' + esc(b.note || "") + "</td>" + recBtns("bl", b.id) + "</tr>").join("") +
+      '</tbody><tfoot><tr><th scope="row" colspan="3">' + tr("bl_total") + "</th><td>" + fmtN(tot) + '</td><td colspan="4"></td></tr></tfoot></table></div>';
+    if (+o.trees && tot && tot !== +o.trees) h += '<p class="fine">' + tr("bl_diff").replace("{n}", fmtN(tot)).replace("{m}", fmtN(+o.trees)) + "</p>";
+  } else h += '<p class="hint">' + tr("bl_none") + "</p>";
+  if (ed) h += recForm("bl", [{k: "name", lab: tr("bl_name"), ph: tr("bl_name_ph"), max: 60}, {k: "var", lab: tr("p_var"), ph: tr("p_var_ph"), max: 80},
+    {k: "root", lab: tr("p_root"), sel: [["", "–"]].concat(ROOTS.map(r => [r, tr("r_" + r)]))}, {k: "trees", lab: tr("bl_trees"), t: "number"}, {k: "planted", lab: tr("p_planted"), t: "number"},
+    {k: "replant", lab: tr("bl_replant"), t: "number"}, {k: "note", lab: tr("bl_note"), wide: true, max: 160}], ed.v || {}, "bl_save");
+  else h += '<div><button class="btn-s" type="button" data-xact="bladd">' + tr("bl_add") + "</button></div>";
+  return h + "</details>";
+}
+function soilHtml(o) {
+  const L = (o.soil || []).slice().sort((a, b) => (a.date < b.date ? 1 : -1)), ed = xEdit && xEdit.sec === "sl" ? xEdit : null;
+  const keys = ["ph", "n", "p", "k", "oc"];
+  let h = '<details class="osec dsec" id="slSec"' + (L.length || ed ? " open" : "") + "><summary><h4>" + tr("sl_h") + "</h4></summary>";
+  if (L.length) {
+    const cell = (b, prev, k) => { const v = +b[k]; if (!v) return "<td>–</td>"; let d = ""; if (prev && +prev[k]) { const df = v - +prev[k]; if (Math.abs(df) > 1e-9) d = ' <small class="' + (df > 0 ? "up" : "down") + '">' + (df > 0 ? "▲" : "▼") + fmtD(Math.abs(df)) + "</small>"; } return "<td>" + fmtD(v) + d + "</td>"; };
+    h += '<div class="tablewrap"><table class="ledger sm rectab"><thead><tr>' + ["sl_date", "sl_ph", "sl_n", "sl_p", "sl_k", "sl_oc", "sl_note"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th class="acts"></th></tr></thead><tbody>' +
+      L.map((b, i) => "<tr" + (ed && ed.id === b.id ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(b.date, true) + "</th>" + keys.map(k => cell(b, L[i + 1], k)).join("") + '<td class="t">' + esc(b.note || "") + "</td>" + recBtns("sl", b.id) + "</tr>").join("") +
+      "</tbody></table></div>" + (L.length > 1 ? '<p class="fine">' + tr("sl_p2") + "</p>" : "");
+  } else h += '<p class="hint">' + tr("sl_none") + "</p>";
+  if (ed) h += recForm("sl", [{k: "date", lab: tr("sl_date"), t: "date"}, {k: "ph", lab: tr("sl_ph"), t: "number"}, {k: "n", lab: tr("sl_n"), t: "number"}, {k: "p", lab: tr("sl_p"), t: "number"},
+    {k: "k", lab: tr("sl_k"), t: "number"}, {k: "oc", lab: tr("sl_oc"), t: "number"}, {k: "note", lab: tr("sl_note"), wide: true, max: 200}], ed.v || {date: todayIso()}, "sl_save");
+  else h += '<div><button class="btn-s" type="button" data-xact="sladd">' + tr("sl_add") + "</button></div>";
+  return h + "</details>";
+}
+function labourHtml(o) {
+  const all = o.labour || [], ed = xEdit && xEdit.sec === "lb" ? xEdit : null;
+  const yrs = Array.from(new Set(all.map(e => hYear(e.date)).concat([curHYear()]))).filter(y => y > 1900).sort((a, b) => b - a);
+  if (yrs.indexOf(labYear) < 0) labYear = yrs[0];
+  const L = all.filter(e => hYear(e.date) === labYear).sort((a, b) => (a.date < b.date ? 1 : -1));
+  let h = '<details class="osec dsec" id="lbSec"' + (all.length || ed ? " open" : "") + "><summary><h4>" + tr("lb_h") + "</h4></summary>" + '<p class="hint">' + tr("lb_p") + "</p>" +
+    '<div class="oyear field"><label for="lb_year">' + tr("lb_year") + '</label><select id="lb_year">' + yrs.map(y => '<option value="' + y + '"' + (y === labYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>";
+  if (L.length) {
+    const wages = L.filter(e => e.type === "work").reduce((a, e) => a + (+e.days || 0) * (+e.rate || 0), 0), paid = L.filter(e => e.type !== "work").reduce((a, e) => a + (+e.amt || 0), 0);
+    h += '<div class="tablewrap"><table class="ledger sm rectab"><thead><tr>' + ["lb_date", "lb_name", "lb_type", "lb_days", "lb_rate", "lb_amt", "lb_note"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th class="acts"></th></tr></thead><tbody>' +
+      L.map(e => { const w = e.type === "work", amt = w ? (+e.days || 0) * (+e.rate || 0) : +e.amt || 0;
+        return "<tr" + (ed && ed.id === e.id ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(e.date) + '</th><td class="t">' + esc(e.name) + '</td><td class="t">' + tr(w ? "lb_work" : "lb_pay") + "</td><td>" + (w ? fmtD(+e.days || 0) : "–") +
+          "</td><td>" + (w ? inr(+e.rate || 0) : "–") + "</td><td>" + inr(amt) + '</td><td class="t">' + esc(e.note || "") + "</td>" + recBtns("lb", e.id) + "</tr>"; }).join("") +
+      '</tbody><tfoot><tr><th scope="row" colspan="5">' + tr("lb_earned") + " / " + tr("lb_paid") + "</th><td>" + inr(wages) + " / " + inr(paid) + '</td><td colspan="2"></td></tr></tfoot></table></div>';
+  } else h += '<p class="hint">' + tr("lb_none") + "</p>";
+  const names = Array.from(new Set(all.map(e => e.name).filter(Boolean)));
+  if (names.length) {
+    const rows = names.map(n => { const es = all.filter(e => e.name === n), days = es.filter(e => e.type === "work").reduce((a, e) => a + (+e.days || 0), 0);
+      const earned = es.filter(e => e.type === "work").reduce((a, e) => a + (+e.days || 0) * (+e.rate || 0), 0), paid = es.filter(e => e.type !== "work").reduce((a, e) => a + (+e.amt || 0), 0);
+      return {n, days, earned, paid, bal: earned - paid}; });
+    h += '<p class="subhead">' + tr("lb_sum") + '</p><div class="tablewrap"><table class="ledger sm rectab"><thead><tr>' + ["lb_name", "lb_days", "lb_earned", "lb_paid", "lb_bal"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+      rows.map(r => '<tr><th scope="row">' + esc(r.n) + "</th><td>" + fmtD(r.days) + "</td><td>" + inr(r.earned) + "</td><td>" + inr(r.paid) + '</td><td class="' + (r.bal > 0 ? "neg" : "") + '">' +
+        (Math.abs(r.bal) < 1 ? tr("lb_settled") : r.bal > 0 ? tr("lb_owe").replace("{x}", inr(r.bal)) : tr("lb_adv").replace("{x}", inr(-r.bal))) + "</td></tr>").join("") + "</tbody></table></div>";
+  }
+  if (ed) {
+    const v = ed.v || {date: todayIso(), type: "work"};
+    h += '<datalist id="lb_names">' + names.map(n => '<option value="' + esc(n) + '">').join("") + "</datalist>" +
+      recForm("lb", [{k: "date", lab: tr("lb_date"), t: "date"}, {k: "name", lab: tr("lb_name"), list: "lb_names", max: 60}, {k: "type", lab: tr("lb_type"), sel: [["work", tr("lb_work")], ["pay", tr("lb_pay")]]},
+        {k: "days", lab: tr("lb_days"), t: "number", wrap: "lb_dw", hide: v.type !== "work"}, {k: "rate", lab: tr("lb_rate"), t: "number", wrap: "lb_rw", hide: v.type !== "work"},
+        {k: "amt", lab: tr("lb_amt"), t: "number", wrap: "lb_aw", hide: v.type === "work"}, {k: "note", lab: tr("lb_note"), wide: true, max: 120}], v, "lb_save");
+  } else h += '<div><button class="btn-s" type="button" data-xact="lbadd">' + tr("lb_add") + "</button></div>";
+  return h + "</details>";
+}
+
+/* ---- events for the extras ---- */
+function xRender(scrollId) { renderDash(); if (scrollId) { const s2 = $(scrollId); if (s2 && s2.scrollIntoView) s2.scrollIntoView({block: "start"}); } }
+$("dash").addEventListener("click", e => {
+  const b = e.target.closest("[data-xact]"); if (!b) return;
+  const a = b.dataset.xact, o = S.orchards.find(x => x.id === (b.dataset.o || dashView)); if (!o) return;
+  const id = b.dataset.id, armed = () => { if (b.dataset.armed) return true; const back = b.textContent; b.dataset.armed = "1"; b.textContent = tr("dy_sure"); setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = back; } }, 4000); return false; };
+  if (a === "ics") { const x = (o.todos || []).find(q => q.id === id); if (x) downloadIcs(o, x); return; }
+  if (a === "cancel") { xEdit = null; xRender(); return; }
+  if (a === "locgps") {
+    if (!navigator.geolocation) { set("loc_err", tr("loc_gps_err")); return; }
+    navigator.geolocation.getCurrentPosition(p => setLocation(o, p.coords.latitude, p.coords.longitude, p.coords.altitude, ""), () => set("loc_err", tr("loc_gps_err")), {enableHighAccuracy: true, timeout: 15000});
+    return;
+  }
+  if (a === "locfind") { locMode = locMode === "find" ? null : "find"; locResults = null; xRender("locSec"); const q = $("loc_q"); if (q) q.focus(); return; }
+  if (a === "locmap") { locMode = locMode === "map" ? null : "map"; locResults = null; xRender("locSec"); return; }
+  if (a === "locpick") { const r = locResults && locResults[+b.dataset.i]; if (r) setLocation(o, r.lat, r.lon, r.elev, r.name); return; }
+  if (a === "locrm") { if (!armed()) return; if (o.profile) { delete o.profile.lat; delete o.profile.lon; } save(); xRender("locSec"); return; }
+  if (a === "todoadd") { xEdit = {sec: "todo", v: {due: addDays(todayIso(), 7), kind: ""}}; todoDone = null; xRender("workSec"); const k = $("td_due"); if (k) k.focus(); return; }
+  if (a === "plan") { const ls = lastSpray(o); xEdit = {sec: "todo", v: {due: addDays(todayIso(), 7), kind: "spray", stage: ls && ls.stage ? NEXT_STAGE[ls.stage] : ""}}; xRender("workSec"); return; }
+  if (a === "todoedit") { const x = (o.todos || []).find(q => q.id === id); if (x) { xEdit = {sec: "todo", id, v: Object.assign({}, x)}; xRender("workSec"); } return; }
+  if (a === "tododone") { todoDone = id; xRender("workSec"); return; }
+  if (a === "donecancel") { todoDone = null; xRender("workSec"); return; }
+  if (a === "tododel") { if (!armed()) return; o.todos = (o.todos || []).filter(q => q.id !== id); save(); xRender("workSec"); return; }
+  const sec = a.slice(0, 2), op = a.slice(2), key = {bl: "blocks", sl: "soil", lb: "labour"}[sec];
+  if (!key) return;
+  if (op === "add") { xEdit = {sec}; xRender({bl: "blSec", sl: "slSec", lb: "lbSec"}[sec]); return; }
+  if (op === "edit") { const x = (o[key] || []).find(q => q.id === id); if (x) { xEdit = {sec, id, v: Object.assign({}, x)}; xRender({bl: "blSec", sl: "slSec", lb: "lbSec"}[sec]); } return; }
+  if (op === "del") {
+    if (!armed()) return;
+    const gone = (o[key] || []).find(q => q.id === id);
+    o[key] = (o[key] || []).filter(q => q.id !== id);
+    if (sec === "lb" && gone) pruneSeason(o.id, hYear(gone.date));
+    if (xEdit && xEdit.id === id) xEdit = null;
+    fixSel(); save(); renderAll(); return;
+  }
+});
+$("dash").addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "td_kind") { const w = $("td_stagewrap"); if (w) w.hidden = t.value !== "spray"; }
+  else if (t.id === "lb_type") { const w = t.value === "work"; ["lb_dw", "lb_rw"].forEach(i => { const el = $(i); if (el) el.hidden = !w; }); const a = $("lb_aw"); if (a) a.hidden = w; }
+  else if (t.id === "lb_year") { labYear = +t.value; renderDash(); const s2 = $("lbSec"); if (s2) s2.scrollIntoView({block: "start"}); }
+});
+$("dash").addEventListener("submit", e => {
+  const f = e.target.closest("[data-xform]"); if (!f) return;
+  e.preventDefault();
+  const kind = f.dataset.xform, o = S.orchards.find(x => x.id === dashView); if (!o) return;
+  const val = id => ($(id) ? $(id).value.trim() : "");
+  if (kind === "locsearch") {
+    const q = val("loc_q"); if (!q) return;
+    set("loc_err", "");
+    fetch("https://geocoding-api.open-meteo.com/v1/search?count=8&language=en&format=json&name=" + encodeURIComponent(q)).then(r => r.json()).then(j => {
+      const res = ((j && j.results) || []).sort((a, b) => (b.country_code === "IN") - (a.country_code === "IN"));
+      locResults = res.map(r => ({lat: r.latitude, lon: r.longitude, elev: r.elevation, name: r.name, label: [r.name, r.admin2, r.admin1, r.country].filter(Boolean).join(", ") + (r.elevation ? " (" + fmtN(r.elevation) + " m)" : "")}));
+      xRender("locSec");
+    }).catch(() => { set("loc_err", tr("wx_err")); });
+    return;
+  }
+  if (kind === "todo") {
+    const due = val("td_due"), k = val("td_kind");
+    if (!due || !k) { set("td_err", tr("td_err")); return; }
+    const x = {id: (xEdit && xEdit.id) || newId(), due, kind: k, stage: k === "spray" ? val("td_stage") : "", text: val("td_text"), done: false};
+    o.todos = (o.todos || []).filter(q => q.id !== x.id).concat([x]); xEdit = null;
+    save(); xRender("workSec"); return;
+  }
+  if (kind === "tododone") {
+    const x = (o.todos || []).find(q => q.id === f.dataset.id); if (!x) return;
+    const date = val("tdd_date") || todayIso(), cost = numOf(val("tdd_cost"));
+    x.done = true; x.doneOn = date; todoDone = null;
+    o.diary = (o.diary || []).concat([{id: newId(), date, kind: TODO_DIARY[x.kind] || "xother", text: x.text || "", cost, stage: x.kind === "spray" ? x.stage || "" : ""}]);
+    if (cost > 0) ensureSeason(o.id, hYear(date));
+    fixSel(); save(); renderAll(); const s2 = $("workSec"); if (s2) s2.scrollIntoView({block: "start"}); return;
+  }
+  const key = {bl: "blocks", sl: "soil", lb: "labour"}[kind]; if (!key) return;
+  let rec = {id: (xEdit && xEdit.id) || newId()};
+  if (kind === "bl") {
+    rec = Object.assign(rec, {name: val("bl_name"), var: val("bl_var"), root: val("bl_root"), trees: numOf(val("bl_trees")), planted: numOf(val("bl_planted")), replant: numOf(val("bl_replant")), note: val("bl_note")});
+    if (!rec.name) { set("bl_err", tr("bl_err")); return; }
+  } else if (kind === "sl") {
+    rec = Object.assign(rec, {date: val("sl_date"), ph: numOf(val("sl_ph")), n: numOf(val("sl_n")), p: numOf(val("sl_p")), k: numOf(val("sl_k")), oc: numOf(val("sl_oc")), note: val("sl_note")});
+    if (!rec.date) { set("sl_err", tr("sl_err")); return; }
+  } else {
+    const ty = val("lb_type");
+    rec = Object.assign(rec, {date: val("lb_date"), name: val("lb_name"), type: ty === "pay" ? "pay" : "work", note: val("lb_note")});
+    if (rec.type === "work") { rec.days = numOf(val("lb_days")); rec.rate = numOf(val("lb_rate")); } else rec.amt = numOf(val("lb_amt"));
+    if (!rec.date || !rec.name || (rec.type === "work" ? !(rec.days && rec.rate) : !rec.amt)) { set("lb_err", tr("lb_err")); return; }
+  }
+  const old = (o[key] || []).find(q => q.id === rec.id);
+  o[key] = (o[key] || []).filter(q => q.id !== rec.id).concat([rec]);
+  if (kind === "lb") { if (rec.type === "work") ensureSeason(o.id, hYear(rec.date)); if (old) pruneSeason(o.id, hYear(old.date)); labYear = hYear(rec.date); }
+  xEdit = null; fixSel(); save(); renderAll();
+  const s2 = $({bl: "blSec", sl: "slSec", lb: "lbSec"}[kind]); if (s2) s2.scrollIntoView({block: "start"});
+});
+
 $("dash").addEventListener("click", e => {
   const b = e.target.closest("[data-dact]"); if (!b) return;
   const a = b.dataset.dact, oid = b.dataset.o, o = S.orchards.find(x => x.id === (oid || dashView));
+  if (a === "view" || a === "back") { xEdit = null; locMode = null; locResults = null; todoDone = null; }
   if (a === "view") { dashView = oid; dashYear = null; profEdit = false; diaryEdit = null; renderDash(); dashTop(); }
   else if (a === "back") { dashView = null; profEdit = false; diaryEdit = null; renderDash(); dashTop(); }
   else if (a === "year") { dashYear = +b.dataset.y; renderDash(); const y = $("o_season"); if (y) y.scrollIntoView({block: "start"}); }
@@ -2797,8 +3307,9 @@ function expTotals(o, y) {
   let lump = 0;
   ents.forEach(d => { const k = EXP_KINDS.indexOf(d.kind) >= 0 ? d.kind : (DIARY_COST[d.kind] ? d.kind : "xother"); cat[k] = (cat[k] || 0) + (+d.cost); });
   if (se) COST_KEYS.forEach(k => { const v = +se.costs[k] || 0; if (v) { lump += v; cat[LUMP_KIND[k]] = (cat[LUMP_KIND[k]] || 0) + v; } });
+  const lw = labourWork(o, y); if (lw) cat.labour = (cat.labour || 0) + lw;
   const total = Object.keys(cat).reduce((a, k) => a + cat[k], 0);
-  return {ents, cat, lump, total};
+  return {ents, cat, lump, lw, total};
 }
 function fixExp() {
   if (!S.orchards.some(o => o.id === exO)) exO = S.orchards.some(o => o.id === sel.o) ? sel.o : (S.orchards[0] ? S.orchards[0].id : null);
@@ -2806,6 +3317,7 @@ function fixExp() {
 function expYearsAll() {
   const ys = new Set([curHYear()]);
   S.orchards.forEach(o => (o.diary || []).forEach(d => { if (+d.cost > 0) { const y = hYear(d.date); if (y > 1900) ys.add(y); } }));
+  S.orchards.forEach(o => (o.labour || []).forEach(e => { if (e.type === "work") { const y = hYear(e.date); if (y > 1900) ys.add(y); } }));
   S.seasons.forEach(x => { if (COST_KEYS.some(k => +x.costs[k] > 0)) ys.add(x.year); });
   return Array.from(ys).sort((a, b) => b - a);
 }
@@ -2870,7 +3382,8 @@ function renderExpList() {
             t.ents.map(e => '<tr' + (e.id === exEdit ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(e.date) + '</th><td class="t">' + tr("dk_" + e.kind) + (e.kind === "spray" && e.stage ? " <small>(" + tr(e.stage) + ")</small>" : "") +
               (e.text ? '<span class="det">' + esc(e.text) + "</span>" : "") + "</td><td>" + inr(+e.cost) + '</td><td class="acts"><button class="link" type="button" data-exact="edit" data-id="' + esc(e.id) + '">' + tr("dy_edit") +
               '</button><button class="link del" type="button" data-exact="del" data-o="' + esc(o.id) + '" data-id="' + esc(e.id) + '">' + tr("dy_del") + "</button></td></tr>").join("") + "</tbody></table></div>";
-        } else if (!t.lump) h += '<p class="hint">' + tr("ex_zero") + "</p>";
+        } else if (!t.lump && !t.lw) h += '<p class="hint">' + tr("ex_zero") + "</p>";
+        if (t.lw) h += '<p class="hint">' + tr("lb_inexp").replace("{x}", inr(t.lw)) + "</p>";
         h += '<details class="manage exlump"' + (hasL ? " open" : "") + "><summary>" + tr("ex_lump") + '</summary><p class="hint">' + tr("ex_lump_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
           '<div class="field"><label for="exl_' + esc(o.id) + "_" + y + "_" + k + '">' + tr("yc_" + k) + ' (₹)</label><input id="exl_' + esc(o.id) + "_" + y + "_" + k + '" data-exlump="' + k + '" data-o="' + esc(o.id) + '" data-y="' + y +
           '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>').join("") + "</div></details></section>";
@@ -2884,7 +3397,7 @@ function renderExpList() {
 function refreshExpTotals() {
   // update year and orchard totals without redrawing the lump-sum boxes being typed in
   document.querySelectorAll("#exList [data-exact=ytoggle]").forEach(b => {
-    const y = +b.dataset.y, tot = S.orchards.reduce((a, o) => a + expTotals(o, y).total, 0), n = b.querySelector(".ynet"); if (n) n.textContent = inr(tot);
+    const y = +b.dataset.y, tot = S.orchards.reduce((a, o) => a + expTotals(o, y).total, 0), n = b.querySelector(".yfig.ynet b"); if (n) n.innerHTML = mny(tot);
   });
   document.querySelectorAll("#exList .exo").forEach(s2 => {
     const m = s2.id.match(/^exo-(.+)-(\d{4})$/); if (!m) return;
