@@ -627,6 +627,17 @@ details.dsec > summary h4{display:inline}
 .detlist dd .link{padding:0;font-size:inherit}.detlist .none{color:var(--muted);font-weight:400}
 .detrows .ybody .oacts{display:flex;gap:8px;flex-wrap:wrap}
 .detrows .ybody form.detcard{margin-top:10px}
+.vtbox{border:1px solid var(--line);border-radius:10px;padding:10px 12px 12px;margin:0;display:grid;gap:8px;background:var(--surface)}
+.vtbox legend{font:700 1rem var(--display);padding:0 6px;color:var(--apple)}
+.vtbox .fine{margin:0}
+.vthead,.vtrow{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) auto;gap:8px;align-items:center}
+.vthead span{font-size:.82rem;color:var(--muted)}
+#vt_rows{display:grid;gap:6px}
+.vtrow input{width:100%;min-height:42px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:500 1rem var(--mono);font-variant-numeric:tabular-nums}
+.vtrow input.vt-v{font-family:var(--body)}
+.vtrow .link{padding:2px 0;font-size:.88rem}
+.vtbox > .btn-s{justify-self:start}
+.vtsum{margin:0;font-weight:700}.vtsum:empty{display:none}
 @media (max-width:560px){.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.detrows .dname{grid-column:1}.detrows .yfigs.three{border-left:0}.detrows .yfigs.three{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr)}}
 .detpick{display:flex;gap:10px 14px;align-items:end;flex-wrap:wrap}
 .detpick .field{min-width:min(100%,260px)}
@@ -1242,7 +1253,8 @@ en: {
   lb_err:"Enter the date and worker, and the days and rate (or the amount paid).", lb_none:"No entries for this harvest year.", lb_sum:"Balance by worker (all years)", lb_earned:"Wages", lb_paid:"Paid",
   lb_bal:"Balance", lb_owe:"You owe {x}", lb_adv:"Advance {x}", lb_settled:"Settled", lb_inexp:"Includes {x} of wages from the labour register.",
   o_next:"Next: {t}, {d}", o_lastspray:"Last spray {n} days ago",
-  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_pick:"Orchard", det_tap:"Tap an orchard to see all its details.", sum_h:"My Orchards Summary", sum_p:"Trees by variety for each orchard.", sum_p0:"Area and trees for each orchard.", sum_all:"All {n} orchards", sum_trees:"Total trees", sum_area:"Total area", sum_var:"{v} trees", sum_unsplit:"Not split by variety", sum_hint:"Not split by variety: trees of an orchard that lists more than one variety. Add its blocks (variety and trees) on the orchard page to split them.", sum_hint0:"Trees by variety appear here when an orchard lists one variety, or when you add blocks (variety and trees) on the orchard page.", det_noplace:"Place not added yet", det_next:"Next task", det_lastspray:"Last spray", dg_place:"Place", dg_trees:"Trees", dg_care:"Care", det_tot2:"All {n} orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
+  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_pick:"Orchard", det_tap:"Tap an orchard to see all its details.", vt_h:"Trees by variety", vt_p:"One line for each variety. The orchard's total trees add up from these lines.", vt_var:"Variety", vt_var_ph:"For example Gala",
+  vt_n:"Number of trees", vt_add:"+ Add variety", vt_rm:"Remove", vt_total:"Total trees: {n}", vt_total0:"Number of trees (if not split by variety)", vt_onpage:"Trees and varieties are set under Trees by variety on the Dashboard (Edit profile).", sum_h:"My Orchards Summary", sum_p:"Trees by variety for each orchard.", sum_p0:"Area and trees for each orchard.", sum_all:"All {n} orchards", sum_trees:"Total trees", sum_area:"Total area", sum_var:"{v} trees", sum_unsplit:"Not split by variety", sum_hint:"Not split by variety: trees of an orchard that lists more than one variety. Add its blocks (variety and trees) on the orchard page to split them.", sum_hint0:"Trees by variety appear here when an orchard lists one variety, or when you add blocks (variety and trees) on the orchard page.", det_noplace:"Place not added yet", det_next:"Next task", det_lastspray:"Last spray", dg_place:"Place", dg_trees:"Trees", dg_care:"Care", det_tot2:"All {n} orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
   w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
   w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
   w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
@@ -1463,7 +1475,8 @@ hi: {
   lb_err:"तारीख़ और मज़दूर, और दिन व रेट (या दी गई रक़म) डालें।", lb_none:"इस फ़सल वर्ष की कोई एंट्री नहीं।", lb_sum:"हर मज़दूर का हिसाब (सभी साल)", lb_earned:"मज़दूरी", lb_paid:"दिया गया",
   lb_bal:"बाक़ी", lb_owe:"आपको देने हैं {x}", lb_adv:"एडवांस {x}", lb_settled:"हिसाब बराबर", lb_inexp:"इसमें मज़दूरी रजिस्टर की {x} मज़दूरी शामिल है।",
   o_next:"अगला: {t}, {d}", o_lastspray:"पिछला स्प्रे {n} दिन पहले",
-  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_pick:"बाग़", det_tap:"किसी बाग़ की पूरी जानकारी देखने के लिए उस पर दबाएँ।", sum_h:"मेरे बाग़ों का सार", sum_p:"हर बाग़ में किस्म के हिसाब से पेड़।", sum_p0:"हर बाग़ का रक़बा और पेड़।", sum_all:"सभी {n} बाग़", sum_trees:"कुल पेड़", sum_area:"कुल रक़बा", sum_var:"{v} के पेड़", sum_unsplit:"किस्म के हिसाब से नहीं बँटे", sum_hint:"किस्म के हिसाब से नहीं बँटे: उन बाग़ों के पेड़ जिनमें एक से ज़्यादा किस्म लिखी है। बाँटने के लिए बाग़ के पन्ने पर उसके हिस्से (किस्म और पेड़) जोड़ें।", sum_hint0:"किस्म के हिसाब से पेड़ यहाँ तब दिखेंगे जब बाग़ में एक ही किस्म लिखी हो, या बाग़ के पन्ने पर हिस्से (किस्म और पेड़) जोड़ें।", det_noplace:"जगह अभी नहीं जोड़ी", det_next:"अगला काम", det_lastspray:"पिछला स्प्रे", dg_place:"जगह", dg_trees:"पेड़", dg_care:"देखभाल", det_tot2:"सभी {n} बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
+  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_pick:"बाग़", det_tap:"किसी बाग़ की पूरी जानकारी देखने के लिए उस पर दबाएँ।", vt_h:"किस्म के हिसाब से पेड़", vt_p:"हर किस्म के लिए एक पंक्ति। बाग़ के कुल पेड़ इन्हीं पंक्तियों से जुड़ते हैं।", vt_var:"किस्म", vt_var_ph:"जैसे Gala",
+  vt_n:"पेड़ों की संख्या", vt_add:"+ किस्म जोड़ें", vt_rm:"हटाएँ", vt_total:"कुल पेड़: {n}", vt_total0:"पेड़ों की संख्या (अगर किस्म के हिसाब से नहीं बाँटे)", vt_onpage:"पेड़ और किस्में डैशबोर्ड पर किस्म के हिसाब से पेड़ में सेट होते हैं (जानकारी बदलें)।", sum_h:"मेरे बाग़ों का सार", sum_p:"हर बाग़ में किस्म के हिसाब से पेड़।", sum_p0:"हर बाग़ का रक़बा और पेड़।", sum_all:"सभी {n} बाग़", sum_trees:"कुल पेड़", sum_area:"कुल रक़बा", sum_var:"{v} के पेड़", sum_unsplit:"किस्म के हिसाब से नहीं बँटे", sum_hint:"किस्म के हिसाब से नहीं बँटे: उन बाग़ों के पेड़ जिनमें एक से ज़्यादा किस्म लिखी है। बाँटने के लिए बाग़ के पन्ने पर उसके हिस्से (किस्म और पेड़) जोड़ें।", sum_hint0:"किस्म के हिसाब से पेड़ यहाँ तब दिखेंगे जब बाग़ में एक ही किस्म लिखी हो, या बाग़ के पन्ने पर हिस्से (किस्म और पेड़) जोड़ें।", det_noplace:"जगह अभी नहीं जोड़ी", det_next:"अगला काम", det_lastspray:"पिछला स्प्रे", dg_place:"जगह", dg_trees:"पेड़", dg_care:"देखभाल", det_tot2:"सभी {n} बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
   w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
   w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
   w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
@@ -2577,10 +2590,12 @@ function orchardFacts(o) {
 function farmSummaryHtml() {
   if (!S.orchards.length) return "";
   const names = {}, rows = S.orchards.map(o => {
-    const P = o.profile || {}, t = +o.trees || 0, bl = (o.blocks || []).filter(b => +b.trees > 0), v = {};
+    const P = o.profile || {}, t = +o.trees || 0, bl = (o.blocks || []).filter(b => +b.trees > 0), v = {}, vt = vtList(o);
     const addV = (name, n) => { const k = name.trim().toLowerCase(); if (!k || !(n > 0)) return; if (!names[k]) names[k] = name.trim(); v[k] = (v[k] || 0) + n; };
     let trees = t, un = 0;
-    if (bl.length) {
+    if (vt.length) {
+      const vs = vt.reduce((a, x) => a + +x.n, 0); vt.forEach(x => addV(x.v, +x.n)); trees = Math.max(t, vs); if (t > vs) un += t - vs;
+    } else if (bl.length) {
       const bt = bl.reduce((a, b) => a + (+b.trees || 0), 0);
       bl.forEach(b => { if ((b.var || "").trim()) addV(b.var, +b.trees); else un += +b.trees; });
       trees = Math.max(t, bt); if (t > bt) un += t - bt;
@@ -2627,9 +2642,10 @@ function profileHtml(o) {
       fld("p_village", "p_village", inp("p_village", "text", P.village, ' maxlength="80"')) +
       fld("p_alt", "p_alt", inp("p_alt", "number", P.alt || "", ' inputmode="numeric" min="0" step="1"')) +
       fld("p_area", "p_area", inp("p_area", "number", P.area || "", ' inputmode="decimal" min="0" step="any"')) +
-      fld("p_trees", "f_trees", inp("p_trees", "number", trees || "", ' inputmode="numeric" min="0" step="1"')) +
+      fld("p_trees", "f_trees", inp("p_trees", "number", trees || "", ' inputmode="numeric" min="0" step="1"' + (vtList(o).length ? " disabled" : ""))) +
       fld("p_planted", "p_planted", inp("p_planted", "number", P.planted || "", ' inputmode="numeric" min="1950" max="' + thisYear() + '" step="1"')) +
-      fld("p_var", "p_var", inp("p_var", "text", P.var, ' maxlength="120" placeholder="' + esc(tr("p_var_ph")) + '"'), true) +
+      fld("p_var", "p_var", inp("p_var", "text", P.var, ' maxlength="120" placeholder="' + esc(tr("p_var_ph")) + '"' + (vtList(o).length ? " disabled" : "")), true) +
+      (vtList(o).length ? '<p class="fine wide">' + tr("vt_onpage") + "</p>" : "") +
       fld("p_root", "p_root", '<select id="p_root">' + opt(ROOTS, "r_", P.root) + "</select>") +
       fld("p_irr", "p_irr", '<select id="p_irr">' + opt(IRR, "i_", P.irr) + "</select>") +
       fld("p_hail", "p_hail", '<select id="p_hail">' + opt(HAIL, "h_", P.hail) + "</select>") +
@@ -2642,7 +2658,7 @@ function profileHtml(o) {
   add("p_alt", +P.alt ? tr("p_m").replace("{n}", fmtN(+P.alt)) : "");
   add("p_area", +P.area ? tr("p_bigha").replace("{n}", fmtD(P.area)) : "");
   add("d_trees", trees ? fmtN(trees) : "");
-  add("p_var", esc(P.var));
+  add("p_var", vtList(o).length ? vtList(o).map(x => esc(x.v) + " " + fmtN(+x.n)).join(", ") : esc(P.var));
   add("p_root", P.root ? tr("r_" + P.root) : "");
   add("p_planted", +P.planted ? P.planted + " (" + tr("p_age").replace("{n}", Math.max(0, thisYear() - +P.planted)) + ")" : "");
   add("p_irr", P.irr ? tr("i_" + P.irr) : "");
@@ -2861,6 +2877,27 @@ const dayDiff = (a, b) => Math.round((new Date(b + "T00:00:00") - new Date(a + "
 const hasLoc = o => !!(o && o.profile && isFinite(+o.profile.lat) && isFinite(+o.profile.lon) && o.profile.lat !== "" && o.profile.lat != null);
 let xEdit = null, todoDone = null, locMode = null, locResults = null, labYear = null, detEdit = null;
 
+/* trees by variety (orchard.varTrees = [{v, n}]); total trees and the varieties text follow from it */
+const VARIETIES = ["Royal Delicious", "Red Delicious", "Golden Delicious", "Gala", "Spur", "Super Chief", "Red Chief", "Scarlet Spur", "Oregon Spur", "Jeromine", "Granny Smith", "Fuji", "Rich-a-Red", "Starking", "Ambri"];
+const vtList = o => ((o && o.varTrees) || []).filter(x => (x.v || "").trim() && +x.n > 0);
+function vtRow(v, n) {
+  return '<div class="vtrow"><input class="vt-v" type="text" list="vt_names" maxlength="40" placeholder="' + esc(tr("vt_var_ph")) + '" aria-label="' + esc(tr("vt_var")) + '" value="' + esc(v || "") + '">' +
+    '<input class="vt-n" type="number" inputmode="numeric" min="0" step="1" placeholder="0" aria-label="' + esc(tr("vt_n")) + '" value="' + esc(+n ? n : "") + '">' +
+    '<button class="link del" type="button" data-xact="vtdel" data-o="_">' + tr("vt_rm") + "</button></div>";
+}
+function vtEditor(o) {
+  const L = vtList(o);
+  return '<fieldset class="wide vtbox"><legend>' + tr("vt_h") + '</legend><p class="fine">' + tr("vt_p") + '</p><div class="vthead"><span>' + tr("vt_var") + "</span><span>" + tr("vt_n") + '</span></div><div id="vt_rows">' +
+    (L.length ? L.map(x => vtRow(x.v, x.n)).join("") : vtRow("", "")) + '</div><button class="btn-s" type="button" data-xact="vtadd" data-o="_">' + tr("vt_add") + "</button>" +
+    '<p class="vtsum" id="vt_sum"></p><datalist id="vt_names">' + VARIETIES.map(v => '<option value="' + v + '">').join("") + "</datalist></fieldset>" +
+    '<div class="field" id="det_treeswrap"><label for="det_trees">' + tr("vt_total0") + '</label><input id="det_trees" type="number" inputmode="numeric" min="0" step="1" value="' + esc(+o.trees && !L.length ? o.trees : "") + '"></div>';
+}
+function vtRefresh() {
+  const rows = Array.from(document.querySelectorAll("#vt_rows .vtrow")); if (!rows.length && !$("vt_sum")) return;
+  const tot = rows.reduce((a, r) => a + numOf(r.querySelector(".vt-n").value), 0), w = $("det_treeswrap");
+  if (w) w.hidden = tot > 0;
+  set("vt_sum", tot > 0 ? tr("vt_total").replace("{n}", fmtN(tot)) : "");
+}
 /* a small apple-tree picture for orchards without a photo; apples placed differently for each orchard */
 function treeArt(seed) {
   let hsh = 0; for (let i = 0; i < seed.length; i++) hsh = (hsh * 31 + seed.charCodeAt(i)) >>> 0;
@@ -2899,12 +2936,12 @@ function detailsHtml() {
     r += '<div class="ybody">';
     if (detEdit === o.id) {
       r += '<form class="detcard editing" data-xform="det" data-o="' + esc(o.id) + '"><div class="field wide"><label for="det_name">' + tr("f_oname") + '</label><input id="det_name" type="text" maxlength="60" value="' + esc(o.name || "") + '"></div>' +
-        fields.map(([k, lab, t, pre]) => {
+        fields.filter(([k]) => k !== "trees" && k !== "var").map(([k, lab, t, pre]) => {
           const v = get(k), id = "det_" + k;
           const inner = Array.isArray(t) ? '<select id="' + id + '"><option value="">–</option>' + t.map(x => '<option value="' + x + '"' + (x === v ? " selected" : "") + ">" + tr(pre + x) + "</option>").join("") + "</select>"
             : '<input id="' + id + '" type="' + t + '"' + (t === "number" ? ' inputmode="decimal" min="0" step="any"' : ' maxlength="120"') + (k === "var" ? ' placeholder="' + esc(tr("p_var_ph")) + '"' : "") + ' value="' + esc(+v || (t !== "number" && v) ? v : "") + '">';
           return '<div class="field' + (k === "var" ? " wide" : "") + '"><label for="' + id + '">' + tr(lab) + "</label>" + inner + "</div>";
-        }).join("") +
+        }).join("") + vtEditor(o) +
         '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-xact="detcancel" data-o="' + esc(o.id) + '">' + tr("d_cancel") + "</button></div></form>";
     } else {
       const nt = nextTodo(o), lsp = lastSpray(o);
@@ -2915,7 +2952,7 @@ function detailsHtml() {
           const grp = (k, rows) => '<section class="dgrp"><h6>' + tr(k) + '</h6><dl class="detlist">' + rows.join("") + "</dl></section>";
           return '<div class="dgroups">' +
             grp("dg_place", [row(tr("p_village"), show("village")), row(tr("p_alt"), show("alt")), row(tr("p_area"), show("area")), row(tr("det_loc"), loc)]) +
-            grp("dg_trees", [row(tr("d_trees"), show("trees")), row(tr("p_var"), show("var")), row(tr("p_root"), show("root", "r_")), row(tr("p_planted"), show("planted"))]) +
+            grp("dg_trees", [row(tr("d_trees"), show("trees")), row(tr("p_var"), vtList(o).length ? vtList(o).map(x => esc(x.v) + " " + fmtN(+x.n)).join(", ") : show("var")), row(tr("p_root"), show("root", "r_")), row(tr("p_planted"), show("planted"))]) +
             grp("dg_care", [row(tr("p_irr"), show("irr", "i_")), row(tr("p_hail"), show("hail", "h_")),
               row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : ""), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "")]) + "</div>";
         })() +
@@ -3230,12 +3267,18 @@ function labourHtml(o) {
 /* ---- events for the extras ---- */
 function xRender(scrollId) { renderDash(); if (scrollId) { const s2 = $(scrollId); if (s2 && s2.scrollIntoView) s2.scrollIntoView({block: "start"}); } }
 $("dash").addEventListener("click", e => {
+  const vb = e.target.closest("[data-xact=vtadd],[data-xact=vtdel]");
+  if (vb) {
+    if (vb.dataset.xact === "vtadd") { $("vt_rows").insertAdjacentHTML("beforeend", vtRow("", "")); const r = $("vt_rows").lastElementChild; if (r) r.querySelector(".vt-v").focus(); }
+    else { const r = vb.closest(".vtrow"); if (r) r.remove(); if (!$("vt_rows").children.length) $("vt_rows").insertAdjacentHTML("beforeend", vtRow("", "")); }
+    vtRefresh(); return;
+  }
   const b = e.target.closest("[data-xact]"); if (!b) return;
   const a = b.dataset.xact, o = S.orchards.find(x => x.id === (b.dataset.o || dashView)); if (!o) return;
   const id = b.dataset.id, armed = () => { if (b.dataset.armed) return true; const back = b.textContent; b.dataset.armed = "1"; b.textContent = tr("dy_sure"); setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = back; } }, 4000); return false; };
   if (a === "ics") { const x = (o.todos || []).find(q => q.id === id); if (x) downloadIcs(o, x); return; }
   if (a === "dettoggle") { if (detOpen.has(o.id)) { detOpen.delete(o.id); if (detEdit === o.id) detEdit = null; } else detOpen.add(o.id); renderDash(); const nb = document.querySelector('[data-xact=dettoggle][data-o="' + o.id + '"]'); if (nb) nb.focus(); return; }
-  if (a === "detedit") { detEdit = o.id; detOpen.add(o.id); renderDash(); const n = $("det_village"); if (n) n.focus(); return; }
+  if (a === "detedit") { detEdit = o.id; detOpen.add(o.id); renderDash(); vtRefresh(); const n = $("det_village"); if (n) n.focus(); return; }
   if (a === "detcancel") { detEdit = null; renderDash(); const s2 = $("det-" + o.id); if (s2) s2.scrollIntoView({block: "nearest"}); return; }
   if (a === "detloc") { dashView = o.id; dashYear = null; detEdit = null; xEdit = null; locMode = null; renderDash(); const s2 = $("locSec"); if (s2) s2.scrollIntoView({block: "start"}); return; }
   if (a === "cancel") { xEdit = null; xRender(); return; }
@@ -3267,6 +3310,7 @@ $("dash").addEventListener("click", e => {
     fixSel(); save(); renderAll(); return;
   }
 });
+$("dash").addEventListener("input", e => { if (e.target.closest && e.target.closest("#vt_rows")) vtRefresh(); });
 $("dash").addEventListener("change", e => {
   const t = e.target;
   if (t.id === "td_kind") { const w = $("td_stagewrap"); if (w) w.hidden = t.value !== "spray"; }
@@ -3280,8 +3324,11 @@ $("dash").addEventListener("submit", e => {
   const val = id => ($(id) ? $(id).value.trim() : "");
   if (kind === "det") {
     const nm = val("det_name"); if (nm) o.name = nm;
-    o.trees = numOf(val("det_trees"));
-    o.profile = Object.assign(o.profile || {}, {village: val("det_village"), alt: numOf(val("det_alt")), area: numOf(val("det_area")), var: val("det_var"),
+    const vt = []; document.querySelectorAll("#vt_rows .vtrow").forEach(r => { const v = r.querySelector(".vt-v").value.trim(), n = Math.round(numOf(r.querySelector(".vt-n").value)); if (v && n) { const f = vt.find(x => x.v.toLowerCase() === v.toLowerCase()); if (f) f.n += n; else vt.push({v, n}); } });
+    o.varTrees = vt;
+    o.trees = vt.length ? vt.reduce((a, x) => a + x.n, 0) : numOf(val("det_trees"));
+    const vtxt = vt.length ? vt.map(x => x.v).join(", ") : ((o.profile || {}).var || "");
+    o.profile = Object.assign(o.profile || {}, {village: val("det_village"), alt: numOf(val("det_alt")), area: numOf(val("det_area")), var: vtxt,
       root: val("det_root"), planted: numOf(val("det_planted")), irr: val("det_irr"), hail: val("det_hail")});
     detEdit = null; detOpen.add(o.id); fixSel(); save(); renderAll(); const s2 = $("det-" + o.id); if (s2) s2.scrollIntoView({block: "nearest"}); return;
   }
@@ -3399,7 +3446,7 @@ $("dash").addEventListener("submit", e => {
   if (kind === "prof") {
     const val = id => $(id).value.trim(), nm = val("p_name");
     if (nm) o.name = nm;
-    o.trees = numOf($("p_trees").value);
+    o.trees = vtList(o).length ? vtList(o).reduce((a, x) => a + +x.n, 0) : numOf($("p_trees").value);
     o.profile = Object.assign(o.profile || {}, {village: val("p_village"), alt: numOf($("p_alt").value), area: numOf($("p_area").value), var: val("p_var"),
       root: $("p_root").value, planted: numOf($("p_planted").value), irr: $("p_irr").value, hail: $("p_hail").value});
     profEdit = false;
