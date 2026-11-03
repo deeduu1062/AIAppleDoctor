@@ -149,6 +149,42 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 #adTable .tag{display:inline-block;font-size:.8rem;font-weight:600;padding:1px 8px;border-radius:6px;border:1px solid var(--line);color:var(--muted)}
 #adTable .tag.ok{color:var(--good);border-color:var(--good)}
 #adTable .tag.me{color:var(--apple);border-color:var(--apple)}
+#tp-orch.tpanel{max-width:none;grid-template-columns:minmax(0,1fr)}
+#tp-orch .authcard{max-width:560px}
+.subpanel{display:grid;gap:24px;min-width:0}
+.status:empty{display:none}
+#rp-year.panel,#rp-orch.panel{margin-top:0}
+#rp-year .ysub:first-child{margin-top:0!important}
+.pctabs{margin-top:0}
+#tp-calc > .status{margin:0}
+.dash{display:grid;gap:18px;margin-top:4px}
+.dash .ystats{margin-top:0}
+.ystats .sub{display:block;font-size:.8rem;color:var(--muted);margin-top:2px;font-weight:500}
+.ocards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:16px}
+.ocard{border:1px solid var(--line);border-top:4px solid var(--apple);border-radius:12px;background:var(--surface);padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ocard header{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ocard h4{font-size:1.5rem;font-weight:700;line-height:1.1;min-width:0;overflow-wrap:anywhere}
+.ocard .otrees{color:var(--muted);font-size:.9rem;white-space:nowrap}
+.ocard .olbl{color:var(--muted);font-size:.9rem;margin:0}
+.ocard .onet{font:600 2rem var(--mono);font-variant-numeric:tabular-nums;line-height:1.05;margin:0}
+.ocard .onet.pos{color:var(--good)}.ocard .onet.neg{color:var(--bad)}
+.ocard .ochg{font-size:.88rem;color:var(--muted);margin:-4px 0 0}
+.ocard dl.ostats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:2px 0 0}
+.ocard dl.ostats div{display:block;border:0;padding:0}
+.ocard dl.ostats dt{font-size:.8rem;color:var(--muted)}
+.ocard dl.ostats dd{margin:0;text-align:left;font:500 1rem var(--mono)}
+.ocard .ybars{margin:2px 0 0;gap:6px}
+.ocard .ybars li{grid-template-columns:2.8rem minmax(0,1fr) auto;gap:10px}
+.ocard .ybars .track{height:12px}
+.ocard .ybars .yl,.ocard .ybars .yv{font-size:.85rem}
+.ocard .ohint{font-size:.85rem;color:var(--muted);margin:0}
+.ocard .oacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.ocard .oacts .btn-s{min-height:38px;padding:7px 12px;font-size:.9rem}
+.ocard form{display:grid;gap:10px}
+.ocard form .field input{min-height:40px}
+.ocard .link.del{color:var(--bad);font-size:.9rem;justify-self:start}
+.ocard.addc{border-top-width:1px;border-style:dashed;background:transparent;justify-content:center}
+.ocard.addc p{color:var(--muted);margin:0}
 .possel{max-width:260px;margin-bottom:8px}
 .possel label{font-size:.8rem;margin-bottom:3px}
 .lothead2 .lotmv{display:flex;gap:14px;margin-left:auto}
@@ -497,6 +533,82 @@ legend{font-size:.95rem}
   <div class="wrap">
     <div class="tpanel" id="tp-calc" role="tabpanel" aria-labelledby="tt-calc">
       <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
+      <div class="tabs pctabs" role="tablist">
+        <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="pt_year"></button>
+        <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="pt_season"></button>
+        <button class="tab" role="tab" id="rt-quick" aria-selected="true" aria-controls="rp-quick" type="button" data-i18n="pt_quick"></button>
+      </div>
+      <p class="status" id="status" aria-live="polite" hidden></p>
+      <div class="authcard" id="pcGate" hidden>
+        <h3 data-i18n="pg_h"></h3>
+        <p data-i18n="pg_p"></p>
+        <div class="dels"><button class="btn-s add" type="button" id="pcSignIn" data-i18n="pg_btn"></button></div>
+      </div>
+    <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year" hidden>
+      <div>
+        <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
+        <div id="yearDetail"></div>
+        <h3 class="ysub" data-i18n="y_h"></h3>
+        <div id="yearTable"></div>
+        <h3 class="ysub" data-i18n="y_chart"></h3>
+        <ul class="ybars" id="ybars"></ul>
+        <p class="fine" data-i18n="y_note"></p>
+      </div>
+    </div>
+
+    
+<div class="panel single" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
+      <div>
+        <div class="pick">
+          <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
+          <div class="field yr"><label for="selYear" data-i18n="lbl_year"></label><select id="selYear"></select></div>
+          <button class="btn-s add" type="button" id="addEntryBtn" data-act="openentry" data-i18n="add_btn"></button>
+        </div>
+        <p class="entrymsg" id="entryMsg" role="status"></p>
+        <form class="lotbox entryform" id="entryForm" novalidate hidden>
+          <h4 id="ne_title"></h4>
+          <div class="field possel"><label for="ne_pos" data-i18n="ne_pos"></label><select id="ne_pos"></select></div>
+          <p class="hint" data-i18n="exp_note"></p>
+          <div class="lottab" id="ne_sum"></div>
+          <div id="ne_rows"></div>
+          <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button>
+          <p class="autherr" id="ne_err" role="alert"></p>
+          <div class="dels"><button class="btn-s add" type="submit" data-i18n="ne_submit"></button><button class="btn-s" type="button" data-act="cancelentry" data-i18n="ne_cancel"></button></div>
+        </form>
+        <div class="addrow" id="addOrchRow" hidden>
+          <div class="field"><label for="newOrchard" data-i18n="ph_orchard"></label><input id="newOrchard" type="text" maxlength="60"></div>
+          <button class="btn-s add" type="button" data-act="addorch" data-i18n="add_btn"></button>
+        </div>
+        <div id="exBanner" class="banner" hidden>
+          <span data-i18n="ex_note"></span>
+          <button class="btn-s" type="button" data-act="clearex" data-i18n="ex_clear"></button>
+        </div>
+        <details class="manage" id="manage">
+          <summary data-i18n="manage"></summary>
+          <div class="dels" id="dels"></div>
+        </details>
+        <div class="headline" id="headline" hidden><span id="hl_label"></span><b id="hl_val"></b></div>
+        <div id="editor"></div>
+      </div>
+      <div class="result" id="resBox">
+        <p class="big-label" id="o_label"></p>
+        <p class="big" id="o_profit"></p>
+        <p class="persub"><span id="o_ppb"></span> <span data-i18n="hero_card_per"></span></p>
+        <dl>
+          <div><dt data-i18n="r_boxes"></dt><dd id="o_boxes"></dd></div>
+          <div><dt data-i18n="r_gross"></dt><dd id="o_rev"></dd></div>
+          
+          <div><dt data-i18n="r_lotexp"></dt><dd id="o_perbox"></dd></div>
+          <div><dt data-i18n="r_year"></dt><dd id="o_year"></dd></div>
+          <div><dt data-i18n="r_due"></dt><dd id="o_due"></dd></div>
+        </dl>
+        <h4 data-i18n="bar_title"></h4>
+        <div class="stack" id="bar" role="img" aria-label="Breakdown"></div>
+        <ul class="legend" id="legend"></ul>
+      </div>
+    </div>
+
+      <div class="subpanel" id="rp-quick" role="tabpanel" aria-labelledby="rt-quick">
       <p data-i18n="pc_p"></p>
       <div class="panel">
         <div>
@@ -536,6 +648,7 @@ legend{font-size:.95rem}
         </div>
       </div>
       <p class="tnote" data-i18n="pc_rec"></p>
+      </div>
     </div>
 
     <div class="tpanel" id="tp-diag" role="tabpanel" aria-labelledby="tt-diag" hidden>
@@ -646,79 +759,8 @@ legend{font-size:.95rem}
       </div>
 
       <div id="recApp" hidden>
-        <p class="status" id="status" aria-live="polite"></p>
-        <div class="tabs" role="tablist">
-          <button class="tab" role="tab" id="rt-year" aria-selected="true" aria-controls="rp-year" type="button" data-i18n="tab_year"></button>
-          <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="tab_edit"></button>
-        </div>
-<div class="panel single" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
-      <div>
-        <div class="pick">
-          <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
-          <div class="field yr"><label for="selYear" data-i18n="lbl_year"></label><select id="selYear"></select></div>
-          <button class="btn-s add" type="button" id="addEntryBtn" data-act="openentry" data-i18n="add_btn"></button>
-        </div>
-        <p class="entrymsg" id="entryMsg" role="status"></p>
-        <form class="lotbox entryform" id="entryForm" novalidate hidden>
-          <h4 id="ne_title"></h4>
-          <div class="field possel"><label for="ne_pos" data-i18n="ne_pos"></label><select id="ne_pos"></select></div>
-          <p class="hint" data-i18n="exp_note"></p>
-          <div class="lottab" id="ne_sum"></div>
-          <div id="ne_rows"></div>
-          <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button>
-          <p class="autherr" id="ne_err" role="alert"></p>
-          <div class="dels"><button class="btn-s add" type="submit" data-i18n="ne_submit"></button><button class="btn-s" type="button" data-act="cancelentry" data-i18n="ne_cancel"></button></div>
-        </form>
-        <div class="addrow" id="addOrchRow" hidden>
-          <div class="field"><label for="newOrchard" data-i18n="ph_orchard"></label><input id="newOrchard" type="text" maxlength="60"></div>
-          <button class="btn-s add" type="button" data-act="addorch" data-i18n="add_btn"></button>
-        </div>
-        <div id="exBanner" class="banner" hidden>
-          <span data-i18n="ex_note"></span>
-          <button class="btn-s" type="button" data-act="clearex" data-i18n="ex_clear"></button>
-        </div>
-        <details class="manage" id="manage">
-          <summary data-i18n="manage"></summary>
-          <div class="grid">
-            <div class="field"><label for="oname" data-i18n="f_oname"></label><input id="oname" type="text" maxlength="60"></div>
-            <div class="field"><label for="otrees" data-i18n="f_trees"></label><input id="otrees" type="number" inputmode="numeric" min="0" step="1"></div>
-          </div>
-          <div class="dels" id="dels"></div>
-        </details>
-        <div class="headline" id="headline" hidden><span id="hl_label"></span><b id="hl_val"></b></div>
-        <div id="editor"></div>
-      </div>
-      <div class="result" id="resBox">
-        <p class="big-label" id="o_label"></p>
-        <p class="big" id="o_profit"></p>
-        <p class="persub"><span id="o_ppb"></span> <span data-i18n="hero_card_per"></span></p>
-        <dl>
-          <div><dt data-i18n="r_boxes"></dt><dd id="o_boxes"></dd></div>
-          <div><dt data-i18n="r_gross"></dt><dd id="o_rev"></dd></div>
-          
-          <div><dt data-i18n="r_lotexp"></dt><dd id="o_perbox"></dd></div>
-          <div><dt data-i18n="r_year"></dt><dd id="o_year"></dd></div>
-          <div><dt data-i18n="r_due"></dt><dd id="o_due"></dd></div>
-        </dl>
-        <h4 data-i18n="bar_title"></h4>
-        <div class="stack" id="bar" role="img" aria-label="Breakdown"></div>
-        <ul class="legend" id="legend"></ul>
-      </div>
-    </div>
-
-    <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year">
-      <div>
-        <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
-        <div id="yearDetail"></div>
-        <h3 class="ysub" data-i18n="y_h"></h3>
-        <div id="yearTable"></div>
-        <h3 class="ysub" data-i18n="y_chart"></h3>
-        <ul class="ybars" id="ybars"></ul>
-        <p class="fine" data-i18n="y_note"></p>
-      </div>
-    </div>
-
-    
+        <p class="status" id="status2" aria-live="polite"></p>
+        <div class="dash" id="dash"></div>
         <details class="manage" id="bk">
           <summary data-i18n="bk_h"></summary>
           <p class="hint" data-i18n="bk_p"></p>
@@ -787,7 +829,7 @@ en: {
   calc_p:"Keep a record for each orchard and each year. Profit per orchard and per year works itself out. The first records are examples you can clear.",
   tab_orch:"My orchards", tab_year:"Yearly profit", tab_cmp:"Mandi or ladhani?", reset:"Put back the example numbers",
   lbl_orchard:"Orchard", lbl_year:"Year", add_btn:"Add", ph_orchard:"New orchard name", ph_year:"Choose the year to add",
-  manage:"Rename, trees, delete", f_oname:"Orchard name", f_trees:"Number of trees (optional)",
+  manage:"Delete this year", f_oname:"Orchard name", f_trees:"Number of trees (optional)",
   del_orchard:"Delete this orchard", del_year:"Delete this year", del_sure:"Delete? Its records will be removed.", del_yes:"Yes, delete", del_no:"Keep it",
   ex_note:"Example records are included. Clear them when you are ready to enter your own.", ex_clear:"Clear examples",
   empty_orch:"No orchards yet. Type a name above and press Add.", empty_year:"No entries for this year yet. Tap Add to enter a sale.",
@@ -868,7 +910,14 @@ en: {
   tt_calc:"Profit calculator", tt_cal:"Season calendar", s_guide:"Guide live",
   pc_h:"Profit calculator", pc_p:"Add each grade or rate you sold. Gross is boxes × rate, and net income is gross minus expenses. Everything is worked out on your phone and nothing is sent anywhere.",
   pc_lines:"Your sale", pc_hint:"The starting numbers are examples. Change them to yours.",
-  pc_rec:"To keep every lot for each orchard and see your total for each year, you will need to sign in. Sign-in is coming next, and your records will stay private to your account.",
+  pc_rec:"To save every lot for each orchard and see your totals by year, sign in and use Season Profit. Your records stay private to your account.",
+  pt_year:"Yearly net profit", pt_season:"Season Profit", pt_quick:"Quick calculator",
+  pg_h:"Sign in to see your own records", pg_p:"Season Profit and Yearly net profit use the lots you save in your private account. The quick calculator works without signing in.", pg_btn:"Sign in",
+  d_orchards:"Orchards", d_trees:"Trees", d_net:"Net income, {y}", d_boxes:"Boxes sold, {y}", d_ppb:"Net per box, {y}", d_due:"Not yet received, {y}",
+  d_up:"{x} more than {y}", d_down:"{x} less than {y}", d_treesn:"{n} trees", d_latest:"Latest season, {y}",
+  d_seasons:"{n} seasons recorded", d_season1:"1 season recorded", d_best:"Best year {y}: {x}", d_nosales:"No sales recorded yet.",
+  d_open:"Open Season Profit", d_addsale:"Add sale", d_edit:"Edit details", d_save:"Save", d_cancel:"Cancel",
+  d_del:"Delete orchard", d_delsure:"Tap again to delete it and all its records", d_add:"＋ Add orchard", d_first:"Add your first orchard to start keeping records.", d_addp:"Add another orchard.",
   tt_admin:"Admin", ad_h:"Admin", ad_pill:"Only you can see this",
   ad_p:"Everyone who has made an account, when they last signed in, and whether they are keeping records. Sale figures stay private to each grower.",
   ad_refresh:"Refresh", ad_at:"Updated {t}", ad_loading:"Loading…", ad_find:"Find by email",
@@ -932,7 +981,7 @@ hi: {
   calc_p:"हर बाग़ और हर साल का रिकॉर्ड रखें। हर बाग़ और हर साल का मुनाफ़ा अपने आप निकल आता है। शुरू के रिकॉर्ड उदाहरण हैं, जिन्हें आप हटा सकते हैं।",
   tab_orch:"मेरे बाग़", tab_year:"साल भर का मुनाफ़ा", tab_cmp:"मंडी या लदानी?", reset:"उदाहरण वाले आँकड़े वापस लाएँ",
   lbl_orchard:"बाग़", lbl_year:"साल", add_btn:"जोड़ें", ph_orchard:"नए बाग़ का नाम", ph_year:"जोड़ने के लिए साल चुनें",
-  manage:"नाम बदलें, पेड़, हटाएँ", f_oname:"बाग़ का नाम", f_trees:"पेड़ों की संख्या (वैकल्पिक)",
+  manage:"यह साल हटाएँ", f_oname:"बाग़ का नाम", f_trees:"पेड़ों की संख्या (वैकल्पिक)",
   del_orchard:"इस बाग़ को हटाएँ", del_year:"यह साल हटाएँ", del_sure:"हटाएँ? इसके सारे रिकॉर्ड मिट जाएँगे।", del_yes:"हाँ, हटाएँ", del_no:"रहने दें",
   ex_note:"इसमें उदाहरण के रिकॉर्ड शामिल हैं। अपने आँकड़े डालने के लिए इन्हें हटा दें।", ex_clear:"उदाहरण हटाएँ",
   empty_orch:"अभी कोई बाग़ नहीं है। ऊपर नाम लिखकर जोड़ें दबाएँ।", empty_year:"इस साल की कोई एंट्री अभी नहीं है। बिक्री डालने के लिए जोड़ें दबाएँ।",
@@ -1013,7 +1062,14 @@ hi: {
   tt_calc:"मुनाफ़ा कैलकुलेटर", tt_cal:"सीज़न कैलेंडर", s_guide:"गाइड चालू",
   pc_h:"मुनाफ़ा कैलकुलेटर", pc_p:"जो ग्रेड या भाव बेचा, हर एक की पंक्ति जोड़ें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर। सारा हिसाब आपके फ़ोन पर ही होता है, कुछ भी कहीं भेजा नहीं जाता।",
   pc_lines:"आपकी बिक्री", pc_hint:"शुरुआती संख्याएँ उदाहरण हैं। इन्हें अपनी संख्याओं से बदलें।",
-  pc_rec:"हर बाग़ का हर लॉट सहेजने और हर साल का कुल देखने के लिए आपको साइन इन करना होगा। साइन-इन अगला काम है, और आपका रिकॉर्ड सिर्फ़ आपके खाते में रहेगा।",
+  pc_rec:"हर बाग़ का हर लॉट सहेजने और साल भर के कुल देखने के लिए साइन इन करें और सीज़न का मुनाफ़ा इस्तेमाल करें। आपका रिकॉर्ड सिर्फ़ आपके खाते में रहता है।",
+  pt_year:"सालाना शुद्ध मुनाफ़ा", pt_season:"सीज़न का मुनाफ़ा", pt_quick:"झटपट हिसाब",
+  pg_h:"अपना रिकॉर्ड देखने के लिए साइन इन करें", pg_p:"सीज़न का मुनाफ़ा और सालाना शुद्ध मुनाफ़ा आपके निजी खाते में सहेजे गए लॉट से बनते हैं। झटपट हिसाब बिना साइन इन के चलता है।", pg_btn:"साइन इन",
+  d_orchards:"बाग़", d_trees:"पेड़", d_net:"शुद्ध आय, {y}", d_boxes:"बिकी पेटियाँ, {y}", d_ppb:"प्रति पेटी शुद्ध आय, {y}", d_due:"अभी नहीं मिला, {y}",
+  d_up:"{y} से {x} ज़्यादा", d_down:"{y} से {x} कम", d_treesn:"{n} पेड़", d_latest:"ताज़ा सीज़न, {y}",
+  d_seasons:"{n} सीज़न दर्ज", d_season1:"1 सीज़न दर्ज", d_best:"सबसे अच्छा साल {y}: {x}", d_nosales:"अभी कोई बिक्री दर्ज नहीं है।",
+  d_open:"सीज़न का मुनाफ़ा खोलें", d_addsale:"बिक्री जोड़ें", d_edit:"जानकारी बदलें", d_save:"सहेजें", d_cancel:"रद्द करें",
+  d_del:"बाग़ हटाएँ", d_delsure:"इसे और इसका सारा रिकॉर्ड हटाने के लिए दोबारा दबाएँ", d_add:"＋ बाग़ जोड़ें", d_first:"रिकॉर्ड रखना शुरू करने के लिए अपना पहला बाग़ जोड़ें।", d_addp:"एक और बाग़ जोड़ें।",
   tt_admin:"एडमिन", ad_h:"एडमिन", ad_pill:"सिर्फ़ आप देख सकते हैं",
   ad_p:"जिन्होंने भी खाता बनाया है, उन्होंने आख़िरी बार कब साइन इन किया, और क्या वे रिकॉर्ड रख रहे हैं। बिक्री के आँकड़े हर बागवान के अपने रहते हैं।",
   ad_refresh:"ताज़ा करें", ad_at:"{t} पर ताज़ा किया", ad_loading:"लोड हो रहा है…", ad_find:"ईमेल से ढूँढें",
@@ -1296,7 +1352,7 @@ let user = null, loaded = false, loadFailed = false, pendingEmail = "";
 let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink/.test(String(location.hash) + String(location.search));
 let saving = false, again = false, saveTimer = null, rev = 0, savedRev = 0;
 const isDirty = () => rev > savedRev;
-function setStatus(k) { $("status").textContent = tr(k); $("status").dataset.k = k; }
+function setStatus(k) { ["status", "status2"].forEach(id => { $(id).textContent = tr(k); $(id).dataset.k = k; }); $("status").hidden = false; }
 function save() { if (!user || !loaded) return; rev++; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
 async function flush() {
   if (!user || !sb || !loaded) return;
@@ -1381,11 +1437,12 @@ function renderOrchGate() {
   $("pwCard").hidden = !(user && (recovering || pwOpen));
   $("loadErr").hidden = !(user && !loaded && loadFailed);
   $("recApp").hidden = !ready;
+  if (typeof showSub === "function") showSub();
   $("orchPill").className = "pill" + (user ? " live" : "");
   set("orchPill", tr(user ? "s_signedin" : "s_signin"));
   renderAcct();
 }
-function renderAll() { renderEditor(); renderResults(); renderSummary(); }
+function renderAll() { renderEditor(); renderResults(); renderSummary(); renderDash(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -1408,6 +1465,7 @@ async function applyUser(u) {
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
   if (!u) {
+    curSub = "quick"; dashEdit = null; dashAdd = false;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false; addingO = false;
     $("authStep1").hidden = false; $("authStep2").hidden = true;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
@@ -1528,12 +1586,19 @@ $("bkFile").addEventListener("change", async e => {
   e.target.value = "";
 });
 
+let curSub = "quick";
 function showSub(w) {
-  ["year", "orch"].forEach(n => {
-    $("rp-" + n).hidden = n !== w;
-    $("rt-" + n).setAttribute("aria-selected", n === w ? "true" : "false");
+  curSub = w || curSub;
+  const ready = !!(user && loaded) && !recovering;
+  ["year", "orch", "quick"].forEach(n => {
+    $("rp-" + n).hidden = n !== curSub || (n !== "quick" && !ready);
+    $("rt-" + n).setAttribute("aria-selected", n === curSub ? "true" : "false");
   });
+  $("pcGate").hidden = curSub === "quick" || ready;
+  $("status").hidden = curSub === "quick" || !ready;
 }
+$("rt-quick").addEventListener("click", () => showSub("quick"));
+$("pcSignIn").addEventListener("click", () => { tabPicked = true; showTool("orch", false, true); });
 $("rt-year").addEventListener("click", () => showSub("year"));
 $("rp-year").addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-act=editsel]");
@@ -1621,7 +1686,7 @@ function lotTable(rows, acts) {
 function updDraft() {
   const rows = [];
   draft.forEach((r, i) => { if (draftFilled(r)) rows.push([i + 1, draftLine(r)]); });
-  $("ne_sum").innerHTML = lotTable(rows, {isEd: x => x[0] - 1 === editIdx, attr: (x, k) => 'data-act="ne' + k + '" data-i="' + (x[0] - 1) + '"'});
+  $("ne_sum").innerHTML = lotTable(rows, {isEd: x => x[0] - 1 === editIdx, attr: (x, k) => 'data-act="' + (k === "edit" ? "nedit" : "nedel") + '" data-i="' + (x[0] - 1) + '"'});
 }
 function openEntry() {
   const o = curOrchard(); if (!o || !sel.y) return;
@@ -1687,8 +1752,7 @@ function renderEditor() {
   $("addOrchRow").hidden = !addingO;
 
   $("exBanner").hidden = !S.orchards.some(x => x.ex);
-  $("manage").hidden = !o;
-  if (o) { $("oname").value = o.name || ""; $("otrees").value = o.trees || ""; }
+  $("manage").hidden = !se;
   renderDels();
 
   let h = "";
@@ -1743,7 +1807,6 @@ function renderDels() {
     h = '<div class="confirm"><span>' + tr("del_sure") + '</span><button class="btn-s danger" type="button" data-act="delyes">' + tr("del_yes") + '</button><button class="btn-s" type="button" data-act="delno">' + tr("del_no") + "</button></div>";
   } else {
     pendingDel = null;
-    if (o) h += '<button class="btn-s danger" type="button" data-act="delorch">' + tr("del_orchard") + "</button>";
     if (se) h += '<button class="btn-s danger" type="button" data-act="delyear">' + tr("del_year") + "</button>";
   }
   $("dels").innerHTML = h;
@@ -1784,6 +1847,108 @@ function renderResults() {
       attr: (x, k) => 'data-act="s' + k + '" data-lot="' + esc(l.id) + '" data-id="' + esc(x[1].id) + '"'}) : '<p class="hint">' + tr("ne_none_lot") + "</p>";
   });
 }
+
+/* ---------- My orchards dashboard ---------- */
+let dashEdit = null, dashAdd = false;
+function renderDash() {
+  const el = $("dash"); if (!el) return;
+  const cls = n => (n < 0 ? "neg" : "pos");
+  const years = Array.from(new Set(S.seasons.map(s => s.year))).sort((a, b) => b - a);
+  const LY = years[0];
+  let h = "";
+  if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
+  if (S.orchards.length) {
+    const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
+    const t = {net:0, boxes:0, eq:0, due:0}; let prev = null;
+    S.seasons.forEach(se => {
+      if (se.year === LY) { const r = seasonCalc(se); t.net += r.profit; t.boxes += r.boxes; t.eq += r.eq; t.due += r.due; }
+      if (se.year === LY - 1) { prev = (prev || 0) + seasonCalc(se).profit; }
+    });
+    const tile = (lab, val, extra, sub) => "<div" + (extra ? ' class="' + extra + '"' : "") + "><span>" + lab + "</span><b>" + val + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
+    const chg = prev == null ? "" : tr(t.net >= prev ? "d_up" : "d_down").replace("{x}", inr(Math.abs(t.net - prev))).replace("{y}", LY - 1);
+    h += '<div class="ystats">' + tile(tr("d_orchards"), fmtN(S.orchards.length)) + tile(tr("d_trees"), trees ? fmtN(trees) : "–") +
+      (LY ? tile(tr("d_net").replace("{y}", LY), inr(t.net), "main " + cls(t.net), chg) + tile(tr("d_boxes").replace("{y}", LY), fmtN(t.boxes)) +
+        tile(tr("d_ppb").replace("{y}", LY), inr(t.eq ? t.net / t.eq : 0)) + tile(tr("d_due").replace("{y}", LY), inr(t.due)) : "") + "</div>";
+  }
+  h += '<div class="ocards">' + S.orchards.map(o => {
+    const name = esc(o.name || tr("orchard_fallback"));
+    const head = "<header><h4>" + name + "</h4>" + (+o.trees ? '<span class="otrees">' + tr("d_treesn").replace("{n}", fmtN(+o.trees)) + "</span>" : "") + "</header>";
+    if (dashEdit === o.id) {
+      return '<article class="ocard">' + head + '<form data-dform="edit" data-o="' + esc(o.id) + '">' +
+        '<div class="field"><label for="dn_name">' + tr("f_oname") + '</label><input id="dn_name" type="text" maxlength="60" value="' + esc(o.name) + '"></div>' +
+        '<div class="field"><label for="dn_trees">' + tr("f_trees") + '</label><input id="dn_trees" type="number" inputmode="numeric" min="0" step="1" value="' + (+o.trees || "") + '"></div>' +
+        '<div class="dels"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button></div>" +
+        '<button class="link del" type="button" data-dact="del" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></form></article>";
+    }
+    const ss = S.seasons.filter(se => se.oid === o.id).map(se => ({y: se.year, r: seasonCalc(se)})).sort((a, b) => b.y - a.y);
+    let body = "";
+    if (ss.length) {
+      const L = ss[0], P = ss[1], best = ss.reduce((a, b) => (b.r.profit > a.r.profit ? b : a));
+      body += '<p class="olbl">' + tr("d_latest").replace("{y}", L.y) + '</p><p class="onet ' + cls(L.r.profit) + '">' + inr(L.r.profit) + "</p>";
+      if (P) body += '<p class="ochg">' + tr(L.r.profit >= P.r.profit ? "d_up" : "d_down").replace("{x}", inr(Math.abs(L.r.profit - P.r.profit))).replace("{y}", P.y) + "</p>";
+      body += '<dl class="ostats"><div><dt>' + tr("ls_boxes") + "</dt><dd>" + fmtN(L.r.boxes) + "</dd></div><div><dt>" + tr("ls_ppb") + "</dt><dd>" + inr(L.r.ppb) + "</dd></div><div><dt>" +
+        (L.r.due > 0 ? tr("r_due") + "</dt><dd>" + inr(L.r.due) : tr("ls_gross") + "</dt><dd>" + inr(L.r.rev)) + "</dd></div></dl>";
+      if (ss.length > 1) {
+        const max = Math.max.apply(null, ss.map(x => Math.abs(x.r.profit))) || 1;
+        body += '<ul class="ybars">' + ss.slice().reverse().map(x => '<li><span class="yl">' + x.y + '</span><span class="track"><span class="fill ' + cls(x.r.profit) + '" style="width:' +
+          (Math.abs(x.r.profit) / max * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(x.r.profit) + "</span></li>").join("") + "</ul>";
+      }
+      body += '<p class="ohint">' + (ss.length === 1 ? tr("d_season1") : tr("d_seasons").replace("{n}", ss.length)) +
+        (ss.length > 1 ? ". " + tr("d_best").replace("{y}", best.y).replace("{x}", inr(best.r.profit)) : "") + "</p>";
+    } else body += '<p class="ohint">' + tr("d_nosales") + "</p>";
+    const act = (a, k, main) => '<button class="btn-s' + (main ? " add" : "") + '" type="button" data-dact="' + a + '" data-o="' + esc(o.id) + '">' + tr(k) + "</button>";
+    return '<article class="ocard">' + head + body + '<div class="oacts">' + (ss.length ? act("open", "d_open", true) + act("addsale", "d_addsale") : act("addsale", "d_addsale", true)) + act("edit", "d_edit") + "</div></article>";
+  }).join("");
+  h += '<article class="ocard addc">' + (dashAdd
+    ? '<form data-dform="add"><div class="field"><label for="dn_new">' + tr("f_oname") + '</label><input id="dn_new" type="text" maxlength="60"></div>' +
+      '<div class="field"><label for="dn_newtrees">' + tr("f_trees") + '</label><input id="dn_newtrees" type="number" inputmode="numeric" min="0" step="1"></div>' +
+      '<div class="dels"><button class="btn-s add" type="submit">' + tr("add_btn") + '</button><button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button></div></form>"
+    : "<p>" + tr(S.orchards.length ? "d_addp" : "d_first") + '</p><div><button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button></div>") + "</article></div>";
+  el.innerHTML = h;
+}
+function goSeason(oid, year) {
+  closeEditLine(); entryOpen = false; addingO = false; pendingDel = null; set("entryMsg", "");
+  sel.o = oid; sel.y = year; fixSel(); renderAll();
+  tabPicked = true; showTool("calc", false, true); showSub("orch");
+}
+$("dash").addEventListener("click", e => {
+  const b = e.target.closest("[data-dact]"); if (!b) return;
+  const a = b.dataset.dact, oid = b.dataset.o, ty = new Date().getFullYear();
+  if (a === "open") {
+    const ys = S.seasons.filter(se => se.oid === oid).map(se => se.year);
+    goSeason(oid, ys.length ? Math.max.apply(null, ys) : ty);
+  } else if (a === "addsale") { goSeason(oid, ty); openEntry(); }
+  else if (a === "edit") { dashEdit = oid; dashAdd = false; renderDash(); const i = $("dn_name"); if (i) i.focus(); }
+  else if (a === "add") { dashAdd = true; dashEdit = null; renderDash(); $("dn_new").focus(); }
+  else if (a === "cancel") { dashEdit = null; dashAdd = false; renderDash(); }
+  else if (a === "del") {
+    if (!b.dataset.armed) {
+      b.dataset.armed = "1"; b.textContent = tr("d_delsure");
+      setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = tr("d_del"); } }, 4000);
+      return;
+    }
+    S.seasons = S.seasons.filter(se => se.oid !== oid); S.orchards = S.orchards.filter(x => x.id !== oid);
+    if (sel.o === oid) { sel.o = null; sel.y = null; }
+    dashEdit = null; fixSel(); save(); renderAll();
+  } else if (a === "clearex") {
+    const ids = S.orchards.filter(x => x.ex).map(x => x.id);
+    S.orchards = S.orchards.filter(x => !x.ex); S.seasons = S.seasons.filter(se => ids.indexOf(se.oid) < 0);
+    fixSel(); save(); renderAll();
+  }
+});
+$("dash").addEventListener("submit", e => {
+  const f = e.target.closest("[data-dform]"); if (!f) return;
+  e.preventDefault();
+  if (f.dataset.dform === "edit") {
+    const o = S.orchards.find(x => x.id === f.dataset.o); if (!o) return;
+    const nm = $("dn_name").value.trim(); if (nm) o.name = nm;
+    o.trees = numOf($("dn_trees").value); dashEdit = null;
+  } else {
+    const nm = $("dn_new").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.filter(x => !x.ex).length + 1));
+    S.orchards.push({id: newId(), name: nm, trees: numOf($("dn_newtrees").value)}); dashAdd = false;
+  }
+  fixSel(); save(); renderAll();
+});
 
 /* ---------- yearly totals ---------- */
 function renderYearDetail() {
@@ -1865,7 +2030,7 @@ function onEdit(e) {
     const o = curOrchard(); if (!o) return;
     o.trees = numOf(t.value);
   } else return;
-  save(); renderResults(); renderSummary(); renderHero();
+  save(); renderResults(); renderSummary(); renderHero(); renderDash();
 }
 $("rp-orch").addEventListener("input", onEdit);
 $("rp-orch").addEventListener("change", e => { if (e.target.type === "checkbox") onEdit(e); });
