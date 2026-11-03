@@ -577,6 +577,13 @@ details.dsec > summary::before{content:"";width:8px;height:8px;border-right:2px 
 details.dsec[open] > summary::before{transform:rotate(45deg)}
 details.dsec > summary h4{display:inline}
 .ledger.rectab th,.ledger.rectab td{padding:8px 10px}
+.detpick{display:flex;gap:10px 14px;align-items:end;flex-wrap:wrap}
+.detpick .field{min-width:min(100%,260px)}
+.detpick select{min-height:44px;font-size:1.05rem;font-weight:600}
+.detcard.one{max-width:720px;display:grid;gap:10px}
+.detcard.one header{margin-bottom:0}
+.detcard.one .oacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+form.detcard.editing{max-width:720px}
 .detgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
 .detcard{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 16px 14px;min-width:0}
 .detcard header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
@@ -1184,7 +1191,7 @@ en: {
   lb_err:"Enter the date and worker, and the days and rate (or the amount paid).", lb_none:"No entries for this harvest year.", lb_sum:"Balance by worker (all years)", lb_earned:"Wages", lb_paid:"Paid",
   lb_bal:"Balance", lb_owe:"You owe {x}", lb_adv:"Advance {x}", lb_settled:"Settled", lb_inexp:"Includes {x} of wages from the labour register.",
   o_next:"Next: {t}, {d}", o_lastspray:"Last spray {n} days ago",
-  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
+  det_h:"Orchard details", det_p:"Tap Edit on an orchard to change its details here.", det_tot:"All orchards: {t} trees, {a} bigha.", det_pick:"Orchard", det_tot2:"All {n} orchards: {t} trees, {a} bigha.", det_loc:"Location", det_yes:"Set", det_set:"Set location",
   w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
   w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
   w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
@@ -1405,7 +1412,7 @@ hi: {
   lb_err:"तारीख़ और मज़दूर, और दिन व रेट (या दी गई रक़म) डालें।", lb_none:"इस फ़सल वर्ष की कोई एंट्री नहीं।", lb_sum:"हर मज़दूर का हिसाब (सभी साल)", lb_earned:"मज़दूरी", lb_paid:"दिया गया",
   lb_bal:"बाक़ी", lb_owe:"आपको देने हैं {x}", lb_adv:"एडवांस {x}", lb_settled:"हिसाब बराबर", lb_inexp:"इसमें मज़दूरी रजिस्टर की {x} मज़दूरी शामिल है।",
   o_next:"अगला: {t}, {d}", o_lastspray:"पिछला स्प्रे {n} दिन पहले",
-  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
+  det_h:"बाग़ों की जानकारी", det_p:"किसी बाग़ की जानकारी यहीं बदलने के लिए उस पर बदलें दबाएँ।", det_tot:"सभी बाग़: {t} पेड़, {a} बीघा।", det_pick:"बाग़", det_tot2:"सभी {n} बाग़: {t} पेड़, {a} बीघा।", det_loc:"जगह", det_yes:"सेट है", det_set:"जगह सेट करें",
   w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
   w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
   w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
@@ -2508,73 +2515,13 @@ function orchardFacts(o) {
 }
 
 function dashOverview() {
-  const sold = se => se.lots.some(l => l.lines.some(n => +n.boxes > 0));
-  const years = Array.from(new Set(S.seasons.filter(sold).map(x => x.year))).sort((a, b) => b - a);
-  const LY = years[0];
   let h = "";
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
+  h += detailsHtml();
   if (S.orchards.length) {
-    const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
-    const t = {net: 0, boxes: 0, eq: 0, due: 0}; let prev = null;
-    S.seasons.forEach(se => {
-      if (se.year === LY) { const r = seasonCalc(se); t.net += r.profit; t.boxes += r.boxes; t.eq += r.eq; t.due += r.due; }
-      if (se.year === LY - 1) prev = (prev || 0) + seasonCalc(se).profit;
-    });
-    const tile = (lab, val, extra, sub) => "<div" + (extra ? ' class="' + extra + '"' : "") + "><span>" + lab + "</span><b>" + val + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
-    const chg = prev == null ? "" : tr(t.net >= prev ? "d_up" : "d_down").replace("{x}", inr(Math.abs(t.net - prev))).replace("{y}", LY - 1);
-    h += '<div class="ystats">' + tile(tr("d_orchards"), fmtN(S.orchards.length)) + tile(tr("d_trees"), trees ? fmtN(trees) : "–") +
-      (LY ? tile(tr("d_net").replace("{y}", LY), inr(t.net), "main " + dcls(t.net), chg) + tile(tr("d_boxes").replace("{y}", LY), fmtN(t.boxes)) +
-        tile(tr("d_ppb").replace("{y}", LY), inr(t.eq ? t.net / t.eq : 0)) + tile(tr("d_due").replace("{y}", LY), inr(t.due)) : "") +
-      (function () { const td = todayIso(), HY = curHYear(), a = (HY - 1) + "-11-01", ly = (+td.slice(0, 4) - 1) + td.slice(4);
-        return tile(tr("d_spent").replace("{d}", fmtDay(a, true)), inr(spentBetween(a, td)), "", tr("d_spent_ly").replace("{x}", inr(spentBetween((HY - 2) + "-11-01", ly)))); })() + "</div>";
     const wl = S.orchards.filter(hasLoc);
     h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
-  }
-  h += '<div class="ocards">' + S.orchards.map(o => {
-    const name = esc(o.name || tr("orchard_fallback")), facts = orchardFacts(o);
-    const head = "<header><h4>" + name + "</h4>" + (+o.trees ? '<span class="otrees">' + tr("d_treesn").replace("{n}", fmtN(+o.trees)) + "</span>" : "") + "</header>" +
-      (facts ? '<p class="ofacts1">' + esc(facts) + "</p>" : "");
-    const ss = S.seasons.filter(se => se.oid === o.id).map(se => ({y: se.year, r: seasonCalc(se)})).sort((a, b) => b.y - a.y);
-    let body = "";
-    if (ss.length) {
-      const li = Math.max(0, ss.findIndex(x => x.r.boxes > 0)), L = ss[li], P = ss[li + 1], best = ss.reduce((a, c) => (c.r.profit > a.r.profit ? c : a));
-      body += '<p class="olbl">' + tr("d_latest").replace("{y}", L.y) + '</p><p class="onet ' + dcls(L.r.profit) + '">' + inr(L.r.profit) + "</p>";
-      if (P) body += '<p class="ochg">' + tr(L.r.profit >= P.r.profit ? "d_up" : "d_down").replace("{x}", inr(Math.abs(L.r.profit - P.r.profit))).replace("{y}", P.y) + "</p>";
-      body += '<dl class="ostats"><div><dt>' + tr("ls_boxes") + "</dt><dd>" + fmtN(L.r.boxes) + "</dd></div><div><dt>" + tr("ls_ppb") + "</dt><dd>" + inr(L.r.ppb) + "</dd></div><div><dt>" +
-        (L.r.due > 0 ? tr("r_due") + "</dt><dd>" + inr(L.r.due) : tr("ls_gross") + "</dt><dd>" + inr(L.r.rev)) + "</dd></div></dl>";
-      if (ss.length > 1) {
-        const max = Math.max.apply(null, ss.map(x => Math.abs(x.r.profit))) || 1;
-        body += '<ul class="ybars">' + ss.slice().reverse().map(x => '<li><span class="yl">' + x.y + '</span><span class="track"><span class="fill ' + dcls(x.r.profit) + '" style="width:' +
-          (Math.abs(x.r.profit) / max * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(x.r.profit) + "</span></li>").join("") + "</ul>";
-      }
-      body += '<p class="ohint">' + (ss.length === 1 ? tr("d_season1") : tr("d_seasons").replace("{n}", ss.length)) +
-        (ss.length > 1 ? ". " + tr("d_best").replace("{y}", best.y).replace("{x}", inr(best.r.profit)) : "") + "</p>";
-    } else body += '<p class="ohint">' + tr("d_nosales") + "</p>";
-    const nt = nextTodo(o), lsp = lastSpray(o);
-    if (nt) body += '<p class="onext">' + tr("o_next").replace("{t}", tkName(nt.kind) + (nt.kind === "spray" && nt.stage ? " (" + tr(nt.stage) + ")" : "")).replace("{d}", fmtDay(nt.due)) + " " + dueChip(nt.due) + "</p>";
-    else if (lsp) body += '<p class="onext">' + tr("o_lastspray").replace("{n}", fmtN(dayDiff(lsp.date, todayIso()))) + "</p>";
-    const act = (a, k, main) => '<button class="btn-s' + (main ? " add" : "") + '" type="button" data-dact="' + a + '" data-o="' + esc(o.id) + '">' + tr(k) + "</button>";
-    return '<article class="ocard">' + head + body + '<div class="oacts">' + act("view", "o_view", true) + act("addsale", "d_addsale") + (ss.length ? act("open", "pt_season") : "") + "</div></article>";
-  }).join("");
-  h += '<article class="ocard addc">' + (dashAdd
-    ? '<form data-dform="add"><div class="field"><label for="dn_new">' + tr("f_oname") + '</label><input id="dn_new" type="text" maxlength="60"></div>' +
-      '<div class="field"><label for="dn_newtrees">' + tr("f_trees") + '</label><input id="dn_newtrees" type="number" inputmode="numeric" min="0" step="1"></div>' +
-      '<div class="dels"><button class="btn-s add" type="submit">' + tr("add_btn") + '</button><button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button></div></form>"
-    : "<p>" + tr(S.orchards.length ? "d_addp" : "d_first") + '</p><div><button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button></div>") + "</article></div>";
-  if (S.orchards.length) h += detailsHtml();
-  if (S.orchards.length) h += '<section class="osec"><h4>' + tr("map_h") + "</h4>" + (S.orchards.some(hasLoc) ? '<div class="omap farm" data-map="farm"></div>' : '<p class="hint">' + tr("map_none") + "</p>") + "</section>";
-
-  // orchards side by side for the latest year
-  const rows = LY ? S.orchards.map(o => ({o, se: seFor(o.id, LY)})).filter(x => x.se) : [];
-  if (rows.length > 1) {
-    h += '<section class="osec"><h4>' + tr("cmp_h").replace("{y}", LY) + '</h4><div class="tablewrap"><table class="ledger sm"><thead><tr>' +
-      ["cmp_o", "ls_boxes", "k_bpt", "k_avg", "k_ash", "ls_net", "k_npt"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-      rows.map(x => {
-        const r = seasonCalc(x.se), g = gradeSplit(x.se), tr_ = +x.o.trees;
-        return '<tr><th scope="row"><button class="link" type="button" data-dact="view" data-o="' + esc(x.o.id) + '">' + esc(x.o.name || tr("orchard_fallback")) + "</button></th><td>" +
-          fmtN(r.boxes) + "</td><td>" + (tr_ ? fmtD(r.boxes / tr_) : "–") + "</td><td>" + inr(r.boxes ? r.rev / r.boxes : 0) + "</td><td>" + pct(g.a.b, r.boxes) +
-          '</td><td class="' + dcls(r.profit) + '">' + inr(r.profit) + "</td><td>" + (tr_ ? inr(r.profit / tr_) : "–") + "</td></tr>";
-      }).join("") + '</tbody></table></div><p class="fine">' + tr("cmp_note") + "</p></section>";
+    h += '<section class="osec"><h4>' + tr("map_h") + "</h4>" + (S.orchards.some(hasLoc) ? '<div class="omap farm" data-map="farm"></div>' : '<p class="hint">' + tr("map_none") + "</p>") + "</section>";
   }
   return h;
 }
@@ -2824,32 +2771,47 @@ const dayDiff = (a, b) => Math.round((new Date(b + "T00:00:00") - new Date(a + "
 const hasLoc = o => !!(o && o.profile && isFinite(+o.profile.lat) && isFinite(+o.profile.lon) && o.profile.lat !== "" && o.profile.lat != null);
 let xEdit = null, todoDone = null, locMode = null, locResults = null, labYear = null, detEdit = null;
 
-/* Dashboard: every orchard's details as a card, each editable in place */
+/* Dashboard: pick an orchard from the dropdown; its details (editable), buttons and next task */
+let dashSel = null;
 function detailsHtml() {
+  let h = '<section class="osec" id="detSec"><h4>' + tr("det_h") + "</h4>";
+  const addForm = '<form class="detcard editing addform" data-dform="add"><div class="field"><label for="dn_new">' + tr("f_oname") + '</label><input id="dn_new" type="text" maxlength="60"></div>' +
+    '<div class="field"><label for="dn_newtrees">' + tr("f_trees") + '</label><input id="dn_newtrees" type="number" inputmode="numeric" min="0" step="1"></div>' +
+    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("add_btn") + '</button>' + (S.orchards.length ? '<button class="btn-s" type="button" data-dact="cancel">' + tr("d_cancel") + "</button>" : "") + "</div></form>";
+  if (!S.orchards.length) return h + "<p>" + tr("d_first") + "</p>" + addForm + "</section>";
+  if (!S.orchards.some(o => o.id === dashSel)) dashSel = S.orchards[0].id;
+  const o = S.orchards.find(x => x.id === dashSel), P = o.profile || {};
+  let tt = 0, ta = 0; S.orchards.forEach(x => { tt += +x.trees || 0; ta += +((x.profile || {}).area) || 0; });
+  h += '<div class="detpick"><div class="field"><label for="det_sel">' + tr("det_pick") + '</label><select id="det_sel">' +
+    S.orchards.map(x => '<option value="' + esc(x.id) + '"' + (x.id === dashSel ? " selected" : "") + ">" + esc(x.name || tr("orchard_fallback")) + "</option>").join("") + "</select></div>" +
+    (dashAdd ? "" : '<button class="btn-s" type="button" data-dact="add">' + tr("d_add") + "</button>") + "</div>";
+  if (dashAdd) h += addForm;
   const fields = [["village", "p_village", "text"], ["alt", "p_alt", "number"], ["area", "p_area", "number"], ["trees", "f_trees", "number"], ["var", "p_var", "text"],
     ["root", "p_root", ROOTS, "r_"], ["planted", "p_planted", "number"], ["irr", "p_irr", IRR, "i_"], ["hail", "p_hail", HAIL, "h_"]];
-  let tt = 0, ta = 0;
-  const cards = S.orchards.map(o => {
-    const P = o.profile || {}, get = k => (k === "trees" ? o.trees : P[k]);
-    tt += +o.trees || 0; ta += +P.area || 0;
-    if (detEdit === o.id) {
-      return '<form class="detcard editing" data-xform="det" data-o="' + esc(o.id) + '"><div class="field wide"><label for="det_name">' + tr("f_oname") + '</label><input id="det_name" type="text" maxlength="60" value="' + esc(o.name || "") + '"></div>' +
-        fields.map(([k, lab, t, pre]) => {
-          const v = get(k), id = "det_" + k;
-          const inner = Array.isArray(t) ? '<select id="' + id + '"><option value="">–</option>' + t.map(x => '<option value="' + x + '"' + (x === v ? " selected" : "") + ">" + tr(pre + x) + "</option>").join("") + "</select>"
-            : '<input id="' + id + '" type="' + t + '"' + (t === "number" ? ' inputmode="decimal" min="0" step="any"' : ' maxlength="120"') + (k === "var" ? ' placeholder="' + esc(tr("p_var_ph")) + '"' : "") + ' value="' + esc(+v || (t !== "number" && v) ? v : "") + '">';
-          return '<div class="field' + (k === "var" ? " wide" : "") + '"><label for="' + id + '">' + tr(lab) + "</label>" + inner + "</div>";
-        }).join("") +
-        '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-xact="detcancel" data-o="' + esc(o.id) + '">' + tr("d_cancel") + "</button></div></form>";
-    }
+  const get = k => (k === "trees" ? o.trees : P[k]);
+  if (detEdit === o.id) {
+    h += '<form class="detcard editing" data-xform="det" data-o="' + esc(o.id) + '"><div class="field wide"><label for="det_name">' + tr("f_oname") + '</label><input id="det_name" type="text" maxlength="60" value="' + esc(o.name || "") + '"></div>' +
+      fields.map(([k, lab, t, pre]) => {
+        const v = get(k), id = "det_" + k;
+        const inner = Array.isArray(t) ? '<select id="' + id + '"><option value="">–</option>' + t.map(x => '<option value="' + x + '"' + (x === v ? " selected" : "") + ">" + tr(pre + x) + "</option>").join("") + "</select>"
+          : '<input id="' + id + '" type="' + t + '"' + (t === "number" ? ' inputmode="decimal" min="0" step="any"' : ' maxlength="120"') + (k === "var" ? ' placeholder="' + esc(tr("p_var_ph")) + '"' : "") + ' value="' + esc(+v || (t !== "number" && v) ? v : "") + '">';
+        return '<div class="field' + (k === "var" ? " wide" : "") + '"><label for="' + id + '">' + tr(lab) + "</label>" + inner + "</div>";
+      }).join("") +
+      '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-xact="detcancel" data-o="' + esc(o.id) + '">' + tr("d_cancel") + "</button></div></form>";
+  } else {
     const show = (k, pre) => { const v = get(k); if (k === "alt") return +v ? tr("p_m").replace("{n}", fmtN(+v)) : ""; if (k === "area") return +v ? tr("p_bigha").replace("{n}", fmtD(+v)) : "";
       if (k === "trees") return +v ? fmtN(+v) : ""; if (k === "planted") return +v ? v + " (" + tr("p_age").replace("{n}", Math.max(0, thisYear() - +v)) + ")" : ""; return pre ? (v ? tr(pre + v) : "") : esc(v || ""); };
-    return '<article class="detcard"><header><h5>' + esc(o.name || tr("orchard_fallback")) + '</h5><button class="link" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("dy_edit") + "</button></header><dl>" +
-      fields.map(([k, lab, t, pre]) => { const v = show(k, pre); return "<div><dt>" + tr(lab) + "</dt><dd>" + (v || '<span class="none">–</span>') + "</dd></div>"; }).join("") +
-      "<div><dt>" + tr("det_loc") + "</dt><dd>" + (hasLoc(o) ? tr("det_yes") : '<button class="link" type="button" data-xact="detloc" data-o="' + esc(o.id) + '">' + tr("det_set") + "</button>") + "</dd></div></dl></article>";
-  }).join("");
-  return '<section class="osec" id="detSec"><h4>' + tr("det_h") + '</h4><p class="hint">' + tr("det_p") + '</p><div class="detgrid">' + cards + "</div>" +
-    (tt || ta ? '<p class="fine">' + tr("det_tot").replace("{t}", tt ? fmtN(tt) : "–").replace("{a}", ta ? fmtD(ta) : "–") + "</p>" : "") + "</section>";
+    const nt = nextTodo(o), lsp = lastSpray(o);
+    h += '<article class="detcard one"><header><h5>' + esc(o.name || tr("orchard_fallback")) + '</h5><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></header>" +
+      (nt ? '<p class="onext">' + tr("o_next").replace("{t}", tkName(nt.kind) + (nt.kind === "spray" && nt.stage ? " (" + tr(nt.stage) + ")" : "")).replace("{d}", fmtDay(nt.due)) + " " + dueChip(nt.due) + "</p>"
+        : lsp ? '<p class="onext">' + tr("o_lastspray").replace("{n}", fmtN(dayDiff(lsp.date, todayIso()))) + "</p>" : "") +
+      "<dl>" + fields.map(([k, lab, t, pre]) => { const v = show(k, pre); return "<div><dt>" + tr(lab) + "</dt><dd>" + (v || '<span class="none">–</span>') + "</dd></div>"; }).join("") +
+      "<div><dt>" + tr("det_loc") + "</dt><dd>" + (hasLoc(o) ? tr("det_yes") : '<button class="link" type="button" data-xact="detloc" data-o="' + esc(o.id) + '">' + tr("det_set") + "</button>") + "</dd></div></dl>" +
+      '<div class="oacts"><button class="btn-s add" type="button" data-dact="view" data-o="' + esc(o.id) + '">' + tr("o_view") + '</button><button class="btn-s" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") +
+      '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + "</button></div></article>";
+  }
+  if (S.orchards.length > 1) h += '<p class="fine">' + tr("det_tot2").replace("{n}", fmtN(S.orchards.length)).replace("{t}", tt ? fmtN(tt) : "–").replace("{a}", ta ? fmtD(ta) : "–") + "</p>";
+  return h + "</section>";
 }
 
 /* labour wages count as yearly expenses (Labour) in their harvest year */
@@ -3193,6 +3155,7 @@ $("dash").addEventListener("click", e => {
 });
 $("dash").addEventListener("change", e => {
   const t = e.target;
+  if (t.id === "det_sel") { dashSel = t.value; detEdit = null; renderDash(); const d = $("det_sel"); if (d) d.focus(); return; }
   if (t.id === "td_kind") { const w = $("td_stagewrap"); if (w) w.hidden = t.value !== "spray"; }
   else if (t.id === "lb_type") { const w = t.value === "work"; ["lb_dw", "lb_rw"].forEach(i => { const el = $(i); if (el) el.hidden = !w; }); const a = $("lb_aw"); if (a) a.hidden = w; }
   else if (t.id === "lb_year") { labYear = +t.value; renderDash(); const s2 = $("lbSec"); if (s2) s2.scrollIntoView({block: "start"}); }
@@ -3316,7 +3279,7 @@ $("dash").addEventListener("submit", e => {
   if (kind === "add") {
     const nm = $("dn_new").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.filter(x => !x.ex).length + 1));
     const no = {id: newId(), name: nm, trees: numOf($("dn_newtrees").value)};
-    S.orchards.push(no); dashAdd = false; dashView = no.id; dashYear = null; profEdit = true;
+    S.orchards.push(no); dashAdd = false; dashSel = no.id; dashView = no.id; dashYear = null; profEdit = true;
     fixSel(); save(); renderAll(); dashTop(); return;
   }
   if (!o) return;
