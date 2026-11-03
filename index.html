@@ -506,17 +506,25 @@ legend{font-size:.95rem}
 .ybody .ystats{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
 .ystats .main b{white-space:nowrap}
 table.ledger.ytab{min-width:0;width:100%}
-#yearDetail .tablewrap{max-width:660px}
+.ledger.ytab thead th{background:var(--surface-2);color:var(--muted);font-weight:600;font-size:.86rem;border-bottom:1px solid var(--line)}
+.ledger.ytab tbody th[scope=row]{font-weight:600;color:var(--fg)}
+.ledger.ytab tbody tr:last-child th,.ledger.ytab tbody tr:last-child td{border-bottom:0}
+.ledger.ytab tbody tr:hover{background:var(--surface-2)}
+.ledger.ytab td.pos,.ledger.ytab td.neg{font-weight:600}
+.ledger.ytab tfoot th,.ledger.ytab tfoot td{background:var(--surface-2);border-top:2px solid var(--fg)}
+#yearDetail .tablewrap{max-width:720px;margin-top:6px;border-radius:12px}
 .ledger.ytab tfoot th,.ledger.ytab tfoot td{font-weight:700;color:var(--fg)}
 .ledger.ytab tfoot td.pos{color:var(--good)}.ledger.ytab tfoot td.neg{color:var(--bad)}
 #yearDetail .yhead{grid-template-columns:4.2rem minmax(0,1fr) 1.2rem}
-.yfigs{display:flex;flex-wrap:wrap;gap:6px 28px;justify-content:flex-end;align-items:baseline;min-width:0}
-.yfig{display:grid;gap:2px;text-align:right}
-.yfig > span{font-size:.85rem;color:var(--muted)}
-.yfig b{font:600 1.1rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--fg)}
-.yfig.ynet b{font-size:1.35rem}.yfig.ynet.pos b{color:var(--good)}.yfig.ynet.neg b{color:var(--bad)}
+.yfigs{display:grid;grid-template-columns:minmax(8.5rem,max-content) 1.2rem minmax(8.5rem,max-content) 1.2rem minmax(9.5rem,max-content);gap:8px 10px;justify-content:start;align-items:end;min-width:0;padding-left:14px;border-left:1px solid var(--line)}
+.yfig{display:grid;gap:3px;text-align:left}
+.yfig > span{font-size:.82rem;color:var(--muted);white-space:nowrap}
+.yfig b{font:600 1.15rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--fg);line-height:1.1}
+.yop{font:500 1.2rem var(--mono);color:var(--muted);padding-bottom:1px;line-height:1.1;text-align:center}
+.yfig.ynet{padding:5px 12px 6px;border-radius:8px;background:var(--surface-2)}
+.yfig.ynet b{font-size:1.4rem;font-weight:700}.yfig.ynet.pos b{color:var(--good)}.yfig.ynet.neg b{color:var(--bad)}
 .ledger.ytab thead th{white-space:normal;vertical-align:bottom;line-height:1.25}
-.ledger.ytab th,.ledger.ytab td{padding:7px 9px}
+.ledger.ytab th,.ledger.ytab td{padding:10px 16px}
 
 @media (max-width:560px){
   .yhead{grid-template-columns:3.4rem minmax(0,1fr) 1rem}
@@ -525,8 +533,12 @@ table.ledger.ytab{min-width:0;width:100%}
   .ymid{grid-column:1/3;grid-row:2}
   .ychev{grid-column:3;grid-row:1}
   #yearDetail .yhead{grid-template-columns:3.4rem minmax(0,1fr) 1rem}
-  #yearDetail .yfigs{grid-column:2;grid-row:1;gap:6px 16px}
-  .yfig b{font-size:1rem}.yfig.ynet b{font-size:1.15rem}
+  #yearDetail .yfigs{grid-column:1/3;grid-row:2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1.15fr);gap:6px;padding:10px 0 0;border-left:0;border-top:1px solid var(--line);align-items:end}
+  #yearDetail .yop{display:none}
+  #yearDetail .yfig.ynet{grid-column:auto;grid-row:auto;padding:4px 6px 5px}
+  .yfig > span{white-space:normal;font-size:.78rem;line-height:1.2}
+  .yfig b{font-size:.98rem}.yfig.ynet b{font-size:1.05rem}
+  .yfig.ynet{padding:4px 8px 5px}
   #yearDetail .ybody{padding:4px 8px 12px}
   .ledger.ytab th,.ledger.ytab td{padding:7px 5px;font-size:.84rem}
   .ledger.ytab thead th{font-size:.8rem}
@@ -2788,7 +2800,7 @@ function renderYearDetail() {
     const t = all[y], open = yOpen.has(y), n = t.rows.length;
     const gp = t.rev - t.lot, fig = (k, v, c) => '<span class="yfig' + (c ? " " + c : "") + '"><span>' + tr(k) + "</span><b>" + v + "</b></span>";
     let h = '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="ytoggle" data-y="' + y + '" aria-expanded="' + open + '" aria-controls="yb' + y + '">' +
-      '<span class="yy">' + y + '</span><span class="yfigs">' + fig("y_gp", inr(gp)) + fig("y_yc", inr(t.yearly)) + fig("ls_net", inr(t.net), "ynet " + cls(t.net)) +
+      '<span class="yy">' + y + '</span><span class="yfigs">' + fig("y_gp", inr(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", inr(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", inr(t.net), "ynet " + cls(t.net)) +
       '</span><span class="ychev" aria-hidden="true"></span></button>';
     h += '<div class="ybody" id="yb' + y + '"' + (open ? "" : " hidden") + ">";
     if (open) {
