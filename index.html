@@ -527,6 +527,20 @@ legend{font-size:.95rem}
 .lotrow .lottab{margin-top:0}
 .lotrow .editbox{margin-top:0}
 @media (max-width:560px){.lotrow .yhead{grid-template-columns:4rem minmax(0,1fr) 1rem}}
+/* Yearly expenses */
+.expick{max-width:520px}
+.excost{margin-top:14px}
+.pbars.excat li{grid-template-columns:minmax(0,13rem) minmax(0,1fr) 5.5rem}
+.ledger.sm.extab{min-width:0}
+.extab th[scope=row]{vertical-align:top}
+.extab td.t{white-space:normal}
+.extab .det{display:block;color:var(--muted);font-size:.85rem;margin-top:1px}
+.ledger.sm.extab td.acts{position:static;box-shadow:none;white-space:nowrap;text-align:right;font-family:var(--body)}
+.extab td.acts .link{padding:2px 0;margin-left:12px;font-size:.88rem}
+.extab td.acts .link.del{color:var(--bad)}
+#ex_ok:empty{display:none}
+#ex_ok{color:var(--good);font-weight:600;margin:0}
+@media (max-width:560px){.pbars.excat li{grid-template-columns:minmax(0,8.5rem) minmax(0,1fr) 4.8rem}}
 /* Orchard pages: profile, insights, season diary. Grade colours validated for colour-blind separation in light and dark. */
 :root{--g-a:#B11F24;--g-b:#E09A1A;--g-rg:#6A4FB3;--g-gift:#2F7A34;--g-none:#BDB3A6}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-a:#C23A3A;--g-b:#C4851C;--g-rg:#8B74DC;--g-gift:#3F9A45;--g-none:#5E5248}}
@@ -667,6 +681,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
       <div class="tabs pctabs" role="tablist">
         <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="pt_year"></button>
         <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="pt_season"></button>
+        <button class="tab" role="tab" id="rt-exp" aria-selected="false" aria-controls="rp-exp" type="button" data-i18n="pt_exp"></button>
         <button class="tab" role="tab" id="rt-quick" aria-selected="true" aria-controls="rp-quick" type="button" data-i18n="pt_quick"></button>
       </div>
       <p class="status" id="status" aria-live="polite" hidden></p>
@@ -738,6 +753,15 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
       </div>
     </div>
 
+      <div class="subpanel" id="rp-exp" role="tabpanel" aria-labelledby="rt-exp" hidden>
+        <p class="hint" data-i18n="ex_p"></p>
+        <div class="pick expick">
+          <div class="field"><label for="exOrch" data-i18n="lbl_orchard"></label><select id="exOrch"></select></div>
+          <div class="field yr"><label for="exYear" data-i18n="lbl_year"></label><select id="exYear"></select></div>
+        </div>
+        <div id="exTop"></div>
+        <div id="exBody"></div>
+      </div>
       <div class="subpanel" id="rp-quick" role="tabpanel" aria-labelledby="rt-quick">
       <p data-i18n="pc_p"></p>
       <div class="panel">
@@ -1057,20 +1081,29 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   gt_grade:"Grade", gt_boxes:"Boxes", gt_share:"Share", gt_avg:"Average price", gt_gross:"Gross", gt_note:"Grades typed another way (such as C, 7 or Less Colour) are counted under Other or not set.",
   s_prices:"Prices", s_best:"Best lot", s_low:"Lowest lot", s_byMonth:"Average price by month of sale", s_nodates:"Add sale dates to your entries (under More) to compare early and late prices.",
   s_money:"Where the money goes", m_item:"Cost", m_total:"Total", m_pb:"Per box", m_pt:"Per tree", m_all:"All costs", m_none:"No costs recorded for this season.",
-  lc_oth:"Other per-box expense", yc_spray:"Sprays and pesticides", yc_fert:"Fertiliser and manure", yc_labour:"Labour", yc_prune:"Pruning", yc_irrig:"Irrigation", yc_other:"Other yearly costs",
+  lc_oth:"Other per-box expense", yc_spray:"Sprays and pesticides", yc_fert:"Fertiliser and manure", yc_labour:"Labour", yc_prune:"Cutting and pruning", yc_irrig:"Irrigation", yc_other:"Other yearly costs",
   s_due:"Money still to come", s_due_none:"Nothing pending. Every sale is marked as paid.", d_year:"Year", d_lot:"Lot", d_amt:"Amount", d_sold:"Sold on", d_wait:"Waiting",
   d_days:"{n} days", d_tot:"Total pending", d_due_note:"Mark a sale as paid in Season Profit (Edit, then More) once the money arrives.",
   s_years:"Year by year", y_costs:"Costs",
-  s_diary:"Season diary", s_diary_p:"Note sprays, fertiliser, weather and key dates as the season goes. Costs you add here are counted in that year's net income.",
+  s_diary:"Season diary", s_diary_p:"Note sprays, fertiliser, weather and key dates as the season goes. Costs you add here are counted in that year's net income and show in Yearly expenses.",
   dy_add:"Add diary note", dy_pick:"Choose", dy_date:"Date", dy_kind:"What", dy_stage:"Tree stage", dy_cost:"Cost (₹, optional)", dy_text:"Details",
   dy_text_ph:"For example product and dose, or what you saw", dy_save:"Save note", dy_update:"Update note", dy_edit:"Edit", dy_del:"Delete", dy_sure:"Tap again",
   dy_none:"No notes yet.", dy_err:"Choose a date and what happened.",
   dg_work:"Work", dg_weather:"Weather", dg_dates:"Season dates", dg_other:"Other",
-  dk_spray:"Spray", dk_fert:"Fertiliser or manure", dk_prune:"Pruning", dk_irrig:"Irrigation", dk_labour:"Labour or other work",
+  dk_spray:"Spray", dk_fert:"Fertiliser or manure", dk_prune:"Cutting or pruning", dk_irrig:"Irrigation", dk_labour:"Labour or other work",
   dk_hail:"Hail", dk_frost:"Frost", dk_drought:"Dry spell", dk_rain:"Heavy rain or storm", dk_snow:"Snow",
   dk_flower:"Flowering", dk_hstart:"Harvest started", dk_hend:"Harvest finished", dk_problem:"Problem noticed", dk_note:"Note",
   cmp_h:"Orchards side by side, {y}", cmp_o:"Orchard", cmp_note:"Per-tree figures need the number of trees, which you can add in each orchard's profile.",
   costs_diary:"Another {x} for {y} comes from the season diary and is added automatically.",
+  pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that year's net income and also appear in the orchard's season diary.",
+  ex_all:"All orchards, {y}", ex_entries:"Entries", ex_total:"Yearly expenses", ex_big:"Biggest cost", ex_bycat:"By category", ex_pluslump:"plus {x} in lump sums",
+  ex_add:"Add expense", ex_upd:"Update expense", ex_cat:"Category", ex_amt:"Amount (₹)", ex_amt0:"Amount", ex_det:"Details (optional)", ex_det0:"Details",
+  ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved.",
+  ex_none:"No expenses entered for {o} in {y} yet.", ex_noent:"No entries for this year yet. Add the first one above.", ex_list:"Expenses entered", ex_enttot:"Total of entries",
+  ex_lump:"Lump sums (optional)", ex_lump_p:"If you only know the total for the year, enter it here instead of separate entries. Amounts typed earlier under Other yearly costs in Season Profit are kept here.",
+  ex_noorch:"Add an orchard first in My orchards.",
+  sp_yc:"Yearly expenses for {o}, {y}: {x}. They are taken off the net income above.", sp_yc_btn:"Add or change in Yearly expenses",
+  dk_tools:"Tools and equipment", dk_repair:"Repairs (fencing, hail net)", dk_xother:"Other expense",
   pt_year:"Yearly net profit", pt_season:"Season Profit", pt_quick:"Quick calculator",
   pg_h:"Sign in to see your own records", pg_p:"Season Profit and Yearly net profit use the lots you save in your private account. The quick calculator works without signing in.", pg_btn:"Sign in",
   d_orchards:"Orchards", d_trees:"Trees", d_net:"Net income, {y}", d_boxes:"Boxes sold, {y}", d_ppb:"Net per box, {y}", d_due:"Not yet received, {y}",
@@ -1239,20 +1272,29 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   gt_grade:"ग्रेड", gt_boxes:"पेटियाँ", gt_share:"हिस्सा", gt_avg:"औसत भाव", gt_gross:"कुल बिक्री", gt_note:"जो ग्रेड किसी और तरह लिखे गए हैं (जैसे C, 7 या कम रंग), वे अन्य या दर्ज नहीं में गिने गए हैं।",
   s_prices:"भाव", s_best:"सबसे अच्छा लॉट", s_low:"सबसे कम भाव वाला लॉट", s_byMonth:"बिक्री के महीने के हिसाब से औसत भाव", s_nodates:"शुरुआती और देर के भाव की तुलना के लिए एंट्री में बिक्री की तारीख़ डालें (और में)।",
   s_money:"पैसा कहाँ जाता है", m_item:"ख़र्च", m_total:"कुल", m_pb:"प्रति पेटी", m_pt:"प्रति पेड़", m_all:"सारे ख़र्च", m_none:"इस सीज़न का कोई ख़र्च दर्ज नहीं है।",
-  lc_oth:"प्रति पेटी अन्य ख़र्च", yc_spray:"स्प्रे और कीटनाशक", yc_fert:"खाद", yc_labour:"मज़दूरी", yc_prune:"छँटाई", yc_irrig:"सिंचाई", yc_other:"साल भर के अन्य ख़र्च",
+  lc_oth:"प्रति पेटी अन्य ख़र्च", yc_spray:"स्प्रे और कीटनाशक", yc_fert:"खाद", yc_labour:"मज़दूरी", yc_prune:"कटाई-छँटाई", yc_irrig:"सिंचाई", yc_other:"साल भर के अन्य ख़र्च",
   s_due:"जो पैसा अभी आना है", s_due_none:"कुछ बाक़ी नहीं है। हर बिक्री का भुगतान मिल गया है।", d_year:"साल", d_lot:"लॉट", d_amt:"रक़म", d_sold:"बिक्री की तारीख़", d_wait:"इंतज़ार",
   d_days:"{n} दिन", d_tot:"कुल बाक़ी", d_due_note:"पैसा मिलने पर सीज़न का मुनाफ़ा में (बदलें, फिर और) भुगतान मिल गया पर निशान लगाएँ।",
   s_years:"साल-दर-साल", y_costs:"ख़र्च",
-  s_diary:"सीज़न डायरी", s_diary_p:"सीज़न के दौरान स्प्रे, खाद, मौसम और ख़ास तारीख़ें लिखते जाएँ। यहाँ डाले गए ख़र्च उस साल की शुद्ध आय में गिने जाते हैं।",
+  s_diary:"सीज़न डायरी", s_diary_p:"सीज़न के दौरान स्प्रे, खाद, मौसम और ख़ास तारीख़ें लिखते जाएँ। यहाँ डाले गए ख़र्च उस साल की शुद्ध आय में गिने जाते हैं और साल भर के ख़र्च में दिखते हैं।",
   dy_add:"डायरी में लिखें", dy_pick:"चुनें", dy_date:"तारीख़", dy_kind:"क्या हुआ", dy_stage:"पेड़ की अवस्था", dy_cost:"ख़र्च (₹, वैकल्पिक)", dy_text:"विवरण",
   dy_text_ph:"जैसे दवा का नाम और मात्रा, या जो देखा", dy_save:"सहेजें", dy_update:"बदलाव सहेजें", dy_edit:"बदलें", dy_del:"हटाएँ", dy_sure:"दोबारा दबाएँ",
   dy_none:"अभी कुछ नहीं लिखा गया है।", dy_err:"तारीख़ और क्या हुआ, दोनों चुनें।",
   dg_work:"काम", dg_weather:"मौसम", dg_dates:"सीज़न की तारीख़ें", dg_other:"अन्य",
-  dk_spray:"स्प्रे", dk_fert:"खाद", dk_prune:"छँटाई", dk_irrig:"सिंचाई", dk_labour:"मज़दूरी या अन्य काम",
+  dk_spray:"स्प्रे", dk_fert:"खाद", dk_prune:"कटाई-छँटाई", dk_irrig:"सिंचाई", dk_labour:"मज़दूरी या अन्य काम",
   dk_hail:"ओले", dk_frost:"पाला", dk_drought:"सूखा", dk_rain:"भारी बारिश या तूफ़ान", dk_snow:"बर्फ़",
   dk_flower:"फूल आए", dk_hstart:"तुड़ाई शुरू", dk_hend:"तुड़ाई ख़त्म", dk_problem:"समस्या दिखी", dk_note:"नोट",
   cmp_h:"सभी बाग़ एक साथ, {y}", cmp_o:"बाग़", cmp_note:"प्रति पेड़ आँकड़ों के लिए पेड़ों की संख्या चाहिए, जो हर बाग़ की जानकारी में डाली जा सकती है।",
   costs_diary:"{y} के {x} और सीज़न डायरी से आते हैं और अपने आप जुड़ जाते हैं।",
+  pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस साल की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
+  ex_all:"सभी बाग़, {y}", ex_entries:"एंट्री", ex_total:"साल भर के ख़र्च", ex_big:"सबसे बड़ा ख़र्च", ex_bycat:"किस मद में कितना", ex_pluslump:"और {x} एकमुश्त",
+  ex_add:"ख़र्च जोड़ें", ex_upd:"ख़र्च बदलें", ex_cat:"मद", ex_amt:"रक़म (₹)", ex_amt0:"रक़म", ex_det:"विवरण (वैकल्पिक)", ex_det0:"विवरण",
+  ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च सहेज लिया गया।",
+  ex_none:"{y} में {o} का कोई ख़र्च अभी नहीं डाला गया है।", ex_noent:"इस साल की कोई एंट्री अभी नहीं है। ऊपर पहली एंट्री जोड़ें।", ex_list:"डाले गए ख़र्च", ex_enttot:"एंट्री का कुल",
+  ex_lump:"एकमुश्त रक़म (वैकल्पिक)", ex_lump_p:"अगर सिर्फ़ साल भर का कुल पता है, तो अलग-अलग एंट्री की जगह यहाँ डालें। सीज़न का मुनाफ़ा में पहले साल भर के अन्य ख़र्च में डाली गई रक़म यहीं रखी गई है।",
+  ex_noorch:"पहले मेरे बाग़ में एक बाग़ जोड़ें।",
+  sp_yc:"{o}, {y} के साल भर के ख़र्च: {x}। ये ऊपर की शुद्ध आय में से घटाए गए हैं।", sp_yc_btn:"साल भर के ख़र्च में जोड़ें या बदलें",
+  dk_tools:"औज़ार और मशीनें", dk_repair:"मरम्मत (बाड़, ओला जाली)", dk_xother:"अन्य ख़र्च",
   pt_year:"सालाना शुद्ध मुनाफ़ा", pt_season:"सीज़न का मुनाफ़ा", pt_quick:"झटपट हिसाब",
   pg_h:"अपना रिकॉर्ड देखने के लिए साइन इन करें", pg_p:"सीज़न का मुनाफ़ा और सालाना शुद्ध मुनाफ़ा आपके निजी खाते में सहेजे गए लॉट से बनते हैं। झटपट हिसाब बिना साइन इन के चलता है।", pg_btn:"साइन इन",
   d_orchards:"बाग़", d_trees:"पेड़", d_net:"शुद्ध आय, {y}", d_boxes:"बिकी पेटियाँ, {y}", d_ppb:"प्रति पेटी शुद्ध आय, {y}", d_due:"अभी नहीं मिला, {y}",
@@ -1652,7 +1694,7 @@ function renderOrchGate() {
   set("orchPill", tr(user ? "s_signedin" : "s_signin"));
   renderAcct();
 }
-function renderAll() { renderEditor(); renderResults(); renderSummary(); renderDash(); }
+function renderAll() { renderEditor(); renderResults(); renderSummary(); renderDash(); if (typeof renderExp === "function") renderExp(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -1675,7 +1717,7 @@ async function applyUser(u) {
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
   if (!u) {
-    curSub = "quick"; dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
+    curSub = "quick"; exO = null; exY = null; exEdit = null; dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false; addingO = false;
     $("authStep1").hidden = false; $("authStep2").hidden = true;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
@@ -1800,7 +1842,7 @@ let curSub = "quick";
 function showSub(w) {
   curSub = w || curSub;
   const ready = !!(user && loaded) && !recovering;
-  ["year", "orch", "quick"].forEach(n => {
+  ["year", "orch", "exp", "quick"].forEach(n => {
     $("rp-" + n).hidden = n !== curSub || (n !== "quick" && !ready);
     $("rt-" + n).setAttribute("aria-selected", n === curSub ? "true" : "false");
   });
@@ -1979,12 +2021,9 @@ function renderEditor() {
     se.lots.forEach((l, i) => { h += lotHtml(l, i, se.lots.length, lmax); });
     h += "</div>";
     h += "</fieldset>";
-    const hasC = COST_KEYS.some(k => +se.costs[k] > 0);
-    const dSum = COST_KEYS.reduce((a, k) => a + diaryCosts(se.oid, se.year)[k], 0);
-    h += '<details class="manage"' + (hasC || dSum ? " open" : "") + "><summary>" + tr("g_year") + '</summary><p class="hint">' + tr("costs_p") +
-      (dSum ? " " + tr("costs_diary").replace("{x}", inr(dSum)).replace("{y}", se.year) : "") + '</p><div class="grid">' + COST_KEYS.map(k =>
-      '<div class="field"><label for="c_' + k + '">' + tr("f_" + k) + '</label><input id="c_' + k + '" data-cost="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + (se.costs[k] || "") + '"></div>'
-    ).join("") + "</div></details>";
+    const rY = seasonCalc(se);
+    h += '<div class="banner excost"><span>' + tr("sp_yc").replace("{o}", esc(o.name || tr("orchard_fallback"))).replace("{y}", se.year).replace("{x}", inr(rY.yearly)) +
+      '</span><button class="btn-s" type="button" data-act="goexp">' + tr("sp_yc_btn") + "</button></div>";
   }
   $("editor").innerHTML = h;
   $("editor").hidden = addingO;
@@ -2082,7 +2121,7 @@ function renderResults() {
 
 /* ---------- My orchards dashboard and orchard pages ---------- */
 let dashEdit = null, dashAdd = false, dashView = null, dashYear = null, profEdit = false, diaryEdit = null;
-const DIARY_KINDS = [["work", ["spray", "fert", "prune", "irrig", "labour"]], ["weather", ["hail", "frost", "drought", "rain", "snow"]],
+const DIARY_KINDS = [["work", ["spray", "fert", "prune", "irrig", "labour", "tools", "repair", "xother"]], ["weather", ["hail", "frost", "drought", "rain", "snow"]],
   ["dates", ["flower", "hstart", "hend"]], ["other", ["problem", "note"]]];
 const TIMELINE_KINDS = ["flower", "hstart", "hend", "hail", "frost", "drought", "rain", "snow", "problem"];
 const ROOTS = ["seedling", "m9", "mm106", "m7", "mm111", "other"], IRR = ["rain", "drip", "sprink", "tank", "other"], HAIL = ["yes", "part", "no"];
@@ -2488,6 +2527,166 @@ $("dash").addEventListener("submit", e => {
   fixSel(); save(); renderAll();
 });
 
+/* ---------- Yearly expenses (entries live in orchard.diary; lump sums in season.costs) ---------- */
+const EXP_KINDS = ["prune", "fert", "spray", "labour", "irrig", "tools", "repair", "xother"];
+const LUMP_KIND = {spray: "spray", fert: "fert", labour: "labour", prune: "prune", irrig: "irrig", other: "xother"};
+let exO = null, exY = null, exEdit = null;
+function ensureSeason(oid, y) {
+  let se = seFor(oid, y);
+  if (!se) { se = {id: newId(), oid: oid, year: y, costs: blankCosts(), lots: []}; S.seasons.push(se); }
+  return se;
+}
+function pruneSeason(oid, y) {
+  const se = seFor(oid, y); if (!se || se.lots.length) return;
+  if (COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(oid, y)[k] > 0)) return;
+  S.seasons = S.seasons.filter(x => x !== se);
+}
+function expEntries(o, y) {
+  return ((o && o.diary) || []).filter(d => +d.cost > 0 && String(d.date || "").slice(0, 4) === String(y)).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+function expTotals(o, y) {
+  const se = seFor(o.id, y), cat = {}, ents = expEntries(o, y);
+  let lump = 0;
+  ents.forEach(d => { const k = EXP_KINDS.indexOf(d.kind) >= 0 ? d.kind : (DIARY_COST[d.kind] ? d.kind : "xother"); cat[k] = (cat[k] || 0) + (+d.cost); });
+  if (se) COST_KEYS.forEach(k => { const v = +se.costs[k] || 0; if (v) { lump += v; cat[LUMP_KIND[k]] = (cat[LUMP_KIND[k]] || 0) + v; } });
+  const total = Object.keys(cat).reduce((a, k) => a + cat[k], 0);
+  return {ents, cat, lump, total};
+}
+function fixExp() {
+  if (!S.orchards.some(o => o.id === exO)) exO = S.orchards.some(o => o.id === sel.o) ? sel.o : (S.orchards[0] ? S.orchards[0].id : null);
+  if (!exY) exY = thisYear();
+}
+function expYears(o) {
+  const ys = [], ty = thisYear();
+  for (let i = 0; i < 10; i++) ys.push(ty - i);
+  S.seasons.filter(x => o && x.oid === o.id).forEach(x => { if (ys.indexOf(x.year) < 0) ys.push(x.year); });
+  ((o && o.diary) || []).forEach(d => { const y = +String(d.date).slice(0, 4); if (y > 1900 && ys.indexOf(y) < 0) ys.push(y); });
+  if (ys.indexOf(exY) < 0) ys.push(exY);
+  return ys.sort((a, b) => b - a);
+}
+function renderExpTop() {
+  const el = $("exTop"); if (!el) return;
+  fixExp();
+  const o = S.orchards.find(x => x.id === exO);
+  if (!o) { el.innerHTML = '<p class="empty">' + tr("ex_noorch") + "</p>"; return; }
+  let h = "";
+  // all orchards for the year
+  const rows = S.orchards.map(x => ({o: x, t: expTotals(x, exY)}));
+  const all = rows.reduce((a, r) => a + r.t.total, 0);
+  if (S.orchards.length > 1) {
+    h += '<section class="osec"><h4>' + tr("ex_all").replace("{y}", exY) + '</h4><div class="tablewrap"><table class="ledger sm"><thead><tr>' +
+      ["cmp_o", "ex_entries", "ex_total", "m_pt"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+      rows.map(r => '<tr' + (r.o.id === exO ? ' class="editing"' : "") + '><th scope="row"><button class="link" type="button" data-exsel="' + esc(r.o.id) + '">' + esc(r.o.name || tr("orchard_fallback")) +
+        "</button></th><td>" + fmtN(r.t.ents.length) + "</td><td>" + inr(r.t.total) + "</td><td>" + (+r.o.trees ? inr(r.t.total / +r.o.trees) : "–") + "</td></tr>").join("") +
+      '</tbody><tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + fmtN(rows.reduce((a, r) => a + r.t.ents.length, 0)) + "</td><td>" + inr(all) + "</td><td></td></tr></tfoot></table></div></section>";
+  }
+  // the chosen orchard
+  const t = expTotals(o, exY), trees = +o.trees, cats = Object.keys(t.cat).sort((a, b) => t.cat[b] - t.cat[a]);
+  h += '<section class="osec"><h4>' + esc(o.name || tr("orchard_fallback")) + ", " + exY + "</h4>";
+  if (!t.total) h += '<p class="hint">' + tr("ex_none").replace("{o}", esc(o.name || tr("orchard_fallback"))).replace("{y}", exY) + "</p>";
+  else {
+    const tile = (lab, val, extra, sub) => "<div" + (extra ? ' class="' + extra + '"' : "") + "><span>" + lab + "</span><b>" + val + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
+    h += '<div class="ystats">' + tile(tr("ex_total"), inr(t.total), "main") + tile(tr("m_pt"), trees ? inr(t.total / trees) : "–", "", trees ? "" : tr("k_addtrees")) +
+      tile(tr("ex_big"), inr(t.cat[cats[0]]), "", tr("dk_" + cats[0])) + tile(tr("ex_entries"), fmtN(t.ents.length), "", t.lump ? tr("ex_pluslump").replace("{x}", inr(t.lump)) : "") + "</div>";
+    const mx = t.cat[cats[0]] || 1;
+    h += '<p class="subhead">' + tr("ex_bycat") + '</p><ul class="pbars excat">' + cats.map(k => '<li><span class="yl">' + tr("dk_" + k) + '</span><span class="track"><span class="fill" style="width:' +
+      (t.cat[k] / mx * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(t.cat[k]) + '</span><span class="ys">' + pct(t.cat[k], t.total) + "</span></li>").join("") + "</ul>";
+  }
+  el.innerHTML = h + "</section>";
+}
+function renderExpBody() {
+  const el = $("exBody"); if (!el) return;
+  fixExp();
+  const o = S.orchards.find(x => x.id === exO);
+  $("exOrch").innerHTML = S.orchards.map(x => '<option value="' + esc(x.id) + '"' + (x.id === exO ? " selected" : "") + ">" + esc(x.name || tr("orchard_fallback")) + "</option>").join("");
+  $("exYear").innerHTML = expYears(o).map(y => '<option value="' + y + '"' + (y === exY ? " selected" : "") + ">" + y + "</option>").join("");
+  $("exOrch").disabled = $("exYear").disabled = !o;
+  if (!o) { el.innerHTML = ""; return; }
+  const ents = expEntries(o, exY), ed = exEdit ? ents.find(d => d.id === exEdit) || (o.diary || []).find(d => d.id === exEdit) : null;
+  const ty = thisYear(), defDate = exY === ty ? todayIso() : exY + "-01-01";
+  const v = ed || {date: defDate, kind: "", text: "", cost: "", stage: ""};
+  const kinds = EXP_KINDS.slice(); if (v.kind && kinds.indexOf(v.kind) < 0) kinds.push(v.kind);
+  let h = '<section class="osec"><h4>' + tr(ed ? "ex_upd" : "ex_add") + '</h4><form class="dform" id="exForm">' +
+    '<div class="field"><label for="ex_date">' + tr("dy_date") + '</label><input id="ex_date" type="date" value="' + esc(v.date) + '"></div>' +
+    '<div class="field"><label for="ex_kind">' + tr("ex_cat") + '</label><select id="ex_kind"><option value="">' + tr("dy_pick") + "</option>" +
+      kinds.map(k => '<option value="' + k + '"' + (k === v.kind ? " selected" : "") + ">" + tr("dk_" + k) + "</option>").join("") + "</select></div>" +
+    '<div class="field"><label for="ex_cost">' + tr("ex_amt") + '</label><input id="ex_cost" type="number" inputmode="decimal" min="0" step="any" value="' + esc(+v.cost ? v.cost : "") + '"></div>' +
+    '<div class="field" id="ex_stagewrap"><label for="ex_stage">' + tr("dy_stage") + '</label><select id="ex_stage"><option value="">–</option>' +
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '"' + ("st" + i === v.stage ? " selected" : "") + ">" + tr("st" + i) + "</option>").join("") + "</select></div>" +
+    '<div class="field wide"><label for="ex_text">' + tr("ex_det") + '</label><input id="ex_text" type="text" maxlength="200" placeholder="' + esc(tr("ex_det_ph")) + '" value="' + esc(v.text) + '"></div>' +
+    '<p class="autherr wide" id="ex_err" role="alert"></p>' +
+    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr(ed ? "ex_upd" : "ex_add") + "</button>" + (ed ? '<button class="btn-s" type="button" data-exact="cancel">' + tr("d_cancel") + "</button>" : "") +
+    '<span class="fine" id="ex_ok" role="status"></span></div></form></section>';
+  h += '<section class="osec"><h4>' + tr("ex_list") + "</h4>";
+  if (!ents.length) h += '<p class="hint">' + tr("ex_noent") + "</p>";
+  else {
+    const tot = ents.reduce((a, d) => a + (+d.cost), 0);
+    h += '<div class="tablewrap"><table class="ledger sm extab"><thead><tr>' + ["dy_date", "ex_cat", "ex_amt0", ""].map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
+      ents.map(d => '<tr' + (d.id === exEdit ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(d.date) + '</th><td class="t">' + tr("dk_" + d.kind) + (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : "") +
+        (d.text ? '<span class="det">' + esc(d.text) + "</span>" : "") + "</td><td>" + inr(+d.cost) + '</td><td class="acts"><button class="link" type="button" data-exact="edit" data-id="' + esc(d.id) + '">' + tr("dy_edit") +
+        '</button><button class="link del" type="button" data-exact="del" data-id="' + esc(d.id) + '">' + tr("dy_del") + "</button></td></tr>").join("") +
+      '</tbody><tfoot><tr><th scope="row" colspan="2">' + tr("ex_enttot") + "</th><td>" + inr(tot) + '</td><td class="acts"></td></tr></tfoot></table></div>';
+  }
+  h += "</section>";
+  const se = seFor(o.id, exY), hasL = se && COST_KEYS.some(k => +se.costs[k] > 0);
+  h += '<details class="manage"' + (hasL ? " open" : "") + "><summary>" + tr("ex_lump") + '</summary><p class="hint">' + tr("ex_lump_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
+    '<div class="field"><label for="exl_' + k + '">' + tr("yc_" + k) + ' (₹)</label><input id="exl_' + k + '" data-exlump="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>'
+  ).join("") + "</div></details>";
+  el.innerHTML = h;
+  const k = $("ex_kind"), w = $("ex_stagewrap"); if (k && w) w.hidden = k.value !== "spray";
+}
+function renderExp() { renderExpTop(); renderExpBody(); }
+function expChanged() { save(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderHero(); renderExpTop(); }
+$("rt-exp").addEventListener("click", () => { exEdit = null; renderExp(); showSub("exp"); });
+$("rp-exp").addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "exOrch") { exO = t.value; exEdit = null; renderExp(); }
+  else if (t.id === "exYear") { exY = +t.value; exEdit = null; renderExp(); }
+  else if (t.id === "ex_kind") { const w = $("ex_stagewrap"); if (w) w.hidden = t.value !== "spray"; }
+});
+$("rp-exp").addEventListener("input", e => {
+  const t = e.target, k = t.dataset && t.dataset.exlump; if (!k) return;
+  const o = S.orchards.find(x => x.id === exO); if (!o) return;
+  const v = numOf(t.value);
+  if (v) ensureSeason(o.id, exY).costs[k] = v;
+  else { const se = seFor(o.id, exY); if (se) { se.costs[k] = 0; pruneSeason(o.id, exY); } }
+  expChanged();
+});
+$("rp-exp").addEventListener("click", e => {
+  const s2 = e.target.closest("[data-exsel]");
+  if (s2) { exO = s2.dataset.exsel; exEdit = null; renderExp(); return; }
+  const b = e.target.closest("[data-exact]"); if (!b) return;
+  const a = b.dataset.exact, o = S.orchards.find(x => x.id === exO); if (!o) return;
+  if (a === "cancel") { exEdit = null; renderExpBody(); }
+  else if (a === "edit") { exEdit = b.dataset.id; renderExpBody(); const k = $("ex_kind"); if (k) { k.scrollIntoView({block: "center"}); k.focus(); } }
+  else if (a === "del") {
+    if (!b.dataset.armed) {
+      const back = b.textContent; b.dataset.armed = "1"; b.textContent = tr("dy_sure");
+      setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = back; } }, 4000);
+      return;
+    }
+    o.diary = (o.diary || []).filter(d => d.id !== b.dataset.id);
+    if (exEdit === b.dataset.id) exEdit = null;
+    pruneSeason(o.id, exY); renderExpBody(); expChanged();
+  }
+});
+$("rp-exp").addEventListener("submit", e => {
+  e.preventDefault(); set("ex_err", "");
+  const o = S.orchards.find(x => x.id === exO); if (!o) return;
+  const date = $("ex_date").value, kind = $("ex_kind").value, cost = numOf($("ex_cost").value);
+  if (!date || !kind || !cost) { set("ex_err", tr("ex_err")); return; }
+  const old = exEdit ? (o.diary || []).find(d => d.id === exEdit) : null;
+  const entry = Object.assign({}, old || {}, {id: exEdit || newId(), date: date, kind: kind, cost: cost, text: $("ex_text").value.trim(), stage: kind === "spray" ? $("ex_stage").value : ""});
+  o.diary = (o.diary || []).filter(d => d.id !== entry.id).concat([entry]);
+  const y = +date.slice(0, 4);
+  ensureSeason(o.id, y);
+  if (old) pruneSeason(o.id, +String(old.date).slice(0, 4));
+  exEdit = null; exY = y;
+  renderExpBody(); expChanged();
+  set("ex_ok", tr("ex_saved"));
+  const k = $("ex_kind"); if (k) k.focus();
+});
+
 /* ---------- yearly totals ---------- */
 let yOpen = new Set();
 function renderYearDetail() {
@@ -2654,6 +2853,8 @@ $("rp-orch").addEventListener("click", e => {
     if (filled.length) nl.exp = +filled[filled.length - 1].exp || 0;
     l.lines.push(nl); editLine = {lot: l.id, line: nl.id};
     fixSel(); save(); renderAll(); const el = $("n_" + nl.id + "_grade"); if (el) el.focus(); return;
+  } else if (act === "goexp") {
+    exO = sel.o; exY = sel.y; exEdit = null; renderExp(); showSub("exp"); window.scrollTo(0, 0); return;
   } else if (act === "lottoggle") {
     const id = b.dataset.id;
     if (lotOpen.has(id) || (editLine && editLine.lot === id)) { lotOpen.delete(id); if (editLine && editLine.lot === id) closeEditLine(); } else lotOpen.add(id);
