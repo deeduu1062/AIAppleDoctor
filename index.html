@@ -505,6 +505,7 @@ legend{font-size:.95rem}
 #rp-quick > p{max-width:70ch}
 .ybody .ystats{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
 .ystats .main b{white-space:nowrap}
+.hynote{margin:0 0 4px;padding:8px 12px;border-left:4px solid var(--brand-bg);border-radius:0 8px 8px 0;background:var(--surface-2);color:var(--fg);font-size:.95rem;font-weight:500;max-width:62ch}
 table.ledger.ytab{min-width:0;width:100%}
 .ledger.ytab thead th{background:var(--surface-2);color:var(--muted);font-weight:600;font-size:.86rem;border-bottom:1px solid var(--line)}
 .ledger.ytab tbody th[scope=row]{font-weight:600;color:var(--fg)}
@@ -519,9 +520,8 @@ table.ledger.ytab{min-width:0;width:100%}
 .yfigs{display:grid;grid-template-columns:minmax(8.5rem,max-content) 1.2rem minmax(8.5rem,max-content) 1.2rem minmax(9.5rem,max-content);gap:8px 10px;justify-content:start;align-items:end;min-width:0;padding-left:14px;border-left:1px solid var(--line)}
 .yfig{display:grid;gap:3px;text-align:left}
 .yfig > span{font-size:.82rem;color:var(--muted);white-space:nowrap}
-.yfig b{font:600 1.15rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--fg);line-height:1.1}
+.yfig b{font:700 1.15rem var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--fg);line-height:1.1}
 .yop{font:500 1.2rem var(--mono);color:var(--muted);padding-bottom:1px;line-height:1.1;text-align:center}
-.yfig.ynet{padding:5px 12px 6px;border-radius:8px;background:var(--surface-2)}
 .yfig.ynet b{font-size:1.4rem;font-weight:700}.yfig.ynet.pos b{color:var(--good)}.yfig.ynet.neg b{color:var(--bad)}
 .ledger.ytab thead th{white-space:normal;vertical-align:bottom;line-height:1.25}
 .ledger.ytab th,.ledger.ytab td{padding:10px 16px}
@@ -535,10 +535,9 @@ table.ledger.ytab{min-width:0;width:100%}
   #yearDetail .yhead{grid-template-columns:3.4rem minmax(0,1fr) 1rem}
   #yearDetail .yfigs{grid-column:1/3;grid-row:2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1.15fr);gap:6px;padding:10px 0 0;border-left:0;border-top:1px solid var(--line);align-items:end}
   #yearDetail .yop{display:none}
-  #yearDetail .yfig.ynet{grid-column:auto;grid-row:auto;padding:4px 6px 5px}
+  #yearDetail .yfig.ynet{grid-column:auto;grid-row:auto}
   .yfig > span{white-space:normal;font-size:.78rem;line-height:1.2}
   .yfig b{font-size:.98rem}.yfig.ynet b{font-size:1.05rem}
-  .yfig.ynet{padding:4px 8px 5px}
   #yearDetail .ybody{padding:4px 8px 12px}
   .ledger.ytab th,.ledger.ytab td{padding:7px 5px;font-size:.84rem}
   .ledger.ytab thead th{font-size:.8rem}
@@ -734,13 +733,13 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
   <div class="wrap">
     <div class="tpanel" id="tp-calc" role="tabpanel" aria-labelledby="tt-calc">
       <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
+      <p class="status" id="status" aria-live="polite" hidden></p>
       <div class="tabs pctabs" role="tablist">
         <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="pt_year"></button>
         <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="pt_season"></button>
         <button class="tab" role="tab" id="rt-exp" aria-selected="false" aria-controls="rp-exp" type="button" data-i18n="pt_exp"></button>
         <button class="tab" role="tab" id="rt-quick" aria-selected="true" aria-controls="rp-quick" type="button" data-i18n="pt_quick"></button>
       </div>
-      <p class="status" id="status" aria-live="polite" hidden></p>
       <div class="authcard" id="pcGate" hidden>
         <h3 data-i18n="pg_h"></h3>
         <p data-i18n="pg_p"></p>
@@ -748,6 +747,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
       </div>
     <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year" hidden>
       <div>
+        <p class="hynote" data-i18n="hy_note"></p>
         <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
         <p class="hint" data-i18n="y_tap"></p>
         <div class="ylist" id="yearDetail"></div>
@@ -760,6 +760,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
     
 <div class="panel single" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
       <div>
+        <p class="hynote" data-i18n="hy_note"></p>
         <p class="hint" data-i18n="sp_addhint"></p>
         <div class="pick">
           <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
@@ -811,6 +812,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
     </div>
 
       <div class="subpanel" id="rp-exp" role="tabpanel" aria-labelledby="rt-exp" hidden>
+        <p class="hynote" data-i18n="hy_note"></p>
         <p class="hint" data-i18n="ex_p"></p>
         <div class="exformbox" id="exForm"></div>
         <div class="exlistbox" id="exList"></div>
@@ -1151,7 +1153,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   ex_years:"Expenses by harvest year", ex_years_hint:"A harvest year runs from 1 November to 31 October and is named after the harvest it ends with. So pruning or manure in November or December counts toward the next year's crop. Tap a harvest year to see each orchard's expenses.", ex_ymeta:"{n} orchards, {e}", ex_ymeta1:"1 orchard, {e}", ex_ometa:"{e} entries", ex_ometa1:"1 entry", ex_ptree:"{x} a tree", ex_zero:"No expenses this year.", ex_yrcat:"By category, all orchards", pt_exp:"Yearly expenses", ex_p:"Add each expense for an orchard as you pay it: cutting and pruning, fertiliser, sprays, labour and more. They are taken off that harvest year's net income and also appear in the orchard's season diary.",
   ex_all:"All orchards, {y}", ex_entries:"Entries", ex_total:"Yearly expenses", ex_big:"Biggest cost", ex_bycat:"By category", ex_pluslump:"plus {x} in lump sums",
   ex_add:"Add expense", ex_upd:"Update expense", ex_cat:"Category", ex_amt:"Amount (₹)", ex_amt0:"Amount", ex_det:"Details (optional)", ex_det0:"Details",
-  ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved in harvest year {y}.", hy_label:"Harvest year {y}", hy_range:"1 Nov {a} to 31 Oct {b}.",
+  ex_det_ph:"For example 20 bags of CAN, or 3 workers for 2 days", ex_err:"Choose a date and a category, and enter the amount.", ex_saved:"Expense saved in harvest year {y}.", hy_label:"Harvest year {y}", hy_note:"Harvest year is counted from 1 November to 31 October.", hy_range:"1 Nov {a} to 31 Oct {b}.",
   ex_none:"No expenses entered for {o} in {y} yet.", ex_noent:"No entries for this year yet. Add the first one above.", ex_list:"Expenses entered", ex_enttot:"Total of entries",
   ex_lump:"Lump sums (optional)", ex_lump_p:"If you only know the total for the year, enter it here instead of separate entries. Amounts typed earlier under Other yearly expenses in Season Profit are kept here.",
   ex_noorch:"Add an orchard first in My orchards.",
@@ -1342,7 +1344,7 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   ex_years:"फ़सल वर्ष के हिसाब से ख़र्च", ex_years_hint:"फ़सल वर्ष 1 नवंबर से 31 अक्टूबर तक चलता है और उसी साल की तुड़ाई के नाम से जाना जाता है। इसलिए नवंबर या दिसंबर की छँटाई या खाद अगले साल की फ़सल में गिनी जाती है। हर बाग़ के ख़र्च देखने के लिए किसी फ़सल वर्ष पर दबाएँ।", ex_ymeta:"{n} बाग़, {e}", ex_ymeta1:"1 बाग़, {e}", ex_ometa:"{e} एंट्री", ex_ometa1:"1 एंट्री", ex_ptree:"{x} प्रति पेड़", ex_zero:"इस साल कोई ख़र्च नहीं।", ex_yrcat:"मद के हिसाब से, सभी बाग़", pt_exp:"साल भर के ख़र्च", ex_p:"बाग़ का हर ख़र्च देते समय यहाँ जोड़ें: कटाई-छँटाई, खाद, स्प्रे, मज़दूरी और बाक़ी। ये उस फ़सल वर्ष की शुद्ध आय में से घटाए जाते हैं और बाग़ की सीज़न डायरी में भी दिखते हैं।",
   ex_all:"सभी बाग़, {y}", ex_entries:"एंट्री", ex_total:"साल भर के ख़र्च", ex_big:"सबसे बड़ा ख़र्च", ex_bycat:"किस मद में कितना", ex_pluslump:"और {x} एकमुश्त",
   ex_add:"ख़र्च जोड़ें", ex_upd:"ख़र्च बदलें", ex_cat:"मद", ex_amt:"रक़म (₹)", ex_amt0:"रक़म", ex_det:"विवरण (वैकल्पिक)", ex_det0:"विवरण",
-  ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च फ़सल वर्ष {y} में सहेज लिया गया।", hy_label:"फ़सल वर्ष {y}", hy_range:"1 नवंबर {a} से 31 अक्टूबर {b}।",
+  ex_det_ph:"जैसे CAN के 20 बोरे, या 3 मज़दूर 2 दिन", ex_err:"तारीख़ और मद चुनें, और रक़म डालें।", ex_saved:"ख़र्च फ़सल वर्ष {y} में सहेज लिया गया।", hy_label:"फ़सल वर्ष {y}", hy_note:"फ़सल वर्ष 1 नवंबर से 31 अक्टूबर तक गिना जाता है।", hy_range:"1 नवंबर {a} से 31 अक्टूबर {b}।",
   ex_none:"{y} में {o} का कोई ख़र्च अभी नहीं डाला गया है।", ex_noent:"इस साल की कोई एंट्री अभी नहीं है। ऊपर पहली एंट्री जोड़ें।", ex_list:"डाले गए ख़र्च", ex_enttot:"एंट्री का कुल",
   ex_lump:"एकमुश्त रक़म (वैकल्पिक)", ex_lump_p:"अगर सिर्फ़ साल भर का कुल पता है, तो अलग-अलग एंट्री की जगह यहाँ डालें। सीज़न का मुनाफ़ा में पहले साल भर के अन्य ख़र्च में डाली गई रक़म यहीं रखी गई है।",
   ex_noorch:"पहले मेरे बाग़ में एक बाग़ जोड़ें।",
