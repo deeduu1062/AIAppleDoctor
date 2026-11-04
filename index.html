@@ -1451,10 +1451,6 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <div class="promo" id="promo"></div>
       <p id="orIntro" data-i18n="or_p"></p>
 
-      <div class="dels" id="authCard">
-        <a class="btn-s add" href="/login.html" data-i18n="hdr_signin"></a>
-        <a class="btn-s" href="/login.html?mode=signup" data-i18n="pr_join"></a>
-      </div>
 
       <div class="authcard" id="pwCard" hidden>
         <h3 data-i18n="pw_h"></h3>
@@ -2335,7 +2331,6 @@ $("adRefresh").addEventListener("click", loadAdmin);
 $("adFind").addEventListener("input", renderAdmin);
 function renderOrchGate() {
   const ready = !!(user && loaded) && !recovering;
-  $("authCard").hidden = !!user;
   $("pwCard").hidden = !(user && (recovering || pwOpen));
   $("loadErr").hidden = !(user && !loaded && loadFailed);
   $("recApp").hidden = !ready;
