@@ -582,15 +582,15 @@ footer p{max-width:70ch}
 .glempty{border:1px dashed var(--line);border-radius:12px;padding:16px;background:var(--surface)}
 .glempty p{margin:4px 0 0;color:var(--muted)}
 /* compact welcome banner (no example card) */
-#top .hero-grid{grid-template-columns:minmax(0,1fr);gap:0;padding-block:22px 34px}
+#top .hero-grid{grid-template-columns:minmax(0,1fr);gap:0;padding-block:22px 58px}
 #top h1{font-size:clamp(2.3rem,9.5vw,3.6rem);margin-top:6px}
 #top .greet{margin-top:10px}
 #top p.sub{margin-top:6px;max-width:60ch}
 #top .btns{margin-top:14px;gap:10px}
 #top .btns .btn{padding:10px 16px;min-height:44px;font-size:.98rem}
-#top svg.rows{height:34px}
+#top svg.rows{height:40px}
 @media (max-width:560px){
-  #top .hero-grid{padding-block:14px 20px}
+  #top .hero-grid{padding-block:14px 52px}
   #top .kicker{font-size:.9rem}
   #top h1{font-size:clamp(2rem,10vw,2.6rem)}
   #top .greet{font-size:1.02rem;margin-top:8px}
@@ -598,7 +598,6 @@ footer p{max-width:70ch}
   #top .btns{gap:8px;margin-top:12px}
   #top .btns .btn{padding:9px 12px;min-height:42px;font-size:.88rem}
   #top .btns{flex-wrap:nowrap}
-  #top svg.rows{display:none}
 }
 /* install as app */
 .instbar{background:var(--surface-2);border-bottom:1px solid var(--line)}
@@ -651,7 +650,7 @@ h1,h2,h3,h4{font-weight:700;letter-spacing:0}
 .brand i::after{content:"";position:absolute;left:9px;top:-6px;width:8px;height:5px;background:var(--leaf);border-radius:0 100% 0 100%;transform:rotate(-15deg)}
 /* the welcome banner is the side of a kraft apple box */
 .hero{color:var(--fg);background:repeating-linear-gradient(90deg,rgba(70,45,25,.05) 0 2px,transparent 2px 9px),var(--kraft);
-  --on-brand:var(--kraft-ink);--on-brand-soft:var(--kraft-soft);--on-brand-line:var(--kraft-line);--tree:rgba(47,107,47,.42);--tree-apple:rgba(177,31,36,.85)}
+  --on-brand:var(--kraft-ink);--on-brand-soft:var(--kraft-soft);--on-brand-line:var(--kraft-line);--tree:rgba(47,107,47,.42);--tree-apple:rgba(177,31,36,.85);--apple-green:rgba(62,138,58,.75);--apple-red:rgba(177,31,36,.8);--apple-leaf:rgba(47,107,47,.9);--apple-stem:rgba(70,45,25,.75)}
 .hero h1{color:var(--kraft-ink);font-size:clamp(2.8rem,10vw,5rem);line-height:.92}
 html[lang="hi"] .hero h1{line-height:1.15}
 .hero .greet{color:var(--fg);font-family:var(--body);font-weight:600}
@@ -1086,17 +1085,24 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
       </div>
     </div>
   </div>
-  <svg class="rows" width="100%" height="64" aria-hidden="true" focusable="false">
+  <svg class="rows" width="100%" height="40" aria-hidden="true" focusable="false">
     <defs>
-      <pattern id="tree" width="64" height="64" patternUnits="userSpaceOnUse">
-        <rect x="30" y="38" width="4" height="26" style="fill:var(--tree)"/>
-        <circle cx="32" cy="28" r="19" style="fill:var(--tree)"/>
-        <circle cx="25" cy="24" r="2.6" style="fill:var(--tree-apple)"/>
-        <circle cx="38" cy="30" r="2.6" style="fill:var(--tree-apple)"/>
-        <circle cx="31" cy="35" r="2.6" style="fill:var(--tree-apple)"/>
+      <pattern id="tree" width="96" height="40" patternUnits="userSpaceOnUse">
+        <g transform="translate(24 23) scale(.08)">
+          <path d="M0 -118 C52 -150 150 -128 152 -20 C154 70 98 152 46 152 C22 152 14 140 0 140 C-14 140 -22 152 -46 152 C-98 152 -154 70 -152 -20 C-150 -128 -52 -150 0 -118Z" style="fill:var(--apple-green)"/>
+          <path d="M-92 -70 C-110 -40 -112 0 -100 30" style="stroke:rgba(255,255,255,.45);fill:none" stroke-width="18" stroke-linecap="round"/>
+          <path d="M-4 -116 C-6 -150 0 -172 14 -190" style="stroke:var(--apple-stem);fill:none" stroke-width="16" stroke-linecap="round"/>
+          <path d="M14 -160 C40 -206 104 -214 128 -192 C102 -150 46 -140 14 -160Z" style="fill:var(--apple-leaf)"/>
+        </g>
+        <g transform="translate(72 23) scale(.08)">
+          <path d="M0 -118 C52 -150 150 -128 152 -20 C154 70 98 152 46 152 C22 152 14 140 0 140 C-14 140 -22 152 -46 152 C-98 152 -154 70 -152 -20 C-150 -128 -52 -150 0 -118Z" style="fill:var(--apple-red)"/>
+          <path d="M-92 -70 C-110 -40 -112 0 -100 30" style="stroke:rgba(255,255,255,.45);fill:none" stroke-width="18" stroke-linecap="round"/>
+          <path d="M-4 -116 C-6 -150 0 -172 14 -190" style="stroke:var(--apple-stem);fill:none" stroke-width="16" stroke-linecap="round"/>
+          <path d="M14 -160 C40 -206 104 -214 128 -192 C102 -150 46 -140 14 -160Z" style="fill:var(--apple-leaf)"/>
+        </g>
       </pattern>
     </defs>
-    <rect width="100%" height="64" fill="url(#tree)"/>
+    <rect width="100%" height="40" fill="url(#tree)"/>
   </svg>
 </section>
 
