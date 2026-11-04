@@ -542,6 +542,45 @@ footer p{max-width:70ch}
   .instrow span{flex:1 1 150px;font-size:.9rem;line-height:1.35}
   .instrow .btn-s{padding:6px 12px;min-height:36px;font-size:.88rem}
 }
+/* dashboard: season at a glance */
+.glance{display:grid;gap:14px;min-width:0}
+.glhead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px 16px;flex-wrap:wrap}
+.glhead h3{font-size:1.45rem;font-weight:800;line-height:1.2}
+.glhead .fine{margin:2px 0 0}
+.glyears{display:flex;gap:6px;flex-wrap:wrap}
+.glyears .tab{padding:6px 12px;min-height:36px;font-size:.92rem}
+.glyears .tab[aria-pressed="true"]{background:var(--brand-bg);color:var(--on-brand);border-color:var(--brand-bg)}
+.glhero{border-radius:14px;padding:18px 20px;background:var(--brand-bg);color:var(--on-brand);display:grid;gap:4px}
+.glhero.neg{background:var(--bad)}
+.glhero > span{font-size:.95rem;opacity:.9}
+.glhero b{font:600 clamp(2rem,9vw,2.6rem)/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.glsub{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:.92rem;opacity:.95}
+.glvs{font-weight:600}
+.gltiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:10px}
+.gltiles div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface);min-width:0}
+.gltiles span{display:block;font-size:.85rem;color:var(--muted)}
+.gltiles b{display:block;font:500 1.2rem var(--mono);font-variant-numeric:tabular-nums;margin-top:3px;overflow-wrap:anywhere}
+.gltiles .warn b{color:var(--apple)}
+.glacts{display:flex;gap:8px;flex-wrap:wrap}
+.glcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.glbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;align-content:start;min-width:0}
+.glbox h4{font-size:1.08rem;font-weight:700}
+.glbox .fine{margin:-4px 0 0}
+.glrows{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.glrows button,.glrows li > div{width:100%;display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:baseline;text-align:left;background:none;border:0;padding:6px 0;font:inherit;color:inherit}
+.glrows button{cursor:pointer;border-radius:8px}
+.glrows button:hover span:first-child{text-decoration:underline}
+.glrows b{font:500 .98rem var(--mono);font-variant-numeric:tabular-nums}
+.glrows b.neg{color:var(--bad)}
+.glrows small{grid-column:1/-1;color:var(--muted);font-size:.8rem}
+.glbar{grid-column:1/-1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.glbar i{display:block;height:100%;background:var(--good);border-radius:4px}
+.glbar.neg i{background:var(--bad)}
+.glrows.exp .glbar i{background:var(--seg-pack,#C9862B)}
+.gltot{margin:2px 0 0;border-top:1px solid var(--line);padding-top:8px;display:flex;justify-content:space-between}
+.gltot b{font-family:var(--mono)}
+.glempty{border:1px dashed var(--line);border-radius:12px;padding:16px;background:var(--surface)}
+.glempty p{margin:4px 0 0;color:var(--muted)}
 /* install as app */
 .instbar{background:var(--surface-2);border-bottom:1px solid var(--line)}
 .instrow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
@@ -2938,10 +2977,12 @@ function farmSummaryHtml() {
     (anyUn ? '<p class="fine">' + tr("sum_hint") + "</p>" : "") + "</section>";
 }
 function dashOverview() {
-  let h = farmSummaryHtml();
+  let h = "";
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
+  try { h += glanceHtml(); } catch (e) {}
   h += detailsHtml();
   h += dashDxHtml();
+  h += farmSummaryHtml();
   if (S.orchards.length) {
     const wl = S.orchards.filter(hasLoc);
     h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
@@ -4721,6 +4762,89 @@ $("promo").addEventListener("click", e => {
   if (g === "diag") { tabPicked = true; showTool("diag", false, true); }
   else if (g === "quick") { tabPicked = true; showTool("calc", false, true); showSub("quick"); }
   else if (g === "join") { const c = $("authCard"); if (c && c.scrollIntoView) c.scrollIntoView({block: "start"}); const i = $("phNum") && !$("authPhone").hidden ? $("phNum") : $("authEmail"); setTimeout(() => { try { i.focus({preventScroll: true}); } catch (x) {} }, 300); }
+});
+
+/* ---- Dashboard: season at a glance (signed in) ---- */
+Object.assign(T.en, {
+  gl_h:"{y} season at a glance", gl_range:"Harvest year: 1 Nov {a} to 31 Oct {b}",
+  gl_net:"Net profit", gl_loss:"Net loss", gl_vs:"{s} compared with {y}", gl_ppb:"{x} per box",
+  gl_sales:"Sales", gl_exp:"Expenses", gl_boxes:"Boxes sold", gl_due:"Not yet received",
+  gl_byo:"Net profit by orchard", gl_byo_p:"Tap an orchard to open its season.",
+  gl_where:"Where the money went", gl_lotexp:"Picking, grading, packing, carriage and commission",
+  gl_other:"Other costs",
+  gl_add_sale:"Add a sale", gl_add_exp:"Add an expense", gl_check:"Check a disease",
+  gl_none:"Nothing recorded for {y} yet.", gl_none_p:"Add your first sale lot or expense and your totals will show here."
+});
+Object.assign(T.hi, {
+  gl_h:"{y} सीज़न एक नज़र में", gl_range:"फ़सल वर्ष: 1 नवंबर {a} से 31 अक्टूबर {b}",
+  gl_net:"शुद्ध मुनाफ़ा", gl_loss:"शुद्ध घाटा", gl_vs:"{y} की तुलना में {s}", gl_ppb:"{x} प्रति पेटी",
+  gl_sales:"बिक्री", gl_exp:"ख़र्च", gl_boxes:"बिकी पेटियाँ", gl_due:"अभी नहीं मिला",
+  gl_byo:"बाग़ के हिसाब से शुद्ध मुनाफ़ा", gl_byo_p:"किसी बाग़ पर दबाकर उसका सीज़न खोलें।",
+  gl_where:"पैसा कहाँ गया", gl_lotexp:"तुड़ाई, ग्रेडिंग, पैकिंग, ढुलाई और कमीशन",
+  gl_other:"अन्य ख़र्च",
+  gl_add_sale:"बिक्री जोड़ें", gl_add_exp:"ख़र्च जोड़ें", gl_check:"रोग जाँचें",
+  gl_none:"{y} के लिए अभी कुछ दर्ज नहीं है।", gl_none_p:"पहला लॉट या ख़र्च जोड़ें, आपका हिसाब यहाँ दिखेगा।"
+});
+var glY = null;
+function glYears() {
+  const ys = new Set();
+  S.seasons.forEach(se => { if (S.orchards.some(o => o.id === se.oid)) { const r = seasonCalc(se); if (r.rev || r.cost) ys.add(se.year); } });
+  S.orchards.forEach(o => ((o.diary || []).forEach(d => { if (+d.cost > 0) ys.add(hYear(d.date)); })));
+  ys.delete(0);
+  return Array.from(ys).sort((a, b) => b - a);
+}
+function glExpBreak(d) {
+  const rows = [];
+  if (d.tot.pbe > 0) rows.push([tr("gl_lotexp"), d.tot.pbe]);
+  COST_KEYS.forEach(k => { const v = d.etot.c[k] || 0; if (v > 0) rows.push([tr(k === "other" ? "gl_other" : "dk_" + k), v]); });
+  return rows.sort((a, b) => b[1] - a[1]);
+}
+function glOrchRows(y) {
+  return S.orchards.map(o => { const se = seFor(o.id, y); if (!se) return null; const r = seasonCalc(se); return {oid: o.id, name: o.name || tr("orchard_fallback"), net: r.profit, boxes: r.boxes}; })
+    .filter(r => r && (r.net || r.boxes));
+}
+function glanceHtml() {
+  if (!S.orchards.length) return "";
+  const ys = glYears();
+  if (glY == null || (ys.length && ys.indexOf(glY) < 0 && glY !== curHYear())) glY = ys.length ? ys[0] : curHYear();
+  const y = glY, d = yearSummary(y), t = d.tot;
+  const chips = ys.length > 1 ? '<div class="glyears" role="group">' + ys.slice(0, 5).map(v => '<button type="button" class="tab" data-gl="y:' + v + '" aria-pressed="' + (v === y) + '">' + v + "</button>").join("") + "</div>" : "";
+  const acts = '<div class="glacts"><button class="btn-s add" type="button" data-gl="sale">+ ' + tr("gl_add_sale") + '</button><button class="btn-s" type="button" data-gl="exp">+ ' + tr("gl_add_exp") + '</button><button class="btn-s" type="button" data-gl="dx">' + tr("gl_check") + "</button></div>";
+  let h = '<section class="glance"><div class="glhead"><div><h3>' + tr("gl_h").replace("{y}", y) + '</h3><p class="fine">' + tr("gl_range").replace("{a}", y - 1).replace("{b}", y) + "</p></div>" + chips + "</div>";
+  if (!d.rows.length || !(t.sales || t.pbe || t.yearly)) {
+    return h + '<div class="glempty"><b>' + tr("gl_none").replace("{y}", y) + "</b><p>" + tr("gl_none_p") + "</p></div>" + acts + "</section>";
+  }
+  const cost = t.pbe + t.yearly, eq = S.orchards.reduce((a, o) => { const se = seFor(o.id, y); return a + (se ? seasonCalc(se).eq : 0); }, 0);
+  const prev = ys.indexOf(y - 1) >= 0 ? yearSummary(y - 1).tot.net : null;
+  let vs = "";
+  if (prev != null && prev > 0) {
+    const ch = Math.round((t.net / prev - 1) * 100);
+    vs = '<span class="glvs ' + (ch >= 0 ? "up" : "down") + '">' + (ch >= 0 ? "▲ " : "▼ ") + tr("gl_vs").replace("{s}", Math.abs(ch) + "%").replace("{y}", y - 1) + "</span>";
+  }
+  h += '<div class="glhero ' + (t.net < 0 ? "neg" : "") + '"><span>' + tr(t.net < 0 ? "gl_loss" : "gl_net") + "</span><b>" + inr(Math.abs(t.net)) + "</b>" +
+    '<div class="glsub">' + (eq ? "<span>" + tr("gl_ppb").replace("{x}", inr(t.net / eq)) + "</span>" : "") + vs + "</div></div>";
+  h += '<div class="gltiles"><div><span>' + tr("gl_sales") + "</span><b>" + inr(t.sales) + "</b></div><div><span>" + tr("gl_exp") + "</span><b>" + inr(cost) + "</b></div>" +
+    "<div><span>" + tr("gl_boxes") + "</span><b>" + fmtN(t.boxes) + "</b></div>" +
+    '<div class="' + (t.due > 0 ? "warn" : "") + '"><span>' + tr("gl_due") + "</span><b>" + inr(t.due) + "</b></div></div>";
+  h += acts;
+  const rows = glOrchRows(y).sort((a, b) => b.net - a.net), maxN = Math.max.apply(null, rows.map(r => Math.abs(r.net)).concat([1]));
+  h += '<div class="glcols"><div class="glbox"><h4>' + tr("gl_byo") + '</h4><p class="fine">' + tr("gl_byo_p") + '</p><ul class="glrows">' +
+    rows.map(r => '<li><button type="button" data-gl="o:' + esc(r.oid) + '"><span>' + esc(r.name) + '</span><b class="' + (r.net < 0 ? "neg" : "") + '">' + (r.net < 0 ? "−" : "") + inr(Math.abs(r.net)) + "</b>" +
+      '<span class="glbar ' + (r.net < 0 ? "neg" : "") + '"><i style="width:' + Math.max(3, Math.round(Math.abs(r.net) / maxN * 100)) + '%"></i></span><small>' + fmtN(r.boxes) + " " + tr("hero_boxes") + "</small></button></li>").join("") + "</ul></div>";
+  const br = glExpBreak(d), maxE = Math.max.apply(null, br.map(r => r[1]).concat([1]));
+  h += '<div class="glbox"><h4>' + tr("gl_where") + '</h4><ul class="glrows exp">' +
+    br.slice(0, 6).map(r => "<li><div><span>" + esc(r[0]) + "</span><b>" + inr(r[1]) + '</b><span class="glbar"><i style="width:' + Math.max(3, Math.round(r[1] / maxE * 100)) + '%"></i></span><small>' + pct(r[1], cost) + "</small></div></li>").join("") +
+    '</ul><p class="gltot"><span>' + tr("gl_exp") + "</span><b>" + inr(cost) + "</b></p></div></div>";
+  return h + "</section>";
+}
+$("dash").addEventListener("click", e => {
+  const b = e.target.closest("[data-gl]"); if (!b) return;
+  const g = b.dataset.gl;
+  if (g.startsWith("y:")) { glY = +g.slice(2); renderDash(); return; }
+  if (g.startsWith("o:")) { if (g.length > 2) goSeason(g.slice(2), glY); return; }
+  if (g === "sale") { const o = S.orchards.find(x => x.id === sel.o) || S.orchards[0]; if (o) goSeason(o.id, glY || curHYear()); return; }
+  if (g === "exp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); return; }
+  if (g === "dx") goDiag("sym");
 });
 /* ---- install as an app (PWA) ---- */
 Object.assign(T.en, {
