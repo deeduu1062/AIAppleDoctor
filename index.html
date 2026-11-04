@@ -1177,12 +1177,12 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
           <button class="tab" role="tab" id="authM-email" type="button" aria-selected="true" data-i18n="em_tab"></button>
         </div>
         <div id="authPhone" hidden>
-          <p data-i18n="ph_p"></p>
+          <p id="phIntro"></p>
           <div id="phStep1">
             <form id="phForm" novalidate>
               <div class="field"><label for="phNum" data-i18n="ph_num"></label><div class="phrow"><span class="phcc">+91</span><input id="phNum" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="98765 43210"></div></div>
               <p class="autherr" id="phErr" role="alert"></p>
-              <div class="dels"><button class="btn-s add" type="submit" id="phSend" data-i18n="ph_send"></button><button class="btn-s" type="button" id="phWa" data-i18n="ph_wa" hidden></button></div>
+              <div class="dels"><button class="btn-s add" type="submit" id="phSend"></button><button class="btn-s" type="button" id="phWa" hidden></button></div>
             </form>
           </div>
           <div id="phStep2" hidden>
@@ -2220,12 +2220,13 @@ $("authOther").addEventListener("click", () => { pendingEmail = ""; $("authStep1
 /* ---- mobile number sign-in (Supabase phone OTP, sent by Twilio) ----
    PHONE_READY: set to true once Twilio is connected in Supabase (Authentication → Providers → Phone).
    Until then the Mobile tab is hidden; add ?phone=1 to the address to test it.
-   PHONE_WHATSAPP: set to true once a Twilio WhatsApp sender is approved, to show "Send on WhatsApp". */
+   PHONE_CHANNELS: how the code is sent. The first one is the main button.
+     "whatsapp" needs a WhatsApp sender approved in Twilio; "sms" needs India DLT registration. */
 const PHONE_READY = false;
-const PHONE_WHATSAPP = false;
+const PHONE_CHANNELS = ["whatsapp"];
 Object.assign(T.en, {
   ph_tab:"Mobile number", em_tab:"Email",
-  ph_p:"Sign in with your mobile number. We send a 6-digit code by SMS. New here? The same steps create your account.",
+  ph_p:"Sign in with your mobile number. We send you a 6-digit code on {c}. New here? The same steps create your account.", ph_c_whatsapp:"WhatsApp", ph_c_sms:"SMS",
   ph_num:"Mobile number", ph_send:"Send code by SMS", ph_wa:"Send code on WhatsApp",
   ph_sent:"We sent a 6-digit code to {p}. Type it below. It can take a minute to arrive.", ph_sent_wa:"We sent a 6-digit code on WhatsApp to {p}. Type it below.",
   ph_code:"6-digit code", ph_verify:"Sign in", ph_resend:"Send again", ph_resend_in:"Send again in {n}s", ph_other:"Use a different number",
@@ -2235,7 +2236,7 @@ Object.assign(T.en, {
 });
 Object.assign(T.hi, {
   ph_tab:"मोबाइल नंबर", em_tab:"ईमेल",
-  ph_p:"अपने मोबाइल नंबर से साइन इन करें। हम SMS से 6 अंकों का कोड भेजेंगे। नए हैं? इन्हीं क़दमों से आपका खाता बन जाएगा।",
+  ph_p:"अपने मोबाइल नंबर से साइन इन करें। हम {c} पर 6 अंकों का कोड भेजेंगे। नए हैं? इन्हीं क़दमों से आपका खाता बन जाएगा।", ph_c_whatsapp:"WhatsApp", ph_c_sms:"SMS",
   ph_num:"मोबाइल नंबर", ph_send:"SMS से कोड भेजें", ph_wa:"WhatsApp पर कोड भेजें",
   ph_sent:"हमने {p} पर 6 अंकों का कोड भेजा है। नीचे डालें। आने में एक मिनट लग सकता है।", ph_sent_wa:"हमने {p} पर WhatsApp से 6 अंकों का कोड भेजा है। नीचे डालें।",
   ph_code:"6 अंकों का कोड", ph_verify:"साइन इन", ph_resend:"फिर से भेजें", ph_resend_in:"{n} सेकंड बाद फिर से भेजें", ph_other:"दूसरा नंबर इस्तेमाल करें",
@@ -2272,7 +2273,11 @@ function renderAuthMethod() {
   });
   $("authPhone").hidden = authMethod !== "phone";
   $("authEmailBox").hidden = authMethod !== "email";
-  $("phWa").hidden = !PHONE_WHATSAPP;
+  const main = PHONE_CHANNELS[0] || "sms", alt = PHONE_CHANNELS[1];
+  set("phSend", tr(main === "whatsapp" ? "ph_wa" : "ph_send"));
+  $("phWa").hidden = !alt;
+  if (alt) set("phWa", tr(alt === "whatsapp" ? "ph_wa" : "ph_send"));
+  set("phIntro", tr("ph_p").replace("{c}", PHONE_CHANNELS.map(c => tr("ph_c_" + c)).join(" / ")));
   renderPhResend();
   if (phPending) set("phSentMsg", tr(phChannel === "whatsapp" ? "ph_sent_wa" : "ph_sent").replace("{p}", fmtPhone(phPending)));
 }
@@ -2311,8 +2316,8 @@ async function phSendCode(channel, errId) {
   phCountdown(); renderAuthMethod();
   try { $("phCode").focus(); } catch (e) {}
 }
-$("phForm").addEventListener("submit", e => { e.preventDefault(); phSendCode("sms", "phErr"); });
-$("phWa").addEventListener("click", () => phSendCode("whatsapp", "phErr"));
+$("phForm").addEventListener("submit", e => { e.preventDefault(); phSendCode(PHONE_CHANNELS[0] || "sms", "phErr"); });
+$("phWa").addEventListener("click", () => phSendCode(PHONE_CHANNELS[1] || "sms", "phErr"));
 $("phResend").addEventListener("click", () => phSendCode(phChannel, "phCodeErr"));
 $("phCodeForm").addEventListener("submit", async e => {
   e.preventDefault(); set("phCodeErr", "");
