@@ -479,7 +479,20 @@ footer p{max-width:70ch}
 .promo[hidden]{display:none}
 .prhead h3{font-size:1.45rem;font-weight:800;line-height:1.25}
 .prhead p{color:var(--muted);margin-top:6px;max-width:60ch}
-.prgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.prshow{display:grid;gap:10px;min-width:0}
+.prtrack{display:grid;grid-auto-flow:column;grid-auto-columns:100%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;border-radius:12px}
+.prtrack::-webkit-scrollbar{display:none}
+.prtrack:focus-visible{outline:2px solid var(--brand-bg);outline-offset:3px}
+.prtrack > .prcard{scroll-snap-align:start;scroll-snap-stop:always}
+@media (min-width:760px){.prtrack{grid-auto-columns:calc(50% - 6px)}}
+.prnav{display:flex;align-items:center;justify-content:center;gap:10px}
+.prarr{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:600 1.5rem/1 var(--body);cursor:pointer;display:grid;place-items:center;padding:0 0 3px}
+.prarr:hover{border-color:var(--brand-bg)}
+.prdots{display:flex;gap:2px}
+.prdots button{width:28px;height:28px;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+.prdots button::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--line);transition:width .2s,background .2s}
+.prdots button[aria-current="true"]::after{width:22px;border-radius:5px;background:var(--brand-bg)}
+@media (prefers-reduced-motion:reduce){.prdots button::after{transition:none}}
 .prcard{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface);display:grid;gap:10px;align-content:start;min-width:0}
 .prcard h4{font-size:1.1rem;font-weight:700;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .prcard h4 .chip{margin-left:0}
@@ -4592,7 +4605,7 @@ Object.assign(T.en, {
   pr_o1:"Upper orchard", pr_o2:"Lower orchard", pr_o3:"Orchard near home",
   pr_c_spray:"Sprays", pr_c_lab:"Labour", pr_c_pack:"Grading and packing", pr_c_carr:"Carriage", pr_c_fert:"Manure and fertiliser", pr_e_tot:"Total {y}",
   pr_d_res:"Premature leaf fall (Marssonina)", pr_d_conf:"Fairly sure", pr_d_do:"Collect fallen leaves. Follow the monsoon spray schedule.",
-  pr_join:"Create your free account", pr_quick:"Try the quick calculator", pr_try:"Try it now, free"
+  pr_join:"Create your free account", pr_quick:"Try the quick calculator", pr_try:"Try it now, free", pr_prev:"Previous", pr_next:"Next"
 });
 Object.assign(T.hi, {
   pr_h:"आपके बाग़ का हिसाब और सेहत, एक ही जगह",
@@ -4606,7 +4619,7 @@ Object.assign(T.hi, {
   pr_o1:"ऊपर वाला बाग़", pr_o2:"नीचे वाला बाग़", pr_o3:"घर के पास का बाग़",
   pr_c_spray:"स्प्रे", pr_c_lab:"मज़दूरी", pr_c_pack:"ग्रेडिंग और पैकिंग", pr_c_carr:"ढुलाई", pr_c_fert:"खाद", pr_e_tot:"कुल {y}",
   pr_d_res:"समय से पहले पत्ती गिरना (मार्सोनिना)", pr_d_conf:"कुछ भरोसा", pr_d_do:"गिरी पत्तियाँ इकट्ठा करें। बरसात का स्प्रे शेड्यूल मानें।",
-  pr_join:"अपना मुफ़्त खाता बनाएँ", pr_quick:"छोटा कैलकुलेटर आज़माएँ", pr_try:"अभी आज़माएँ, मुफ़्त"
+  pr_join:"अपना मुफ़्त खाता बनाएँ", pr_quick:"छोटा कैलकुलेटर आज़माएँ", pr_try:"अभी आज़माएँ, मुफ़्त", pr_prev:"पिछला", pr_next:"अगला"
 });
 function renderPromo() {
   const el = $("promo"); if (!el) return;
@@ -4621,7 +4634,7 @@ function renderPromo() {
   const bar = (v, m) => '<span class="prbar"><i style="width:' + Math.round(v / m * 100) + '%"></i></span>';
   el.innerHTML =
     '<div class="prhead"><h3>' + tr("pr_h") + '</h3><p>' + tr("pr_p") + "</p></div>" +
-    '<div class="prgrid">' +
+    '<div class="prshow" role="region" aria-roledescription="carousel" aria-label="' + esc(tr("pr_h")) + '"><div class="prtrack" id="prTrack" tabindex="0">' +
       '<article class="prcard"><h4>' + tr("pr_y_h") + " " + ex + "</h4><p class=\"sub2\">" + tr("pr_y_p") + "</p>" +
         '<div class="prbig"><span>' + tr("pr_y_lbl") + ", " + y + "</span><b>" + inr(years[2][1]) + "</b><small>" + tr("pr_up").replace("{p}", Math.round((years[2][1] / years[1][1] - 1) * 100)) + "</small></div>" +
         '<div class="prcols">' + years.map(r => '<div><i style="height:' + Math.round(r[1] / maxY * 100) + '%"></i><span>' + r[0] + "</span></div>").join("") + "</div></article>" +
@@ -4633,10 +4646,52 @@ function renderPromo() {
       '<article class="prcard prdx"><h4>' + tr("pr_d_h") + " " + ex + "</h4><p class=\"sub2\">" + tr("pr_d_p") + "</p>" +
         '<div class="prres"><b>' + tr("pr_d_res") + '</b> <em class="chip">' + tr("pr_d_conf") + "</em><p>" + tr("pr_d_do") + "</p></div>" +
         '<button class="btn-s add" type="button" data-prgo="diag">' + tr("pr_try") + "</button></article>" +
-    "</div>" +
+    '</div><div class="prnav"><button class="prarr" type="button" data-prnav="-1" aria-label="' + esc(tr("pr_prev")) + '">&#8249;</button><div class="prdots" id="prDots">' +
+      PR_SLIDES.map((k, i) => '<button type="button" data-prdot="' + i + '" aria-label="' + esc(tr(k)) + '"></button>').join("") +
+      '</div><button class="prarr" type="button" data-prnav="1" aria-label="' + esc(tr("pr_next")) + '">&#8250;</button></div></div>' +
     '<div class="dels prcta"><button class="btn-s add" type="button" data-prgo="join">' + tr("pr_join") + '</button><button class="btn-s" type="button" data-prgo="quick">' + tr("pr_quick") + "</button></div>";
+  prSetup();
+}
+/* slideshow: swipe, arrows, dots; moves on by itself until someone touches it */
+var PR_SLIDES = ["pr_y_h", "pr_s_h", "pr_e_h", "pr_d_h"], prTimer = null, prIdx = 0, prHeld = false;
+function prSlides() { const t = $("prTrack"); return t ? Array.from(t.children) : []; }
+function prGo(i, smooth) {
+  const t = $("prTrack"), sl = prSlides(); if (!t || !sl.length) return;
+  prIdx = (i + sl.length) % sl.length;
+  t.scrollTo({left: sl[prIdx].offsetLeft - sl[0].offsetLeft, behavior: smooth === false ? "auto" : "smooth"});
+  prMark();
+}
+function prMark() {
+  const sl = prSlides();
+  sl.forEach((el, k) => { el.setAttribute("aria-roledescription", "slide"); el.setAttribute("aria-label", (k + 1) + " / " + sl.length); });
+  document.querySelectorAll("#prDots button").forEach((b, k) => b.setAttribute("aria-current", k === prIdx ? "true" : "false"));
+}
+function prHold() { prHeld = true; clearInterval(prTimer); prTimer = null; }
+function prSetup() {
+  clearInterval(prTimer); prTimer = null; prIdx = 0;
+  const t = $("prTrack"); if (!t) return;
+  prMark();
+  let raf = 0;
+  t.addEventListener("scroll", () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const sl = prSlides(), x = t.scrollLeft + sl[0].offsetLeft;
+      let best = 0; sl.forEach((el, k) => { if (Math.abs(el.offsetLeft - x) < Math.abs(sl[best].offsetLeft - x)) best = k; });
+      if (best !== prIdx) { prIdx = best; prMark(); }
+    });
+  }, {passive: true});
+  ["pointerdown", "touchstart", "wheel", "focusin"].forEach(ev => t.addEventListener(ev, prHold, {passive: true}));
+  t.addEventListener("keydown", e => { if (e.key === "ArrowRight") { e.preventDefault(); prHold(); prGo(prIdx + 1); } else if (e.key === "ArrowLeft") { e.preventDefault(); prHold(); prGo(prIdx - 1); } });
+  const calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!calm && !prHeld) prTimer = setInterval(() => {
+    const vis = t.offsetParent !== null && !document.hidden;
+    const r = t.getBoundingClientRect();
+    if (vis && r.bottom > 0 && r.top < innerHeight) prGo(prIdx + 1);
+  }, 6000);
 }
 $("promo").addEventListener("click", e => {
+  const n = e.target.closest("[data-prnav]"); if (n) { prHold(); prGo(prIdx + +n.dataset.prnav); return; }
+  const d = e.target.closest("[data-prdot]"); if (d) { prHold(); prGo(+d.dataset.prdot); return; }
   const b = e.target.closest("[data-prgo]"); if (!b) return;
   const g = b.dataset.prgo;
   if (g === "diag") { tabPicked = true; showTool("diag", false, true); }
