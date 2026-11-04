@@ -1451,51 +1451,9 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <div class="promo" id="promo"></div>
       <p id="orIntro" data-i18n="or_p"></p>
 
-      <div class="authcard" id="authCard">
-        <h3 data-i18n="auth_h"></h3>
-        <div class="tabs authtabs" role="tablist" id="authTabs">
-          <button class="tab" role="tab" id="authM-phone" type="button" aria-selected="false" data-i18n="ph_tab"></button>
-          <button class="tab" role="tab" id="authM-email" type="button" aria-selected="true" data-i18n="em_tab"></button>
-        </div>
-        <div id="authPhone" hidden>
-          <p id="phIntro"></p>
-          <div id="phStep1">
-            <form id="phForm" novalidate>
-              <div class="field"><label for="phNum" data-i18n="ph_num"></label><div class="phrow"><span class="phcc">+91</span><input id="phNum" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="98765 43210"></div></div>
-              <p class="autherr" id="phErr" role="alert"></p>
-              <div class="dels"><button class="btn-s add" type="submit" id="phSend"></button><button class="btn-s" type="button" id="phWa" hidden></button></div>
-            </form>
-          </div>
-          <div id="phStep2" hidden>
-            <p class="sentmsg" id="phSentMsg"></p>
-            <form id="phCodeForm" novalidate>
-              <div class="field"><label for="phCode" data-i18n="ph_code"></label><input id="phCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8"></div>
-              <p class="autherr" id="phCodeErr" role="alert"></p>
-              <div class="dels"><button class="btn-s add" type="submit" id="phVerify" data-i18n="ph_verify"></button><button class="btn-s" type="button" id="phResend"></button><button class="link" type="button" id="phOther" data-i18n="ph_other"></button></div>
-            </form>
-          </div>
-        </div>
-        <div id="authEmailBox">
-        <p data-i18n="auth_p"></p>
-        <div id="authStep1">
-          <form id="authForm" novalidate>
-            <div class="field"><label for="authEmail" data-i18n="auth_email"></label><input id="authEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
-            <div class="field"><label for="authPw" data-i18n="auth_pw"></label><input id="authPw" type="password" autocomplete="current-password"></div>
-            <p class="autherr" id="authErr" role="alert"></p>
-            <p class="sentmsg" id="authInfo" role="status"></p>
-            <div class="dels"><button class="btn-s add" type="submit" id="authSignIn" data-i18n="auth_signin"></button><button class="btn-s" type="button" id="authCreate" data-i18n="auth_create"></button></div>
-            <div class="dels"><button class="link" type="button" id="authForgot" data-i18n="auth_forgot"></button><button class="link" type="button" id="authSend" data-i18n="auth_send"></button></div>
-          </form>
-        </div>
-        <div id="authStep2" hidden>
-          <p class="sentmsg" id="authSentMsg"></p>
-          <form id="codeForm" novalidate>
-            <div class="field"><label for="authCode" data-i18n="auth_code"></label><input id="authCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></div>
-            <p class="autherr" id="authCodeErr" role="alert"></p>
-            <div class="dels"><button class="btn-s add" type="submit" data-i18n="auth_verify"></button><button class="btn-s" type="button" id="authOther" data-i18n="auth_other"></button></div>
-          </form>
-        </div>
-        </div>
+      <div class="dels" id="authCard">
+        <a class="btn-s add" href="/login.html" data-i18n="hdr_signin"></a>
+        <a class="btn-s" href="/login.html?mode=signup" data-i18n="pr_join"></a>
       </div>
 
       <div class="authcard" id="pwCard" hidden>
@@ -1645,7 +1603,7 @@ en: {
   y_chart:"Overall profit, year by year", y_boxes:"boxes sold",
   y_empty:"Add an orchard and a year first. Your totals will appear here.",
   y_note:"Each figure is the sale amount minus commission, per-box costs and yearly orchard costs.",
-  st_cloud:"Saved to your account. Sign in on any device to see it.",
+  st_cloud:"Saved to your account. Log in on any device to see it.",
   st_local:"Saved on this device only. Clearing the browser's data removes it.",
   st_saving:"Saving…", st_saved:"✓ Saved", st_err:"Could not save to your account. Your changes are still on this screen. Keep the page open and edit again to retry.",
   x_title:"Money in hand after all costs", x_mandi:"Mandi sale", x_lad:"Ladhani offer", x_per:"per box",
@@ -1705,7 +1663,7 @@ en: {
   tt_calc:"Profit calculator", tt_cal:"Season calendar", s_guide:"Guide live",
   pc_h:"Profit calculator", pc_p:"Add each grade or rate you sold. Gross is boxes × rate, and net income is gross minus expenses. Everything is worked out on your phone and nothing is sent anywhere.",
   pc_lines:"Your sale", pc_hint:"The starting numbers are examples. Change them to yours.",
-  pc_rec:"To save every lot for each orchard and see your totals by year, sign in and use Season Profit. Your records stay private to your account.",
+  pc_rec:"To save every lot for each orchard and see your totals by year, log in and use Season Profit. Your records stay private to your account.",
 o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_season:"Season", o_photo_add:"Add photo", o_photo_chg:"Change photo", o_photo_rm:"Remove photo",
   o_photo_alt:"Photo of {o} orchard", o_photo_err:"That photo could not be read. Try a JPG or PNG.", o_spray_link:"Open the spray schedule",
   o_noprof:"Add the location, varieties and more so this page tells the whole story of the orchard.", o_nosales:"No sales recorded for {y} yet.",
@@ -1746,38 +1704,38 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   sp_yc:"Yearly expenses for {o}, {y}: {x}. They are taken off the net income above.", sp_yc_btn:"Add or change in Yearly expenses",
   dk_tools:"Tools and equipment", dk_repair:"Repairs (fencing, hail net)", dk_xother:"Other expense",
   pt_year:"Yearly net profit", pt_season:"Season Profit", pt_quick:"Quick calculator",
-  pg_h:"Sign in to see your own records", pg_p:"Season Profit and Yearly net profit use the lots you save in your private account. The quick calculator works without signing in.", pg_btn:"Sign in",
+  pg_h:"Log in to see your own records", pg_p:"Season Profit and Yearly net profit use the lots you save in your private account. The quick calculator works without logging in.", pg_btn:"Log in",
   d_orchards:"Orchards", d_trees:"Trees", d_net:"Net income, {y}", d_boxes:"Boxes sold, {y}", d_ppb:"Net per box, {y}", d_due:"Not yet received, {y}",
   d_up:"{x} more than {y}", d_down:"{x} less than {y}", d_treesn:"{n} trees", d_latest:"Latest season, {y}",
   d_seasons:"{n} seasons recorded", d_season1:"1 season recorded", d_best:"Best year {y}: {x}", d_nosales:"No sales recorded yet.",
   d_open:"Open Season Profit", d_addsale:"Add sale", d_edit:"Edit details", d_save:"Save", d_cancel:"Cancel",
   d_del:"Delete orchard", d_delsure:"Tap again to delete it and all its records", d_add:"＋ Add orchard", d_first:"Add your first orchard to start keeping records.", d_addp:"Add another orchard.",
   tt_admin:"Admin", ad_h:"Admin", ad_pill:"Only you can see this",
-  ad_p:"Everyone who has made an account, when they last signed in, and whether they are keeping records. Sale figures stay private to each grower.",
+  ad_p:"Everyone who has made an account, when they last logged in, and whether they are keeping records. Sale figures stay private to each grower.",
   ad_refresh:"Refresh", ad_at:"Updated {t}", ad_loading:"Loading…", ad_find:"Find by email",
-  ad_total:"Accounts", ad_a7:"Signed in, last 7 days", ad_a30:"Signed in, last 30 days", ad_new7:"New this week", ad_rec:"Keeping records", ad_unconf:"Email not confirmed",
-  ad_email:"Email", ad_joined:"Joined", ad_last:"Last sign-in", ad_orch:"Orchards", ad_years:"Years", ad_lots:"Lots", ad_saved:"Last saved", ad_status:"Status",
+  ad_total:"Accounts", ad_a7:"Logged in, last 7 days", ad_a30:"Logged in, last 30 days", ad_new7:"New this week", ad_rec:"Keeping records", ad_unconf:"Email not confirmed",
+  ad_email:"Email", ad_joined:"Joined", ad_last:"Last login", ad_orch:"Orchards", ad_years:"Years", ad_lots:"Lots", ad_saved:"Last saved", ad_status:"Status",
   ad_ok:"Confirmed", ad_no:"Not confirmed", ad_me:"You", ad_never:"Never", ad_today:"Today, {t}", ad_yday:"Yesterday, {t}", ad_none:"No accounts match.",
-  ad_note:"Last sign-in is the most recent time each person signed in. Orchards, years and lots leave out the example records.",
+  ad_note:"Last login is the most recent time each person logged in. Orchards, years and lots leave out the example records.",
   ad_err_setup:"The admin view is not set up yet. Run the admin SQL once in Supabase > SQL Editor (it is in the project notes), then tap Refresh.",
   ad_err_deny:"This account is not an admin.", ad_err:"Could not load the admin view: {m}",
-  tt_orch:"Dashboard", hdr_signin:"Sign in", hdr_mine:"Dashboard", s_signin:"Sign in needed", s_signedin:"Signed in",
-  or_p:"Create your own private account to keep your orchards, sale lots and yearly totals. Only you can see them, and they are there on any phone you sign in on.",
-  auth_h:"Sign in or create your account", auth_p:"Sign in with your email and password. New here? Choose a password and tap Create account. You can also ask for a sign-in link by email instead of using a password.",
-  auth_email:"Email address", auth_send:"Email me a sign-in link instead",
-  auth_pw:"Password", auth_signin:"Sign in", auth_create:"Create account", auth_forgot:"Forgot password?",
+  tt_orch:"Dashboard", hdr_signin:"Log in", hdr_mine:"Dashboard", s_signin:"Log in needed", s_signedin:"Logged in",
+  or_p:"Create your own private account to keep your orchards, sale lots and yearly totals. Only you can see them, and they are there on any phone you log in on.",
+  auth_h:"Log in or create your account", auth_p:"Log in with your email and password. New here? Choose a password and tap Create account. You can also ask for a login link by email instead of using a password.",
+  auth_email:"Email address", auth_send:"Email me a login link instead",
+  auth_pw:"Password", auth_signin:"Log in", auth_create:"Create account", auth_forgot:"Forgot password?",
   auth_err_pw:"Enter a password of at least 8 characters.", auth_err_cred:"Wrong email or password.",
-  auth_confirm:"If {e} is new, we sent a confirmation email: open it, tap the link, then sign in. If you already have an account with this email, tap Sign in, or tap Forgot password? to set a password.",
+  auth_confirm:"If {e} is new, we sent a confirmation email: open it, tap the link, then log in. If you already have an account with this email, tap Log in, or tap Forgot password? to set a password.",
   auth_reset_sent:"If {e} has an account, we sent a link to reset the password.",
   pw_h:"Set a password", pw_p:"Choose a password for next time. Use at least 8 characters.", pw_new:"New password", pw_save:"Save password", pw_cancel:"Cancel",
-  pw_ok:"Password saved. You can now sign in with your email and this password.", acct_setpw:"Set / change password",
+  pw_ok:"Password saved. You can now log in with your email and this password.", acct_setpw:"Set / change password",
   auth_sent:"We sent an email to {e}. Open it on this phone and tap the link. If it shows a 6-digit code instead, type the code below.",
-  auth_code:"6-digit code (if your email has one)", auth_verify:"Sign in with code", auth_other:"Use a different email",
-  auth_err_email:"Enter a valid email address.", auth_err_lib:"Sign-in could not load. Check your internet connection and refresh the page.",
+  auth_code:"6-digit code (if your email has one)", auth_verify:"Log in with code", auth_other:"Use a different email",
+  auth_err_email:"Enter a valid email address.", auth_err_lib:"Login could not load. Check your internet connection and refresh the page.",
   auth_err_send:"We could not send the email: {m}",
-  auth_err_net:"Could not reach the sign-in service. Check your internet. Sign-in works only on the live website, not in a preview inside Claude.",
+  auth_err_net:"Could not reach the login service. Check your internet. Login works only on the live website, not in a preview inside Claude.",
   auth_err_code:"That code did not work. Check it and try again, or ask for a new email.",
-  auth_as:"{e}", auth_out:"Sign out",
+  auth_as:"{e}", auth_out:"Log out",
   st_loading:"Loading your records…", load_h:"Could not load your records", load_retry:"Try again",
   bk_h:"Backup and import", bk_p:"Download a copy of your records, or import orchards and years from a backup file. Anything with the same id is replaced, and example orchards are removed.",
   bk_down:"Download backup", bk_import:"Import from file", bk_ok:"Imported.", bk_bad:"That file is not a valid backup.",
@@ -1867,7 +1825,7 @@ hi: {
   y_chart:"सभी बाग़ों का साल-दर-साल मुनाफ़ा", y_boxes:"पेटियाँ बिकीं",
   y_empty:"पहले एक बाग़ और साल जोड़ें। आपके कुल आँकड़े यहाँ दिखेंगे।",
   y_note:"हर आँकड़ा बिक्री की रक़म में से कमीशन, प्रति पेटी ख़र्च और साल भर के बाग़ ख़र्च घटाकर निकाला गया है।",
-  st_cloud:"आपके खाते में सहेजा गया। किसी भी डिवाइस पर साइन इन करके देखें।",
+  st_cloud:"आपके खाते में सहेजा गया। किसी भी डिवाइस पर लॉग इन करके देखें।",
   st_local:"सिर्फ़ इस डिवाइस पर सहेजा गया। ब्राउज़र का डेटा मिटाने पर यह भी मिट जाएगा।",
   st_saving:"सहेज रहे हैं…", st_saved:"✓ सहेजा गया", st_err:"आपके खाते में सहेज नहीं सका। बदलाव इसी स्क्रीन पर हैं। पेज खुला रखें और दोबारा बदलाव करके कोशिश करें।",
   x_title:"सारे ख़र्च के बाद हाथ में आई रक़म", x_mandi:"मंडी में बिक्री", x_lad:"लदानी का प्रस्ताव", x_per:"प्रति पेटी",
@@ -1927,7 +1885,7 @@ hi: {
   tt_calc:"मुनाफ़ा कैलकुलेटर", tt_cal:"सीज़न कैलेंडर", s_guide:"गाइड चालू",
   pc_h:"मुनाफ़ा कैलकुलेटर", pc_p:"जो ग्रेड या भाव बेचा, हर एक की पंक्ति जोड़ें। कुल बिक्री यानी पेटियाँ × भाव, और शुद्ध आय यानी कुल बिक्री में से ख़र्च घटाकर। सारा हिसाब आपके फ़ोन पर ही होता है, कुछ भी कहीं भेजा नहीं जाता।",
   pc_lines:"आपकी बिक्री", pc_hint:"शुरुआती संख्याएँ उदाहरण हैं। इन्हें अपनी संख्याओं से बदलें।",
-  pc_rec:"हर बाग़ का हर लॉट सहेजने और साल भर के कुल देखने के लिए साइन इन करें और सीज़न का मुनाफ़ा इस्तेमाल करें। आपका रिकॉर्ड सिर्फ़ आपके खाते में रहता है।",
+  pc_rec:"हर बाग़ का हर लॉट सहेजने और साल भर के कुल देखने के लिए लॉग इन करें और सीज़न का मुनाफ़ा इस्तेमाल करें। आपका रिकॉर्ड सिर्फ़ आपके खाते में रहता है।",
 o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_editp:"जानकारी बदलें", o_season:"सीज़न", o_photo_add:"फ़ोटो जोड़ें", o_photo_chg:"फ़ोटो बदलें", o_photo_rm:"फ़ोटो हटाएँ",
   o_photo_alt:"{o} बाग़ की फ़ोटो", o_photo_err:"यह फ़ोटो पढ़ी नहीं जा सकी। JPG या PNG फ़ोटो आज़माएँ।", o_spray_link:"स्प्रे सूची खोलें",
   o_noprof:"जगह, किस्में और बाक़ी जानकारी जोड़ें, ताकि इस पन्ने पर बाग़ की पूरी तस्वीर दिखे।", o_nosales:"{y} की कोई बिक्री अभी दर्ज नहीं है।",
@@ -1968,38 +1926,38 @@ o_view:"बाग़ देखें", o_back:"← सभी बाग़", o_ed
   sp_yc:"{o}, {y} के साल भर के ख़र्च: {x}। ये ऊपर की शुद्ध आय में से घटाए गए हैं।", sp_yc_btn:"साल भर के ख़र्च में जोड़ें या बदलें",
   dk_tools:"औज़ार और मशीनें", dk_repair:"मरम्मत (बाड़, ओला जाली)", dk_xother:"अन्य ख़र्च",
   pt_year:"सालाना शुद्ध मुनाफ़ा", pt_season:"सीज़न का मुनाफ़ा", pt_quick:"झटपट हिसाब",
-  pg_h:"अपना रिकॉर्ड देखने के लिए साइन इन करें", pg_p:"सीज़न का मुनाफ़ा और सालाना शुद्ध मुनाफ़ा आपके निजी खाते में सहेजे गए लॉट से बनते हैं। झटपट हिसाब बिना साइन इन के चलता है।", pg_btn:"साइन इन",
+  pg_h:"अपना रिकॉर्ड देखने के लिए लॉग इन करें", pg_p:"सीज़न का मुनाफ़ा और सालाना शुद्ध मुनाफ़ा आपके निजी खाते में सहेजे गए लॉट से बनते हैं। झटपट हिसाब बिना लॉग इन के चलता है।", pg_btn:"लॉग इन",
   d_orchards:"बाग़", d_trees:"पेड़", d_net:"शुद्ध आय, {y}", d_boxes:"बिकी पेटियाँ, {y}", d_ppb:"प्रति पेटी शुद्ध आय, {y}", d_due:"अभी नहीं मिला, {y}",
   d_up:"{y} से {x} ज़्यादा", d_down:"{y} से {x} कम", d_treesn:"{n} पेड़", d_latest:"ताज़ा सीज़न, {y}",
   d_seasons:"{n} सीज़न दर्ज", d_season1:"1 सीज़न दर्ज", d_best:"सबसे अच्छा साल {y}: {x}", d_nosales:"अभी कोई बिक्री दर्ज नहीं है।",
   d_open:"सीज़न का मुनाफ़ा खोलें", d_addsale:"बिक्री जोड़ें", d_edit:"जानकारी बदलें", d_save:"सहेजें", d_cancel:"रद्द करें",
   d_del:"बाग़ हटाएँ", d_delsure:"इसे और इसका सारा रिकॉर्ड हटाने के लिए दोबारा दबाएँ", d_add:"＋ बाग़ जोड़ें", d_first:"रिकॉर्ड रखना शुरू करने के लिए अपना पहला बाग़ जोड़ें।", d_addp:"एक और बाग़ जोड़ें।",
   tt_admin:"एडमिन", ad_h:"एडमिन", ad_pill:"सिर्फ़ आप देख सकते हैं",
-  ad_p:"जिन्होंने भी खाता बनाया है, उन्होंने आख़िरी बार कब साइन इन किया, और क्या वे रिकॉर्ड रख रहे हैं। बिक्री के आँकड़े हर बागवान के अपने रहते हैं।",
+  ad_p:"जिन्होंने भी खाता बनाया है, उन्होंने आख़िरी बार कब लॉग इन किया, और क्या वे रिकॉर्ड रख रहे हैं। बिक्री के आँकड़े हर बागवान के अपने रहते हैं।",
   ad_refresh:"ताज़ा करें", ad_at:"{t} पर ताज़ा किया", ad_loading:"लोड हो रहा है…", ad_find:"ईमेल से ढूँढें",
-  ad_total:"खाते", ad_a7:"पिछले 7 दिन में साइन इन", ad_a30:"पिछले 30 दिन में साइन इन", ad_new7:"इस हफ़्ते नए", ad_rec:"रिकॉर्ड रख रहे हैं", ad_unconf:"ईमेल की पुष्टि नहीं हुई",
-  ad_email:"ईमेल", ad_joined:"जुड़े", ad_last:"आख़िरी साइन इन", ad_orch:"बाग़", ad_years:"साल", ad_lots:"लॉट", ad_saved:"आख़िरी बार सहेजा", ad_status:"स्थिति",
+  ad_total:"खाते", ad_a7:"पिछले 7 दिन में लॉग इन", ad_a30:"पिछले 30 दिन में लॉग इन", ad_new7:"इस हफ़्ते नए", ad_rec:"रिकॉर्ड रख रहे हैं", ad_unconf:"ईमेल की पुष्टि नहीं हुई",
+  ad_email:"ईमेल", ad_joined:"जुड़े", ad_last:"आख़िरी लॉग इन", ad_orch:"बाग़", ad_years:"साल", ad_lots:"लॉट", ad_saved:"आख़िरी बार सहेजा", ad_status:"स्थिति",
   ad_ok:"पुष्टि हुई", ad_no:"पुष्टि नहीं हुई", ad_me:"आप", ad_never:"कभी नहीं", ad_today:"आज, {t}", ad_yday:"कल, {t}", ad_none:"कोई खाता नहीं मिला।",
-  ad_note:"आख़िरी साइन इन यानी हर व्यक्ति ने सबसे हाल में कब साइन इन किया। बाग़, साल और लॉट में उदाहरण वाले रिकॉर्ड शामिल नहीं हैं।",
+  ad_note:"आख़िरी लॉग इन यानी हर व्यक्ति ने सबसे हाल में कब लॉग इन किया। बाग़, साल और लॉट में उदाहरण वाले रिकॉर्ड शामिल नहीं हैं।",
   ad_err_setup:"एडमिन व्यू अभी सेट नहीं हुआ है। Supabase > SQL Editor में एडमिन SQL एक बार चलाएँ (यह प्रोजेक्ट नोट्स में है), फिर ताज़ा करें दबाएँ।",
   ad_err_deny:"यह खाता एडमिन नहीं है।", ad_err:"एडमिन व्यू लोड नहीं हो सका: {m}",
-  tt_orch:"डैशबोर्ड", hdr_signin:"साइन इन", hdr_mine:"डैशबोर्ड", s_signin:"साइन इन ज़रूरी", s_signedin:"साइन इन है",
-  or_p:"अपने बाग़, बिक्री के लॉट और साल भर के कुल सहेजने के लिए अपना निजी खाता बनाएँ। इन्हें सिर्फ़ आप देख सकते हैं, और जिस भी फ़ोन पर साइन इन करें वहाँ मिलेंगे।",
-  auth_h:"साइन इन करें या अपना खाता बनाएँ", auth_p:"अपने ईमेल और पासवर्ड से साइन इन करें। नए हैं? पासवर्ड चुनें और खाता बनाएँ दबाएँ। चाहें तो पासवर्ड की जगह ईमेल से साइन-इन लिंक भी मँगवा सकते हैं।",
-  auth_email:"ईमेल पता", auth_send:"इसकी जगह साइन-इन लिंक ईमेल करें",
-  auth_pw:"पासवर्ड", auth_signin:"साइन इन", auth_create:"खाता बनाएँ", auth_forgot:"पासवर्ड भूल गए?",
+  tt_orch:"डैशबोर्ड", hdr_signin:"लॉग इन", hdr_mine:"डैशबोर्ड", s_signin:"लॉग इन ज़रूरी", s_signedin:"लॉग इन है",
+  or_p:"अपने बाग़, बिक्री के लॉट और साल भर के कुल सहेजने के लिए अपना निजी खाता बनाएँ। इन्हें सिर्फ़ आप देख सकते हैं, और जिस भी फ़ोन पर लॉग इन करें वहाँ मिलेंगे।",
+  auth_h:"लॉग इन करें या अपना खाता बनाएँ", auth_p:"अपने ईमेल और पासवर्ड से लॉग इन करें। नए हैं? पासवर्ड चुनें और खाता बनाएँ दबाएँ। चाहें तो पासवर्ड की जगह ईमेल से लॉग इन लिंक भी मँगवा सकते हैं।",
+  auth_email:"ईमेल पता", auth_send:"इसकी जगह लॉग इन लिंक ईमेल करें",
+  auth_pw:"पासवर्ड", auth_signin:"लॉग इन", auth_create:"खाता बनाएँ", auth_forgot:"पासवर्ड भूल गए?",
   auth_err_pw:"कम से कम 8 अक्षरों का पासवर्ड डालें।", auth_err_cred:"ईमेल या पासवर्ड ग़लत है।",
-  auth_confirm:"अगर {e} नया है, तो हमने पुष्टि वाला ईमेल भेजा है: उसे खोलें, लिंक दबाएँ, फिर साइन इन करें। अगर इस ईमेल का खाता पहले से है, तो साइन इन दबाएँ, या पासवर्ड बनाने के लिए पासवर्ड भूल गए? दबाएँ।",
+  auth_confirm:"अगर {e} नया है, तो हमने पुष्टि वाला ईमेल भेजा है: उसे खोलें, लिंक दबाएँ, फिर लॉग इन करें। अगर इस ईमेल का खाता पहले से है, तो लॉग इन दबाएँ, या पासवर्ड बनाने के लिए पासवर्ड भूल गए? दबाएँ।",
   auth_reset_sent:"अगर {e} का खाता है, तो हमने पासवर्ड बदलने का लिंक भेजा है।",
   pw_h:"पासवर्ड बनाएँ", pw_p:"अगली बार के लिए पासवर्ड चुनें। कम से कम 8 अक्षर रखें।", pw_new:"नया पासवर्ड", pw_save:"पासवर्ड सहेजें", pw_cancel:"रद्द करें",
-  pw_ok:"पासवर्ड सहेज लिया गया। अब आप अपने ईमेल और इस पासवर्ड से साइन इन कर सकते हैं।", acct_setpw:"पासवर्ड बदलें",
+  pw_ok:"पासवर्ड सहेज लिया गया। अब आप अपने ईमेल और इस पासवर्ड से लॉग इन कर सकते हैं।", acct_setpw:"पासवर्ड बदलें",
   auth_sent:"हमने {e} पर ईमेल भेजा है। इसे इसी फ़ोन पर खोलें और लिंक दबाएँ। अगर उसमें 6 अंकों का कोड दिखे, तो नीचे वही कोड डालें।",
-  auth_code:"6 अंकों का कोड (अगर ईमेल में हो)", auth_verify:"कोड से साइन इन करें", auth_other:"दूसरा ईमेल इस्तेमाल करें",
-  auth_err_email:"सही ईमेल पता डालें।", auth_err_lib:"साइन-इन लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।",
+  auth_code:"6 अंकों का कोड (अगर ईमेल में हो)", auth_verify:"कोड से लॉग इन करें", auth_other:"दूसरा ईमेल इस्तेमाल करें",
+  auth_err_email:"सही ईमेल पता डालें।", auth_err_lib:"लॉग इन लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।",
   auth_err_send:"ईमेल नहीं भेजा जा सका: {m}",
-  auth_err_net:"साइन-इन सेवा से जुड़ नहीं सका। इंटरनेट जाँचें। साइन-इन सिर्फ़ चालू वेबसाइट पर काम करता है, Claude के अंदर के प्रीव्यू में नहीं।",
+  auth_err_net:"लॉग इन सेवा से जुड़ नहीं सका। इंटरनेट जाँचें। लॉग इन सिर्फ़ चालू वेबसाइट पर काम करता है, Claude के अंदर के प्रीव्यू में नहीं।",
   auth_err_code:"यह कोड काम नहीं किया। जाँचकर दोबारा डालें, या नया ईमेल मँगवाएँ।",
-  auth_as:"{e}", auth_out:"साइन आउट",
+  auth_as:"{e}", auth_out:"लॉग आउट",
   st_loading:"आपका रिकॉर्ड लोड हो रहा है…", load_h:"आपका रिकॉर्ड लोड नहीं हो सका", load_retry:"दोबारा कोशिश करें",
   bk_h:"बैकअप और आयात", bk_p:"अपने रिकॉर्ड की कॉपी डाउनलोड करें, या बैकअप फ़ाइल से बाग़ और साल आयात करें। एक जैसी पहचान वाली चीज़ें बदल दी जाती हैं और उदाहरण वाले बाग़ हट जाते हैं।",
   bk_down:"बैकअप डाउनलोड करें", bk_import:"फ़ाइल से आयात करें", bk_ok:"आयात हो गया।", bk_bad:"यह फ़ाइल सही बैकअप नहीं है।",
@@ -2072,7 +2030,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderAuthMethod(); renderInstall(); renderPromo(); if (AD) renderAdmin();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -2284,8 +2242,9 @@ const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
 let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
 let tabPicked = false;
-let user = null, loaded = false, loadFailed = false, pendingEmail = "";
-let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink/.test(String(location.hash) + String(location.search));
+let user = null, loaded = false, loadFailed = false;
+let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink|^#dashboard$/.test(String(location.hash) + String(location.search));
+const goLogin = signup => { location.href = "/login.html" + (signup ? "?mode=signup" : ""); };
 let saving = false, again = false, saveTimer = null, rev = 0, savedRev = 0;
 const isDirty = () => rev > savedRev;
 function setStatus(k) {
@@ -2322,7 +2281,6 @@ function renderAcct() {
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || fmtPhone(user.phone)));
   $("setPw").hidden = !!(user && !user.email);
-  if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail));
 }
 let recovering = false, pwOpen = false;
 
@@ -2406,7 +2364,7 @@ async function loadMine() {
   S = parsed || makeSample();
   loaded = true; rev = 0; savedRev = 0; sel.o = null; sel.y = null; fixSel();
   setStatus("st_cloud"); entryOpen = false; showSub("year"); renderAll(); renderOrchGate();
-  if (justSignedIn) { justSignedIn = false; showTool("orch", false, true); }
+  if (justSignedIn) { justSignedIn = false; showTool("orch", false, true); if (location.hash === "#dashboard") try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
   else if (!tabPicked) showTool("orch");
 }
 async function applyUser(u) {
@@ -2414,8 +2372,7 @@ async function applyUser(u) {
   user = u;
   if (!u) {
     curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); spOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
-    S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; pendingEmail = ""; recovering = false; pwOpen = false; addingO = false;
-    $("authStep1").hidden = false; $("authStep2").hidden = true;
+    S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
   if (changed) await loadMine();
@@ -2429,60 +2386,6 @@ function netMsg(err) {
   const m = String((err && err.message) || err || "");
   return /fetch|network|failed|load/i.test(m) ? tr("auth_err_net") : tr("auth_err_send").replace("{m}", m);
 }
-function authEmailOk() {
-  const email = $("authEmail").value.trim();
-  if (!/^\S+@\S+\.\S+$/.test(email)) { set("authErr", tr("auth_err_email")); return ""; }
-  if (!sb) { set("authErr", tr("auth_err_lib")); return ""; }
-  return email;
-}
-function authBusy(on) { ["authSignIn", "authCreate", "authForgot", "authSend"].forEach(id => { $(id).disabled = on; }); }
-function authClear() { set("authErr", ""); set("authInfo", ""); }
-$("authForm").addEventListener("submit", async e => {
-  e.preventDefault(); authClear();
-  const email = authEmailOk(); if (!email) return;
-  const pw = $("authPw").value;
-  if (!pw) { set("authErr", tr("auth_err_pw")); return; }
-  authBusy(true); justSignedIn = true;
-  let err = null;
-  try { const res = await sb.auth.signInWithPassword({email: email, password: pw}); err = res.error; } catch (x) { err = x; }
-  authBusy(false);
-  if (err) { justSignedIn = false; set("authErr", /invalid login/i.test(String(err.message || "")) ? tr("auth_err_cred") : netMsg(err)); }
-});
-$("authCreate").addEventListener("click", async () => {
-  authClear();
-  const email = authEmailOk(); if (!email) return;
-  const pw = $("authPw").value;
-  if (pw.length < 8) { set("authErr", tr("auth_err_pw")); return; }
-  authBusy(true); justSignedIn = true;
-  let err = null, res = null;
-  try { res = await sb.auth.signUp({email: email, password: pw, options: {emailRedirectTo: location.origin + location.pathname}}); err = res.error; } catch (x) { err = x; }
-  authBusy(false);
-  if (err) { justSignedIn = false; set("authErr", netMsg(err)); return; }
-  if (!(res.data && res.data.session)) { justSignedIn = false; set("authInfo", tr("auth_confirm").replace("{e}", email)); }
-});
-$("authForgot").addEventListener("click", async () => {
-  authClear();
-  const email = authEmailOk(); if (!email) return;
-  authBusy(true);
-  let err = null;
-  try { const res = await sb.auth.resetPasswordForEmail(email, {redirectTo: location.origin + location.pathname}); err = res.error; } catch (x) { err = x; }
-  authBusy(false);
-  if (err) { set("authErr", netMsg(err)); return; }
-  set("authInfo", tr("auth_reset_sent").replace("{e}", email));
-});
-$("authSend").addEventListener("click", async () => {
-  authClear();
-  const email = authEmailOk(); if (!email) return;
-  authBusy(true);
-  let err = null;
-  try {
-    const res = await sb.auth.signInWithOtp({email: email, options: {shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname}});
-    err = res.error;
-  } catch (x) { err = x; }
-  authBusy(false);
-  if (err) { set("authErr", netMsg(err)); return; }
-  pendingEmail = email; $("authStep1").hidden = true; $("authStep2").hidden = false; renderAcct();
-});
 $("setPw").addEventListener("click", () => { showTool("orch", false, true); pwOpen = true; set("pwErr", ""); set("pwOk", ""); $("pwNew").value = ""; renderOrchGate(); $("pwCard").scrollIntoView({block: "center"}); });
 $("pwCancel").addEventListener("click", () => { pwOpen = false; recovering = false; renderOrchGate(); if (user && !loaded && !loadFailed) loadMine(); });
 $("pwForm").addEventListener("submit", async e => {
@@ -2496,48 +2399,6 @@ $("pwForm").addEventListener("submit", async e => {
   $("pwNew").value = ""; set("pwOk", tr("pw_ok")); recovering = false; renderOrchGate();
   setTimeout(() => { pwOpen = false; renderOrchGate(); }, 2500);
 });
-$("codeForm").addEventListener("submit", async e => {
-  e.preventDefault(); set("authCodeErr", "");
-  const token = $("authCode").value.replace(/\s/g, "");
-  if (!token || !sb) return;
-  justSignedIn = true;
-  let err = null;
-  try { const res = await sb.auth.verifyOtp({email: pendingEmail, token: token, type: "email"}); err = res.error; } catch (x) { err = x; }
-  if (err) { justSignedIn = false; set("authCodeErr", tr("auth_err_code")); }
-});
-$("authOther").addEventListener("click", () => { pendingEmail = ""; $("authStep1").hidden = false; $("authStep2").hidden = true; authClear(); });
-
-/* ---- mobile number sign-in (Supabase phone OTP, sent by Twilio) ----
-   PHONE_READY: set to true once Twilio is connected in Supabase (Authentication → Providers → Phone).
-   Until then the Mobile tab is hidden; add ?phone=1 to the address to test it.
-   PHONE_CHANNELS: how the code is sent. The first one is the main button.
-     "whatsapp" needs a WhatsApp sender approved in Twilio; "sms" needs India DLT registration. */
-const PHONE_READY = false;
-const PHONE_CHANNELS = ["whatsapp"];
-Object.assign(T.en, {
-  ph_tab:"Mobile number", em_tab:"Email",
-  ph_p:"Sign in with your mobile number. We send you a 6-digit code on {c}. New here? The same steps create your account.", ph_c_whatsapp:"WhatsApp", ph_c_sms:"SMS",
-  ph_num:"Mobile number", ph_send:"Send code by SMS", ph_wa:"Send code on WhatsApp",
-  ph_sent:"We sent a 6-digit code to {p}. Type it below. It can take a minute to arrive.", ph_sent_wa:"We sent a 6-digit code on WhatsApp to {p}. Type it below.",
-  ph_code:"6-digit code", ph_verify:"Sign in", ph_resend:"Send again", ph_resend_in:"Send again in {n}s", ph_other:"Use a different number",
-  ph_e_num:"Enter a 10-digit mobile number, for example 98765 43210.", ph_e_code:"That code did not work. Check it and try again, or tap Send again.",
-  ph_e_wait:"Please wait a minute before asking for another code.", ph_e_off:"Sign-in by mobile is not switched on yet. Please use Email for now.",
-  ph_e_send:"We could not send the code: {m}"
-});
-Object.assign(T.hi, {
-  ph_tab:"मोबाइल नंबर", em_tab:"ईमेल",
-  ph_p:"अपने मोबाइल नंबर से साइन इन करें। हम {c} पर 6 अंकों का कोड भेजेंगे। नए हैं? इन्हीं क़दमों से आपका खाता बन जाएगा।", ph_c_whatsapp:"WhatsApp", ph_c_sms:"SMS",
-  ph_num:"मोबाइल नंबर", ph_send:"SMS से कोड भेजें", ph_wa:"WhatsApp पर कोड भेजें",
-  ph_sent:"हमने {p} पर 6 अंकों का कोड भेजा है। नीचे डालें। आने में एक मिनट लग सकता है।", ph_sent_wa:"हमने {p} पर WhatsApp से 6 अंकों का कोड भेजा है। नीचे डालें।",
-  ph_code:"6 अंकों का कोड", ph_verify:"साइन इन", ph_resend:"फिर से भेजें", ph_resend_in:"{n} सेकंड बाद फिर से भेजें", ph_other:"दूसरा नंबर इस्तेमाल करें",
-  ph_e_num:"10 अंकों का मोबाइल नंबर डालें, जैसे 98765 43210।", ph_e_code:"यह कोड काम नहीं किया। जाँचकर दोबारा डालें, या फिर से भेजें दबाएँ।",
-  ph_e_wait:"दूसरा कोड मँगवाने से पहले एक मिनट रुकें।", ph_e_off:"मोबाइल से साइन-इन अभी चालू नहीं है। अभी के लिए ईमेल इस्तेमाल करें।",
-  ph_e_send:"कोड नहीं भेजा जा सका: {m}"
-});
-const phoneOn = PHONE_READY || /[?&]phone=1/.test(location.search);
-let authMethod = "email";
-try { const m = localStorage.getItem("ad-auth"); authMethod = phoneOn ? (m === "email" ? "email" : "phone") : "email"; } catch (e) { authMethod = phoneOn ? "phone" : "email"; }
-let phPending = "", phChannel = "sms", phTimer = null, phLeft = 0;
 
 /* "+91 98765 43210" from what Supabase stores ("919876543210") or from E.164 */
 function fmtPhone(p) {
@@ -2546,90 +2407,9 @@ function fmtPhone(p) {
   if (d.length === 12 && d.startsWith("91")) return "+91 " + d.slice(2, 7) + " " + d.slice(7);
   return "+" + d;
 }
-/* returns E.164 (+91XXXXXXXXXX) or "" */
-function normPhone(v) {
-  let s = String(v || "").replace(/[\s\-().]/g, "");
-  if (s.startsWith("+")) return /^\+\d{8,15}$/.test(s) ? s : "";
-  if (/^0\d{10}$/.test(s)) s = s.slice(1);
-  if (/^91[6-9]\d{9}$/.test(s)) s = s.slice(2);
-  return /^[6-9]\d{9}$/.test(s) ? "+91" + s : "";
-}
-function renderAuthMethod() {
-  $("authTabs").hidden = !phoneOn;
-  ["phone", "email"].forEach(m => {
-    const b = $("authM-" + m);
-    b.setAttribute("aria-selected", authMethod === m ? "true" : "false");
-    b.tabIndex = authMethod === m ? 0 : -1;
-  });
-  $("authPhone").hidden = authMethod !== "phone";
-  $("authEmailBox").hidden = authMethod !== "email";
-  const main = PHONE_CHANNELS[0] || "sms", alt = PHONE_CHANNELS[1];
-  set("phSend", tr(main === "whatsapp" ? "ph_wa" : "ph_send"));
-  $("phWa").hidden = !alt;
-  if (alt) set("phWa", tr(alt === "whatsapp" ? "ph_wa" : "ph_send"));
-  set("phIntro", tr("ph_p").replace("{c}", PHONE_CHANNELS.map(c => tr("ph_c_" + c)).join(" / ")));
-  renderPhResend();
-  if (phPending) set("phSentMsg", tr(phChannel === "whatsapp" ? "ph_sent_wa" : "ph_sent").replace("{p}", fmtPhone(phPending)));
-}
-["phone", "email"].forEach(m => $("authM-" + m).addEventListener("click", () => {
-  authMethod = m; try { localStorage.setItem("ad-auth", m); } catch (e) {}
-  renderAuthMethod();
-}));
-function renderPhResend() {
-  const b = $("phResend");
-  b.disabled = phLeft > 0;
-  b.textContent = phLeft > 0 ? tr("ph_resend_in").replace("{n}", phLeft) : tr("ph_resend");
-}
-function phCountdown() {
-  clearInterval(phTimer); phLeft = 60; renderPhResend();
-  phTimer = setInterval(() => { phLeft--; renderPhResend(); if (phLeft <= 0) clearInterval(phTimer); }, 1000);
-}
-function phErrMsg(err) {
-  const m = String((err && err.message) || err || "");
-  if (/after \d+ seconds|rate limit|too many/i.test(m) || (err && err.status === 429)) return tr("ph_e_wait");
-  if (/provider|sign ?ups? (are )?disabled|unsupported phone/i.test(m)) return tr("ph_e_off");
-  if (/fetch|network|failed|load/i.test(m)) return tr("auth_err_net");
-  return tr("ph_e_send").replace("{m}", m);
-}
-async function phSendCode(channel, errId) {
-  const phone = phPending || normPhone($("phNum").value);
-  if (!phone) { set(errId, tr("ph_e_num")); return; }
-  if (!sb) { set(errId, tr("auth_err_lib")); return; }
-  set(errId, "");
-  ["phSend", "phWa", "phResend"].forEach(id => { $(id).disabled = true; });
-  let err = null;
-  try { const res = await sb.auth.signInWithOtp({phone: phone, options: {channel: channel, shouldCreateUser: true}}); err = res.error; } catch (x) { err = x; }
-  ["phSend", "phWa"].forEach(id => { $(id).disabled = false; });
-  if (err) { renderPhResend(); set(errId, phErrMsg(err)); return; }
-  phPending = phone; phChannel = channel;
-  $("phStep1").hidden = true; $("phStep2").hidden = false; $("phCode").value = "";
-  phCountdown(); renderAuthMethod();
-  try { $("phCode").focus(); } catch (e) {}
-}
-$("phForm").addEventListener("submit", e => { e.preventDefault(); phSendCode(PHONE_CHANNELS[0] || "sms", "phErr"); });
-$("phWa").addEventListener("click", () => phSendCode(PHONE_CHANNELS[1] || "sms", "phErr"));
-$("phResend").addEventListener("click", () => phSendCode(phChannel, "phCodeErr"));
-$("phCodeForm").addEventListener("submit", async e => {
-  e.preventDefault(); set("phCodeErr", "");
-  const token = $("phCode").value.replace(/\D/g, "");
-  if (token.length < 6 || !sb) { set("phCodeErr", tr("ph_e_code")); return; }
-  $("phVerify").disabled = true; justSignedIn = true;
-  let err = null;
-  try { const res = await sb.auth.verifyOtp({phone: phPending, token: token, type: "sms"}); err = res.error; } catch (x) { err = x; }
-  $("phVerify").disabled = false;
-  if (err) { justSignedIn = false; set("phCodeErr", /fetch|network|failed to/i.test(String(err.message || "")) ? tr("auth_err_net") : tr("ph_e_code")); return; }
-  phPending = ""; clearInterval(phTimer); phLeft = 0;
-  $("phStep1").hidden = false; $("phStep2").hidden = true; $("phNum").value = "";
-});
-$("phOther").addEventListener("click", () => {
-  phPending = ""; clearInterval(phTimer); phLeft = 0;
-  $("phStep1").hidden = false; $("phStep2").hidden = true; set("phErr", ""); set("phCodeErr", "");
-  renderAuthMethod();
-});
-renderAuthMethod();
 $("signOut").addEventListener("click", async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} applyUser(null); });
 $("loadRetry").addEventListener("click", () => { if (user) loadMine(); });
-$("signBtn").addEventListener("click", () => showTool("orch", false, true));
+$("signBtn").addEventListener("click", () => { if (user) showTool("orch", false, true); else goLogin(false); });
 
 /* ---- backup and import ---- */
 function bkMsg(k) { set("bkMsg", tr(k)); }
@@ -2667,7 +2447,7 @@ function showSub(w) {
   $("status").hidden = curSub === "quick" || !ready;
 }
 $("rt-quick").addEventListener("click", () => showSub("quick"));
-$("pcSignIn").addEventListener("click", () => { tabPicked = true; showTool("orch", false, true); });
+$("pcSignIn").addEventListener("click", () => goLogin(false));
 $("rt-year").addEventListener("click", () => showSub("year"));
 $("rp-year").addEventListener("click", e => {
   const dl = e.target.closest && e.target.closest("[data-act=dlcsv],[data-act=dlpdf]");
@@ -4432,10 +4212,10 @@ Object.assign(T.en, {
   dx_best:"Best match", dx_also:"Also possible", dx_look:"What it looks like", dx_when:"When it shows up", dx_do:"What to do now",
   dx_spray:"For sprays, see the spray schedule", dx_urgent:"This can kill trees. Show it to a horticulture officer or your nearest KVK soon.",
   dx_ph_h:"2. Check by photo", dx_ph_pill:"AI · test", dx_ph_p:"Send 1 to 3 close, clear photos. The AI suggests the likely cause and says how sure it is.",
-  dx_gate:"Sign in to use the photo check. It is free, and your checks stay private to you.",
+  dx_gate:"Log in to use the photo check. It is free, and your checks stay private to you.",
   dx_part:"The photo shows", dx_file:"Photos (up to 3)", dx_note:"Anything else? (optional: variety, when it started, how many trees)",
   dx_go:"Check photo", dx_busy:"Checking… this can take up to 30 seconds", dx_pick:"Choose at least one photo.", dx_max:"Only the first 3 photos will be used.",
-  dx_e_signin:"Please sign in again and retry.", dx_e_limit:"You have used today's {n} photo checks. Try again tomorrow, or use the check by symptoms above.",
+  dx_e_signin:"Please log in again and retry.", dx_e_limit:"You have used today's {n} photo checks. Try again tomorrow, or use the check by symptoms above.",
   dx_e_setup:"Photo check is not switched on yet. Please use the check by symptoms for now.", dx_e_photos:"Those photos could not be read. Try a JPG or PNG photo.",
   dx_e_net:"Could not reach the photo check. Check your internet and try again.",
   dx_ai_h:"Photo result", dx_photo_bad:"Photo not clear enough", dx_steps:"Next steps", dx_expert:"Please also show this to a horticulture officer or KVK.",
@@ -4452,10 +4232,10 @@ Object.assign(T.hi, {
   dx_best:"सबसे ज़्यादा मेल", dx_also:"यह भी हो सकता है", dx_look:"कैसा दिखता है", dx_when:"कब दिखता है", dx_do:"अभी क्या करें",
   dx_spray:"स्प्रे के लिए स्प्रे शेड्यूल देखें", dx_urgent:"इससे पेड़ मर सकते हैं। जल्दी बागवानी अधिकारी या नज़दीकी KVK को दिखाएँ।",
   dx_ph_h:"2. फ़ोटो से जाँचें", dx_ph_pill:"AI · टेस्ट", dx_ph_p:"1 से 3 पास से ली हुई साफ़ फ़ोटो भेजें। AI संभावित कारण बताएगा और यह भी कि उसे कितना भरोसा है।",
-  dx_gate:"फ़ोटो जाँच के लिए साइन इन करें। यह मुफ़्त है, और आपकी जाँच सिर्फ़ आपको दिखती है।",
+  dx_gate:"फ़ोटो जाँच के लिए लॉग इन करें। यह मुफ़्त है, और आपकी जाँच सिर्फ़ आपको दिखती है।",
   dx_part:"फ़ोटो में क्या है", dx_file:"फ़ोटो (ज़्यादा से ज़्यादा 3)", dx_note:"कुछ और? (वैकल्पिक: किस्म, कब शुरू हुआ, कितने पेड़ों में)",
   dx_go:"फ़ोटो जाँचें", dx_busy:"जाँच हो रही है… 30 सेकंड तक लग सकते हैं", dx_pick:"कम से कम एक फ़ोटो चुनें।", dx_max:"सिर्फ़ पहली 3 फ़ोटो ली जाएँगी।",
-  dx_e_signin:"कृपया दोबारा साइन इन करके फिर कोशिश करें।", dx_e_limit:"आज की {n} फ़ोटो जाँच पूरी हो गईं। कल फिर कोशिश करें, या ऊपर लक्षणों से जाँचें।",
+  dx_e_signin:"कृपया दोबारा लॉग इन करके फिर कोशिश करें।", dx_e_limit:"आज की {n} फ़ोटो जाँच पूरी हो गईं। कल फिर कोशिश करें, या ऊपर लक्षणों से जाँचें।",
   dx_e_setup:"फ़ोटो जाँच अभी चालू नहीं है। अभी के लिए लक्षणों से जाँचें।", dx_e_photos:"ये फ़ोटो पढ़ी नहीं जा सकीं। JPG या PNG फ़ोटो भेजें।",
   dx_e_net:"फ़ोटो जाँच तक नहीं पहुँच पाए। इंटरनेट देखें और फिर कोशिश करें।",
   dx_ai_h:"फ़ोटो का नतीजा", dx_photo_bad:"फ़ोटो साफ़ नहीं है", dx_steps:"अगले क़दम", dx_expert:"इसे बागवानी अधिकारी या KVK को भी ज़रूर दिखाएँ।",
@@ -4629,7 +4409,7 @@ function renderDiagAuth() {
   $("dxGate").hidden = !!user;
   $("dxForm").hidden = !user;
 }
-$("dxSign").addEventListener("click", () => showTool("orch", false, true));
+$("dxSign").addEventListener("click", () => goLogin(false));
 
 function dxShrink(file) {
   return new Promise((ok, bad) => {
@@ -4795,7 +4575,7 @@ $("dash").addEventListener("click", e => {
 /* ---- Dashboard showcase for visitors who are not signed in ---- */
 Object.assign(T.en, {
   pr_h:"Your orchard's money and health, in one place",
-  pr_p:"Free for apple growers. Your records stay private to you, on any phone you sign in on. In Hindi and English.",
+  pr_p:"Free for apple growers. Your records stay private to you, on any phone you log in on. In Hindi and English.",
   pr_ex:"Example",
   pr_y_h:"Yearly net profit", pr_y_p:"All your orchards added up, year after year, so you can see if you are doing better.",
   pr_s_h:"Season net profit, orchard by orchard", pr_s_p:"Every sale lot by grade, minus that orchard's costs. See which orchard really earns.",
@@ -4809,7 +4589,7 @@ Object.assign(T.en, {
 });
 Object.assign(T.hi, {
   pr_h:"आपके बाग़ का हिसाब और सेहत, एक ही जगह",
-  pr_p:"सेब बाग़वानों के लिए मुफ़्त। आपके रिकॉर्ड सिर्फ़ आपको दिखते हैं, जिस भी फ़ोन पर साइन इन करें। हिंदी और अंग्रेज़ी में।",
+  pr_p:"सेब बाग़वानों के लिए मुफ़्त। आपके रिकॉर्ड सिर्फ़ आपको दिखते हैं, जिस भी फ़ोन पर लॉग इन करें। हिंदी और अंग्रेज़ी में।",
   pr_ex:"उदाहरण",
   pr_y_h:"साल भर का शुद्ध मुनाफ़ा", pr_y_p:"सभी बाग़ों का जोड़, साल दर साल, ताकि पता चले कि हालत सुधर रही है या नहीं।",
   pr_s_h:"सीज़न का शुद्ध मुनाफ़ा, हर बाग़ का अलग", pr_s_p:"ग्रेड के हिसाब से हर लॉट की बिक्री, उस बाग़ के ख़र्च घटाकर। पता चले कि असल कमाई किस बाग़ से है।",
@@ -4983,12 +4763,7 @@ $("dash").addEventListener("click", e => {
   if (g === "exp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); return; }
   if (g === "dx") goDiag("sym");
 });
-function prJoin() {
-  tabPicked = true; showTool("orch", false, false);
-  const c = $("authCard"); if (c && c.scrollIntoView) c.scrollIntoView({block: "start"});
-  const i = $("phNum") && !$("authPhone").hidden ? $("phNum") : $("authEmail");
-  setTimeout(() => { try { i.focus({preventScroll: true}); } catch (x) {} }, 300);
-}
+function prJoin() { if (user) { tabPicked = true; showTool("orch", false, true); } else goLogin(true); }
 $("heroJoin").addEventListener("click", prJoin);
 /* ---- install as an app (PWA) ---- */
 Object.assign(T.en, {

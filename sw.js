@@ -25,9 +25,9 @@ self.addEventListener("fetch", e => {
   if (req.mode === "navigate") {
     e.respondWith(
       fetch(req).then(res => {
-        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put("/", copy)); }
+        if (res.ok) { const copy = res.clone(); const key = url.pathname === "/" || url.pathname === "/index.html" ? "/" : url.pathname; caches.open(CACHE).then(c => c.put(key, copy)); }
         return res;
-      }).catch(() => caches.match("/").then(r => r || Response.error()))
+      }).catch(() => caches.match(url.pathname === "/index.html" ? "/" : url.pathname).then(r => r || caches.match("/")).then(r => r || Response.error()))
     );
     return;
   }
