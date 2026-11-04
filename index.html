@@ -155,7 +155,18 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .fbadm h4{font-family:var(--display);font-size:1.25rem;margin:0}
 .fbadm .admbar{margin-top:10px}
 .fbadm .tabs{margin-top:0}
-.fblist{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+#faList .tablewrap{margin-top:14px}
+#faList table.ledger{min-width:760px}
+#faList .ledger td,#faList .ledger th{vertical-align:top;text-align:left}
+#faList .ledger td{font:400 .95rem var(--body)}
+#faList .ledger td.n{font-family:var(--mono);text-align:right;color:var(--muted)}
+#faList td.fbmsgc{white-space:pre-wrap;overflow-wrap:anywhere;min-width:240px;max-width:420px}
+#faList td.fbwhen,#faList td.fbcont{white-space:normal;min-width:110px;max-width:200px;overflow-wrap:anywhere;color:var(--muted)}
+#faList tr.done td,#faList tr.done th{opacity:.6}
+#faList tr.done td.fbst{opacity:1}
+.fbst select{min-height:36px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:600 .9rem var(--body)}
+.fbst select.new{border-color:var(--apple);color:var(--apple)}
+.fbst select.done{border-color:var(--good);color:var(--good)}
 .fblist li{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);min-width:0}
 .fblist li.done{opacity:.6}
 .fbmeta{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;font-size:.85rem;color:var(--muted)}
@@ -1455,7 +1466,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
           <button class="btn-s" type="button" id="faRefresh" data-i18n="ad_refresh"></button>
         </div>
         <p class="autherr" id="faErr" role="alert"></p>
-        <ul class="fblist" id="faList"></ul>
+        <div id="faList"></div>
       </section>
     </div>
 
@@ -2358,14 +2369,14 @@ $("adFind").addEventListener("input", renderAdmin);
 Object.assign(T.en, {
   fa_h:"Feedback and suggestions", fa_p:"Messages sent with the Feedback button on any page. Only you can see them.",
   fa_new:"New ({n})", fa_all:"All ({n})", fa_none:"No messages here yet.", fa_done:"Mark done", fa_undo:"Mark as new",
-  fa_k_problem:"Problem", fa_k_idea:"Suggestion", fa_k_other:"Other", fa_anon:"Not logged in", fa_page:"Page: {p}",
+  fa_k_problem:"Problem", fa_k_idea:"Suggestion", fa_k_other:"Other", fa_c_n:"#", fa_c_when:"Date", fa_c_kind:"Type", fa_c_msg:"Message", fa_c_page:"Page", fa_c_from:"From", fa_c_status:"Status", fa_s_new:"New", fa_s_done:"Done", fa_anon:"Not logged in", fa_page:"Page: {p}",
   fa_err_setup:"The feedback table is not set up yet. Run supabase/feedback.sql once in the Supabase SQL Editor.",
   fa_err:"Could not load feedback: {m}"
 });
 Object.assign(T.hi, {
   fa_h:"सुझाव और शिकायतें", fa_p:"हर पेज के सुझाव बटन से भेजे गए संदेश। इन्हें सिर्फ़ आप देख सकते हैं।",
   fa_new:"नए ({n})", fa_all:"सभी ({n})", fa_none:"यहाँ अभी कोई संदेश नहीं है।", fa_done:"हो गया", fa_undo:"फिर से नया करें",
-  fa_k_problem:"दिक़्क़त", fa_k_idea:"सुझाव", fa_k_other:"अन्य", fa_anon:"लॉग इन नहीं", fa_page:"पेज: {p}",
+  fa_k_problem:"दिक़्क़त", fa_k_idea:"सुझाव", fa_k_other:"अन्य", fa_c_n:"#", fa_c_when:"तारीख़", fa_c_kind:"प्रकार", fa_c_msg:"संदेश", fa_c_page:"पेज", fa_c_from:"किससे", fa_c_status:"स्थिति", fa_s_new:"नया", fa_s_done:"हो गया", fa_anon:"लॉग इन नहीं", fa_page:"पेज: {p}",
   fa_err_setup:"सुझाव वाली टेबल अभी नहीं बनी है। Supabase SQL Editor में supabase/feedback.sql एक बार चलाएँ।",
   fa_err:"सुझाव लोड नहीं हो सके: {m}"
 });
@@ -2391,27 +2402,32 @@ function renderFeedback() {
   $("faAll").setAttribute("aria-selected", fbShow === "all" ? "true" : "false");
   if (!FB) { $("faList").innerHTML = ""; return; }
   const rows = fbShow === "new" ? fresh : all;
-  if (!rows.length) { $("faList").innerHTML = '<li class="fine">' + tr("fa_none") + "</li>"; return; }
-  $("faList").innerHTML = rows.map(x =>
-    '<li class="' + (x.status === "done" ? "done" : "") + '"><div class="fbmeta"><span class="fbkind ' + esc(x.kind) + '">' + tr("fa_k_" + (x.kind || "other")) + "</span>" +
-    "<span>" + adWhen(x.created_at) + "</span>" + (x.page ? "<span>" + esc(tr("fa_page").replace("{p}", x.page)) + "</span>" : "") +
-    (x.lang ? "<span>" + esc(x.lang.toUpperCase()) + "</span>" : "") + "</div>" +
-    '<p class="fbmsg">' + esc(x.message) + "</p>" +
-    '<div class="fbfoot"><span>' + esc(x.contact || (x.user_id ? "" : tr("fa_anon"))) + "</span>" +
-    '<button class="btn-s" type="button" data-fb="' + esc(x.id) + '">' + tr(x.status === "done" ? "fa_undo" : "fa_done") + "</button></div></li>").join("");
+  if (!rows.length) { $("faList").innerHTML = '<p class="empty">' + tr("fa_none") + "</p>"; return; }
+  const head = ["fa_c_n", "fa_c_status", "fa_c_when", "fa_c_kind", "fa_c_msg", "fa_c_page", "fa_c_from"];
+  $("faList").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map((x, i) => {
+      const st = x.status === "done" ? "done" : "new";
+      const stCell = '<td class="fbst"><select class="' + st + '" data-fb="' + esc(x.id) + '" aria-label="' + tr("fa_c_status") + '">' +
+        '<option value="new"' + (st === "new" ? " selected" : "") + ">" + tr("fa_s_new") + '</option><option value="done"' + (st === "done" ? " selected" : "") + ">" + tr("fa_s_done") + "</option></select></td>";
+      return '<tr class="' + st + '"><td class="n">' + (rows.length - i) + "</td>" + stCell + '<td class="fbwhen">' + adWhen(x.created_at) + "</td>" +
+        '<td><span class="fbkind ' + esc(x.kind) + '">' + tr("fa_k_" + (x.kind || "other")) + "</span></td>" +
+        '<td class="fbmsgc">' + esc(x.message) + "</td><td>" + esc(x.page || "–") + (x.lang ? '<br><span class="fine">' + esc(x.lang.toUpperCase()) + "</span>" : "") + "</td>" +
+        '<td class="fbcont">' + esc(x.contact || (x.user_id ? "–" : tr("fa_anon"))) + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
 }
 $("faNew").addEventListener("click", () => { fbShow = "new"; renderFeedback(); });
 $("faAll").addEventListener("click", () => { fbShow = "all"; renderFeedback(); });
 $("faRefresh").addEventListener("click", loadFeedback);
-$("faList").addEventListener("click", async e => {
-  const b = e.target.closest("[data-fb]"); if (!b || !FB) return;
-  const row = FB.find(x => x.id === b.dataset.fb); if (!row) return;
-  const next = row.status === "done" ? "new" : "done";
-  b.disabled = true; set("faErr", "");
+$("faList").addEventListener("change", async e => {
+  const sel = e.target.closest("select[data-fb]"); if (!sel || !FB) return;
+  const row = FB.find(x => x.id === sel.dataset.fb); if (!row) return;
+  const next = sel.value === "done" ? "done" : "new";
+  if (next === row.status) return;
+  sel.disabled = true; set("faErr", "");
   let err = null;
   try { const res = await sb.from("feedback").update({status: next}).eq("id", row.id); err = res.error; } catch (x) { err = x; }
-  b.disabled = false;
-  if (err) { set("faErr", tr("fa_err").replace("{m}", String(err.message || err))); return; }
+  sel.disabled = false;
+  if (err) { sel.value = row.status === "done" ? "done" : "new"; set("faErr", tr("fa_err").replace("{m}", String(err.message || err))); return; }
   row.status = next; renderFeedback();
 });
 function renderOrchGate() {
