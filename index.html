@@ -6,7 +6,7 @@
 <meta name="description" content="Apple Doctor: free tools and simple guidance for apple growers in Himachal Pradesh and Kashmir.">
 <title>Apple Doctor</title>
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#FAF7F1">
+<meta name="theme-color" content="#F2F4EF">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -617,10 +617,10 @@ img{max-width:100%}
 <style>
 /* Theme: an apple orchard. Kraft apple-box (peti) banner with a printed label, Royal Delicious red, leaf green, bark-brown text. */
 :root{
-  --bg:#FAF7F1;--surface:#FFFFFF;--surface-2:#F1E8DA;--fg:#2E2018;--muted:#6B5646;--line:#E3D6C3;
-  --brand:#2F6B2F;--brand-bg:#2F6B2F;--on-brand:#FFFFFF;--on-brand-soft:#D9EAD0;--on-brand-line:rgba(255,255,255,.32);
-  --apple:#B11F24;--on-apple:#FFFFFF;--good:#2F7A34;--bad:#B3261E;
-  --kraft:#D8BA88;--kraft-ink:#7E1519;--kraft-soft:#5A4030;--kraft-line:rgba(70,45,25,.3);--label:#FFFCF6;--leaf:#3E8A3A;
+  --bg:#F2F4EF;--surface:#FFFFFF;--surface-2:#E8ECE3;--fg:#2A1B12;--muted:#5F564D;--line:#D9DED2;
+  --brand:#1E5A2F;--brand-bg:#1E5A2F;--on-brand:#FFFFFF;--on-brand-soft:#D3E6D6;--on-brand-line:rgba(255,255,255,.32);
+  --apple:#A0171C;--on-apple:#FFFFFF;--good:#22703A;--bad:#B3261E;
+  --kraft:#D7B57E;--kraft-ink:#8A1418;--kraft-soft:#5A4030;--kraft-line:rgba(70,45,25,.3);--label:#FFFCF6;--leaf:#3E8A3A;
   --seg-pack:#C9862B;--seg-year:#8A6A52;--seg-profit:#2F7A34;
   --display:"Khand","Hind",system-ui,sans-serif;
   --mono:"Barlow Semi Condensed","Hind",system-ui,sans-serif;
@@ -1058,6 +1058,71 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
   .dlist .da{grid-column:2/4}
   .pbars li{grid-template-columns:5rem minmax(0,1fr) 4.8rem}
 }
+
+/* ===== Theme: the apple carton ===== */
+/* Page: mountain-mist background, white cards, carton red and orchard green. The banner is the one bold thing. */
+.topbar{background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.4) blur(8px);backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(42,27,18,.03),0 8px 20px -18px rgba(42,27,18,.35)}
+.tabbar .tab{font-family:var(--display);font-size:1.12rem;font-weight:600;letter-spacing:.01em;padding:8px 14px 6px}
+.tabbar .tab[aria-selected="true"]{color:var(--apple);border-bottom-width:3px}
+.brand{font-size:1.65rem;min-width:0}
+.brand i{flex:none}
+
+/* banner = a printed apple-box label on kraft */
+#top{background:
+  radial-gradient(120% 90% at 50% 0%,rgba(255,240,210,.35),transparent 60%),
+  repeating-linear-gradient(90deg,rgba(90,60,30,.07) 0 1px,transparent 1px 7px),
+  var(--kraft);padding-top:40px}
+#top .rows-top{position:absolute;left:0;right:0;top:0;bottom:auto;z-index:0}
+#top .hero-grid{padding-block:14px 56px}
+#top .label{position:relative;padding:22px 24px 22px;border:2px solid var(--kraft-ink);outline:1px solid var(--kraft-ink);outline-offset:4px;border-radius:4px;background:rgba(255,248,232,.28);max-width:760px;overflow:hidden;isolation:isolate}
+#top .label > *:not(.ridge):not(.stamp){position:relative;z-index:1}
+#top .label > .stamp{z-index:1}
+#top .ridge{position:absolute;left:0;right:0;bottom:0;width:100%;height:30%;z-index:0}
+#top .ridge path{fill:rgba(138,20,24,.05);stroke:rgba(138,20,24,.2);stroke-width:1.25;vector-effect:non-scaling-stroke}
+#top .ridge .snow{fill:none;stroke:rgba(255,255,255,.6);stroke-width:1.5}
+#top .kicker{color:var(--kraft-ink);font-size:1rem;max-width:calc(100% - 92px)}
+#top h1{color:var(--kraft-ink);font-family:var(--display);font-weight:700;line-height:.9;letter-spacing:-.01em;margin-top:8px;text-wrap:balance}
+#top .greet{font-family:var(--display);font-weight:600;font-size:1.25rem;color:var(--fg)}
+#top .stamp{position:absolute;top:12px;right:14px;width:84px;height:84px;margin:0;border-radius:50%;border:2px solid var(--kraft-ink);outline:1px solid var(--kraft-ink);outline-offset:-6px;display:grid;place-items:center;text-align:center;transform:rotate(-12deg);color:var(--kraft-ink);font:700 .8rem/1.05 var(--display);text-transform:none;padding:12px;opacity:.85}
+#top .btns .btn.primary{background:var(--apple);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2),0 6px 14px -8px rgba(120,10,15,.6)}
+#top .btns .btn.ghost{background:rgba(255,250,240,.55);border:1.5px solid var(--kraft-ink);color:var(--kraft-ink)}
+@media (max-width:560px){
+  #top{padding-top:34px}
+  #top .label{padding:16px 16px 16px}
+  #top .hero-grid{padding-block:10px 50px}
+  #top .stamp{width:66px;height:66px;font-size:.66rem;padding:9px;top:8px;right:8px}
+  #top .kicker{max-width:calc(100% - 66px);font-size:.92rem}
+  #top .greet{font-size:1.08rem}
+}
+
+/* buttons: pressable */
+.btn-s{border-radius:10px;transition:background .15s,border-color .15s}
+.btn-s.add{background:var(--brand-bg);border-color:var(--brand-bg);color:#fff;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+.btn-s.add:hover{background:#174a26}
+.btn-s:not(.add):hover{border-color:var(--brand-bg)}
+:focus-visible{outline:2px solid var(--brand-bg);outline-offset:2px}
+
+/* cards: one soft warm shadow, larger radius for big cards */
+.prcard,.glbox,.authcard,.dxcard,.tnote,.dxgate,.glempty{border-color:var(--line);box-shadow:0 1px 0 rgba(42,27,18,.04),0 10px 24px -20px rgba(42,27,18,.45)}
+.prcard,.glbox,.authcard{border-radius:16px}
+.gltiles div{border-radius:14px;border-color:var(--line);box-shadow:0 1px 0 rgba(42,27,18,.04)}
+
+/* headings in the display face */
+.osec h4,.glhead h3,.glbox h4,.prcard h4,.thead h3,.authcard h3,.dxsec h4,.dxcard h5{font-family:var(--display);font-weight:600;letter-spacing:.005em}
+.osec h4{font-size:1.45rem}
+.thead h3{font-size:1.7rem}
+.glhead h3{font-size:1.6rem}
+.prcard h4,.glbox h4{font-size:1.25rem}
+
+/* season hero card: orchard green with a faint leaf vein */
+.glhero{background:
+  radial-gradient(140% 120% at 100% 0%,rgba(255,255,255,.12),transparent 55%),
+  linear-gradient(160deg,#22683A,#174A26);box-shadow:0 14px 28px -18px rgba(23,74,38,.8)}
+.glhero.neg{background:linear-gradient(160deg,#B3261E,#7E1519)}
+
+/* slideshow dots and arrows follow the theme */
+.prdots button[aria-current="true"]::after{background:var(--apple)}
+.prarr{box-shadow:0 1px 0 rgba(42,27,18,.05)}
 </style>
 </head>
 <body>
@@ -1072,9 +1137,12 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 </div>
 
 <section class="hero" id="top">
+  <svg class="rows rows-top" width="100%" height="40" aria-hidden="true" focusable="false"><rect width="100%" height="40" fill="url(#tree)"/></svg>
   <div class="wrap">
     <div class="hero-grid">
-      <div>
+      <div class="label">
+        <svg class="ridge" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 120 L0 92 L48 70 L80 82 L132 38 L170 64 L214 30 L262 72 L300 54 L352 14 L398 60 L436 46 L482 76 L530 40 L572 66 L600 58 L600 120 Z"/><path class="snow" d="M132 38 L146 48 L156 44 L170 64 M214 30 L228 42 L240 38 M352 14 L366 30 L378 26 L390 40 M530 40 L544 52 L556 48"/></svg>
+        <p class="stamp" aria-hidden="true"><span data-i18n="st_free"></span></p>
         <p class="kicker" data-i18n="hero_kicker"></p>
         <h1 data-i18n="hero_h1"></h1>
         <p class="greet">“Main hoon aapka apna Apple Doctor.”</p>
@@ -1085,7 +1153,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
       </div>
     </div>
   </div>
-  <svg class="rows" width="100%" height="40" aria-hidden="true" focusable="false">
+  <svg class="rows rows-bottom" width="100%" height="40" aria-hidden="true" focusable="false">
     <defs>
       <pattern id="tree" width="96" height="40" patternUnits="userSpaceOnUse">
         <g transform="translate(24 23) scale(.08)">
@@ -1464,7 +1532,7 @@ en: {
   hero_kicker:"For apple growers of Himachal and Kashmir",
   hero_h1:"Your orchard's own doctor.",
   hero_p:"Know what each box of apples really earns you. Free tools and simple guidance, starting with growers around Rohru and Chirgaon.",
-  hero_cta1:"Explore the tools", hero_cta2:"Join the grower community",
+  hero_cta1:"Explore the tools", st_free:"Free for growers", hero_cta2:"Join the grower community",
   hero_card_t:"Example season", hero_card_note:"Example numbers. Open the calculator below to see the full record.",
   hero_card_per:"per box", hero_boxes:"boxes sold",
   calc_h:"Profit calculator",
@@ -1686,7 +1754,7 @@ hi: {
   hero_kicker:"हिमाचल और कश्मीर के सेब बागवानों के लिए",
   hero_h1:"आपके बाग़ का अपना डॉक्टर।",
   hero_p:"जानिए कि हर पेटी सेब से असल में कितनी कमाई होती है। रोहड़ू और चिरगाँव के बागवानों से शुरुआत, मुफ़्त टूल और सरल जानकारी।",
-  hero_cta1:"टूल देखें", hero_cta2:"बागवान समुदाय से जुड़ें",
+  hero_cta1:"टूल देखें", st_free:"बाग़वानों के लिए मुफ़्त", hero_cta2:"बागवान समुदाय से जुड़ें",
   hero_card_t:"उदाहरण सीज़न", hero_card_note:"ये उदाहरण के आँकड़े हैं। पूरा रिकॉर्ड देखने के लिए नीचे कैलकुलेटर खोलें।",
   hero_card_per:"प्रति पेटी", hero_boxes:"पेटियाँ बिकीं",
   calc_h:"मुनाफ़ा कैलकुलेटर",
