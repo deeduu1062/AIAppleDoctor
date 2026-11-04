@@ -1,4 +1,4 @@
-// Seb Sathi — apple news bulletins (Vercel serverless function)
+// Seb Saathi — apple news bulletins (Vercel serverless function)
 // GET /api/news?lang=en|hi  →  { items: [{ title, url, source, date }], at }
 // Reads Google News search feeds about apple growing in Himachal, Kashmir and Uttarakhand,
 // drops Apple-the-company stories, and caches the result for 30 minutes on Vercel's edge.
@@ -50,7 +50,7 @@ async function feed(q, lang) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 8000);
   try {
-    const r = await fetch(url, { signal: ctl.signal, headers: { "User-Agent": "Mozilla/5.0 (compatible; SebSathiNews/1.0)", Accept: "application/rss+xml,application/xml,text/xml" } });
+    const r = await fetch(url, { signal: ctl.signal, headers: { "User-Agent": "Mozilla/5.0 (compatible; SebSaathiNews/1.0)", Accept: "application/rss+xml,application/xml,text/xml" } });
     if (!r.ok) return [];
     return parse(await r.text());
   } catch (e) {
