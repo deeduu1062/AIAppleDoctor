@@ -1,4 +1,4 @@
-/* Apple Doctor: "Feedback" button on every page.
+/* Seb Sathi: "Feedback" button on every page.
    A small button sits at the bottom corner; it opens a form (problem / suggestion / other + message).
    Messages are saved to the Supabase table public.feedback (see supabase/feedback.sql) and read on the Admin tab.
    Each page calls ADFeedback.init({getSb, getLang, getUser, getPage}). */
@@ -6,7 +6,7 @@
   const TXT = {
     en: {
       btn: "Feedback", h: "Feedback or a problem?",
-      p: "Tell us what went wrong or what would make Apple Doctor better. We read every message.",
+      p: "Tell us what went wrong or what would make Seb Sathi better. We read every message.",
       kind: "What is it about?", k_problem: "Something is not working", k_idea: "A suggestion", k_other: "Something else",
       msg: "Your message", msg_ph: "For example: the Save button did nothing on the Dashboard.",
       contact: "Email or mobile number, if you want a reply (optional)",
@@ -18,7 +18,7 @@
     },
     hi: {
       btn: "सुझाव", h: "सुझाव या कोई दिक़्क़त?",
-      p: "बताइए क्या ठीक नहीं चला, या Apple Doctor को और अच्छा कैसे बनाएँ। हम हर संदेश पढ़ते हैं।",
+      p: "बताइए क्या ठीक नहीं चला, या सेब साथी को और अच्छा कैसे बनाएँ। हम हर संदेश पढ़ते हैं।",
       kind: "किस बारे में है?", k_problem: "कुछ काम नहीं कर रहा", k_idea: "एक सुझाव", k_other: "कुछ और",
       msg: "आपका संदेश", msg_ph: "जैसे: डैशबोर्ड पर सहेजें बटन दबाने पर कुछ नहीं हुआ।",
       contact: "जवाब चाहिए तो ईमेल या मोबाइल नंबर (ज़रूरी नहीं)",

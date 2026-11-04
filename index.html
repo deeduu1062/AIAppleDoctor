@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Apple Doctor: free tools and simple guidance for apple growers in Himachal Pradesh and Kashmir.">
-<title>Apple Doctor</title>
+<meta name="description" content="Seb Sathi: Your Orchard. Your Companion. Knowledge, technology and profit for apple growers in Himachal Pradesh and Kashmir.">
+<title>Seb Sathi – Your Orchard. Your Companion.</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#F2F4EF">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Apple Doctor">
+<meta name="apple-mobile-web-app-title" content="Seb Sathi">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1178,6 +1178,9 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 #top .label{position:relative;padding:22px 24px 22px;border:2px solid var(--kraft-ink);outline:1px solid var(--kraft-ink);outline-offset:4px;border-radius:4px;background:rgba(255,248,232,.28);max-width:760px;overflow:hidden;isolation:isolate}
 #top .label > *:not(.ridge):not(.stamp){position:relative;z-index:1}
 #top .label > .stamp{z-index:1}
+#top .pillars{display:flex;flex-direction:column;gap:2px;margin:10px 0 0;font:600 1.02rem/1.35 var(--display);letter-spacing:.03em;color:var(--kraft-ink)}
+#top .pillars span[lang="hi"]{font-family:var(--body);font-size:1.08rem;letter-spacing:0}
+footer .brandline{margin:0 0 10px;font:600 .95rem/1.4 var(--display);color:var(--fg)}
 #top .ridge{position:absolute;left:0;right:0;bottom:0;width:100%;height:30%;z-index:0}
 #top .ridge path{fill:rgba(138,20,24,.05);stroke:rgba(138,20,24,.2);stroke-width:1.25;vector-effect:non-scaling-stroke}
 #top .ridge .snow{fill:none;stroke:rgba(255,255,255,.6);stroke-width:1.5}
@@ -1285,7 +1288,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
   <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo"></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
   <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><button class="link" type="button" id="shareAcct" data-i18n="sh_invite"></button><button class="link" type="button" id="setPw" data-i18n="acct_setpw"></button><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
   <header class="wrap top">
-    <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
+    <a class="brand" href="#top"><i aria-hidden="true"></i>Seb Sathi</a>
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
   </header>
   <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-lib" aria-selected="false" aria-controls="tp-lib" type="button" data-i18n="tt_lib"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-admin" aria-selected="false" aria-controls="tp-admin" type="button" data-i18n="tt_admin" hidden></button></div></div>
@@ -1300,7 +1303,8 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <p class="stamp" aria-hidden="true"><span data-i18n="st_free"></span></p>
         <p class="kicker" data-i18n="hero_kicker"></p>
         <h1 data-i18n="hero_h1"></h1>
-        <p class="greet">“Main hoon aapka apna Apple Doctor.”</p>
+        <p class="greet">“Main hoon aapka apna Seb Sathi.”</p>
+        <p class="pillars"><span lang="hi">ज्ञान • तकनीक • मुनाफ़ा</span><span lang="en">Knowledge • Technology • Profit</span></p>
         <div class="btns">
           <button class="btn primary" type="button" id="heroJoin" data-i18n="pr_join"></button>
           <a class="btn ghost" href="#join" data-i18n="hero_cta2"></a>
@@ -1685,6 +1689,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </section>
 
 <footer class="wrap">
+  <p class="brandline">Seb Sathi · सेब साथी — Your Orchard. Your Companion. · ज्ञान • तकनीक • मुनाफ़ा</p>
   <p data-i18n="foot_note"></p>
 </footer>
 
@@ -1723,7 +1728,7 @@ const T = {
 en: {
   nav_calc:"Profit calculator", nav_plan:"What's coming", nav_cal:"Season calendar", nav_join:"Join",
   hero_kicker:"For apple growers of Himachal and Kashmir",
-  hero_h1:"Your orchard's own doctor.",
+  hero_h1:"Your Orchard. Your Companion.",
   hero_p:"Know what each box of apples really earns you. Free tools and simple guidance, starting with growers around Rohru and Chirgaon.",
   hero_cta1:"Explore the tools", st_free:"Free for growers", hero_cta2:"Join the grower community",
   hero_card_t:"Example season", hero_card_note:"Example numbers. Open the calculator below to see the full record.",
@@ -1739,7 +1744,7 @@ en: {
   ne_h:"New lot: {o}, {y}", ne_pos:"Save as", ne_end:"{l} (at the end)", lot_up:"Move up", lot_down:"Move down", ne_submit:"Submit", ne_cancel:"Cancel", ne_more:"＋ Add another type", ne_col:"Entry", ne_done:"Done", ne_none_lot:"No entries in this lot.", ne_edit:"Edit", ne_del:"Delete", ne_editing:"Editing", ne_sure:"Tap again", ne_tot:"Lot total", sp_otot:"Orchard total", l_addtype:"＋ Add type", ne_editing2:"Editing {l}, entry {n}", exp_note:"Expenses are in ₹ per box. Commission is a % of the sale amount.", ne_row:"Entry {n}", ne_rm:"Remove", ne_err:"Entry {n}: choose a type, and enter the boxes and the sold price per box.", ne_none:"Fill in at least one entry.", ne_ok:"{l} saved to {o}, {y}.",
   d_spent:"Spent since {d}", d_spent_ly:"Same time last year: {x}",
   ds_h:"Due soon", ds_p:"Tasks due in the next 14 days, and sales still not paid after 30 days.", ds_none:"Nothing due in the next 14 days.", ds_pay:"{l}, {y}: {x} not yet received",
-  ds_payd:"Waiting {n} days", ds_nodate:"No sale date", ds_wa_all:"Send this list on WhatsApp", ds_wa_head:"Apple Doctor reminder", wa:"WhatsApp", ics:"Add to calendar", late:"Overdue", today:"Today", inN:"In {n} days",
+  ds_payd:"Waiting {n} days", ds_nodate:"No sale date", ds_wa_all:"Send this list on WhatsApp", ds_wa_head:"Seb Sathi reminder", wa:"WhatsApp", ics:"Add to calendar", late:"Overdue", today:"Today", inN:"In {n} days",
   wx_h:"Weather, next 5 days", wx_none:"Set each orchard's location (open the orchard, then Location and weather) to see its weather here.", wx_load:"Loading weather…",
   wx_err:"Weather could not be loaded. Check the internet connection and open the page again.", wx_src:"Forecast from Open-Meteo. Temperatures are highest / lowest of the day.",
   wx_frost:"Frost risk {d}: down to {t}°C", wx_hail:"Hail possible {d}", wx_rain:"Heavy rain {d}: {mm} mm", wx_ok:"No frost, hail or heavy rain expected in the next 5 days.",
@@ -1766,7 +1771,7 @@ en: {
   w_rate:"Check the price: {x} a box is far from this orchard's usual price of about {m}.", w_rate_hi:"Check the price: {x} a box is very high.",
   w_boxes:"Check the boxes: {n} is much more than this orchard's usual entry of about {m}.", w_boxes2:"Check the boxes: {n} is a very large number for one entry.",
   w_exp:"Check the expenses: {e} a box is more than the price of {p} a box.", w_com:"Check the commission: {c}% looks high.",
-  dl_csv:"Download for Excel", dl_pdf:"Print or save as PDF", dl_title:"Apple Doctor: harvest year {y}", dl_sum:"Summary by orchard", dl_exp:"Yearly expenses by category", dl_lots:"Sales by lot",
+  dl_csv:"Download for Excel", dl_pdf:"Print or save as PDF", dl_title:"Seb Sathi: harvest year {y}", dl_sum:"Summary by orchard", dl_exp:"Yearly expenses by category", dl_lots:"Sales by lot",
   dl_sales:"Gross sales", dl_lot:"Lot", dl_price:"Price per box", dl_date:"Sale date", dl_paid:"Paid", dl_yes:"Yes", dl_no:"No", dl_total:"Total", dl_made:"Made on {d}",
   lots_h:"Lots sold", lot_add:"Add a lot", lot_remove:"Remove", f_lname:"Lot name (for example variety or picking)",
   lot_margin:"Lot margin before yearly expenses",
@@ -1799,7 +1804,7 @@ en: {
   s_live:"Live", s_plan:"Planned", s_later:"Later",
   p1_h:"Saved records for each orchard", p1_p:"Record every lot you sell for each orchard and year, and see gross and net income. Saved in your own private account.",
   p2_h:"Photo diagnosis", p2_p:"Upload a photo of a leaf, fruit or branch and get possible causes and safe next steps. It is an indication, not a final diagnosis.",
-  p3_h:"Ask Apple Doctor", p3_p:"Questions answered in simple Hindi, with the reasoning shown.",
+  p3_h:"Ask Seb Sathi", p3_p:"Questions answered in simple Hindi, with the reasoning shown.",
   p4_h:"Season calendar and spray schedule", p4_p:"Reminders matched to the stage your orchard is in.",
   p5_h:"Weather and mandi rates", p5_p:"Always shown with the date, market and unit, and only when the data is reliable.",
   p6_h:"Android app", p6_p:"All of this in one app, once the website and community show what growers need.",
@@ -1820,7 +1825,7 @@ en: {
   d_how_h:"How it will work", d_s1:"Take clear photos of the leaf, fruit or branch.", d_s2:"Answer a few questions about the variety, the age of the tree, the stage and the place.", d_s3:"See the possible causes, how sure the app is, and what to do next.",
   d_tips_h:"Photos that help, from today", d_t1:"Take it in daylight, close to the affected part.", d_t2:"Add one wider photo of the whole tree.", d_t3:"Write down when it started and how many trees have it.", d_t4:"Photograph it before you spray anything.",
   d_note:"A photo result is an indication, not a final diagnosis, and it will say how sure it is. For a serious or fast-spreading problem, show a local horticulture officer or your nearest Krishi Vigyan Kendra (KVK).",
-  sp_h:"Spray schedule", sp_p:"What to spray, how much and when depends on the stage of the tree, your altitude and that year's weather. Apple Doctor will remind you by stage. The products and doses come from the official schedule, so please follow it and the label on the product.",
+  sp_h:"Spray schedule", sp_p:"What to spray, how much and when depends on the stage of the tree, your altitude and that year's weather. Seb Sathi will remind you by stage. The products and doses come from the official schedule, so please follow it and the label on the product.",
   sp_stage_h:"Stages of the apple tree", sp_stage_p:"The stage your orchard is in decides the spray. Timing shifts from one orchard to another.",
   st1:"Dormant", sd1:"Buds are closed and the tree is resting.",
   st2:"Green tip", sd2:"Small green tips show on the buds.",
@@ -1838,7 +1843,7 @@ en: {
   m_link:"Open the Agmarknet portal", m_link_note:"Government of India market price portal. Opens in a new tab.",
   b_h:"Buy and sell", b_p:"A place for growers to sell apples, and to buy or sell what an orchard needs, like cartons and packing material, tools and equipment, and to find labour.",
   b_what_h:"What it will have", b_1:"Sell: list a lot with the grade, number of boxes and place.", b_2:"Buy: find packing material, tools and equipment near you.", b_3:"Talk directly with the other grower or buyer.",
-  b_safe_h:"Staying safe", b_safe:"At the start, Apple Doctor will not take payments or guarantee a deal. Check the buyer or seller yourself, and never pay in advance to someone you do not know.",
+  b_safe_h:"Staying safe", b_safe:"At the start, Seb Sathi will not take payments or guarantee a deal. Check the buyer or seller yourself, and never pay in advance to someone you do not know.",
   b_why:"This opens after more growers are using the other tools, so the listings are real and useful.",
   p7_h:"Buy and sell", p7_p:"Listings for apples, packing material, tools and labour, opened once enough growers are on board.",
   tt_calc:"Profit calculator", tt_cal:"Season calendar", s_guide:"Guide live",
@@ -1945,7 +1950,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
 hi: {
   nav_calc:"मुनाफ़ा कैलकुलेटर", nav_plan:"आगे क्या आ रहा है", nav_cal:"सीज़न कैलेंडर", nav_join:"जुड़ें",
   hero_kicker:"हिमाचल और कश्मीर के सेब बागवानों के लिए",
-  hero_h1:"आपके बाग़ का अपना डॉक्टर।",
+  hero_h1:"आपका बगीचा। आपका साथी।",
   hero_p:"जानिए कि हर पेटी सेब से असल में कितनी कमाई होती है। रोहड़ू और चिरगाँव के बागवानों से शुरुआत, मुफ़्त टूल और सरल जानकारी।",
   hero_cta1:"टूल देखें", st_free:"बाग़वानों के लिए मुफ़्त", hero_cta2:"बागवान समुदाय से जुड़ें",
   hero_card_t:"उदाहरण सीज़न", hero_card_note:"ये उदाहरण के आँकड़े हैं। पूरा रिकॉर्ड देखने के लिए नीचे कैलकुलेटर खोलें।",
@@ -1961,7 +1966,7 @@ hi: {
   ne_h:"नया लॉट: {o}, {y}", ne_pos:"किस नंबर पर सहेजें", ne_end:"{l} (आख़िर में)", lot_up:"ऊपर करें", lot_down:"नीचे करें", ne_submit:"जमा करें", ne_cancel:"रद्द करें", ne_more:"＋ एक और प्रकार जोड़ें", ne_col:"एंट्री", ne_done:"हो गया", ne_none_lot:"इस लॉट में कोई एंट्री नहीं है।", ne_edit:"बदलें", ne_del:"हटाएँ", ne_editing:"बदल रहे हैं", ne_sure:"दोबारा दबाएँ", ne_tot:"लॉट का कुल", sp_otot:"बाग़ का कुल", l_addtype:"＋ प्रकार जोड़ें", ne_editing2:"{l}, एंट्री {n} बदल रहे हैं", exp_note:"ख़र्च ₹ प्रति पेटी में हैं। कमीशन बिक्री की रक़म का % है।", ne_row:"एंट्री {n}", ne_rm:"हटाएँ", ne_err:"एंट्री {n}: प्रकार चुनें, और पेटियाँ व प्रति पेटी बिक्री भाव डालें।", ne_none:"कम से कम एक एंट्री भरें।", ne_ok:"{l} {o}, {y} में सहेज लिया गया।",
   d_spent:"{d} से अब तक ख़र्च", d_spent_ly:"पिछले साल इसी समय तक: {x}",
   ds_h:"जल्द करने वाले काम", ds_p:"अगले 14 दिनों के काम, और वे बिक्री जिनका पैसा 30 दिन बाद भी नहीं मिला।", ds_none:"अगले 14 दिनों में कुछ बाक़ी नहीं है।", ds_pay:"{l}, {y}: {x} अभी नहीं मिला",
-  ds_payd:"{n} दिन से इंतज़ार", ds_nodate:"बिक्री की तारीख़ नहीं", ds_wa_all:"यह सूची WhatsApp पर भेजें", ds_wa_head:"Apple Doctor याद दिलाना", wa:"WhatsApp", ics:"कैलेंडर में जोड़ें", late:"देर हो गई", today:"आज", inN:"{n} दिन में",
+  ds_payd:"{n} दिन से इंतज़ार", ds_nodate:"बिक्री की तारीख़ नहीं", ds_wa_all:"यह सूची WhatsApp पर भेजें", ds_wa_head:"सेब साथी याद दिलाना", wa:"WhatsApp", ics:"कैलेंडर में जोड़ें", late:"देर हो गई", today:"आज", inN:"{n} दिन में",
   wx_h:"मौसम, अगले 5 दिन", wx_none:"यहाँ मौसम देखने के लिए हर बाग़ की जगह सेट करें (बाग़ खोलें, फिर जगह और मौसम)।", wx_load:"मौसम लोड हो रहा है…",
   wx_err:"मौसम लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।", wx_src:"पूर्वानुमान Open-Meteo से। तापमान दिन का सबसे ज़्यादा / सबसे कम है।",
   wx_frost:"पाले का ख़तरा {d}: {t}°C तक", wx_hail:"ओले पड़ सकते हैं {d}", wx_rain:"भारी बारिश {d}: {mm} मिमी", wx_ok:"अगले 5 दिनों में पाला, ओले या भारी बारिश की संभावना नहीं।",
@@ -1988,7 +1993,7 @@ hi: {
   w_rate:"भाव जाँच लें: {x} प्रति पेटी इस बाग़ के आम भाव (लगभग {m}) से बहुत अलग है।", w_rate_hi:"भाव जाँच लें: {x} प्रति पेटी बहुत ज़्यादा है।",
   w_boxes:"पेटियाँ जाँच लें: {n} इस बाग़ की आम एंट्री (लगभग {m}) से बहुत ज़्यादा है।", w_boxes2:"पेटियाँ जाँच लें: एक एंट्री के लिए {n} बहुत बड़ी संख्या है।",
   w_exp:"ख़र्च जाँच लें: {e} प्रति पेटी, भाव {p} प्रति पेटी से ज़्यादा है।", w_com:"कमीशन जाँच लें: {c}% ज़्यादा लगता है।",
-  dl_csv:"एक्सेल के लिए डाउनलोड करें", dl_pdf:"प्रिंट करें या PDF में सहेजें", dl_title:"Apple Doctor: फ़सल वर्ष {y}", dl_sum:"बाग़ के हिसाब से सार", dl_exp:"श्रेणी के हिसाब से साल भर के ख़र्च", dl_lots:"लॉट के हिसाब से बिक्री",
+  dl_csv:"एक्सेल के लिए डाउनलोड करें", dl_pdf:"प्रिंट करें या PDF में सहेजें", dl_title:"सेब साथी: फ़सल वर्ष {y}", dl_sum:"बाग़ के हिसाब से सार", dl_exp:"श्रेणी के हिसाब से साल भर के ख़र्च", dl_lots:"लॉट के हिसाब से बिक्री",
   dl_sales:"कुल बिक्री", dl_lot:"लॉट", dl_price:"प्रति पेटी भाव", dl_date:"बिक्री की तारीख़", dl_paid:"भुगतान मिला", dl_yes:"हाँ", dl_no:"नहीं", dl_total:"कुल", dl_made:"{d} को बनाया गया",
   lots_h:"बेचे गए लॉट", lot_add:"लॉट जोड़ें", lot_remove:"हटाएँ", f_lname:"लॉट का नाम (जैसे किस्म या तुड़ाई)",
   lot_margin:"साल भर के ख़र्च से पहले लॉट का मुनाफ़ा",
@@ -2021,7 +2026,7 @@ hi: {
   s_live:"चालू", s_plan:"योजना में", s_later:"बाद में",
   p1_h:"हर बाग़ का सहेजा हुआ रिकॉर्ड", p1_p:"हर बाग़ और साल में बेचा गया हर लॉट दर्ज करें और कुल बिक्री व शुद्ध आय देखें। आपके अपने निजी खाते में सहेजा जाता है।",
   p2_h:"फ़ोटो से पहचान", p2_p:"पत्ती, फल या टहनी की फ़ोटो डालें और संभावित कारण व सुरक्षित अगले क़दम पाएँ। यह संकेत है, पक्का निदान नहीं।",
-  p3_h:"सेब डॉक्टर से पूछें", p3_p:"आसान हिंदी में जवाब, कारण के साथ।",
+  p3_h:"सेब साथी से पूछें", p3_p:"आसान हिंदी में जवाब, कारण के साथ।",
   p4_h:"सीज़न कैलेंडर और स्प्रे सूची", p4_p:"आपके बाग़ की अवस्था के हिसाब से याद दिलाना।",
   p5_h:"मौसम और मंडी भाव", p5_p:"हमेशा तारीख़, मंडी और इकाई के साथ, और तभी जब आँकड़े भरोसेमंद हों।",
   p6_h:"एंड्रॉइड ऐप", p6_p:"यह सब एक ऐप में, जब वेबसाइट और समुदाय से साफ़ हो जाए कि बागवानों को क्या चाहिए।",
@@ -2042,7 +2047,7 @@ hi: {
   d_how_h:"यह कैसे काम करेगा", d_s1:"पत्ती, फल या टहनी की साफ़ फ़ोटो लें।", d_s2:"किस्म, पेड़ की उम्र, अवस्था और जगह के बारे में कुछ सवालों के जवाब दें।", d_s3:"संभावित कारण, ऐप को कितना भरोसा है और आगे क्या करना है, यह देखें।",
   d_tips_h:"काम की फ़ोटो, आज से", d_t1:"दिन की रोशनी में, प्रभावित हिस्से के पास से फ़ोटो लें।", d_t2:"पूरे पेड़ की एक दूर से ली हुई फ़ोटो भी जोड़ें।", d_t3:"लिख लें कि समस्या कब शुरू हुई और कितने पेड़ों में है।", d_t4:"कोई भी स्प्रे करने से पहले फ़ोटो लें।",
   d_note:"फ़ोटो से मिला नतीजा एक संकेत है, पक्का निदान नहीं, और यह बताएगा कि कितना भरोसा है। गंभीर या तेज़ी से फैलने वाली समस्या हो तो स्थानीय बागवानी अधिकारी या नज़दीकी कृषि विज्ञान केंद्र (KVK) को दिखाएँ।",
-  sp_h:"स्प्रे सूची", sp_p:"क्या स्प्रे करना है, कितना और कब, यह पेड़ की अवस्था, आपकी ऊँचाई और उस साल के मौसम पर निर्भर करता है। सेब डॉक्टर अवस्था के हिसाब से आपको याद दिलाएगा। दवाएँ और मात्रा सरकारी सूची से ली जाती हैं, इसलिए उसी का और दवा के लेबल का पालन करें।",
+  sp_h:"स्प्रे सूची", sp_p:"क्या स्प्रे करना है, कितना और कब, यह पेड़ की अवस्था, आपकी ऊँचाई और उस साल के मौसम पर निर्भर करता है। सेब साथी अवस्था के हिसाब से आपको याद दिलाएगा। दवाएँ और मात्रा सरकारी सूची से ली जाती हैं, इसलिए उसी का और दवा के लेबल का पालन करें।",
   sp_stage_h:"सेब के पेड़ की अवस्थाएँ", sp_stage_p:"आपका बाग़ जिस अवस्था में है, उसी से स्प्रे तय होता है। समय एक बाग़ से दूसरे बाग़ में बदलता है।",
   st1:"सुप्तावस्था", sd1:"कलियाँ बंद हैं और पेड़ आराम की अवस्था में है।",
   st2:"ग्रीन टिप", sd2:"कलियों की नोक पर छोटा हरा हिस्सा दिखता है।",
@@ -2060,7 +2065,7 @@ hi: {
   m_link:"एगमार्कनेट पोर्टल खोलें", m_link_note:"भारत सरकार का मंडी भाव पोर्टल। नए टैब में खुलता है।",
   b_h:"ख़रीद और बिक्री", b_p:"बागवानों के लिए सेब बेचने की जगह, और बाग़ की ज़रूरत की चीज़ें ख़रीदने-बेचने की जगह, जैसे कार्टन और पैकिंग का सामान, औज़ार और मशीनें, और मज़दूर ढूँढना।",
   b_what_h:"इसमें क्या होगा", b_1:"बेचें: ग्रेड, पेटियों की संख्या और जगह के साथ लॉट डालें।", b_2:"ख़रीदें: अपने पास पैकिंग का सामान, औज़ार और मशीनें ढूँढें।", b_3:"दूसरे बागवान या ख़रीदार से सीधे बात करें।",
-  b_safe_h:"सुरक्षित रहें", b_safe:"शुरुआत में सेब डॉक्टर न भुगतान लेगा और न किसी सौदे की गारंटी देगा। ख़रीदार या विक्रेता को ख़ुद जाँचें, और अनजान व्यक्ति को कभी पहले से पैसे न दें।",
+  b_safe_h:"सुरक्षित रहें", b_safe:"शुरुआत में सेब साथी न भुगतान लेगा और न किसी सौदे की गारंटी देगा। ख़रीदार या विक्रेता को ख़ुद जाँचें, और अनजान व्यक्ति को कभी पहले से पैसे न दें।",
   b_why:"यह तब खुलेगा जब ज़्यादा बागवान बाक़ी टूल इस्तेमाल करने लगेंगे, ताकि लिस्टिंग असली और काम की हों।",
   p7_h:"ख़रीद और बिक्री", p7_p:"सेब, पैकिंग का सामान, औज़ार और मज़दूर की लिस्टिंग, जब काफ़ी बागवान जुड़ जाएँगे।",
   tt_calc:"मुनाफ़ा कैलकुलेटर", tt_cal:"सीज़न कैलेंडर", s_guide:"गाइड चालू",
@@ -2662,7 +2667,7 @@ function bkMsg(k) { set("bkMsg", tr(k)); }
 $("bkDown").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(S)], {type: "application/json"});
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "apple-doctor-records.json";
+  a.href = URL.createObjectURL(blob); a.download = "seb-sathi-records.json";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
@@ -3538,12 +3543,12 @@ function dueSoonHtml() {
 function downloadIcs(o, x) {
   const e2 = s => String(s).replace(/[\\,;]/g, m => "\\" + m).replace(/\n/g, "\\n");
   const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
-  const sum = "Apple Doctor: " + todoLine(o, x);
-  const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Apple Doctor//EN", "BEGIN:VEVENT", "UID:" + x.id + "@aiappledoctor", "DTSTAMP:" + stamp,
+  const sum = "Seb Sathi: " + todoLine(o, x);
+  const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Seb Sathi//EN", "BEGIN:VEVENT", "UID:" + x.id + "@aiappledoctor", "DTSTAMP:" + stamp,
     "DTSTART;VALUE=DATE:" + x.due.replace(/-/g, ""), "DTEND;VALUE=DATE:" + addDays(x.due, 1).replace(/-/g, ""), "SUMMARY:" + e2(sum), "DESCRIPTION:" + e2(sum),
     "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + e2(sum), "TRIGGER:-PT15H", "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([ics], {type: "text/calendar"})); a.download = "apple-doctor-task-" + x.due + ".ics";
+  a.href = URL.createObjectURL(new Blob([ics], {type: "text/calendar"})); a.download = "seb-sathi-task-" + x.due + ".ics";
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 
@@ -4239,7 +4244,7 @@ function yearCsv(y) {
   const csv = "\ufeff" + out.map(r => r.map(q).join(",")).join("\r\n");
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv;charset=utf-8"}));
-  a.download = "apple-doctor-harvest-year-" + y + ".csv";
+  a.download = "seb-sathi-harvest-year-" + y + ".csv";
   document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
@@ -4264,7 +4269,7 @@ function yearPrint(y) {
     (d.lots.length ? "<h2>" + esc(tr("dl_lots")) + '</h2><div class="wide">' + tbl(LOT_HEAD.map(tr), d.lots.map(l => lotCells(l, inr).map((v, i) => (i === 3 ? fmtN(v) : i === 8 && v ? fmtDay(v, true) : v))), null, "lots") + "</div>" : "") +
     "</body></html>";
   const w = window.open("", "_blank");
-  if (!w) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], {type: "text/html"})); a.download = "apple-doctor-harvest-year-" + y + ".html"; a.click(); return; }
+  if (!w) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], {type: "text/html"})); a.download = "seb-sathi-harvest-year-" + y + ".html"; a.click(); return; }
   w.document.open(); w.document.write(html); w.document.close();
   setTimeout(() => { try { w.focus(); w.print(); } catch (e) {} }, 400);
 }
@@ -4466,7 +4471,7 @@ Object.assign(T.en, {
   dx_e_net:"Could not reach the photo check. Check your internet and try again.",
   dx_ai_h:"Photo result", dx_photo_bad:"Photo not clear enough", dx_steps:"Next steps", dx_expert:"Please also show this to a horticulture officer or KVK.",
   dx_c_high:"Quite sure", dx_c_medium:"Fairly sure", dx_c_low:"Not sure", dx_other:"Something else", dx_healthy:"Looks healthy",
-  dx_more:"Read more about this", dx_fb:"Was this right?", dx_fb_right:"Right", dx_fb_wrong:"Wrong", dx_fb_unsure:"Not sure", dx_fb_thanks:"Thank you, this helps Apple Doctor learn.",
+  dx_more:"Read more about this", dx_fb:"Was this right?", dx_fb_right:"Right", dx_fb_wrong:"Wrong", dx_fb_unsure:"Not sure", dx_fb_thanks:"Thank you, this helps Seb Sathi learn.",
   dx_safe:"These results are a guide, not a final diagnosis. Never spray more than the label says. For a serious or fast-spreading problem, show it to a local horticulture officer or your nearest Krishi Vigyan Kendra (KVK)."
 });
 Object.assign(T.hi, {
@@ -4486,7 +4491,7 @@ Object.assign(T.hi, {
   dx_e_net:"फ़ोटो जाँच तक नहीं पहुँच पाए। इंटरनेट देखें और फिर कोशिश करें।",
   dx_ai_h:"फ़ोटो का नतीजा", dx_photo_bad:"फ़ोटो साफ़ नहीं है", dx_steps:"अगले क़दम", dx_expert:"इसे बागवानी अधिकारी या KVK को भी ज़रूर दिखाएँ।",
   dx_c_high:"काफ़ी भरोसा", dx_c_medium:"कुछ भरोसा", dx_c_low:"पक्का नहीं", dx_other:"कुछ और", dx_healthy:"स्वस्थ लगता है",
-  dx_more:"इसके बारे में और पढ़ें", dx_fb:"क्या यह सही था?", dx_fb_right:"सही", dx_fb_wrong:"ग़लत", dx_fb_unsure:"पता नहीं", dx_fb_thanks:"धन्यवाद, इससे Apple Doctor सीखता है।",
+  dx_more:"इसके बारे में और पढ़ें", dx_fb:"क्या यह सही था?", dx_fb_right:"सही", dx_fb_wrong:"ग़लत", dx_fb_unsure:"पता नहीं", dx_fb_thanks:"धन्यवाद, इससे सेब साथी सीखता है।",
   dx_safe:"ये नतीजे एक मार्गदर्शन हैं, पक्का निदान नहीं। लेबल पर लिखी मात्रा से ज़्यादा कभी स्प्रे न करें। गंभीर या तेज़ी से फैलने वाली समस्या हो तो स्थानीय बागवानी अधिकारी या नज़दीकी कृषि विज्ञान केंद्र (KVK) को दिखाएँ।"
 });
 
@@ -5013,20 +5018,20 @@ function prJoin() { if (user) { tabPicked = true; showTool("orch", false, true);
 $("heroJoin").addEventListener("click", prJoin);
 /* ---- install as an app (PWA) ---- */
 Object.assign(T.en, {
-  in_android:"Get Apple Doctor as an app on your phone.",
-  in_ios:"Get Apple Doctor as an app on your phone.",
+  in_android:"Get Seb Sathi as an app on your phone.",
+  in_ios:"Get Seb Sathi as an app on your phone.",
   in_go:"Install", in_how:"Show me how", in_no:"Not now", in_btn:"App",
-  ig_h:"Add Apple Doctor to your phone", ig_ok:"OK, got it",
+  ig_h:"Add Seb Sathi to your phone", ig_ok:"OK, got it",
   ig_ios:["Tap <b>•••</b> at the bottom right of Safari. On older iPhones, tap the <b>Share</b> icon (a square with an arrow) at the bottom instead.","Tap <b>Share</b>.","Scroll down and tap <b>Add to Home Screen</b>. If you don’t see it, tap <b>View More</b> first.","Tap <b>Add</b>. The red apple icon appears on your home screen."],
   ig_ios_note:"Using Chrome on iPhone? Tap the Share icon in the address bar, then Add to Home Screen.",
   ig_and:["Tap <b>⋮</b> (three dots) at the top right of Chrome.","Tap <b>Install app</b> or <b>Add to Home screen</b>.","Tap <b>Install</b>. The red apple icon appears on your home screen."],
   ig_and_note:"On a Samsung phone’s own browser, tap ☰ at the bottom, then Add page to, then Home screen."
 });
 Object.assign(T.hi, {
-  in_android:"Apple Doctor को ऐप की तरह फ़ोन में रखें।",
-  in_ios:"Apple Doctor को ऐप की तरह फ़ोन में रखें।",
+  in_android:"सेब साथी को ऐप की तरह फ़ोन में रखें।",
+  in_ios:"सेब साथी को ऐप की तरह फ़ोन में रखें।",
   in_go:"इंस्टॉल करें", in_how:"तरीक़ा देखें", in_no:"अभी नहीं", in_btn:"ऐप",
-  ig_h:"Apple Doctor को फ़ोन में जोड़ें", ig_ok:"ठीक है",
+  ig_h:"सेब साथी को फ़ोन में जोड़ें", ig_ok:"ठीक है",
   ig_ios:["Safari में नीचे दाईं ओर <b>•••</b> दबाएँ। पुराने iPhone में नीचे <b>शेयर</b> आइकन (तीर वाला चौकोर) दबाएँ।","<b>Share</b> दबाएँ।","नीचे स्क्रॉल करें और <b>Add to Home Screen</b> दबाएँ। न दिखे तो पहले <b>View More</b> दबाएँ।","<b>Add</b> दबाएँ। लाल सेब का आइकन होम स्क्रीन पर आ जाएगा।"],
   ig_ios_note:"iPhone पर Chrome इस्तेमाल करते हैं? पता-पट्टी में शेयर आइकन दबाएँ, फिर Add to Home Screen।",
   ig_and:["Chrome में ऊपर दाईं ओर <b>⋮</b> (तीन बिंदु) दबाएँ।","<b>Install app</b> या <b>Add to Home screen</b> दबाएँ।","<b>Install</b> दबाएँ। लाल सेब का आइकन होम स्क्रीन पर आ जाएगा।"],
@@ -5410,19 +5415,19 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) load
    Whoever opens it gets a welcome box offering to install the app; the code is kept on their phone
    and saved on their account (user_metadata.ref) if they create one. */
 Object.assign(T.en, {
-  sh_btn:"Share", sh_invite:"Invite friends", sh_h:"Recommend Apple Doctor", sh_p:"Send this to other apple growers. When they open the link, they can add Apple Doctor to their phone.",
+  sh_btn:"Share", sh_invite:"Invite friends", sh_h:"Recommend Seb Sathi", sh_p:"Send this to other apple growers. When they open the link, they can add Seb Sathi to their phone.",
   sh_wa:"Send on WhatsApp", sh_more:"Share another way", sh_copy:"Copy link", sh_close:"Close", sh_copied:"Link copied. Paste it in any chat.", sh_copy_fail:"Could not copy. Press and hold the message above to copy it.",
-  sh_msg:"Namaste! 🍎 I use Apple Doctor for my orchard. It is free for apple growers: profit calculator, spray schedule, disease check and mandi rates, in Hindi and English.\nOpen this link and add it to your phone:",
-  sh_join_h:"Know another grower?", sh_join_p:"Recommend Apple Doctor to friends and family. It is free, and they can add it to their phone like an app.",
-  wl_h:"Welcome to Apple Doctor", wl_p:"A friend shared Apple Doctor with you. Add it to your phone and open it like an app, any time. It is free.",
+  sh_msg:"Namaste! 🍎 I use Seb Sathi for my orchard. It is free for apple growers: profit calculator, spray schedule, disease check and mandi rates, in Hindi and English.\nOpen this link and add it to your phone:",
+  sh_join_h:"Know another grower?", sh_join_p:"Recommend Seb Sathi to friends and family. It is free, and they can add it to their phone like an app.",
+  wl_h:"Welcome to Seb Sathi", wl_p:"A friend shared Seb Sathi with you. Add it to your phone and open it like an app, any time. It is free.",
   wl_go:"Add to my phone", wl_how:"Show me how", wl_no:"Maybe later"
 });
 Object.assign(T.hi, {
-  sh_btn:"शेयर", sh_invite:"दोस्तों को बुलाएँ", sh_h:"Apple Doctor की सिफ़ारिश करें", sh_p:"इसे दूसरे सेब बाग़वानों को भेजें। लिंक खोलकर वे Apple Doctor को अपने फ़ोन में जोड़ सकते हैं।",
+  sh_btn:"शेयर", sh_invite:"दोस्तों को बुलाएँ", sh_h:"सेब साथी की सिफ़ारिश करें", sh_p:"इसे दूसरे सेब बाग़वानों को भेजें। लिंक खोलकर वे सेब साथी को अपने फ़ोन में जोड़ सकते हैं।",
   sh_wa:"WhatsApp पर भेजें", sh_more:"दूसरे तरीक़े से भेजें", sh_copy:"लिंक कॉपी करें", sh_close:"बंद करें", sh_copied:"लिंक कॉपी हो गया। किसी भी चैट में पेस्ट करें।", sh_copy_fail:"कॉपी नहीं हो सका। ऊपर वाले संदेश को दबाकर रखें और कॉपी करें।",
-  sh_msg:"नमस्ते! 🍎 मैं अपने बाग़ के लिए Apple Doctor इस्तेमाल करता हूँ। सेब बाग़वानों के लिए मुफ़्त: मुनाफ़ा कैलकुलेटर, स्प्रे शेड्यूल, बीमारी की जाँच और मंडी भाव, हिंदी और अंग्रेज़ी में।\nयह लिंक खोलें और इसे अपने फ़ोन में जोड़ें:",
-  sh_join_h:"कोई और बाग़वान जानते हैं?", sh_join_p:"दोस्तों और परिवार को Apple Doctor के बारे में बताएँ। यह मुफ़्त है, और वे इसे ऐप की तरह फ़ोन में रख सकते हैं।",
-  wl_h:"Apple Doctor में आपका स्वागत है", wl_p:"एक दोस्त ने आपको Apple Doctor भेजा है। इसे फ़ोन में जोड़ें और जब चाहें ऐप की तरह खोलें। यह मुफ़्त है।",
+  sh_msg:"नमस्ते! 🍎 मैं अपने बाग़ के लिए सेब साथी इस्तेमाल करता हूँ। सेब बाग़वानों के लिए मुफ़्त: मुनाफ़ा कैलकुलेटर, स्प्रे शेड्यूल, बीमारी की जाँच और मंडी भाव, हिंदी और अंग्रेज़ी में।\nयह लिंक खोलें और इसे अपने फ़ोन में जोड़ें:",
+  sh_join_h:"कोई और बाग़वान जानते हैं?", sh_join_p:"दोस्तों और परिवार को सेब साथी के बारे में बताएँ। यह मुफ़्त है, और वे इसे ऐप की तरह फ़ोन में रख सकते हैं।",
+  wl_h:"सेब साथी में आपका स्वागत है", wl_p:"एक दोस्त ने आपको सेब साथी भेजा है। इसे फ़ोन में जोड़ें और जब चाहें ऐप की तरह खोलें। यह मुफ़्त है।",
   wl_go:"मेरे फ़ोन में जोड़ें", wl_how:"तरीक़ा देखें", wl_no:"बाद में"
 });
 const myRef = () => user && user.id ? String(user.id).replace(/-/g, "").slice(0, 8) : "1";
@@ -5442,7 +5447,7 @@ $("shareJoin").addEventListener("click", shareOpen);
 $("shareClose").addEventListener("click", shareShut);
 $("shareDlg").addEventListener("click", e => { if (e.target === $("shareDlg")) shareShut(); });
 $("shareMore").addEventListener("click", async () => {
-  try { await navigator.share({title: "Apple Doctor", text: tr("sh_msg"), url: shareLink()}); } catch (e) {}
+  try { await navigator.share({title: "Seb Sathi", text: tr("sh_msg"), url: shareLink()}); } catch (e) {}
 });
 $("shareCopy").addEventListener("click", async () => {
   let ok = false;

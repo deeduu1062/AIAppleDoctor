@@ -1,8 +1,8 @@
-// Apple Doctor offline helper.
+// Seb Sathi offline helper.
 // The page itself: try the internet first (so updates show straight away), fall back to the saved copy when offline.
 // Fonts, icons and the sign-in library: use the saved copy, refresh it in the background.
 // Never touches sign-in, saving, or the photo check (/api, supabase.co): those always need the internet.
-const CACHE = "apple-doctor-v1";
+const CACHE = "seb-sathi-v2";
 const CORE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

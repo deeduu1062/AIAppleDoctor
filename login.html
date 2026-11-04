@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Apple Doctor – Log in</title>
+<title>Seb Sathi – Log in</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#F2F4EF">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Apple Doctor">
+<meta name="apple-mobile-web-app-title" content="Seb Sathi">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1197,7 +1197,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <body>
 <div class="topbar">
   <header class="wrap top">
-    <a class="brand" href="/"><i aria-hidden="true"></i>Apple Doctor</a>
+    <a class="brand" href="/"><i aria-hidden="true"></i>Seb Sathi</a>
     <nav class="nav" aria-label="Language"><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
   </header>
 </div>
@@ -1261,7 +1261,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="/feedback.js"></script>
 <script>
-/* Apple Doctor login page. After a successful login it goes back to the main page and opens the Dashboard. */
+/* Seb Sathi login page. After a successful login it goes back to the main page and opens the Dashboard. */
 const T = {
 "en": {
 "hdr_signin": "Log in",
@@ -1319,17 +1319,17 @@ const T = {
 }
 };
 Object.assign(T.en, {
-  lg_kicker:"Apple Doctor account", lg_back:"← Back to Apple Doctor",
+  lg_kicker:"Seb Sathi account", lg_back:"← Back to Seb Sathi",
   lg_h_login:"Log in", lg_p_login:"Log in with your email and password, or ask for a login link by email.",
   lg_h_signup:"Create your free account", lg_p_signup:"Enter your email and choose a password (at least 8 characters), then tap Create account. Your orchards and records stay private to you.",
-  lg_sw_login:"New to Apple Doctor?", lg_sw_login_a:"Create your free account",
+  lg_sw_login:"New to Seb Sathi?", lg_sw_login_a:"Create your free account",
   lg_sw_signup:"Already have an account?", lg_sw_signup_a:"Log in"
 });
 Object.assign(T.hi, {
-  lg_kicker:"Apple Doctor खाता", lg_back:"← Apple Doctor पर वापस",
+  lg_kicker:"सेब साथी खाता", lg_back:"← सेब साथी पर वापस",
   lg_h_login:"लॉग इन", lg_p_login:"अपने ईमेल और पासवर्ड से लॉग इन करें, या ईमेल पर लॉग इन लिंक मँगवाएँ।",
   lg_h_signup:"अपना मुफ़्त खाता बनाएँ", lg_p_signup:"अपना ईमेल डालें और पासवर्ड चुनें (कम से कम 8 अक्षर), फिर खाता बनाएँ दबाएँ। आपके बाग़ और रिकॉर्ड सिर्फ़ आपके लिए रहेंगे।",
-  lg_sw_login:"Apple Doctor पर नए हैं?", lg_sw_login_a:"अपना मुफ़्त खाता बनाएँ",
+  lg_sw_login:"सेब साथी पर नए हैं?", lg_sw_login_a:"अपना मुफ़्त खाता बनाएँ",
   lg_sw_signup:"पहले से खाता है?", lg_sw_signup_a:"लॉग इन"
 });
 const $ = id => document.getElementById(id);
@@ -1554,7 +1554,7 @@ function renderMode() {
   $("authSignIn").hidden = up; $("authForgot").hidden = up;
   $("authCreate").hidden = !up; $("authCreate").className = "btn-s add";
   $("authPw").autocomplete = up ? "new-password" : "current-password";
-  document.title = "Apple Doctor – " + tr("lg_h_" + mode);
+  document.title = "Seb Sathi – " + tr("lg_h_" + mode);
 }
 $("swA").addEventListener("click", e => {
   e.preventDefault();

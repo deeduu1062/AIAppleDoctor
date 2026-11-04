@@ -1,4 +1,4 @@
-// Apple Doctor — photo diagnosis (Vercel serverless function)
+// Seb Sathi — photo diagnosis (Vercel serverless function)
 // POST /api/diagnose  { images: [dataUrl or base64 jpeg, ...1-3], part, note, lang }
 // Header: Authorization: Bearer <Supabase access token of the signed-in grower>
 //
@@ -18,7 +18,7 @@ const ADMIN_LIMIT = 50;
 const IDS = ["scab", "mars", "alt", "pm", "sooty", "pit", "canker", "collar", "wrr", "woolly", "mite", "sjs", "borer", "other", "healthy"];
 const PARTS = ["leaf", "fruit", "bark", "tree"];
 
-const SYSTEM = `You are "Apple Doctor", helping apple growers in Himachal Pradesh and Kashmir (mostly Royal Delicious and other Delicious types, also spur types and Gala on clonal rootstocks, grown at roughly 1,500 to 2,700 m).
+const SYSTEM = `You are "Seb Sathi", helping apple growers in Himachal Pradesh and Kashmir (mostly Royal Delicious and other Delicious types, also spur types and Gala on clonal rootstocks, grown at roughly 1,500 to 2,700 m).
 
 Look at the grower's photo(s) and say what the most likely problem is. Choose ids ONLY from this list:
 scab = apple scab (Venturia): olive to black velvety spots on leaves, dark corky scabby spots and cracks on fruit
