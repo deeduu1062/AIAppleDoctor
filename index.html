@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Apple Doctor: free tools and simple guidance for apple growers in Himachal Pradesh and Kashmir.">
 <title>Apple Doctor</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#FAF7F1">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Apple Doctor">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Khand:wght@500;600;700&family=Hind:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
@@ -443,6 +452,13 @@ footer p{max-width:70ch}
 .phrow{display:flex;align-items:stretch}
 .phcc{display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;background:var(--surface-2);font:500 1.05rem var(--mono);color:var(--muted)}
 .phrow input{border-radius:0 8px 8px 0!important;font-family:var(--mono)!important;letter-spacing:.03em}
+
+/* install as app */
+.instbar{background:var(--surface-2);border-bottom:1px solid var(--line)}
+.instrow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+.instrow img{border-radius:8px;flex:none}
+.instrow span{flex:1 1 200px;font-size:.95rem}
+.instrow .link{padding:6px 0}
 </style>
 
 <style>
@@ -900,6 +916,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 </head>
 <body>
 <div class="topbar">
+  <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo" data-i18n="in_go" hidden></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
   <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><button class="link" type="button" id="setPw" data-i18n="acct_setpw"></button><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
   <header class="wrap top">
     <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
@@ -1783,7 +1800,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderAuthMethod(); if (AD) renderAdmin();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderAuthMethod(); renderInstall(); if (AD) renderAdmin();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -4414,6 +4431,36 @@ async function dxFeedback(k) {
   try { await sb.from("diagnoses").update({ feedback: k }).eq("id", dxLast.id); } catch (e) {}
 }
 
+
+/* ---- install as an app (PWA) ---- */
+Object.assign(T.en, { in_android:"Add Apple Doctor to your phone. It opens like an app, even with weak signal.", in_ios:"Add Apple Doctor to your phone: tap the Share button, then \u201cAdd to Home Screen\u201d.", in_go:"Install", in_no:"Not now" });
+Object.assign(T.hi, { in_android:"Apple Doctor को अपने फ़ोन में जोड़ें। यह ऐप की तरह खुलेगा, कमज़ोर नेटवर्क में भी।", in_ios:"Apple Doctor को फ़ोन में जोड़ें: शेयर बटन दबाएँ, फिर \u201cAdd to Home Screen\u201d चुनें।", in_go:"इंस्टॉल करें", in_no:"अभी नहीं" });
+let instEvt = null, instMode = "";
+const instApp = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+const instSnoozed = () => { try { return +localStorage.getItem("ad-inst-no") > Date.now(); } catch (e) { return false; } };
+function renderInstall() {
+  const show = !!instMode && !instApp() && !instSnoozed();
+  $("instBar").hidden = !show;
+  if (!show) return;
+  set("instMsg", tr(instMode === "ios" ? "in_ios" : "in_android"));
+  $("instGo").hidden = instMode !== "android";
+}
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); instEvt = e; instMode = "android"; renderInstall(); });
+window.addEventListener("appinstalled", () => { instEvt = null; instMode = ""; renderInstall(); });
+if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !instApp()) instMode = "ios";
+$("instGo").addEventListener("click", async () => {
+  if (!instEvt) return;
+  instEvt.prompt();
+  try { await instEvt.userChoice; } catch (e) {}
+  instEvt = null; instMode = ""; renderInstall();
+});
+$("instNo").addEventListener("click", () => {
+  try { localStorage.setItem("ad-inst-no", String(Date.now() + 14 * 86400000)); } catch (e) {}
+  renderInstall();
+});
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
+}
 /* ---- top tabs ---- */
 const TT = ["orch","calc","diag","spray","cal","mandi","buy","admin"];
 function showTool(w, focus, scroll) {
