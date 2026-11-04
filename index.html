@@ -357,7 +357,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .tabbar .tab{flex:none;white-space:nowrap;border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--muted);padding:10px 14px;min-height:46px;font:600 .98rem var(--body)}
 .tabbar .tab:hover{color:var(--fg)}
 .tabbar .tab[aria-selected="true"]{background:none;color:var(--fg);border-bottom-color:var(--apple)}
-#tools{scroll-margin-top:120px}
+#tools{scroll-margin-top:120px;padding-top:18px}
 
 /* tools */
 .tpanel{margin-top:24px;display:grid;gap:24px;max-width:880px}
@@ -477,6 +477,7 @@ footer p{max-width:70ch}
 /* dashboard showcase (signed out) */
 .promo{display:grid;gap:18px}
 .promo[hidden]{display:none}
+.prgreet{font-weight:700;color:var(--apple);margin:0 0 4px;font-size:1rem}
 .prhead h3{font-size:1.45rem;font-weight:800;line-height:1.25}
 .prhead p{color:var(--muted);margin-top:6px;max-width:60ch}
 .prshow{display:grid;gap:10px;min-width:0}
@@ -484,6 +485,8 @@ footer p{max-width:70ch}
 .prtrack::-webkit-scrollbar{display:none}
 .prtrack:focus-visible{outline:2px solid var(--brand-bg);outline-offset:3px}
 .prtrack > .prcard{scroll-snap-align:start;scroll-snap-stop:always}
+.prtrack > .prcard{display:flex;flex-direction:column}
+.prtrack .prcols{flex:1 1 auto;min-height:72px;height:auto}
 @media (min-width:760px){.prtrack{grid-auto-columns:calc(50% - 6px)}}
 .prnav{display:flex;align-items:center;justify-content:center;gap:10px}
 .prarr{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:600 1.5rem/1 var(--body);cursor:pointer;display:grid;place-items:center;padding:0 0 3px}
@@ -520,6 +523,25 @@ footer p{max-width:70ch}
 .prres p{margin:6px 0 0;color:var(--muted);font-size:.92rem}
 .prdx .btn-s{justify-self:start}
 .prcta{margin-top:0}
+/* visitors: showcase first, compact on phones */
+.tpanel.guest{margin-top:6px;gap:18px}
+.tpanel.guest .promo{gap:12px}
+@media (max-width:560px){
+  .prhead p:not(.prgreet){display:none}
+  .prhead h3{font-size:1.25rem}
+  .prgreet{font-size:.92rem}
+  .prcard{padding:14px;gap:8px}
+  .prcard .sub2{font-size:.88rem}
+  .prrows{gap:7px}
+  .prrows small{display:none}
+  .prbig b{font-size:1.6rem}
+  .prnav{gap:6px}
+  .prarr{width:36px;height:36px}
+  .instrow{padding-top:8px;padding-bottom:8px;gap:6px 10px}
+  .instrow img{width:30px;height:30px}
+  .instrow span{flex:1 1 150px;font-size:.9rem;line-height:1.35}
+  .instrow .btn-s{padding:6px 12px;min-height:36px;font-size:.88rem}
+}
 /* install as app */
 .instbar{background:var(--surface-2);border-bottom:1px solid var(--line)}
 .instrow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
@@ -992,46 +1014,6 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
   <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-admin" aria-selected="false" aria-controls="tp-admin" type="button" data-i18n="tt_admin" hidden></button></div></div>
 </div>
 
-<section class="hero" id="top">
-  <div class="wrap">
-    <div class="hero-grid">
-      <div>
-        <p class="kicker" data-i18n="hero_kicker"></p>
-        <h1 data-i18n="hero_h1"></h1>
-        <p class="greet">“Main hoon aapka apna Apple Doctor.”</p>
-        <p class="sub" data-i18n="hero_p"></p>
-        <div class="btns">
-          <a class="btn primary" href="#tools" data-i18n="hero_cta1"></a>
-          <a class="btn ghost" href="#join" data-i18n="hero_cta2"></a>
-        </div>
-      </div>
-      <div class="sample" aria-live="polite">
-        <p class="tag" id="hero_t" data-i18n="hero_card_t"></p>
-        <p class="lab" data-i18n="hc_net"></p>
-        <p class="fig" id="h_profit"></p>
-        <div class="hrow">
-          <div><span data-i18n="hc_ppb"></span><b id="h_ppb"></b></div>
-          <div><span data-i18n="ls_boxes"></span><b id="h_boxes"></b></div>
-        </div>
-        <p class="meta" id="h_meta"></p>
-        <p class="note" id="hero_n" data-i18n="hero_card_note"></p>
-      </div>
-    </div>
-  </div>
-  <svg class="rows" width="100%" height="64" aria-hidden="true" focusable="false">
-    <defs>
-      <pattern id="tree" width="64" height="64" patternUnits="userSpaceOnUse">
-        <rect x="30" y="38" width="4" height="26" style="fill:var(--tree)"/>
-        <circle cx="32" cy="28" r="19" style="fill:var(--tree)"/>
-        <circle cx="25" cy="24" r="2.6" style="fill:var(--tree-apple)"/>
-        <circle cx="38" cy="30" r="2.6" style="fill:var(--tree-apple)"/>
-        <circle cx="31" cy="35" r="2.6" style="fill:var(--tree-apple)"/>
-      </pattern>
-    </defs>
-    <rect width="100%" height="64" fill="url(#tree)"/>
-  </svg>
-</section>
-
 <section class="section" id="tools">
   <div class="wrap">
     <div class="tpanel" id="tp-calc" role="tabpanel" aria-labelledby="tt-calc">
@@ -1251,7 +1233,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
     </div>
 
     <div class="tpanel" id="tp-orch" role="tabpanel" aria-labelledby="tt-orch" hidden>
-      <div class="thead"><h3 data-i18n="tab_orch"></h3><span class="pill" id="orchPill"></span></div>
+      <div class="thead" id="orchHead"><h3 data-i18n="tab_orch"></h3><span class="pill" id="orchPill"></span></div>
       <div class="promo" id="promo"></div>
       <p id="orIntro" data-i18n="or_p"></p>
 
@@ -1331,6 +1313,46 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
       </div>
     </div>
   </div>
+</section>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="kicker" data-i18n="hero_kicker"></p>
+        <h1 data-i18n="hero_h1"></h1>
+        <p class="greet">“Main hoon aapka apna Apple Doctor.”</p>
+        <p class="sub" data-i18n="hero_p"></p>
+        <div class="btns">
+          <a class="btn primary" href="#tools" data-i18n="hero_cta1"></a>
+          <a class="btn ghost" href="#join" data-i18n="hero_cta2"></a>
+        </div>
+      </div>
+      <div class="sample" aria-live="polite">
+        <p class="tag" id="hero_t" data-i18n="hero_card_t"></p>
+        <p class="lab" data-i18n="hc_net"></p>
+        <p class="fig" id="h_profit"></p>
+        <div class="hrow">
+          <div><span data-i18n="hc_ppb"></span><b id="h_ppb"></b></div>
+          <div><span data-i18n="ls_boxes"></span><b id="h_boxes"></b></div>
+        </div>
+        <p class="meta" id="h_meta"></p>
+        <p class="note" id="hero_n" data-i18n="hero_card_note"></p>
+      </div>
+    </div>
+  </div>
+  <svg class="rows" width="100%" height="64" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="tree" width="64" height="64" patternUnits="userSpaceOnUse">
+        <rect x="30" y="38" width="4" height="26" style="fill:var(--tree)"/>
+        <circle cx="32" cy="28" r="19" style="fill:var(--tree)"/>
+        <circle cx="25" cy="24" r="2.6" style="fill:var(--tree-apple)"/>
+        <circle cx="38" cy="30" r="2.6" style="fill:var(--tree-apple)"/>
+        <circle cx="31" cy="35" r="2.6" style="fill:var(--tree-apple)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="64" fill="url(#tree)"/>
+  </svg>
 </section>
 
 <section class="section alt" id="coming">
@@ -4624,6 +4646,8 @@ Object.assign(T.hi, {
 function renderPromo() {
   const el = $("promo"); if (!el) return;
   el.hidden = !!user;
+  $("orchHead").hidden = !user;
+  $("tp-orch").classList.toggle("guest", !user);
   if (user) { el.innerHTML = ""; return; }
   const now = new Date(), y = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
   const years = [[y - 2, 210000], [y - 1, 305000], [y, 392000]], maxY = 392000;
@@ -4633,7 +4657,7 @@ function renderPromo() {
   const ex = '<em class="chip">' + tr("pr_ex") + "</em>";
   const bar = (v, m) => '<span class="prbar"><i style="width:' + Math.round(v / m * 100) + '%"></i></span>';
   el.innerHTML =
-    '<div class="prhead"><h3>' + tr("pr_h") + '</h3><p>' + tr("pr_p") + "</p></div>" +
+    '<div class="prhead"><p class="prgreet">“Main hoon aapka apna Apple Doctor.”</p><h3>' + tr("pr_h") + '</h3><p>' + tr("pr_p") + "</p></div>" +
     '<div class="prshow" role="region" aria-roledescription="carousel" aria-label="' + esc(tr("pr_h")) + '"><div class="prtrack" id="prTrack" tabindex="0">' +
       '<article class="prcard"><h4>' + tr("pr_y_h") + " " + ex + "</h4><p class=\"sub2\">" + tr("pr_y_p") + "</p>" +
         '<div class="prbig"><span>' + tr("pr_y_lbl") + ", " + y + "</span><b>" + inr(years[2][1]) + "</b><small>" + tr("pr_up").replace("{p}", Math.round((years[2][1] / years[1][1] - 1) * 100)) + "</small></div>" +
@@ -4700,8 +4724,8 @@ $("promo").addEventListener("click", e => {
 });
 /* ---- install as an app (PWA) ---- */
 Object.assign(T.en, {
-  in_android:"Add Apple Doctor to your phone. It opens like an app, even with weak signal.",
-  in_ios:"Add Apple Doctor to your phone so it opens like an app, even with weak signal.",
+  in_android:"Get Apple Doctor as an app on your phone.",
+  in_ios:"Get Apple Doctor as an app on your phone.",
   in_go:"Install", in_how:"Show me how", in_no:"Not now", in_btn:"App",
   ig_h:"Add Apple Doctor to your phone", ig_ok:"OK, got it",
   ig_ios:["Tap <b>•••</b> at the bottom right of Safari. On older iPhones, tap the <b>Share</b> icon (a square with an arrow) at the bottom instead.","Tap <b>Share</b>.","Scroll down and tap <b>Add to Home Screen</b>. If you don’t see it, tap <b>View More</b> first.","Tap <b>Add</b>. The red apple icon appears on your home screen."],
@@ -4710,8 +4734,8 @@ Object.assign(T.en, {
   ig_and_note:"On a Samsung phone’s own browser, tap ☰ at the bottom, then Add page to, then Home screen."
 });
 Object.assign(T.hi, {
-  in_android:"Apple Doctor को अपने फ़ोन में जोड़ें। यह ऐप की तरह खुलेगा, कमज़ोर नेटवर्क में भी।",
-  in_ios:"Apple Doctor को फ़ोन में जोड़ें, ताकि यह ऐप की तरह खुले, कमज़ोर नेटवर्क में भी।",
+  in_android:"Apple Doctor को ऐप की तरह फ़ोन में रखें।",
+  in_ios:"Apple Doctor को ऐप की तरह फ़ोन में रखें।",
   in_go:"इंस्टॉल करें", in_how:"तरीक़ा देखें", in_no:"अभी नहीं", in_btn:"ऐप",
   ig_h:"Apple Doctor को फ़ोन में जोड़ें", ig_ok:"ठीक है",
   ig_ios:["Safari में नीचे दाईं ओर <b>•••</b> दबाएँ। पुराने iPhone में नीचे <b>शेयर</b> आइकन (तीर वाला चौकोर) दबाएँ।","<b>Share</b> दबाएँ।","नीचे स्क्रॉल करें और <b>Add to Home Screen</b> दबाएँ। न दिखे तो पहले <b>View More</b> दबाएँ।","<b>Add</b> दबाएँ। लाल सेब का आइकन होम स्क्रीन पर आ जाएगा।"],
