@@ -662,6 +662,7 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .gltiles span{display:block;font-size:.85rem;color:var(--muted)}
 .gltiles b{display:block;font:500 1.2rem var(--mono);font-variant-numeric:tabular-nums;margin-top:3px;overflow-wrap:anywhere}
 .gltiles .warn b{color:var(--apple)}
+.gltiles b.neg{color:var(--bad)}
 .glacts{display:flex;gap:8px;flex-wrap:wrap}
 .glcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
 .glbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;align-content:start;min-width:0}
@@ -4940,7 +4941,7 @@ $("promo").addEventListener("click", e => {
 Object.assign(T.en, {
   gl_h:"{y} season at a glance", gl_range:"Harvest year: 1 Nov {a} to 31 Oct {b}",
   gl_net:"Net profit", gl_loss:"Net loss", gl_vs:"{s} compared with {y}", gl_ppb:"{x} per box",
-  gl_sales:"Sales", gl_exp:"Expenses", gl_boxes:"Boxes sold", gl_due:"Not yet received",
+  gl_sales:"Sales", gl_exp:"Expenses", gl_boxes:"Boxes sold", gl_due:"Not yet received", gl_ppp:"Net profit per peti",
   gl_byo:"Net profit by orchard", gl_byo_p:"Tap an orchard to open its season.",
   gl_where:"Where the money went", gl_lotexp:"Picking, grading, packing, carriage and commission",
   gl_other:"Other costs",
@@ -4950,7 +4951,7 @@ Object.assign(T.en, {
 Object.assign(T.hi, {
   gl_h:"{y} सीज़न एक नज़र में", gl_range:"फ़सल वर्ष: 1 नवंबर {a} से 31 अक्टूबर {b}",
   gl_net:"शुद्ध मुनाफ़ा", gl_loss:"शुद्ध घाटा", gl_vs:"{y} की तुलना में {s}", gl_ppb:"{x} प्रति पेटी",
-  gl_sales:"बिक्री", gl_exp:"ख़र्च", gl_boxes:"बिकी पेटियाँ", gl_due:"अभी नहीं मिला",
+  gl_sales:"बिक्री", gl_exp:"ख़र्च", gl_boxes:"बिकी पेटियाँ", gl_due:"अभी नहीं मिला", gl_ppp:"प्रति पेटी शुद्ध मुनाफ़ा",
   gl_byo:"बाग़ के हिसाब से शुद्ध मुनाफ़ा", gl_byo_p:"किसी बाग़ पर दबाकर उसका सीज़न खोलें।",
   gl_where:"पैसा कहाँ गया", gl_lotexp:"तुड़ाई, ग्रेडिंग, पैकिंग, ढुलाई और कमीशन",
   gl_other:"अन्य ख़र्च",
@@ -4994,10 +4995,10 @@ function glanceHtml() {
     vs = '<span class="glvs ' + (ch >= 0 ? "up" : "down") + '">' + (ch >= 0 ? "▲ " : "▼ ") + tr("gl_vs").replace("{s}", Math.abs(ch) + "%").replace("{y}", y - 1) + "</span>";
   }
   h += '<div class="glhero ' + (t.net < 0 ? "neg" : "") + '"><span>' + tr(t.net < 0 ? "gl_loss" : "gl_net") + "</span><b>" + inr(Math.abs(t.net)) + "</b>" +
-    '<div class="glsub">' + (eq ? "<span>" + tr("gl_ppb").replace("{x}", inr(t.net / eq)) + "</span>" : "") + vs + "</div></div>";
+    '<div class="glsub">' + vs + "</div></div>";
   h += '<div class="gltiles"><div><span>' + tr("gl_sales") + "</span><b>" + inr(t.sales) + "</b></div><div><span>" + tr("gl_exp") + "</span><b>" + inr(cost) + "</b></div>" +
     "<div><span>" + tr("gl_boxes") + "</span><b>" + fmtN(t.boxes) + "</b></div>" +
-    '<div class="' + (t.due > 0 ? "warn" : "") + '"><span>' + tr("gl_due") + "</span><b>" + inr(t.due) + "</b></div></div>";
+    '<div><span>' + tr("gl_ppp") + '</span><b class="' + (eq && t.net < 0 ? "neg" : "") + '">' + (eq ? inr(t.net / eq) : "–") + "</b></div></div>";
   h += acts;
   const rows = glOrchRows(y).sort((a, b) => b.net - a.net), maxN = Math.max.apply(null, rows.map(r => Math.abs(r.net)).concat([1]));
   h += '<div class="glcols"><div class="glbox"><h4>' + tr("gl_byo") + '</h4><p class="fine">' + tr("gl_byo_p") + '</p><ul class="glrows">' +
