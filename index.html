@@ -437,6 +437,12 @@ footer p{max-width:70ch}
 .dxthumbs:empty{display:none}
 .dxthumbs img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
 .dxfb{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* phone sign-in */
+.authtabs{margin-top:14px}
+.phrow{display:flex;align-items:stretch}
+.phcc{display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;background:var(--surface-2);font:500 1.05rem var(--mono);color:var(--muted)}
+.phrow input{border-radius:0 8px 8px 0!important;font-family:var(--mono)!important;letter-spacing:.03em}
 </style>
 
 <style>
@@ -1166,6 +1172,29 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 
       <div class="authcard" id="authCard">
         <h3 data-i18n="auth_h"></h3>
+        <div class="tabs authtabs" role="tablist" id="authTabs">
+          <button class="tab" role="tab" id="authM-phone" type="button" aria-selected="false" data-i18n="ph_tab"></button>
+          <button class="tab" role="tab" id="authM-email" type="button" aria-selected="true" data-i18n="em_tab"></button>
+        </div>
+        <div id="authPhone" hidden>
+          <p data-i18n="ph_p"></p>
+          <div id="phStep1">
+            <form id="phForm" novalidate>
+              <div class="field"><label for="phNum" data-i18n="ph_num"></label><div class="phrow"><span class="phcc">+91</span><input id="phNum" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="98765 43210"></div></div>
+              <p class="autherr" id="phErr" role="alert"></p>
+              <div class="dels"><button class="btn-s add" type="submit" id="phSend" data-i18n="ph_send"></button><button class="btn-s" type="button" id="phWa" data-i18n="ph_wa" hidden></button></div>
+            </form>
+          </div>
+          <div id="phStep2" hidden>
+            <p class="sentmsg" id="phSentMsg"></p>
+            <form id="phCodeForm" novalidate>
+              <div class="field"><label for="phCode" data-i18n="ph_code"></label><input id="phCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8"></div>
+              <p class="autherr" id="phCodeErr" role="alert"></p>
+              <div class="dels"><button class="btn-s add" type="submit" id="phVerify" data-i18n="ph_verify"></button><button class="btn-s" type="button" id="phResend"></button><button class="link" type="button" id="phOther" data-i18n="ph_other"></button></div>
+            </form>
+          </div>
+        </div>
+        <div id="authEmailBox">
         <p data-i18n="auth_p"></p>
         <div id="authStep1">
           <form id="authForm" novalidate>
@@ -1184,6 +1213,7 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
             <p class="autherr" id="authCodeErr" role="alert"></p>
             <div class="dels"><button class="btn-s add" type="submit" data-i18n="auth_verify"></button><button class="btn-s" type="button" id="authOther" data-i18n="auth_other"></button></div>
           </form>
+        </div>
         </div>
       </div>
 
@@ -1753,7 +1783,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); if (AD) renderAdmin();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderAuthMethod(); if (AD) renderAdmin();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -2000,7 +2030,8 @@ function renderAcct() {
   renderDiagAuth();
   if (!isAdmin()) { AD = null; adLoaded = false; if (!$("tp-admin").hidden) showTool(user ? "orch" : "calc"); }
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
-  if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || ""));
+  if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || fmtPhone(user.phone)));
+  $("setPw").hidden = !!(user && !user.email);
   if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail));
 }
 let recovering = false, pwOpen = false;
@@ -2185,6 +2216,122 @@ $("codeForm").addEventListener("submit", async e => {
   if (err) { justSignedIn = false; set("authCodeErr", tr("auth_err_code")); }
 });
 $("authOther").addEventListener("click", () => { pendingEmail = ""; $("authStep1").hidden = false; $("authStep2").hidden = true; authClear(); });
+
+/* ---- mobile number sign-in (Supabase phone OTP, sent by Twilio) ----
+   PHONE_READY: set to true once Twilio is connected in Supabase (Authentication → Providers → Phone).
+   Until then the Mobile tab is hidden; add ?phone=1 to the address to test it.
+   PHONE_WHATSAPP: set to true once a Twilio WhatsApp sender is approved, to show "Send on WhatsApp". */
+const PHONE_READY = false;
+const PHONE_WHATSAPP = false;
+Object.assign(T.en, {
+  ph_tab:"Mobile number", em_tab:"Email",
+  ph_p:"Sign in with your mobile number. We send a 6-digit code by SMS. New here? The same steps create your account.",
+  ph_num:"Mobile number", ph_send:"Send code by SMS", ph_wa:"Send code on WhatsApp",
+  ph_sent:"We sent a 6-digit code to {p}. Type it below. It can take a minute to arrive.", ph_sent_wa:"We sent a 6-digit code on WhatsApp to {p}. Type it below.",
+  ph_code:"6-digit code", ph_verify:"Sign in", ph_resend:"Send again", ph_resend_in:"Send again in {n}s", ph_other:"Use a different number",
+  ph_e_num:"Enter a 10-digit mobile number, for example 98765 43210.", ph_e_code:"That code did not work. Check it and try again, or tap Send again.",
+  ph_e_wait:"Please wait a minute before asking for another code.", ph_e_off:"Sign-in by mobile is not switched on yet. Please use Email for now.",
+  ph_e_send:"We could not send the code: {m}"
+});
+Object.assign(T.hi, {
+  ph_tab:"मोबाइल नंबर", em_tab:"ईमेल",
+  ph_p:"अपने मोबाइल नंबर से साइन इन करें। हम SMS से 6 अंकों का कोड भेजेंगे। नए हैं? इन्हीं क़दमों से आपका खाता बन जाएगा।",
+  ph_num:"मोबाइल नंबर", ph_send:"SMS से कोड भेजें", ph_wa:"WhatsApp पर कोड भेजें",
+  ph_sent:"हमने {p} पर 6 अंकों का कोड भेजा है। नीचे डालें। आने में एक मिनट लग सकता है।", ph_sent_wa:"हमने {p} पर WhatsApp से 6 अंकों का कोड भेजा है। नीचे डालें।",
+  ph_code:"6 अंकों का कोड", ph_verify:"साइन इन", ph_resend:"फिर से भेजें", ph_resend_in:"{n} सेकंड बाद फिर से भेजें", ph_other:"दूसरा नंबर इस्तेमाल करें",
+  ph_e_num:"10 अंकों का मोबाइल नंबर डालें, जैसे 98765 43210।", ph_e_code:"यह कोड काम नहीं किया। जाँचकर दोबारा डालें, या फिर से भेजें दबाएँ।",
+  ph_e_wait:"दूसरा कोड मँगवाने से पहले एक मिनट रुकें।", ph_e_off:"मोबाइल से साइन-इन अभी चालू नहीं है। अभी के लिए ईमेल इस्तेमाल करें।",
+  ph_e_send:"कोड नहीं भेजा जा सका: {m}"
+});
+const phoneOn = PHONE_READY || /[?&]phone=1/.test(location.search);
+let authMethod = "email";
+try { const m = localStorage.getItem("ad-auth"); authMethod = phoneOn ? (m === "email" ? "email" : "phone") : "email"; } catch (e) { authMethod = phoneOn ? "phone" : "email"; }
+let phPending = "", phChannel = "sms", phTimer = null, phLeft = 0;
+
+/* "+91 98765 43210" from what Supabase stores ("919876543210") or from E.164 */
+function fmtPhone(p) {
+  const d = String(p || "").replace(/\D/g, "");
+  if (!d) return "";
+  if (d.length === 12 && d.startsWith("91")) return "+91 " + d.slice(2, 7) + " " + d.slice(7);
+  return "+" + d;
+}
+/* returns E.164 (+91XXXXXXXXXX) or "" */
+function normPhone(v) {
+  let s = String(v || "").replace(/[\s\-().]/g, "");
+  if (s.startsWith("+")) return /^\+\d{8,15}$/.test(s) ? s : "";
+  if (/^0\d{10}$/.test(s)) s = s.slice(1);
+  if (/^91[6-9]\d{9}$/.test(s)) s = s.slice(2);
+  return /^[6-9]\d{9}$/.test(s) ? "+91" + s : "";
+}
+function renderAuthMethod() {
+  $("authTabs").hidden = !phoneOn;
+  ["phone", "email"].forEach(m => {
+    const b = $("authM-" + m);
+    b.setAttribute("aria-selected", authMethod === m ? "true" : "false");
+    b.tabIndex = authMethod === m ? 0 : -1;
+  });
+  $("authPhone").hidden = authMethod !== "phone";
+  $("authEmailBox").hidden = authMethod !== "email";
+  $("phWa").hidden = !PHONE_WHATSAPP;
+  renderPhResend();
+  if (phPending) set("phSentMsg", tr(phChannel === "whatsapp" ? "ph_sent_wa" : "ph_sent").replace("{p}", fmtPhone(phPending)));
+}
+["phone", "email"].forEach(m => $("authM-" + m).addEventListener("click", () => {
+  authMethod = m; try { localStorage.setItem("ad-auth", m); } catch (e) {}
+  renderAuthMethod();
+}));
+function renderPhResend() {
+  const b = $("phResend");
+  b.disabled = phLeft > 0;
+  b.textContent = phLeft > 0 ? tr("ph_resend_in").replace("{n}", phLeft) : tr("ph_resend");
+}
+function phCountdown() {
+  clearInterval(phTimer); phLeft = 60; renderPhResend();
+  phTimer = setInterval(() => { phLeft--; renderPhResend(); if (phLeft <= 0) clearInterval(phTimer); }, 1000);
+}
+function phErrMsg(err) {
+  const m = String((err && err.message) || err || "");
+  if (/after \d+ seconds|rate limit|too many/i.test(m) || (err && err.status === 429)) return tr("ph_e_wait");
+  if (/provider|sign ?ups? (are )?disabled|unsupported phone/i.test(m)) return tr("ph_e_off");
+  if (/fetch|network|failed|load/i.test(m)) return tr("auth_err_net");
+  return tr("ph_e_send").replace("{m}", m);
+}
+async function phSendCode(channel, errId) {
+  const phone = phPending || normPhone($("phNum").value);
+  if (!phone) { set(errId, tr("ph_e_num")); return; }
+  if (!sb) { set(errId, tr("auth_err_lib")); return; }
+  set(errId, "");
+  ["phSend", "phWa", "phResend"].forEach(id => { $(id).disabled = true; });
+  let err = null;
+  try { const res = await sb.auth.signInWithOtp({phone: phone, options: {channel: channel, shouldCreateUser: true}}); err = res.error; } catch (x) { err = x; }
+  ["phSend", "phWa"].forEach(id => { $(id).disabled = false; });
+  if (err) { renderPhResend(); set(errId, phErrMsg(err)); return; }
+  phPending = phone; phChannel = channel;
+  $("phStep1").hidden = true; $("phStep2").hidden = false; $("phCode").value = "";
+  phCountdown(); renderAuthMethod();
+  try { $("phCode").focus(); } catch (e) {}
+}
+$("phForm").addEventListener("submit", e => { e.preventDefault(); phSendCode("sms", "phErr"); });
+$("phWa").addEventListener("click", () => phSendCode("whatsapp", "phErr"));
+$("phResend").addEventListener("click", () => phSendCode(phChannel, "phCodeErr"));
+$("phCodeForm").addEventListener("submit", async e => {
+  e.preventDefault(); set("phCodeErr", "");
+  const token = $("phCode").value.replace(/\D/g, "");
+  if (token.length < 6 || !sb) { set("phCodeErr", tr("ph_e_code")); return; }
+  $("phVerify").disabled = true; justSignedIn = true;
+  let err = null;
+  try { const res = await sb.auth.verifyOtp({phone: phPending, token: token, type: "sms"}); err = res.error; } catch (x) { err = x; }
+  $("phVerify").disabled = false;
+  if (err) { justSignedIn = false; set("phCodeErr", /fetch|network|failed to/i.test(String(err.message || "")) ? tr("auth_err_net") : tr("ph_e_code")); return; }
+  phPending = ""; clearInterval(phTimer); phLeft = 0;
+  $("phStep1").hidden = false; $("phStep2").hidden = true; $("phNum").value = "";
+});
+$("phOther").addEventListener("click", () => {
+  phPending = ""; clearInterval(phTimer); phLeft = 0;
+  $("phStep1").hidden = false; $("phStep2").hidden = true; set("phErr", ""); set("phCodeErr", "");
+  renderAuthMethod();
+});
+renderAuthMethod();
 $("signOut").addEventListener("click", async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} applyUser(null); });
 $("loadRetry").addEventListener("click", () => { if (user) loadMine(); });
 $("signBtn").addEventListener("click", () => showTool("orch", false, true));
