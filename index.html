@@ -514,6 +514,54 @@ footer p{max-width:70ch}
 .dxhist .chip{margin-left:4px}
 /* dashboard showcase (signed out) */
 .promo{display:grid;gap:18px}
+/* library */
+.libsearch{max-width:420px}
+.libsearch input{font-family:var(--body)!important}
+.libcats{display:flex;gap:8px;flex-wrap:wrap}
+.libcats button{font:600 .9rem var(--body);padding:7px 13px;min-height:38px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
+.libcats button[aria-pressed="true"]{background:var(--brand-bg);border-color:var(--brand-bg);color:var(--on-brand)}
+.libgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px}
+.libcard{display:flex;flex-direction:column;gap:6px;text-align:left;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:0;overflow:hidden;cursor:pointer;color:var(--fg);font:inherit;box-shadow:0 1px 0 rgba(42,27,18,.04),0 10px 24px -20px rgba(42,27,18,.45)}
+.libcard:hover{border-color:var(--brand)}
+.libcard img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--surface-2)}
+.libcard .lc{padding:12px 14px 14px;display:grid;gap:6px}
+.libcard .cat{font-size:.78rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--apple)}
+html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85rem}
+.libcard b{font-family:var(--display);font-weight:600;font-size:1.12rem;line-height:1.3}
+.libcard small{color:var(--muted);font-size:.9rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.libart{max-width:720px}
+.libart .back{margin-bottom:6px}
+.libart .cat{font-size:.85rem;font-weight:700;color:var(--apple)}
+.libart h2{font-family:var(--display);font-size:clamp(1.6rem,6vw,2.2rem);margin:4px 0 0;line-height:1.2}
+.libart .meta{color:var(--muted);font-size:.88rem;margin-top:6px}
+.libart .note{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--surface-2);font-size:.9rem;color:var(--muted)}
+.libbody{margin-top:16px;font-size:1.05rem;line-height:1.65}
+.libbody p{margin:0 0 14px;max-width:none;color:var(--fg)}
+.libbody h4{font-family:var(--display);font-size:1.2rem;margin:22px 0 8px}
+.libbody ul{margin:0 0 14px;padding-left:1.2em}
+.libbody li{margin:4px 0}
+.libbody a{color:var(--brand)}
+.libpics{display:grid;gap:10px;margin-top:16px}
+.libpics img{width:100%;border-radius:12px;display:block}
+.libvid{margin-top:16px;position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.libvid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.libacts{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.libmsg{color:var(--muted)}
+/* admin library editor */
+.laform{display:grid;gap:12px;margin-top:14px;border:1px solid var(--brand-bg);border-radius:14px;padding:16px;background:var(--surface)}
+.laform .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:12px}
+.laform textarea{width:100%;min-height:260px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:400 1rem/1.5 var(--body);resize:vertical}
+.laform .field input,.laform .field select{font-family:var(--body)!important}
+.laform .help{font-size:.85rem;color:var(--muted);margin:0}
+.lapics{display:flex;gap:10px;flex-wrap:wrap}
+.lapics figure{margin:0;position:relative;width:110px}
+.lapics img{width:110px;height:80px;object-fit:cover;border-radius:8px;display:block;border:1px solid var(--line)}
+.lapics button{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:1rem;cursor:pointer;line-height:1}
+#laList .ledger td,#laList .ledger th{text-align:left;vertical-align:top}
+#laList .ledger td{font:400 .95rem var(--body);white-space:normal}
+#laList td.t{min-width:220px}
+#laList .tag{display:inline-block;font-size:.8rem;font-weight:600;padding:1px 8px;border-radius:6px;border:1px solid var(--line);color:var(--muted)}
+#laList .tag.ok{color:var(--good);border-color:var(--good)}
 .news{margin:18px 0 22px;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:16px 18px 12px;box-shadow:0 1px 0 rgba(42,27,18,.04),0 10px 24px -20px rgba(42,27,18,.45)}
 .newshead{display:flex;gap:6px 12px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
 .newshead h3{font-family:var(--display);font-weight:600;font-size:1.3rem;margin:0;display:flex;align-items:center;gap:8px}
@@ -1240,7 +1288,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
   </header>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-admin" aria-selected="false" aria-controls="tp-admin" type="button" data-i18n="tt_admin" hidden></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-lib" aria-selected="false" aria-controls="tp-lib" type="button" data-i18n="tt_lib"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-admin" aria-selected="false" aria-controls="tp-admin" type="button" data-i18n="tt_admin" hidden></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -1446,6 +1494,17 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <p class="tnote" data-i18n="dx_safe"></p>
     </div>
 
+    <div class="tpanel" id="tp-lib" role="tabpanel" aria-labelledby="tt-lib" hidden>
+      <div id="libHome" style="display:grid;gap:18px">
+        <div class="thead"><h3 data-i18n="lb_h"></h3><span class="pill live" data-i18n="lb_pill"></span></div>
+        <p data-i18n="lb_p"></p>
+        <div class="field libsearch"><label for="libQ" data-i18n="lb_search"></label><input id="libQ" type="search" autocomplete="off"></div>
+        <div class="libcats" id="libCats" role="group"></div>
+        <div id="libList"></div>
+      </div>
+      <article class="libart" id="libArt" hidden></article>
+    </div>
+
     <div class="tpanel" id="tp-spray" role="tabpanel" aria-labelledby="tt-spray" hidden>
       <div class="thead"><h3 data-i18n="sp_h"></h3><span class="pill live" data-i18n="s_guide"></span></div>
       <p data-i18n="sp_p"></p>
@@ -1487,6 +1546,40 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <div id="adTable"></div>
         <p class="fine" data-i18n="ad_note"></p>
       </div>
+      <section class="fbadm" aria-labelledby="laH">
+        <h4 id="laH" data-i18n="la_h"></h4>
+        <p class="fine" data-i18n="la_p"></p>
+        <div class="admbar">
+          <button class="btn-s add" type="button" id="laNew" data-i18n="la_new"></button>
+          <button class="btn-s" type="button" id="laSeed" data-i18n="la_seed" hidden></button>
+          <button class="btn-s" type="button" id="laRefresh" data-i18n="ad_refresh"></button>
+        </div>
+        <p class="autherr" id="laErr" role="alert"></p>
+        <p class="sentmsg" id="laOk" role="status"></p>
+        <form class="laform" id="laForm" novalidate hidden>
+          <div class="grid3">
+            <div class="field"><label for="laCat" data-i18n="la_cat"></label><select id="laCat"></select></div>
+            <div class="field"><label for="laStatus" data-i18n="la_status"></label><select id="laStatus"><option value="draft"></option><option value="published"></option></select></div>
+            <div class="field"><label for="laSort" data-i18n="la_sort"></label><input id="laSort" type="number" inputmode="numeric" min="0" max="9999"></div>
+          </div>
+          <div class="field"><label for="laTen" data-i18n="la_ten"></label><input id="laTen" type="text" maxlength="200"></div>
+          <div class="field"><label for="laThi" data-i18n="la_thi"></label><input id="laThi" type="text" maxlength="200"></div>
+          <div class="field"><label for="laBen" data-i18n="la_ben"></label><textarea id="laBen" maxlength="30000"></textarea></div>
+          <div class="field"><label for="laBhi" data-i18n="la_bhi"></label><textarea id="laBhi" maxlength="30000"></textarea></div>
+          <p class="help" data-i18n="la_help"></p>
+          <div class="field"><label for="laVid" data-i18n="la_vid"></label><input id="laVid" type="url" inputmode="url" maxlength="500" placeholder="https://youtu.be/..."></div>
+          <div><p class="help" data-i18n="la_pics"></p><div class="lapics" id="laPics"></div>
+            <input type="file" id="laFile" accept="image/*" multiple hidden>
+            <div class="dels"><button class="btn-s" type="button" id="laAddPic" data-i18n="la_addpic"></button><span class="fine" id="laPicMsg"></span></div></div>
+          <div class="dels">
+            <button class="btn-s add" type="submit" id="laSave" data-i18n="la_save"></button>
+            <button class="btn-s" type="button" id="laPrev" data-i18n="la_prev"></button>
+            <button class="btn-s" type="button" id="laCancel" data-i18n="la_cancel"></button>
+            <button class="btn-s danger" type="button" id="laDel" data-i18n="la_del"></button>
+          </div>
+        </form>
+        <div id="laList"></div>
+      </section>
       <section class="fbadm" aria-labelledby="fbAdmH">
         <h4 id="fbAdmH" data-i18n="fa_h"></h4>
         <p class="fine" data-i18n="fa_p"></p>
@@ -2118,7 +2211,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof loadNews === "function") loadNews(); if (window.ADFeedback) ADFeedback.render();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof loadNews === "function") loadNews(); if (typeof renderLib === "function") { renderLib(); renderLA(); } if (window.ADFeedback) ADFeedback.render();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -2365,7 +2458,7 @@ function renderAcct() {
   $("tt-admin").hidden = !isAdmin();
   renderDiagAuth();
   if (typeof renderPromo === "function") try { renderPromo(); } catch (e) {}
-  if (!isAdmin()) { AD = null; adLoaded = false; FB = null; if (!$("tp-admin").hidden) showTool(user ? "orch" : "calc"); }
+  if (!isAdmin()) { AD = null; adLoaded = false; FB = null; if (typeof LA !== "undefined") { LA = null; laEdit = null; } if (!$("tp-admin").hidden) showTool(user ? "orch" : "calc"); }
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || fmtPhone(user.phone)));
   $("setPw").hidden = !!(user && !user.email);
@@ -2419,7 +2512,7 @@ function renderAdmin() {
       '<td><span class="tag' + (u.confirmed ? " ok" : "") + '">' + tr(u.confirmed ? "ad_ok" : "ad_no") + "</span></td></tr>").join("") +
     "</tbody></table></div>";
 }
-$("adRefresh").addEventListener("click", () => { loadAdmin(); loadFeedback(); });
+$("adRefresh").addEventListener("click", () => { loadAdmin(); loadFeedback(); loadLibAdmin(); });
 $("adFind").addEventListener("input", renderAdmin);
 
 /* ---- admin: feedback and suggestions (table public.feedback, see supabase/feedback.sql) ---- */
@@ -4977,6 +5070,281 @@ $("instNo").addEventListener("click", () => {
   try { localStorage.setItem("ad-inst-no", String(Date.now() + 14 * 86400000)); } catch (e) {}
   renderInstall();
 });
+/* ---- knowledge library (table public.articles, photos in storage bucket "library"; see supabase/library.sql) ---- */
+Object.assign(T.en, {
+  tt_lib:"Library", lb_h:"Knowledge library", lb_pill:"Free guides", lb_p:"Simple guides on diseases, pests, sprays, pruning, harvest and selling, written for apple growers of Himachal and Kashmir.",
+  lb_search:"Search the library", lb_loading:"Loading guides…", lb_all:"All", lb_none:"No guides match your search.", lb_soon:"The first guides are being written. Please check back soon.",
+  lb_err:"The library could not load. Check your internet and try again.", lb_retry:"Try again", lb_back:"← All guides", lb_upd:"Updated {t}",
+  lb_only_en:"This guide is not yet in Hindi, so it is shown in English.", lb_only_hi:"This guide is not yet in English, so it is shown in Hindi.",
+  lb_share:"Share on WhatsApp", lb_video:"Watch the video", lb_draft:"Draft preview — growers cannot see this yet.",
+  lb_cat_disease:"Diseases", lb_cat_pest:"Pests", lb_cat_spray:"Sprays", lb_cat_nutrition:"Nutrition", lb_cat_pruning:"Pruning",
+  lb_cat_orchard:"Orchard care", lb_cat_harvest:"Harvest", lb_cat_market:"Selling", lb_cat_schemes:"Govt. schemes", lb_cat_other:"Other",
+  la_h:"Library articles", la_p:"Write and publish guides for the Library tab. Drafts are only visible to you.",
+  la_new:"New article", la_seed:"Add starter articles (as drafts)", la_cat:"Category", la_status:"Status", la_sort:"Order (small first)",
+  la_draft:"Draft", la_pub:"Published", la_ten:"Title (English)", la_thi:"Title (Hindi)", la_ben:"Article (English)", la_bhi:"Article (Hindi)",
+  la_help:"Formatting: leave an empty line between paragraphs. Start a line with ## for a heading, - for a bullet point, and put **two stars** around words for bold.",
+  la_vid:"Video link (YouTube, Facebook or Instagram, optional)", la_pics:"Photos (the first one is the cover)", la_addpic:"Add photos",
+  la_save:"Save", la_prev:"Preview", la_cancel:"Close", la_del:"Delete", la_delq:"Delete this article for good? Tap Delete again to confirm.",
+  la_saved:"Saved.", la_deleted:"Deleted.", la_need:"Write a title in English or Hindi first.", la_up:"Uploading {n}…", la_upfail:"Photo upload failed: {m}",
+  la_c_t:"Title", la_c_cat:"Category", la_c_st:"Status", la_c_upd:"Updated", la_c_a:"", la_edit:"Edit", la_empty:"No articles yet. Tap New article, or add the starter articles.",
+  la_seeded:"{n} starter articles added as drafts. Check each one, then set it to Published.",
+  la_err_setup:"The library table is not set up yet. Run supabase/library.sql once in the Supabase SQL Editor.", la_err:"Could not save: {m}", la_lerr:"Could not load articles: {m}"
+});
+Object.assign(T.hi, {
+  tt_lib:"जानकारी", lb_h:"जानकारी भंडार", lb_pill:"मुफ़्त गाइड", lb_p:"बीमारी, कीट, स्प्रे, छँटाई, तुड़ाई और बिक्री पर आसान गाइड, हिमाचल और कश्मीर के सेब बाग़वानों के लिए।",
+  lb_search:"जानकारी में खोजें", lb_loading:"गाइड लोड हो रही हैं…", lb_all:"सभी", lb_none:"आपकी खोज से कोई गाइड नहीं मिली।", lb_soon:"पहली गाइड लिखी जा रही हैं। कृपया जल्द फिर देखें।",
+  lb_err:"जानकारी लोड नहीं हो सकी। इंटरनेट जाँचें और फिर कोशिश करें।", lb_retry:"दोबारा कोशिश करें", lb_back:"← सभी गाइड", lb_upd:"अपडेट {t}",
+  lb_only_en:"यह गाइड अभी हिंदी में नहीं है, इसलिए अंग्रेज़ी में दिखाई गई है।", lb_only_hi:"यह गाइड अभी अंग्रेज़ी में नहीं है, इसलिए हिंदी में दिखाई गई है।",
+  lb_share:"WhatsApp पर भेजें", lb_video:"वीडियो देखें", lb_draft:"ड्राफ़्ट झलक — बाग़वान इसे अभी नहीं देख सकते।",
+  lb_cat_disease:"बीमारियाँ", lb_cat_pest:"कीट", lb_cat_spray:"स्प्रे", lb_cat_nutrition:"पोषण", lb_cat_pruning:"छँटाई",
+  lb_cat_orchard:"बाग़ की देखभाल", lb_cat_harvest:"तुड़ाई", lb_cat_market:"बिक्री", lb_cat_schemes:"सरकारी योजनाएँ", lb_cat_other:"अन्य",
+  la_h:"जानकारी के लेख", la_p:"जानकारी टैब के लिए गाइड लिखें और प्रकाशित करें। ड्राफ़्ट सिर्फ़ आपको दिखते हैं।",
+  la_new:"नया लेख", la_seed:"शुरुआती लेख जोड़ें (ड्राफ़्ट में)", la_cat:"श्रेणी", la_status:"स्थिति", la_sort:"क्रम (छोटा पहले)",
+  la_draft:"ड्राफ़्ट", la_pub:"प्रकाशित", la_ten:"शीर्षक (अंग्रेज़ी)", la_thi:"शीर्षक (हिंदी)", la_ben:"लेख (अंग्रेज़ी)", la_bhi:"लेख (हिंदी)",
+  la_help:"लिखने का तरीक़ा: पैराग्राफ़ों के बीच एक ख़ाली लाइन छोड़ें। शीर्षक के लिए लाइन ## से, बिंदु के लिए - से शुरू करें, और मोटे अक्षरों के लिए शब्दों के दोनों ओर **दो तारे** लगाएँ।",
+  la_vid:"वीडियो लिंक (YouTube, Facebook या Instagram, ज़रूरी नहीं)", la_pics:"फ़ोटो (पहली फ़ोटो कवर बनेगी)", la_addpic:"फ़ोटो जोड़ें",
+  la_save:"सहेजें", la_prev:"झलक देखें", la_cancel:"बंद करें", la_del:"हटाएँ", la_delq:"यह लेख हमेशा के लिए हटाएँ? पक्का करने के लिए फिर से हटाएँ दबाएँ।",
+  la_saved:"सहेज लिया।", la_deleted:"हटा दिया।", la_need:"पहले अंग्रेज़ी या हिंदी में शीर्षक लिखें।", la_up:"{n} अपलोड हो रही हैं…", la_upfail:"फ़ोटो अपलोड नहीं हुई: {m}",
+  la_c_t:"शीर्षक", la_c_cat:"श्रेणी", la_c_st:"स्थिति", la_c_upd:"अपडेट", la_c_a:"", la_edit:"बदलें", la_empty:"अभी कोई लेख नहीं। नया लेख दबाएँ, या शुरुआती लेख जोड़ें।",
+  la_seeded:"{n} शुरुआती लेख ड्राफ़्ट में जोड़े गए। हर एक जाँचें, फिर प्रकाशित करें।",
+  la_err_setup:"जानकारी वाली टेबल अभी नहीं बनी है। Supabase SQL Editor में supabase/library.sql एक बार चलाएँ।", la_err:"सहेजा नहीं जा सका: {m}", la_lerr:"लेख लोड नहीं हो सके: {m}"
+});
+var LIB_CATS = ["disease", "pest", "spray", "nutrition", "pruning", "orchard", "harvest", "market", "schemes", "other"];
+var LIB_COLS = "id,category,title_en,title_hi,body_en,body_hi,video_url,images,status,sort,updated_at";
+var LIB = null, libFailed = false, libBusy = false, libCat = "", libOpenId = null, libWant = null, libPreview = null;
+try { const c = JSON.parse(localStorage.getItem("ad-lib") || "null"); if (Array.isArray(c)) LIB = c; } catch (e) {}
+{ const m = /[?&]a=([0-9a-f-]{36})/i.exec(location.search); if (m) libWant = m[1].toLowerCase(); }
+const libPick = (a, k) => { const o = lang === "hi" ? "en" : "hi"; return a[k + "_" + lang] ? [a[k + "_" + lang], lang] : [a[k + "_" + o] || "", o]; };
+function libInline(t) {
+  return t.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (m, a, u) => '<a href="' + u + '" target="_blank" rel="noopener">' + a + "</a>");
+}
+function libMd(src) {
+  const blocks = esc(String(src || "").replace(/\r/g, "")).split(/\n\s*\n/);
+  return blocks.map(b => {
+    const lines = b.split("\n").filter(l => l.trim());
+    if (!lines.length) return "";
+    let out = "", list = [];
+    const flush = () => { if (list.length) { out += "<ul>" + list.map(x => "<li>" + libInline(x) + "</li>").join("") + "</ul>"; list = []; } };
+    let para = [];
+    const flushP = () => { if (para.length) { out += "<p>" + para.map(libInline).join("<br>") + "</p>"; para = []; } };
+    lines.forEach(l => {
+      const t = l.trim();
+      if (/^#{2,3}\s+/.test(t)) { flushP(); flush(); out += "<h4>" + libInline(t.replace(/^#+\s+/, "")) + "</h4>"; }
+      else if (/^[-•*]\s+/.test(t)) { flushP(); list.push(t.replace(/^[-•*]\s+/, "")); }
+      else { flush(); para.push(t); }
+    });
+    flushP(); flush();
+    return out;
+  }).join("");
+}
+const libPlain = s => String(s || "").replace(/^#+\s+/gm, "").replace(/^[-•*]\s+/gm, "").replace(/\*\*/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/\s+/g, " ").trim();
+function libVideo(u) {
+  if (!u) return "";
+  const y = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/.exec(u);
+  if (y) return '<div class="libvid"><iframe src="https://www.youtube-nocookie.com/embed/' + y[1] + '" title="Video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+  if (/^https?:\/\//.test(u)) return '<div class="libacts" style="border:0;padding:0;margin-top:14px"><a class="btn-s add" href="' + esc(u) + '" target="_blank" rel="noopener">▶ ' + tr("lb_video") + "</a></div>";
+  return "";
+}
+async function loadLib(force) {
+  if (!sb || libBusy) { renderLib(); return; }
+  if (LIB && !force && loadLib.done) { renderLib(); return; }
+  libBusy = true; loadLib.tried = true; renderLib();
+  let res = null, err = null;
+  try { res = await sb.from("articles").select(LIB_COLS).eq("status", "published").order("sort", {ascending: true}).order("updated_at", {ascending: false}); err = res.error; } catch (x) { err = x; }
+  libBusy = false;
+  if (err) { libFailed = !LIB; const m = String(err.message || err); if (/does not exist|schema cache|could not find the table/i.test(m)) { LIB = []; libFailed = false; } }
+  else { LIB = res.data || []; libFailed = false; loadLib.done = true; try { localStorage.setItem("ad-lib", JSON.stringify(LIB)); } catch (e) {} }
+  if (libWant) { const w = libWant; libWant = null; if (LIB && LIB.some(a => a.id === w)) { tabPicked = true; showTool("lib", false, true); libOpen(w, true); return; } }
+  renderLib();
+}
+function renderLib() {
+  if (libOpenId) { renderLibArt(); return; }
+  $("libHome").hidden = false; $("libArt").hidden = true;
+  const all = LIB || [];
+  const have = LIB_CATS.filter(c => all.some(a => a.category === c));
+  $("libCats").hidden = have.length < 2;
+  $("libCats").innerHTML = ['<button type="button" data-cat="" aria-pressed="' + (!libCat) + '">' + tr("lb_all") + "</button>"].concat(
+    have.map(c => '<button type="button" data-cat="' + c + '" aria-pressed="' + (libCat === c) + '">' + tr("lb_cat_" + c) + "</button>")).join("");
+  $("libQ").parentNode.hidden = all.length < 4;
+  if (!LIB) { $("libList").innerHTML = '<p class="libmsg">' + tr(libBusy || !loadLib.tried ? "lb_loading" : "lb_err") + "</p>"; return; }
+  if (libFailed) { $("libList").innerHTML = '<p class="libmsg">' + tr("lb_err") + ' <button class="link" type="button" data-libretry>' + tr("lb_retry") + "</button></p>"; return; }
+  if (!all.length) { $("libList").innerHTML = '<p class="empty">' + tr("lb_soon") + "</p>"; return; }
+  const q = $("libQ").value.trim().toLowerCase();
+  const rows = all.filter(a => (!libCat || a.category === libCat) &&
+    (!q || [a.title_en, a.title_hi, a.body_en, a.body_hi].join(" ").toLowerCase().indexOf(q) >= 0));
+  if (!rows.length) { $("libList").innerHTML = '<p class="empty">' + tr("lb_none") + "</p>"; return; }
+  $("libList").innerHTML = '<div class="libgrid">' + rows.map(a => {
+    const img = Array.isArray(a.images) && a.images[0];
+    return '<button type="button" class="libcard" data-art="' + esc(a.id) + '">' + (img ? '<img src="' + esc(img) + '" alt="" loading="lazy">' : "") +
+      '<span class="lc"><span class="cat">' + tr("lb_cat_" + (a.category || "other")) + "</span><b>" + esc(libPick(a, "title")[0]) + "</b><small>" +
+      esc(libPlain(String(libPick(a, "body")[0]).split(/\n\s*\n/).find(x => !/^\s*(#|[-•*]\s)/.test(x)) || "").slice(0, 220)) + "</small></span></button>";
+  }).join("") + "</div>";
+}
+function renderLibArt() {
+  const a = libPreview && libPreview.id === libOpenId ? libPreview : (LIB || []).find(x => x.id === libOpenId);
+  if (!a) { libOpenId = null; renderLib(); return; }
+  $("libHome").hidden = true; $("libArt").hidden = false;
+  const [title] = libPick(a, "title"), [body, bl] = libPick(a, "body");
+  const pics = (Array.isArray(a.images) ? a.images : []).filter(u => /^https:\/\//.test(u));
+  $("libArt").innerHTML = '<button class="link back" type="button" data-libback>' + tr("lb_back") + "</button>" +
+    (a.status === "draft" ? '<p class="note">' + tr("lb_draft") + "</p>" : "") +
+    '<div class="cat">' + tr("lb_cat_" + (a.category || "other")) + "</div><h2>" + esc(title) + "</h2>" +
+    (a.updated_at ? '<p class="meta">' + tr("lb_upd").replace("{t}", adWhen(a.updated_at)) + "</p>" : "") +
+    (bl !== lang ? '<p class="note">' + tr(bl === "en" ? "lb_only_en" : "lb_only_hi") + "</p>" : "") +
+    (pics[0] ? '<div class="libpics"><img src="' + esc(pics[0]) + '" alt=""></div>' : "") +
+    libVideo(a.video_url) +
+    '<div class="libbody" lang="' + bl + '">' + libMd(body) + "</div>" +
+    (pics.length > 1 ? '<div class="libpics">' + pics.slice(1).map(u => '<img src="' + esc(u) + '" alt="" loading="lazy">').join("") + "</div>" : "") +
+    (a.status === "draft" ? "" : '<div class="libacts"><a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' +
+      encodeURIComponent(title + "\n" + location.origin + "/?a=" + a.id) + '">' + tr("lb_share") + "</a></div>") +
+    '<div class="libacts" style="border:0;padding-top:0"><button class="btn-s" type="button" data-libback>' + tr("lb_back") + "</button></div>";
+}
+function libOpen(id, replace) {
+  libOpenId = id; renderLib();
+  const url = location.pathname + "?a=" + id;
+  try { if (replace) history.replaceState({lib: id}, "", url); else history.pushState({lib: id}, "", url); } catch (e) {}
+  const t = $("tp-lib"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"});
+}
+function libClose(fromPop) {
+  libOpenId = null; libPreview = null; renderLib();
+  if (!fromPop) { try { if (history.state && history.state.lib) history.back(); else history.replaceState(null, "", location.pathname); } catch (e) {} }
+}
+window.addEventListener("popstate", e => { if (libOpenId && !(e.state && e.state.lib)) libClose(true); else if (e.state && e.state.lib) { libOpenId = e.state.lib; renderLib(); } });
+$("libList").addEventListener("click", e => {
+  if (e.target.closest("[data-libretry]")) { loadLib(true); return; }
+  const c = e.target.closest("[data-art]"); if (c) libOpen(c.dataset.art);
+});
+$("libArt").addEventListener("click", e => { if (e.target.closest("[data-libback]")) libClose(); });
+$("libCats").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (!b) return; libCat = b.dataset.cat; renderLib(); });
+$("libQ").addEventListener("input", renderLib);
+$("tt-lib").addEventListener("click", () => { if (libOpenId) libClose(); loadLib(); });
+
+/* ---- admin: write and publish library articles ---- */
+var LA = null, laEdit = null, laDelArm = false, laBusy = false;
+function laSetMsg(err, ok) { set("laErr", err || ""); set("laOk", ok || ""); }
+async function loadLA() {
+  if (!isAdmin() || !sb) return;
+  let res = null, err = null;
+  try { res = await sb.from("articles").select(LIB_COLS).order("sort", {ascending: true}).order("updated_at", {ascending: false}); err = res.error; } catch (x) { err = x; }
+  if (err) { const m = String(err.message || err); laSetMsg(/does not exist|schema cache|could not find the table/i.test(m) ? tr("la_err_setup") : tr("la_lerr").replace("{m}", m)); LA = null; renderLA(); return; }
+  LA = res.data || []; renderLA();
+}
+function renderLA() {
+  const cats = LIB_CATS.map(c => '<option value="' + c + '">' + tr("lb_cat_" + c) + "</option>").join("");
+  if ($("laCat").options.length !== LIB_CATS.length) $("laCat").innerHTML = cats; else LIB_CATS.forEach((c, i) => { $("laCat").options[i].text = tr("lb_cat_" + c); });
+  $("laStatus").options[0].text = tr("la_draft"); $("laStatus").options[1].text = tr("la_pub");
+  set("laDel", tr(laDelArm ? "la_delq" : "la_del"));
+  $("laSeed").hidden = !LA || !laStarterMissing.length;
+  if (!LA) { $("laList").innerHTML = ""; return; }
+  if (!LA.length) { $("laList").innerHTML = '<p class="empty">' + tr("la_empty") + "</p>"; return; }
+  const head = ["la_c_t", "la_c_cat", "la_c_st", "la_c_upd", "la_c_a"];
+  $("laList").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    LA.map(a => '<tr><td class="t">' + esc(a.title_en || a.title_hi || "–") + (a.title_en && a.title_hi ? '<br><span class="fine">' + esc(a.title_hi) + "</span>" : "") + "</td>" +
+      "<td>" + tr("lb_cat_" + (a.category || "other")) + "</td>" +
+      '<td><span class="tag' + (a.status === "published" ? " ok" : "") + '">' + tr(a.status === "published" ? "la_pub" : "la_draft") + "</span></td>" +
+      "<td>" + adWhen(a.updated_at) + '</td><td><button class="btn-s" type="button" data-la="' + esc(a.id) + '">' + tr("la_edit") + "</button></td></tr>").join("") +
+    "</tbody></table></div>";
+}
+var laStarter = null, laStarterMissing = [];
+async function laCheckStarter() {
+  if (!laStarter) { try { const r = await fetch("/library-starter.json"); if (r.ok) laStarter = await r.json(); } catch (e) {} }
+  const have = new Set((LA || []).map(a => (a.title_en || "").trim()));
+  laStarterMissing = (laStarter || []).filter(a => !have.has(a.title_en.trim()));
+  renderLA();
+}
+function laFill(a) {
+  laEdit = a ? JSON.parse(JSON.stringify(a)) : {id: null, category: "disease", status: "draft", sort: 100, title_en: "", title_hi: "", body_en: "", body_hi: "", video_url: "", images: []};
+  if (!Array.isArray(laEdit.images)) laEdit.images = [];
+  $("laCat").value = laEdit.category; $("laStatus").value = laEdit.status; $("laSort").value = laEdit.sort;
+  $("laTen").value = laEdit.title_en; $("laThi").value = laEdit.title_hi; $("laBen").value = laEdit.body_en; $("laBhi").value = laEdit.body_hi; $("laVid").value = laEdit.video_url || "";
+  $("laDel").hidden = !laEdit.id; laDelArm = false; set("laPicMsg", "");
+  laPics(); renderLA();
+  $("laForm").hidden = false; $("laForm").scrollIntoView({block: "start"});
+}
+function laRead() {
+  Object.assign(laEdit, {category: $("laCat").value, status: $("laStatus").value, sort: Math.max(0, Math.min(9999, parseInt($("laSort").value, 10) || 0)),
+    title_en: $("laTen").value.trim(), title_hi: $("laThi").value.trim(), body_en: $("laBen").value.trim(), body_hi: $("laBhi").value.trim(), video_url: $("laVid").value.trim() || null});
+}
+function laPics() {
+  $("laPics").innerHTML = laEdit.images.map((u, i) => '<figure><img src="' + esc(u) + '" alt=""><button type="button" data-rmpic="' + i + '" aria-label="Remove">×</button></figure>').join("");
+}
+$("laNew").addEventListener("click", () => { laSetMsg(); laFill(null); });
+$("laRefresh").addEventListener("click", async () => { laSetMsg(); await loadLA(); laCheckStarter(); });
+$("laCancel").addEventListener("click", () => { $("laForm").hidden = true; laEdit = null; laSetMsg(); });
+$("laList").addEventListener("click", e => { const b = e.target.closest("[data-la]"); if (!b || !LA) return; const a = LA.find(x => x.id === b.dataset.la); if (a) { laSetMsg(); laFill(a); } });
+$("laPics").addEventListener("click", e => { const b = e.target.closest("[data-rmpic]"); if (!b) return; laEdit.images.splice(+b.dataset.rmpic, 1); laPics(); });
+$("laAddPic").addEventListener("click", () => $("laFile").click());
+function laShrink(file) {
+  return new Promise((ok, no) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      c.toBlob(b => b ? ok(b) : no(new Error("image")), "image/jpeg", 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); no(new Error("image")); };
+    img.src = url;
+  });
+}
+$("laFile").addEventListener("change", async e => {
+  const files = Array.from(e.target.files || []); e.target.value = "";
+  if (!files.length || !sb) return;
+  set("laPicMsg", tr("la_up").replace("{n}", files.length)); $("laAddPic").disabled = true;
+  for (const f of files) {
+    try {
+      const blob = await laShrink(f);
+      const path = new Date().toISOString().slice(0, 10) + "/" + Math.random().toString(36).slice(2, 10) + ".jpg";
+      const up = await sb.storage.from("library").upload(path, blob, {contentType: "image/jpeg", upsert: false});
+      if (up.error) throw up.error;
+      laEdit.images.push(sb.storage.from("library").getPublicUrl(path).data.publicUrl); laPics();
+    } catch (x) { set("laPicMsg", tr("la_upfail").replace("{m}", String((x && x.message) || x))); $("laAddPic").disabled = false; return; }
+  }
+  set("laPicMsg", ""); $("laAddPic").disabled = false;
+});
+$("laForm").addEventListener("submit", async e => {
+  e.preventDefault(); if (laBusy || !laEdit) return;
+  laRead(); laSetMsg();
+  if (!laEdit.title_en && !laEdit.title_hi) { laSetMsg(tr("la_need")); return; }
+  const row = {category: laEdit.category, status: laEdit.status, sort: laEdit.sort, title_en: laEdit.title_en, title_hi: laEdit.title_hi,
+    body_en: laEdit.body_en, body_hi: laEdit.body_hi, video_url: laEdit.video_url, images: laEdit.images, updated_at: new Date().toISOString()};
+  laBusy = true; $("laSave").disabled = true;
+  let res = null, err = null;
+  try { res = laEdit.id ? await sb.from("articles").update(row).eq("id", laEdit.id).select(LIB_COLS).single() : await sb.from("articles").insert(row).select(LIB_COLS).single(); err = res.error; } catch (x) { err = x; }
+  laBusy = false; $("laSave").disabled = false;
+  if (err) { laSetMsg(tr("la_err").replace("{m}", String(err.message || err))); return; }
+  laEdit = Object.assign({}, res.data); laSetMsg("", tr("la_saved")); $("laDel").hidden = false;
+  await loadLA(); laCheckStarter(); loadLib(true);
+});
+$("laPrev").addEventListener("click", () => {
+  if (!laEdit) return; laRead();
+  libPreview = Object.assign({}, laEdit, {id: laEdit.id || "preview", updated_at: laEdit.updated_at || new Date().toISOString()});
+  showTool("lib", false, true); libOpenId = libPreview.id; renderLib();
+});
+$("laDel").addEventListener("click", async () => {
+  if (!laEdit || !laEdit.id) return;
+  if (!laDelArm) { laDelArm = true; renderLA(); return; }
+  laDelArm = false;
+  let err = null;
+  try { const res = await sb.from("articles").delete().eq("id", laEdit.id); err = res.error; } catch (x) { err = x; }
+  if (err) { laSetMsg(tr("la_err").replace("{m}", String(err.message || err))); renderLA(); return; }
+  $("laForm").hidden = true; laEdit = null; laSetMsg("", tr("la_deleted"));
+  await loadLA(); laCheckStarter(); loadLib(true);
+});
+$("laSeed").addEventListener("click", async () => {
+  if (!laStarterMissing.length) return;
+  $("laSeed").disabled = true; laSetMsg();
+  const rows = laStarterMissing.map(a => ({category: a.category, sort: a.sort, title_en: a.title_en, title_hi: a.title_hi, body_en: a.body_en, body_hi: a.body_hi, status: "draft"}));
+  let err = null;
+  try { const res = await sb.from("articles").insert(rows); err = res.error; } catch (x) { err = x; }
+  $("laSeed").disabled = false;
+  if (err) { laSetMsg(tr("la_err").replace("{m}", String(err.message || err))); return; }
+  laSetMsg("", tr("la_seeded").replace("{n}", rows.length));
+  await loadLA(); laCheckStarter();
+});
+async function loadLibAdmin() { await loadLA(); laCheckStarter(); }
+
 /* ---- apple news bulletins (from /api/news, Google News headlines; same for everyone) ---- */
 Object.assign(T.en, {
   nw_h:"Apple news", nw_src:"Headlines from news sites via Google News. Tap one to read it.",
@@ -5107,7 +5475,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
 }
 /* ---- top tabs ---- */
-const TT = ["orch","calc","diag","spray","cal","mandi","buy","admin"];
+const TT = ["orch","calc","diag","spray","lib","cal","mandi","buy","admin"];
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -5120,7 +5488,8 @@ function showTool(w, focus, scroll) {
     }
   });
   if (scroll && $("tools").scrollIntoView) $("tools").scrollIntoView({block:"start"});
-  if (w === "admin" && !adLoaded) { loadAdmin(); loadFeedback(); }
+  if (w === "admin" && !adLoaded) { loadAdmin(); loadFeedback(); loadLibAdmin(); }
+  if (w === "lib") loadLib();
 }
 TT.forEach((n, i) => {
   const b = $("tt-" + n);
@@ -5136,6 +5505,7 @@ TT.forEach((n, i) => {
   });
 });
 showTool("orch");
+if (libWant) loadLib();
 if (window.ADFeedback) ADFeedback.init({
   getSb: () => sb, getLang: () => lang, getUser: () => user,
   getPage: () => { const n = TT.find(x => !$("tp-" + x).hidden); return n ? tr("tt_" + n) : "Home"; }
