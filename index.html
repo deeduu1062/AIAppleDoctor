@@ -464,6 +464,16 @@ footer p{max-width:70ch}
 .inststeps b{white-space:nowrap}
 @media (max-width:480px){header.top{gap:8px;flex-wrap:nowrap}.nav{gap:6px;flex-wrap:nowrap;flex:none}.nav .lang{padding:7px 9px;font-size:.85rem}.appbtn{gap:4px}.brand{white-space:nowrap;min-width:0;font-size:clamp(1.1rem,5.2vw,1.5rem)!important}}
 @media (max-width:370px){.appbtn span{display:none}}
+.dxwatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px}
+.dxw{text-align:left;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);color:var(--fg);cursor:pointer;display:grid;gap:4px;font:inherit}
+.dxw:hover{border-color:var(--brand-bg)}
+.dxw b{font-size:1rem}
+.dxw span{font-size:.88rem;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dxhist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.dxhist li{display:flex;gap:6px 12px;align-items:baseline;flex-wrap:wrap;border-bottom:1px dashed var(--line);padding:6px 0}
+.dxhist .dd{font:500 .85rem var(--mono);color:var(--muted);min-width:52px}
+.dxhist .dt{flex:1 1 160px;font-weight:600}
+.dxhist .chip{margin-left:4px}
 /* install as app */
 .instbar{background:var(--surface-2);border-bottom:1px solid var(--line)}
 .instrow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
@@ -2861,6 +2871,7 @@ function dashOverview() {
   let h = farmSummaryHtml();
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
   h += detailsHtml();
+  h += dashDxHtml();
   if (S.orchards.length) {
     const wl = S.orchards.filter(hasLoc);
     h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
@@ -4411,7 +4422,7 @@ $("dxGo").addEventListener("click", async () => {
       body: JSON.stringify({ images: dxFiles, part: $("dxPart").value, note: $("dxNote").value.trim(), lang })
     });
     const j = await r.json().catch(() => ({}));
-    if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "" }; renderDiagAi(j.id, j.result); }
+    if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "" }; renderDiagAi(j.id, j.result); loadDxHist(true); }
     else {
       const k = { signin: "dx_e_signin", limit: "dx_e_limit", not_setup: "dx_e_setup", photos: "dx_e_photos" }[j.error] || "dx_e_net";
       set("dxErr", tr(k).replace("{n}", j.limit || ""));
@@ -4446,9 +4457,92 @@ async function dxFeedback(k) {
   if (!dxLast || !dxLast.id || !sb) return;
   dxLast.fb = k; renderDiagAi(dxLast.id, dxLast.result);
   try { await sb.from("diagnoses").update({ feedback: k }).eq("id", dxLast.id); } catch (e) {}
+  if (dxHist) { const row = dxHist.find(x => x.id === dxLast.id); if (row) { row.feedback = k; const box = $("dashDx"); if (box) box.innerHTML = dashDxRecent(); } }
 }
 
 
+
+/* ---- Dashboard: tree health (links to Disease diagnosis) ---- */
+Object.assign(T.en, {
+  th_h:"Tree health", th_p:"Spot problems early. Check by what you see, or send a photo.",
+  th_sym:"Check by symptoms", th_photo:"Check by photo",
+  th_watch:"Watch for in {m}", th_watch_p:"These usually show up at this time of year in Himachal and Kashmir. Tap one to read more.",
+  th_recent:"Your recent photo checks", th_none:"No photo checks yet.", th_left:"Photo checks left today: {n} of {m}",
+  th_fb_right:"marked right", th_fb_wrong:"marked wrong", th_fb_unsure:"marked not sure"
+});
+Object.assign(T.hi, {
+  th_h:"पेड़ों की सेहत", th_p:"समस्या जल्दी पकड़ें। जो दिख रहा है उससे जाँचें, या फ़ोटो भेजें।",
+  th_sym:"लक्षणों से जाँचें", th_photo:"फ़ोटो से जाँचें",
+  th_watch:"{m} में इन पर नज़र रखें", th_watch_p:"हिमाचल और कश्मीर में साल के इस समय ये आम तौर पर दिखते हैं। और पढ़ने के लिए किसी पर दबाएँ।",
+  th_recent:"आपकी हाल की फ़ोटो जाँच", th_none:"अभी कोई फ़ोटो जाँच नहीं।", th_left:"आज बची फ़ोटो जाँच: {m} में से {n}",
+  th_fb_right:"सही बताया", th_fb_wrong:"ग़लत बताया", th_fb_unsure:"पता नहीं"
+});
+/* rough guide by month (1 = January) */
+var DX_MONTH = {1:["canker","sjs"], 2:["canker","sjs","woolly"], 3:["scab","pm","canker"], 4:["scab","pm","woolly"], 5:["scab","pm","mite"], 6:["scab","mite","alt"],
+  7:["mars","alt","mite"], 8:["mars","alt","sooty"], 9:["mars","sooty","pit"], 10:["pit","collar","wrr"], 11:["scab","canker","wrr"], 12:["canker","sjs","scab"]};
+var DX_LIMIT = 5;
+var dxHist = null, dxHistBusy = false, dxHistFor = "";
+async function loadDxHist(force) {
+  if (!user || !sb || dxHistBusy) return;
+  if (!force && dxHistFor === user.id && dxHist) return;
+  dxHistBusy = true;
+  try {
+    const r = await sb.from("diagnoses").select("id,created_at,result,feedback").order("created_at", {ascending: false}).limit(20);
+    dxHist = r.error ? null : (r.data || []); dxHistFor = user.id;
+  } catch (e) { dxHist = null; }
+  dxHistBusy = false;
+  const box = $("dashDx"); if (box) box.innerHTML = dashDxRecent();
+}
+function dashDxRecent() {
+  if (!user || !dxHist) return "";
+  const off = 330 * 60000, day = 86400000, start = Math.floor((Date.now() + off) / day) * day - off;
+  const today = dxHist.filter(x => new Date(x.created_at).getTime() >= start).length;
+  const lim = isAdmin() ? 50 : DX_LIMIT;
+  let h = '<p class="subhead">' + tr("th_recent") + "</p>";
+  if (!dxHist.length) h += '<p class="hint">' + tr("th_none") + "</p>";
+  else h += '<ul class="dxhist">' + dxHist.slice(0, 3).map(x => {
+    const m = x.result && x.result.matches && x.result.matches[0];
+    const d = m && DX[m.id];
+    const name = d ? dxL(d) : m ? tr(m.id === "healthy" ? "dx_healthy" : "dx_other") : tr("dx_photo_bad");
+    const when = new Date(x.created_at).toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {day: "numeric", month: "short"});
+    return '<li><span class="dd">' + esc(when) + '</span><span class="dt">' + esc(name) +
+      (m ? ' <em class="chip' + (m.confidence === "high" ? " hi" : "") + '">' + tr("dx_c_" + m.confidence) + "</em>" : "") + "</span>" +
+      (x.feedback ? '<span class="fine">' + tr("th_fb_" + x.feedback) + "</span>" : "") + "</li>";
+  }).join("") + "</ul>";
+  return h + '<p class="fine">' + tr("th_left").replace("{n}", Math.max(0, lim - today)).replace("{m}", lim) + "</p>";
+}
+function dashDxHtml() {
+  try { return dashDxHtml1(); } catch (e) { return ""; }
+}
+function dashDxHtml1() {
+  const mo = new Date().getMonth() + 1;
+  const mname = new Date().toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {month: "long"});
+  const ids = DX_MONTH[mo] || [];
+  let h = '<section class="osec" id="dxSec"><h4>' + tr("th_h") + '</h4><p class="hint">' + tr("th_p") + "</p>" +
+    '<div class="dels"><button class="btn-s add" type="button" data-dxgo="sym">' + tr("th_sym") + '</button><button class="btn-s" type="button" data-dxgo="photo">' + tr("th_photo") + "</button></div>" +
+    '<p class="subhead">' + tr("th_watch").replace("{m}", esc(mname)) + '</p><p class="fine">' + tr("th_watch_p") + "</p>" +
+    '<div class="dxwatch">' + ids.map(id => '<button type="button" class="dxw" data-dxgo="d:' + id + '"><b>' + esc(dxL(DX[id])) + "</b><span>" + esc(dxL(DX[id].look)) + "</span></button>").join("") + "</div>" +
+    '<div id="dashDx">' + dashDxRecent() + "</div></section>";
+  setTimeout(() => loadDxHist(false), 0);
+  return h;
+}
+/* open the Disease diagnosis tab at the right place */
+function goDiag(what) {
+  tabPicked = true; showTool("diag", false, false);
+  let target = $("tp-diag");
+  if (what === "photo") target = $("dxPhH");
+  else if (what === "sym") target = $("dxSymH");
+  else if (what && what.startsWith("d:")) {
+    const id = what.slice(2);
+    $("dxRes").innerHTML = '<div class="dxcards">' + dxCard(id, "", true) + "</div>";
+    target = $("dxRes");
+  }
+  if (target && target.scrollIntoView) setTimeout(() => target.scrollIntoView({block: "start"}), 30);
+}
+$("dash").addEventListener("click", e => {
+  const b = e.target.closest("[data-dxgo]"); if (!b) return;
+  goDiag(b.dataset.dxgo);
+});
 /* ---- install as an app (PWA) ---- */
 Object.assign(T.en, {
   in_android:"Add Apple Doctor to your phone. It opens like an app, even with weak signal.",
