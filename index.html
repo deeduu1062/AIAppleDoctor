@@ -411,6 +411,32 @@ footer p{max-width:70ch}
   .plan li{grid-template-columns:1fr}
   .lothead{flex-wrap:wrap}
 }
+
+/* disease diagnosis */
+.dxsec{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:18px}
+.dxparts{display:flex;gap:8px;flex-wrap:wrap}
+.dxparts .tab[aria-pressed="true"]{background:var(--brand-bg);color:var(--on-brand);border-color:var(--brand-bg)}
+.dxsyms{display:grid;gap:2px}
+.dxsyms .chk{align-items:flex-start;padding:6px 0;line-height:1.4}
+.dxsyms .chk input{margin-top:2px}
+.dxcards{display:grid;gap:12px;margin-top:6px}
+.dxcard{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;min-width:0}
+.dxcard.top{border-color:var(--brand-bg);box-shadow:inset 0 0 0 1px var(--brand-bg)}
+.dxcard h5{font-size:1.1rem;font-weight:700;margin:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.dxcard h5 .chip{margin-left:0}
+.dxcard p{margin:0;color:var(--fg)}
+.dxcard .k{font-weight:600}
+.dxcard ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.dxcard .urgent{color:var(--bad);font-weight:600}
+.chip.hi{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.dxgate{border:1px dashed var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;justify-items:start}
+.dxform{display:grid;gap:14px;max-width:560px}
+.dxform textarea{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:500 1rem var(--body);resize:vertical}
+.dxform input[type="file"]{font:500 .95rem var(--body);padding:8px}
+.dxthumbs{display:flex;gap:8px;flex-wrap:wrap}
+.dxthumbs:empty{display:none}
+.dxthumbs img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.dxfb{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 </style>
 
 <style>
@@ -1047,13 +1073,38 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
     </div>
 
     <div class="tpanel" id="tp-diag" role="tabpanel" aria-labelledby="tt-diag" hidden>
-      <div class="thead"><h3 data-i18n="d_h"></h3><span class="pill" data-i18n="s_soon"></span></div>
-      <p data-i18n="d_p"></p>
-      <div class="tcols">
-        <div><h4 data-i18n="d_how_h"></h4><ol class="tlist"><li data-i18n="d_s1"></li><li data-i18n="d_s2"></li><li data-i18n="d_s3"></li></ol></div>
-        <div><h4 data-i18n="d_tips_h"></h4><ul class="tlist"><li data-i18n="d_t1"></li><li data-i18n="d_t2"></li><li data-i18n="d_t3"></li><li data-i18n="d_t4"></li></ul></div>
-      </div>
-      <p class="tnote" data-i18n="d_note"></p>
+      <div class="thead"><h3 data-i18n="dx_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
+      <p data-i18n="dx_p"></p>
+
+      <section class="dxsec" aria-labelledby="dxSymH">
+        <h4 id="dxSymH" data-i18n="dx_sym_h"></h4>
+        <p class="sub2" data-i18n="dx_sym_p"></p>
+        <p class="subhead" data-i18n="dx_q1"></p>
+        <div class="dxparts" id="dxParts" role="group"></div>
+        <div id="dxSymWrap" hidden>
+          <p class="subhead" data-i18n="dx_q2"></p>
+          <div class="dxsyms" id="dxSyms"></div>
+        </div>
+        <div id="dxRes" aria-live="polite"></div>
+      </section>
+
+      <section class="dxsec" aria-labelledby="dxPhH">
+        <div class="thead"><h4 id="dxPhH" data-i18n="dx_ph_h"></h4><span class="pill" data-i18n="dx_ph_pill"></span></div>
+        <p class="sub2" data-i18n="dx_ph_p"></p>
+        <div id="dxGate" class="dxgate" hidden><p data-i18n="dx_gate"></p><button class="btn-s add" type="button" id="dxSign" data-i18n="hdr_signin"></button></div>
+        <div id="dxForm" class="dxform" hidden>
+          <div class="field"><label for="dxPart" data-i18n="dx_part"></label><select id="dxPart"></select></div>
+          <div class="field"><label for="dxFile" data-i18n="dx_file"></label><input id="dxFile" type="file" accept="image/*" multiple></div>
+          <div class="dxthumbs" id="dxThumbs"></div>
+          <div class="field"><label for="dxNote" data-i18n="dx_note"></label><textarea id="dxNote" rows="2" maxlength="400"></textarea></div>
+          <div class="linkrow"><button class="btn-s add" type="button" id="dxGo" data-i18n="dx_go"></button><span class="fine" id="dxStat" role="status"></span></div>
+          <p class="autherr" id="dxErr" role="alert"></p>
+        </div>
+        <div id="dxAi" aria-live="polite"></div>
+      </section>
+
+      <div><h4 data-i18n="d_tips_h"></h4><ul class="tlist"><li data-i18n="d_t1"></li><li data-i18n="d_t2"></li><li data-i18n="d_t3"></li><li data-i18n="d_t4"></li></ul></div>
+      <p class="tnote" data-i18n="dx_safe"></p>
     </div>
 
     <div class="tpanel" id="tp-spray" role="tabpanel" aria-labelledby="tt-spray" hidden>
@@ -1702,7 +1753,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); if (AD) renderAdmin();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); if (AD) renderAdmin();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -1946,6 +1997,7 @@ window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault
 function renderAcct() {
   $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user;
   $("tt-admin").hidden = !isAdmin();
+  renderDiagAuth();
   if (!isAdmin()) { AD = null; adLoaded = false; if (!$("tp-admin").hidden) showTool(user ? "orch" : "calc"); }
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || ""));
@@ -3924,6 +3976,291 @@ $("rp-orch").addEventListener("click", e => {
   } else return;
   fixSel(); save(); renderAll();
 });
+
+/* ---------- disease diagnosis ---------- */
+Object.assign(T.en, {
+  dx_h:"Disease diagnosis", dx_p:"Two ways to find what is wrong: tick what you see, or send a photo. Both point you to safe next steps. For anything to spray, always follow the official spray schedule for your tree's stage.",
+  dx_sym_h:"1. Check by what you see", dx_sym_p:"Free, and works even on slow internet.",
+  dx_q1:"Where is the problem?", dx_q2:"What do you see? Tick all that match.",
+  dxp_leaf:"Leaves", dxp_fruit:"Fruit", dxp_bark:"Branch, bark or trunk", dxp_tree:"Whole tree or roots",
+  dx_none:"Tick one or more signs above to see the likely causes.",
+  dx_best:"Best match", dx_also:"Also possible", dx_look:"What it looks like", dx_when:"When it shows up", dx_do:"What to do now",
+  dx_spray:"For sprays, see the spray schedule", dx_urgent:"This can kill trees. Show it to a horticulture officer or your nearest KVK soon.",
+  dx_ph_h:"2. Check by photo", dx_ph_pill:"AI · test", dx_ph_p:"Send 1 to 3 close, clear photos. The AI suggests the likely cause and says how sure it is.",
+  dx_gate:"Sign in to use the photo check. It is free, and your checks stay private to you.",
+  dx_part:"The photo shows", dx_file:"Photos (up to 3)", dx_note:"Anything else? (optional: variety, when it started, how many trees)",
+  dx_go:"Check photo", dx_busy:"Checking… this can take up to 30 seconds", dx_pick:"Choose at least one photo.", dx_max:"Only the first 3 photos will be used.",
+  dx_e_signin:"Please sign in again and retry.", dx_e_limit:"You have used today's {n} photo checks. Try again tomorrow, or use the check by symptoms above.",
+  dx_e_setup:"Photo check is not switched on yet. Please use the check by symptoms for now.", dx_e_photos:"Those photos could not be read. Try a JPG or PNG photo.",
+  dx_e_net:"Could not reach the photo check. Check your internet and try again.",
+  dx_ai_h:"Photo result", dx_photo_bad:"Photo not clear enough", dx_steps:"Next steps", dx_expert:"Please also show this to a horticulture officer or KVK.",
+  dx_c_high:"Quite sure", dx_c_medium:"Fairly sure", dx_c_low:"Not sure", dx_other:"Something else", dx_healthy:"Looks healthy",
+  dx_more:"Read more about this", dx_fb:"Was this right?", dx_fb_right:"Right", dx_fb_wrong:"Wrong", dx_fb_unsure:"Not sure", dx_fb_thanks:"Thank you, this helps Apple Doctor learn.",
+  dx_safe:"These results are a guide, not a final diagnosis. Never spray more than the label says. For a serious or fast-spreading problem, show it to a local horticulture officer or your nearest Krishi Vigyan Kendra (KVK)."
+});
+Object.assign(T.hi, {
+  dx_h:"रोग की पहचान", dx_p:"गड़बड़ी पहचानने के दो तरीके: जो दिख रहा है उस पर निशान लगाएँ, या फ़ोटो भेजें। दोनों से सुरक्षित अगले क़दम पता चलते हैं। किसी भी स्प्रे के लिए हमेशा पेड़ की अवस्था के हिसाब से सरकारी स्प्रे शेड्यूल ही मानें।",
+  dx_sym_h:"1. जो दिख रहा है, उससे जाँचें", dx_sym_p:"मुफ़्त है, और धीमे इंटरनेट पर भी चलता है।",
+  dx_q1:"समस्या कहाँ है?", dx_q2:"क्या दिख रहा है? जो-जो मिलता है, सब पर निशान लगाएँ।",
+  dxp_leaf:"पत्तियाँ", dxp_fruit:"फल", dxp_bark:"टहनी, छाल या तना", dxp_tree:"पूरा पेड़ या जड़ें",
+  dx_none:"संभावित कारण देखने के लिए ऊपर एक या ज़्यादा लक्षणों पर निशान लगाएँ।",
+  dx_best:"सबसे ज़्यादा मेल", dx_also:"यह भी हो सकता है", dx_look:"कैसा दिखता है", dx_when:"कब दिखता है", dx_do:"अभी क्या करें",
+  dx_spray:"स्प्रे के लिए स्प्रे शेड्यूल देखें", dx_urgent:"इससे पेड़ मर सकते हैं। जल्दी बागवानी अधिकारी या नज़दीकी KVK को दिखाएँ।",
+  dx_ph_h:"2. फ़ोटो से जाँचें", dx_ph_pill:"AI · टेस्ट", dx_ph_p:"1 से 3 पास से ली हुई साफ़ फ़ोटो भेजें। AI संभावित कारण बताएगा और यह भी कि उसे कितना भरोसा है।",
+  dx_gate:"फ़ोटो जाँच के लिए साइन इन करें। यह मुफ़्त है, और आपकी जाँच सिर्फ़ आपको दिखती है।",
+  dx_part:"फ़ोटो में क्या है", dx_file:"फ़ोटो (ज़्यादा से ज़्यादा 3)", dx_note:"कुछ और? (वैकल्पिक: किस्म, कब शुरू हुआ, कितने पेड़ों में)",
+  dx_go:"फ़ोटो जाँचें", dx_busy:"जाँच हो रही है… 30 सेकंड तक लग सकते हैं", dx_pick:"कम से कम एक फ़ोटो चुनें।", dx_max:"सिर्फ़ पहली 3 फ़ोटो ली जाएँगी।",
+  dx_e_signin:"कृपया दोबारा साइन इन करके फिर कोशिश करें।", dx_e_limit:"आज की {n} फ़ोटो जाँच पूरी हो गईं। कल फिर कोशिश करें, या ऊपर लक्षणों से जाँचें।",
+  dx_e_setup:"फ़ोटो जाँच अभी चालू नहीं है। अभी के लिए लक्षणों से जाँचें।", dx_e_photos:"ये फ़ोटो पढ़ी नहीं जा सकीं। JPG या PNG फ़ोटो भेजें।",
+  dx_e_net:"फ़ोटो जाँच तक नहीं पहुँच पाए। इंटरनेट देखें और फिर कोशिश करें।",
+  dx_ai_h:"फ़ोटो का नतीजा", dx_photo_bad:"फ़ोटो साफ़ नहीं है", dx_steps:"अगले क़दम", dx_expert:"इसे बागवानी अधिकारी या KVK को भी ज़रूर दिखाएँ।",
+  dx_c_high:"काफ़ी भरोसा", dx_c_medium:"कुछ भरोसा", dx_c_low:"पक्का नहीं", dx_other:"कुछ और", dx_healthy:"स्वस्थ लगता है",
+  dx_more:"इसके बारे में और पढ़ें", dx_fb:"क्या यह सही था?", dx_fb_right:"सही", dx_fb_wrong:"ग़लत", dx_fb_unsure:"पता नहीं", dx_fb_thanks:"धन्यवाद, इससे Apple Doctor सीखता है।",
+  dx_safe:"ये नतीजे एक मार्गदर्शन हैं, पक्का निदान नहीं। लेबल पर लिखी मात्रा से ज़्यादा कभी स्प्रे न करें। गंभीर या तेज़ी से फैलने वाली समस्या हो तो स्थानीय बागवानी अधिकारी या नज़दीकी कृषि विज्ञान केंद्र (KVK) को दिखाएँ।"
+});
+
+/* Disease library. No chemical names or doses here on purpose: sprays come from the official schedule. */
+const DX = {
+  scab: { en:"Apple scab", hi:"स्कैब (सेब का धब्बा रोग)", spray:true,
+    look:{ en:"Olive-green, velvety spots on leaves that turn dark. On fruit, dark scabby spots that can crack the skin.", hi:"पत्तियों पर जैतूनी-हरे, मख़मली धब्बे जो बाद में काले हो जाते हैं। फल पर काले, खुरदुरे धब्बे, जिनसे छिलका फट सकता है।" },
+    when:{ en:"Spring and early summer, after rain or long wet spells.", hi:"बसंत और गर्मी की शुरुआत में, बारिश या लगातार नमी के बाद।" },
+    act:{ en:["Collect and destroy fallen leaves in autumn and winter. They carry the disease to next spring.","Prune so air and light reach inside the tree and leaves dry fast.","Remove badly spotted fruit.","Sprays matter most from green tip to fruit set in wet weather."],
+          hi:["पतझड़ और सर्दी में गिरी पत्तियाँ इकट्ठा करके नष्ट करें। इन्हीं से रोग अगले बसंत में लौटता है।","ऐसी कटाई-छँटाई करें कि पेड़ के अंदर हवा और धूप पहुँचे और पत्तियाँ जल्दी सूखें।","ज़्यादा धब्बे वाले फल तोड़कर हटा दें।","गीले मौसम में ग्रीन टिप से फल बनने तक स्प्रे सबसे ज़रूरी होते हैं।"] } },
+  mars: { en:"Premature leaf fall (Marssonina blotch)", hi:"समय से पहले पत्ती गिरना (मार्सोनिना)", spray:true,
+    look:{ en:"Dark brown to blackish patches on the upper side of leaves. Leaves turn yellow and fall weeks too early.", hi:"पत्तियों की ऊपरी सतह पर गहरे भूरे से काले धब्बे। पत्तियाँ पीली होकर समय से हफ़्तों पहले गिर जाती हैं।" },
+    when:{ en:"Mostly July to September, after monsoon rain.", hi:"ज़्यादातर जुलाई से सितंबर, बरसात के बाद।" },
+    act:{ en:["Collect and destroy fallen leaves.","Open up the canopy and keep grass and weeds short under trees in the monsoon.","Check neighbouring trees, it spreads fast in wet weather.","Monsoon sprays are key, so do not miss them."],
+          hi:["गिरी पत्तियाँ इकट्ठा करके नष्ट करें।","पेड़ को खुला रखें और बरसात में पेड़ों के नीचे घास-खरपतवार छोटी रखें।","आस-पास के पेड़ भी देखें, गीले मौसम में यह तेज़ी से फैलता है।","बरसात के स्प्रे बहुत ज़रूरी हैं, इन्हें न छोड़ें।"] } },
+  alt: { en:"Alternaria leaf spot", hi:"अल्टरनेरिया पत्ती धब्बा", spray:true,
+    look:{ en:"Small round brown spots, often with a purple edge or rings. Spots can join up and leaves may fall.", hi:"छोटे गोल भूरे धब्बे, अक्सर बैंगनी किनारे या छल्लों के साथ। धब्बे आपस में मिल सकते हैं और पत्तियाँ गिर सकती हैं।" },
+    when:{ en:"Summer and monsoon, in warm wet weather.", hi:"गर्मी और बरसात में, गर्म और नम मौसम में।" },
+    act:{ en:["Collect and destroy fallen leaves.","Keep mites under control, mite damage makes it worse.","Give balanced manure and fertiliser, a weak tree is hit harder."],
+          hi:["गिरी पत्तियाँ इकट्ठा करके नष्ट करें।","माइट पर नियंत्रण रखें, माइट से नुकसान होने पर यह रोग बढ़ता है।","संतुलित खाद दें, कमज़ोर पेड़ पर इसका असर ज़्यादा होता है।"] } },
+  pm: { en:"Powdery mildew", hi:"पाउडरी मिल्ड्यू (सफ़ेद चूर्णी रोग)", spray:true,
+    look:{ en:"White powder on young leaves, shoots and flowers. Leaves become narrow, curled and brittle.", hi:"नई पत्तियों, टहनियों और फूलों पर सफ़ेद पाउडर। पत्तियाँ पतली, मुड़ी हुई और भुरभुरी हो जाती हैं।" },
+    when:{ en:"Spring, from bud break, in dry warm days with cool nights.", hi:"बसंत में कलियाँ खुलने से, जब दिन सूखे-गर्म और रातें ठंडी हों।" },
+    act:{ en:["Cut out white-coated shoots and remove them from the orchard. Do this again at winter pruning.","Do not overuse nitrogen fertiliser, soft new growth gets it most.","The early season sprays (pink bud and petal fall) matter most."],
+          hi:["सफ़ेद पाउडर वाली टहनियाँ काटकर बाग़ से बाहर करें। सर्दियों की छँटाई में फिर से ऐसा करें।","नाइट्रोजन खाद ज़्यादा न डालें, नई कोमल बढ़त पर यह सबसे ज़्यादा लगता है।","शुरुआती स्प्रे (पिंक बड और पंखुड़ी गिरने पर) सबसे ज़रूरी हैं।"] } },
+  sooty: { en:"Sooty blotch and flyspeck", hi:"सूटी ब्लॉच और फ्लाईस्पेक (फल पर काले धब्बे)", spray:true,
+    look:{ en:"Dark smudges or groups of tiny black dots on the fruit skin only. The flesh inside is fine.", hi:"सिर्फ़ फल के छिलके पर काले धब्बे या छोटे-छोटे काले बिंदुओं के झुंड। अंदर का गूदा ठीक रहता है।" },
+    when:{ en:"Late summer to harvest, in humid weather.", hi:"गर्मी के आख़िर से तुड़ाई तक, नमी वाले मौसम में।" },
+    act:{ en:["Prune for light and air, and keep weeds down.","It lowers the grade but the fruit is safe to eat. Grade such fruit separately.","Late season sprays help in humid years."],
+          hi:["धूप और हवा के लिए छँटाई करें, खरपतवार कम रखें।","इससे ग्रेड गिरता है पर फल खाने में सुरक्षित है। ऐसे फल अलग ग्रेड करें।","नमी वाले साल में देर के मौसम के स्प्रे मदद करते हैं।"] } },
+  pit: { en:"Bitter pit (calcium shortage)", hi:"बिटर पिट (कैल्शियम की कमी)", spray:true,
+    look:{ en:"Small sunken brown spots on the fruit, often near the bottom. Under the skin the flesh is brown and spongy.", hi:"फल पर छोटे धँसे हुए भूरे धब्बे, अक्सर नीचे की तरफ़। छिलके के नीचे गूदा भूरा और स्पंज जैसा।" },
+    when:{ en:"Near harvest and in storage, worse on big fruit and light crops.", hi:"तुड़ाई के पास और भंडार में, बड़े फलों और कम फसल वाले पेड़ों पर ज़्यादा।" },
+    act:{ en:["This is not a disease and does not spread from tree to tree.","Avoid heavy nitrogen and very hard pruning.","Keep soil moisture even, avoid long dry spells.","Calcium sprays during fruit growth help. Keep spotted fruit out of storage boxes."],
+          hi:["यह रोग नहीं है, एक पेड़ से दूसरे में नहीं फैलता।","ज़्यादा नाइट्रोजन और बहुत भारी छँटाई से बचें।","मिट्टी में नमी एक जैसी रखें, लंबे सूखे से बचाएँ।","फल बढ़ने के समय कैल्शियम स्प्रे मदद करते हैं। धब्बे वाले फल भंडार की पेटियों में न रखें।"] } },
+  canker: { en:"Canker (bark disease)", hi:"कैंकर (छाल का रोग)", spray:false,
+    look:{ en:"Sunken, cracked, dark or peeling patches of bark on branches or trunk. Branches above may dry up.", hi:"टहनियों या तने पर धँसी, फटी, काली या उखड़ती छाल। ऊपर की टहनियाँ सूख सकती हैं।" },
+    when:{ en:"Seen all year, easiest to spot in winter.", hi:"पूरे साल दिखता है, सर्दियों में सबसे आसानी से।" },
+    act:{ en:["Scrape out the diseased bark down to healthy wood and cover the wound with the recommended wound paste.","Cut out dead branches in dry weather and remove them from the orchard.","Clean pruning tools between trees.","Avoid wounds and sunburn on the trunk."],
+          hi:["रोगी छाल को स्वस्थ लकड़ी तक खुरचकर निकालें और घाव पर सुझाया गया पेस्ट लगाएँ।","सूखे मौसम में मरी टहनियाँ काटें और बाग़ से बाहर करें।","हर पेड़ के बाद छँटाई के औज़ार साफ़ करें।","तने पर घाव और धूप से जलन से बचाएँ।"] } },
+  collar: { en:"Collar rot", hi:"कॉलर रॉट (तने का निचला हिस्सा सड़ना)", spray:false, urgent:true,
+    look:{ en:"Bark at the base of the trunk, near the soil, turns dark and rotten. The tree gets weak, with small yellow leaves.", hi:"मिट्टी के पास तने के निचले हिस्से की छाल काली होकर सड़ जाती है। पेड़ कमज़ोर, पत्तियाँ छोटी और पीली।" },
+    when:{ en:"After wet seasons, in heavy or badly drained soil.", hi:"गीले मौसम के बाद, भारी या पानी रुकने वाली मिट्टी में।" },
+    act:{ en:["Pull the soil away from the trunk base to see how far the rot goes.","Stop water standing near the trunk. Improve drainage.","Do not pile manure or soil against the trunk.","Get it checked quickly. Treatment should follow official advice."],
+          hi:["तने के निचले हिस्से से मिट्टी हटाकर देखें कि सड़न कहाँ तक है।","तने के पास पानी न रुकने दें। पानी निकलने का रास्ता बनाएँ।","तने से सटाकर खाद या मिट्टी का ढेर न लगाएँ।","जल्दी जाँच करवाएँ। इलाज सरकारी सलाह के हिसाब से करें।"] } },
+  wrr: { en:"White root rot", hi:"सफ़ेद जड़ सड़न", spray:false, urgent:true,
+    look:{ en:"White threads or fan-like white growth on the roots. The tree has small yellow leaves, declines slowly or dies suddenly.", hi:"जड़ों पर सफ़ेद धागे या पंखे जैसी सफ़ेद फफूँद। पेड़ की पत्तियाँ छोटी-पीली, धीरे-धीरे कमज़ोर होता है या अचानक सूख जाता है।" },
+    when:{ en:"Any time, worse after monsoon in wet soil.", hi:"कभी भी, बरसात के बाद गीली मिट्टी में ज़्यादा।" },
+    act:{ en:["It spreads through soil to nearby trees. Do not let water or soil run from this tree to healthy trees.","Do not replant in the same pit without treating it.","Get it checked quickly. Treatment should follow official advice."],
+          hi:["यह मिट्टी से पास के पेड़ों में फैलता है। इस पेड़ से पानी या मिट्टी स्वस्थ पेड़ों की तरफ़ न जाने दें।","बिना उपचार के उसी गड्ढे में नया पौधा न लगाएँ।","जल्दी जाँच करवाएँ। इलाज सरकारी सलाह के हिसाब से करें।"] } },
+  woolly: { en:"Woolly apple aphid", hi:"वूली एफिड (रूईदार माहू)", spray:true,
+    look:{ en:"White, cotton-like patches on twigs, pruning cuts or roots. Lumps and swellings form underneath.", hi:"टहनियों, कटे हिस्सों या जड़ों पर रूई जैसे सफ़ेद गुच्छे। नीचे गाँठें और सूजन बनती हैं।" },
+    when:{ en:"Spring to autumn, on branches; on roots all year.", hi:"बसंत से पतझड़ तक टहनियों पर; जड़ों पर पूरे साल।" },
+    act:{ en:["On small trees, brush or scrape off the white colonies.","Protect natural enemies, avoid unneeded insecticide sprays.","For new planting, MM-series rootstocks resist woolly aphid."],
+          hi:["छोटे पेड़ों पर सफ़ेद गुच्छे ब्रश से या खुरचकर हटाएँ।","इसके कुदरती दुश्मन कीड़ों को बचाएँ, बेवजह कीटनाशक स्प्रे न करें।","नए पौधे लगाते समय MM सीरीज़ के रूटस्टॉक इस कीड़े को सहते हैं।"] } },
+  mite: { en:"Red spider mite", hi:"लाल मकड़ी (माइट)", spray:true,
+    look:{ en:"Leaves look dull, speckled or bronze. Tiny red dots move on the underside, sometimes with fine webbing.", hi:"पत्तियाँ फीकी, चित्तीदार या ताँबे जैसी दिखती हैं। नीचे की तरफ़ छोटे लाल बिंदु चलते हैं, कभी-कभी बारीक जाला भी।" },
+    when:{ en:"Hot dry summer weeks.", hi:"गर्मी के गर्म और सूखे हफ़्तों में।" },
+    act:{ en:["Check the underside of 20 leaves from different trees, a hand lens helps.","Avoid unneeded insecticide sprays, they kill the insects that eat mites.","Water stress makes it worse, irrigate if you can.","Spray only when numbers are high."],
+          hi:["अलग-अलग पेड़ों की 20 पत्तियों का निचला हिस्सा देखें, लेंस हो तो बेहतर।","बेवजह कीटनाशक स्प्रे न करें, इनसे माइट खाने वाले कीड़े मर जाते हैं।","पानी की कमी से यह बढ़ता है, हो सके तो सिंचाई करें।","स्प्रे तभी करें जब संख्या ज़्यादा हो।"] } },
+  sjs: { en:"San Jose scale", hi:"सैन जोस स्केल", spray:true,
+    look:{ en:"Grey, crusty, tiny round scales on bark and twigs. On fruit, small red spots with a ring around them.", hi:"छाल और टहनियों पर स्लेटी, पपड़ी जैसे छोटे गोल कीड़े। फल पर छोटे लाल धब्बे, जिनके चारों ओर घेरा होता है।" },
+    when:{ en:"All year on bark, on fruit in summer.", hi:"छाल पर पूरे साल, फल पर गर्मियों में।" },
+    act:{ en:["Cut out and remove badly covered twigs at winter pruning.","The dormant season (winter) spray is the main control."],
+          hi:["सर्दियों की छँटाई में ज़्यादा भरी टहनियाँ काटकर हटाएँ।","सुप्त अवस्था (सर्दी) का स्प्रे इसका मुख्य इलाज है।"] } },
+  borer: { en:"Stem or root borer", hi:"तना या जड़ छेदक", spray:false,
+    look:{ en:"Holes in the trunk or branches with fresh sawdust-like powder. Root borer makes trees wilt and decline.", hi:"तने या टहनियों में छेद, जिनसे ताज़ा बुरादा निकलता है। जड़ छेदक से पेड़ मुरझाकर कमज़ोर होता है।" },
+    when:{ en:"Summer, but damage builds up over years.", hi:"गर्मियों में, पर नुकसान सालों में बढ़ता है।" },
+    act:{ en:["Clean out the hole with a thin wire to kill the grub, then plug it.","Keep the trunk base clean and check trees every season.","If trees wilt with no trunk holes, check the roots and ask about root borer."],
+          hi:["पतले तार से छेद साफ़ करके अंदर का कीड़ा मारें, फिर छेद बंद करें।","तने का निचला हिस्सा साफ़ रखें और हर मौसम पेड़ देखें।","अगर तने में छेद नहीं पर पेड़ मुरझा रहा है, तो जड़ें देखें और जड़ छेदक के बारे में पूछें।"] } }
+};
+
+/* Signs a grower can see, and which problems they point to (weights) */
+const DXS = {
+  leaf: [
+    { en:"Olive-green or dark velvety spots", hi:"जैतूनी-हरे या काले मख़मली धब्बे", w:{scab:3} },
+    { en:"Dark brown patches on the upper side, leaves turn yellow", hi:"ऊपरी सतह पर गहरे भूरे धब्बे, पत्तियाँ पीली", w:{mars:3, alt:1} },
+    { en:"Small round brown spots with a purple edge or rings", hi:"बैंगनी किनारे या छल्लों वाले छोटे गोल भूरे धब्बे", w:{alt:3, mars:1} },
+    { en:"Leaves falling too early (July–September)", hi:"पत्तियाँ समय से पहले गिर रही हैं (जुलाई–सितंबर)", w:{mars:3, alt:2, mite:1} },
+    { en:"White powder on young leaves, leaves curled and narrow", hi:"नई पत्तियों पर सफ़ेद पाउडर, पत्तियाँ मुड़ी और पतली", w:{pm:4} },
+    { en:"Dull or bronze leaves, tiny red dots underneath", hi:"फीकी या ताँबे जैसी पत्तियाँ, नीचे छोटे लाल बिंदु", w:{mite:4} },
+    { en:"Small, pale or yellow leaves all over the tree", hi:"पूरे पेड़ पर छोटी, फीकी या पीली पत्तियाँ", w:{wrr:2, collar:2, borer:1} }
+  ],
+  fruit: [
+    { en:"Dark, rough, scabby spots or cracks", hi:"काले, खुरदुरे धब्बे या दरारें", w:{scab:4} },
+    { en:"Dark smudges or tiny black dots that are only on the skin", hi:"सिर्फ़ छिलके पर काले धब्बे या छोटे काले बिंदु", w:{sooty:4} },
+    { en:"Small sunken brown spots, brown spongy flesh under the skin", hi:"छोटे धँसे भूरे धब्बे, छिलके के नीचे भूरा गूदा", w:{pit:4} },
+    { en:"Small red spots with a ring around them", hi:"घेरे वाले छोटे लाल धब्बे", w:{sjs:4} }
+  ],
+  bark: [
+    { en:"Sunken, cracked, dark or peeling bark", hi:"धँसी, फटी, काली या उखड़ती छाल", w:{canker:4} },
+    { en:"Branches drying from the tip", hi:"टहनियाँ सिरे से सूख रही हैं", w:{canker:2, borer:1} },
+    { en:"White cotton-like patches, lumps on twigs", hi:"रूई जैसे सफ़ेद गुच्छे, टहनियों पर गाँठें", w:{woolly:4} },
+    { en:"Holes with fresh sawdust-like powder", hi:"ताज़े बुरादे वाले छेद", w:{borer:4} },
+    { en:"Grey crusty tiny scales on the bark", hi:"छाल पर स्लेटी पपड़ी जैसे छोटे कीड़े", w:{sjs:4} },
+    { en:"White powder on new shoots", hi:"नई टहनियों पर सफ़ेद पाउडर", w:{pm:3} }
+  ],
+  tree: [
+    { en:"Tree weak for a year or more, small yellow leaves", hi:"साल भर या ज़्यादा से पेड़ कमज़ोर, छोटी पीली पत्तियाँ", w:{wrr:2, collar:2, borer:1} },
+    { en:"Bark rotten or dark at the trunk base, near the soil", hi:"मिट्टी के पास तने के नीचे की छाल सड़ी या काली", w:{collar:4} },
+    { en:"White threads or white fungus on the roots", hi:"जड़ों पर सफ़ेद धागे या सफ़ेद फफूँद", w:{wrr:5} },
+    { en:"Tree wilting or dying suddenly", hi:"पेड़ अचानक मुरझा या सूख रहा है", w:{wrr:2, collar:2, borer:2} },
+    { en:"White cotton or lumps on the roots", hi:"जड़ों पर रूई जैसे गुच्छे या गाँठें", w:{woolly:4} }
+  ]
+};
+const DXP = ["leaf", "fruit", "bark", "tree"];
+const dxSel = { part: "", ticks: {} };
+const dxL = o => (o && (o[lang] || o.en)) || "";
+
+function dxCard(id, label, top) {
+  const d = DX[id];
+  const acts = (d.act[lang] || d.act.en).map(a => "<li>" + esc(a) + "</li>").join("");
+  return '<article class="dxcard' + (top ? " top" : "") + '"><h5>' + esc(dxL(d)) + (label ? ' <em class="chip' + (top ? " hi" : "") + '">' + esc(label) + "</em>" : "") + "</h5>" +
+    "<p><span class=\"k\">" + tr("dx_look") + ":</span> " + esc(dxL(d.look)) + "</p>" +
+    "<p><span class=\"k\">" + tr("dx_when") + ":</span> " + esc(dxL(d.when)) + "</p>" +
+    '<p class="k">' + tr("dx_do") + "</p><ul>" + acts + "</ul>" +
+    (d.urgent ? '<p class="urgent">' + tr("dx_urgent") + "</p>" : "") +
+    (d.spray ? '<div><button class="link" type="button" data-dxspray>' + tr("dx_spray") + "</button></div>" : "") +
+    "</article>";
+}
+
+function renderDiag() {
+  $("dxParts").innerHTML = DXP.map(p => '<button class="tab" type="button" data-dxpart="' + p + '" aria-pressed="' + (dxSel.part === p) + '">' + tr("dxp_" + p) + "</button>").join("");
+  $("dxPart").innerHTML = DXP.map(p => '<option value="' + p + '">' + tr("dxp_" + p) + "</option>").join("");
+  if (dxSel.part) $("dxPart").value = dxSel.part;
+  $("dxSymWrap").hidden = !dxSel.part;
+  if (dxSel.part) {
+    const ticks = dxSel.ticks[dxSel.part] || [];
+    $("dxSyms").innerHTML = DXS[dxSel.part].map((s, i) => '<label class="chk"><input type="checkbox" data-dxsym="' + i + '"' + (ticks.includes(i) ? " checked" : "") + "><span>" + esc(dxL(s)) + "</span></label>").join("");
+  }
+  renderDiagRes();
+  renderDiagAuth();
+  if (dxLast) renderDiagAi(dxLast.id, dxLast.result);
+}
+
+function renderDiagRes() {
+  if (!dxSel.part) { $("dxRes").innerHTML = ""; return; }
+  const ticks = dxSel.ticks[dxSel.part] || [];
+  const score = {};
+  ticks.forEach(i => { const w = DXS[dxSel.part][i].w; Object.keys(w).forEach(k => { score[k] = (score[k] || 0) + w[k]; }); });
+  const ids = Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 3);
+  if (!ids.length) { $("dxRes").innerHTML = '<p class="hint">' + tr("dx_none") + "</p>"; return; }
+  const clear = ids.length === 1 || score[ids[0]] > score[ids[1]];
+  $("dxRes").innerHTML = '<div class="dxcards">' + ids.map((id, i) => dxCard(id, i === 0 && clear ? tr("dx_best") : tr("dx_also"), i === 0 && clear)).join("") + "</div>";
+}
+
+$("dxParts").addEventListener("click", e => {
+  const b = e.target.closest("[data-dxpart]"); if (!b) return;
+  dxSel.part = b.dataset.dxpart; renderDiag();
+});
+$("dxSyms").addEventListener("change", e => {
+  const c = e.target.closest("[data-dxsym]"); if (!c) return;
+  const list = (dxSel.ticks[dxSel.part] = dxSel.ticks[dxSel.part] || []), i = +c.dataset.dxsym;
+  if (c.checked) { if (!list.includes(i)) list.push(i); } else dxSel.ticks[dxSel.part] = list.filter(x => x !== i);
+  renderDiagRes();
+});
+$("tp-diag").addEventListener("click", e => {
+  if (e.target.closest("[data-dxspray]")) { showTool("spray", false, true); return; }
+  const f = e.target.closest("[data-dxfb]");
+  if (f) dxFeedback(f.dataset.dxfb);
+});
+
+/* ---- photo check ---- */
+let dxFiles = [], dxBusy = false, dxLast = null;
+function renderDiagAuth() {
+  $("dxGate").hidden = !!user;
+  $("dxForm").hidden = !user;
+}
+$("dxSign").addEventListener("click", () => showTool("orch", false, true));
+
+function dxShrink(file) {
+  return new Promise((ok, bad) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const max = 1024, k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      ok(c.toDataURL("image/jpeg", 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); bad(new Error("img")); };
+    img.src = url;
+  });
+}
+$("dxFile").addEventListener("change", async () => {
+  const fs = Array.from($("dxFile").files || []);
+  set("dxErr", fs.length > 3 ? tr("dx_max") : "");
+  dxFiles = [];
+  for (const f of fs.slice(0, 3)) { try { dxFiles.push(await dxShrink(f)); } catch (e) { set("dxErr", tr("dx_e_photos")); } }
+  $("dxThumbs").innerHTML = dxFiles.map(d => '<img alt="" src="' + d + '">').join("");
+});
+
+$("dxGo").addEventListener("click", async () => {
+  if (dxBusy) return;
+  if (!dxFiles.length) { set("dxErr", tr("dx_pick")); return; }
+  if (!sb) { set("dxErr", tr("dx_e_net")); return; }
+  set("dxErr", "");
+  let token = "";
+  try { const r = await sb.auth.getSession(); token = r && r.data && r.data.session ? r.data.session.access_token : ""; } catch (e) {}
+  if (!token) { set("dxErr", tr("dx_e_signin")); return; }
+  dxBusy = true; $("dxGo").disabled = true; set("dxStat", tr("dx_busy"));
+  try {
+    const r = await fetch("/api/diagnose", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+      body: JSON.stringify({ images: dxFiles, part: $("dxPart").value, note: $("dxNote").value.trim(), lang })
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "" }; renderDiagAi(j.id, j.result); }
+    else {
+      const k = { signin: "dx_e_signin", limit: "dx_e_limit", not_setup: "dx_e_setup", photos: "dx_e_photos" }[j.error] || "dx_e_net";
+      set("dxErr", tr(k).replace("{n}", j.limit || ""));
+    }
+  } catch (e) { set("dxErr", tr("dx_e_net")); }
+  dxBusy = false; $("dxGo").disabled = false; set("dxStat", "");
+});
+
+function renderDiagAi(id, r) {
+  const box = $("dxAi");
+  if (!r) { box.innerHTML = ""; return; }
+  let h = '<div class="dxcards"><article class="dxcard top"><h5>' + tr("dx_ai_h") + "</h5>";
+  if (!r.photo_ok) h += '<p class="urgent">' + tr("dx_photo_bad") + (r.photo_issue ? ": " + esc(r.photo_issue) : "") + "</p>";
+  if (r.summary) h += "<p>" + esc(r.summary) + "</p>";
+  h += "</article>";
+  (r.matches || []).forEach((m, i) => {
+    const d = DX[m.id];
+    const name = d ? dxL(d) : tr(m.id === "healthy" ? "dx_healthy" : "dx_other");
+    h += '<article class="dxcard"><h5>' + esc(name) + ' <em class="chip' + (m.confidence === "high" ? " hi" : "") + '">' + tr("dx_c_" + m.confidence) + "</em></h5>" +
+      (m.why ? "<p>" + esc(m.why) + "</p>" : "") +
+      (d && d.urgent ? '<p class="urgent">' + tr("dx_urgent") + "</p>" : "") +
+      (d ? "<details><summary>" + tr("dx_more") + "</summary>" + dxCard(m.id, "", false) + "</details>" : "") + "</article>";
+  });
+  if (r.next_steps && r.next_steps.length) h += '<article class="dxcard"><h5>' + tr("dx_steps") + "</h5><ul>" + r.next_steps.map(s => "<li>" + esc(s) + "</li>").join("") + "</ul>" +
+    (r.see_expert ? '<p class="urgent">' + tr("dx_expert") + "</p>" : "") + "</article>";
+  if (id) h += '<div class="dxfb">' + (dxLast && dxLast.fb ? '<span class="fine">' + tr("dx_fb_thanks") + "</span>" :
+    "<span>" + tr("dx_fb") + "</span>" + ["right", "wrong", "unsure"].map(k => '<button class="btn-s" type="button" data-dxfb="' + k + '">' + tr("dx_fb_" + k) + "</button>").join("")) + "</div>";
+  box.innerHTML = h + "</div>";
+}
+
+async function dxFeedback(k) {
+  if (!dxLast || !dxLast.id || !sb) return;
+  dxLast.fb = k; renderDiagAi(dxLast.id, dxLast.result);
+  try { await sb.from("diagnoses").update({ feedback: k }).eq("id", dxLast.id); } catch (e) {}
+}
 
 /* ---- top tabs ---- */
 const TT = ["orch","calc","diag","spray","cal","mandi","buy","admin"];
