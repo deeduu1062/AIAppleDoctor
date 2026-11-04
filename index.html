@@ -453,6 +453,17 @@ footer p{max-width:70ch}
 .phcc{display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;background:var(--surface-2);font:500 1.05rem var(--mono);color:var(--muted)}
 .phrow input{border-radius:0 8px 8px 0!important;font-family:var(--mono)!important;letter-spacing:.03em}
 
+.appbtn{display:inline-flex;align-items:center;gap:6px;border-color:var(--brand-bg);color:var(--brand)}
+.appbtn svg{flex:none}
+.instdlg{border:0;border-radius:14px;padding:20px 20px 16px;max-width:min(420px,calc(100vw - 32px));background:var(--surface);color:var(--fg);box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.instdlg::backdrop{background:rgba(20,14,10,.45)}
+.instdlg-head{display:flex;align-items:center;gap:12px}
+.instdlg-head img{border-radius:10px}
+.instdlg-head h3{font-size:1.2rem;font-weight:800;margin:0}
+.inststeps{margin:16px 0 0;padding-left:1.4em;display:grid;gap:10px;font-size:1rem;line-height:1.45}
+.inststeps b{white-space:nowrap}
+@media (max-width:480px){header.top{gap:8px;flex-wrap:nowrap}.nav{gap:6px;flex-wrap:nowrap;flex:none}.nav .lang{padding:7px 9px;font-size:.85rem}.appbtn{gap:4px}.brand{white-space:nowrap;min-width:0;font-size:clamp(1.1rem,5.2vw,1.5rem)!important}}
+@media (max-width:370px){.appbtn span{display:none}}
 /* install as app */
 .instbar{background:var(--surface-2);border-bottom:1px solid var(--line)}
 .instrow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
@@ -916,11 +927,11 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 </head>
 <body>
 <div class="topbar">
-  <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo" data-i18n="in_go" hidden></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
+  <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo"></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
   <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><button class="link" type="button" id="setPw" data-i18n="acct_setpw"></button><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
   <header class="wrap top">
     <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
-    <nav class="nav" aria-label="Account and language"><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
+    <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
   </header>
   <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-admin" aria-selected="false" aria-controls="tp-admin" type="button" data-i18n="tt_admin" hidden></button></div></div>
 </div>
@@ -1304,6 +1315,12 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
   <p data-i18n="foot_note"></p>
 </footer>
 
+<dialog class="instdlg" id="instDlg" aria-labelledby="instDlgH">
+  <div class="instdlg-head"><img src="/icons/icon-192.png" alt="" width="44" height="44"><h3 id="instDlgH" data-i18n="ig_h"></h3></div>
+  <ol class="inststeps" id="instSteps"></ol>
+  <p class="fine" id="instNote"></p>
+  <div class="dels"><button class="btn-s add" type="button" id="instClose" data-i18n="ig_ok"></button></div>
+</dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script>
 /* Fill in your page links here and the buttons appear. Leave a value empty to hide it. */
@@ -4433,27 +4450,60 @@ async function dxFeedback(k) {
 
 
 /* ---- install as an app (PWA) ---- */
-Object.assign(T.en, { in_android:"Add Apple Doctor to your phone. It opens like an app, even with weak signal.", in_ios:"Add Apple Doctor to your phone: tap the Share button, then \u201cAdd to Home Screen\u201d.", in_go:"Install", in_no:"Not now" });
-Object.assign(T.hi, { in_android:"Apple Doctor को अपने फ़ोन में जोड़ें। यह ऐप की तरह खुलेगा, कमज़ोर नेटवर्क में भी।", in_ios:"Apple Doctor को फ़ोन में जोड़ें: शेयर बटन दबाएँ, फिर \u201cAdd to Home Screen\u201d चुनें।", in_go:"इंस्टॉल करें", in_no:"अभी नहीं" });
-let instEvt = null, instMode = "";
+Object.assign(T.en, {
+  in_android:"Add Apple Doctor to your phone. It opens like an app, even with weak signal.",
+  in_ios:"Add Apple Doctor to your phone so it opens like an app, even with weak signal.",
+  in_go:"Install", in_how:"Show me how", in_no:"Not now", in_btn:"App",
+  ig_h:"Add Apple Doctor to your phone", ig_ok:"OK, got it",
+  ig_ios:["Tap <b>•••</b> at the bottom right of Safari. On older iPhones, tap the <b>Share</b> icon (a square with an arrow) at the bottom instead.","Tap <b>Share</b>.","Scroll down and tap <b>Add to Home Screen</b>. If you don’t see it, tap <b>View More</b> first.","Tap <b>Add</b>. The red apple icon appears on your home screen."],
+  ig_ios_note:"Using Chrome on iPhone? Tap the Share icon in the address bar, then Add to Home Screen.",
+  ig_and:["Tap <b>⋮</b> (three dots) at the top right of Chrome.","Tap <b>Install app</b> or <b>Add to Home screen</b>.","Tap <b>Install</b>. The red apple icon appears on your home screen."],
+  ig_and_note:"On a Samsung phone’s own browser, tap ☰ at the bottom, then Add page to, then Home screen."
+});
+Object.assign(T.hi, {
+  in_android:"Apple Doctor को अपने फ़ोन में जोड़ें। यह ऐप की तरह खुलेगा, कमज़ोर नेटवर्क में भी।",
+  in_ios:"Apple Doctor को फ़ोन में जोड़ें, ताकि यह ऐप की तरह खुले, कमज़ोर नेटवर्क में भी।",
+  in_go:"इंस्टॉल करें", in_how:"तरीक़ा देखें", in_no:"अभी नहीं", in_btn:"ऐप",
+  ig_h:"Apple Doctor को फ़ोन में जोड़ें", ig_ok:"ठीक है",
+  ig_ios:["Safari में नीचे दाईं ओर <b>•••</b> दबाएँ। पुराने iPhone में नीचे <b>शेयर</b> आइकन (तीर वाला चौकोर) दबाएँ।","<b>Share</b> दबाएँ।","नीचे स्क्रॉल करें और <b>Add to Home Screen</b> दबाएँ। न दिखे तो पहले <b>View More</b> दबाएँ।","<b>Add</b> दबाएँ। लाल सेब का आइकन होम स्क्रीन पर आ जाएगा।"],
+  ig_ios_note:"iPhone पर Chrome इस्तेमाल करते हैं? पता-पट्टी में शेयर आइकन दबाएँ, फिर Add to Home Screen।",
+  ig_and:["Chrome में ऊपर दाईं ओर <b>⋮</b> (तीन बिंदु) दबाएँ।","<b>Install app</b> या <b>Add to Home screen</b> दबाएँ।","<b>Install</b> दबाएँ। लाल सेब का आइकन होम स्क्रीन पर आ जाएगा।"],
+  ig_and_note:"Samsung फ़ोन के अपने ब्राउज़र में नीचे ☰ दबाएँ, फिर Add page to, फिर Home screen।"
+});
+let instEvt = null;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const instApp = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
 const instSnoozed = () => { try { return +localStorage.getItem("ad-inst-no") > Date.now(); } catch (e) { return false; } };
+const isPhone = () => isIOS || /android/i.test(navigator.userAgent);
 function renderInstall() {
-  const show = !!instMode && !instApp() && !instSnoozed();
+  const installed = instApp();
+  $("appBtn").hidden = installed || (!instEvt && !isPhone());
+  const show = !installed && !instSnoozed() && (!!instEvt || isPhone());
   $("instBar").hidden = !show;
   if (!show) return;
-  set("instMsg", tr(instMode === "ios" ? "in_ios" : "in_android"));
-  $("instGo").hidden = instMode !== "android";
+  set("instMsg", tr(isIOS ? "in_ios" : "in_android"));
+  set("instGo", tr(instEvt ? "in_go" : "in_how"));
 }
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); instEvt = e; instMode = "android"; renderInstall(); });
-window.addEventListener("appinstalled", () => { instEvt = null; instMode = ""; renderInstall(); });
-if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !instApp()) instMode = "ios";
-$("instGo").addEventListener("click", async () => {
-  if (!instEvt) return;
-  instEvt.prompt();
-  try { await instEvt.userChoice; } catch (e) {}
-  instEvt = null; instMode = ""; renderInstall();
-});
+function instGuide() {
+  const ios = isIOS;
+  $("instSteps").innerHTML = tr(ios ? "ig_ios" : "ig_and").map(x => "<li>" + x + "</li>").join("");
+  set("instNote", tr(ios ? "ig_ios_note" : "ig_and_note"));
+  const d = $("instDlg");
+  if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute("open", "");
+}
+async function instStart() {
+  if (instEvt) {
+    instEvt.prompt();
+    try { await instEvt.userChoice; } catch (e) {}
+    instEvt = null; renderInstall();
+  } else instGuide();
+}
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); instEvt = e; renderInstall(); });
+window.addEventListener("appinstalled", () => { instEvt = null; renderInstall(); });
+$("instGo").addEventListener("click", instStart);
+$("appBtn").addEventListener("click", instStart);
+$("instClose").addEventListener("click", () => { const d = $("instDlg"); if (d.close) d.close(); else d.removeAttribute("open"); });
+$("instDlg").addEventListener("click", e => { if (e.target === $("instDlg") && $("instDlg").close) $("instDlg").close(); });
 $("instNo").addEventListener("click", () => {
   try { localStorage.setItem("ad-inst-no", String(Date.now() + 14 * 86400000)); } catch (e) {}
   renderInstall();
