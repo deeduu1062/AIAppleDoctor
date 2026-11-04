@@ -479,6 +479,19 @@ footer p{max-width:70ch}
 
 .appbtn{display:inline-flex;align-items:center;gap:6px;border-color:var(--brand-bg);color:var(--brand)}
 .appbtn svg{flex:none}
+.sharebtn{display:inline-flex;align-items:center;justify-content:center;padding-inline:10px!important}
+.sharebtn svg{flex:none}
+.wa{text-decoration:none;background:#1F7A4A!important;color:#fff!important;border-color:#1F7A4A!important;display:inline-flex;align-items:center;gap:8px}
+.sharedlg{border:0;border-radius:14px;padding:20px;width:min(440px,calc(100vw - 32px));background:var(--surface);color:var(--fg);box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.sharedlg::backdrop{background:rgba(0,0,0,.4)}
+.sharedlg h3{font-family:var(--display);font-size:1.3rem;margin:0}
+.sharedlg > p{margin:6px 0 0;color:var(--muted)}
+.sharemsg{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--surface-2);font-size:.95rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.sharebtns{display:grid;gap:10px;margin-top:14px}
+.sharebtns .btn-s{justify-content:center;min-height:48px;font-size:1rem;width:100%}
+.sharedlg .fine{margin:10px 0 0;min-height:1.2em}
+.welcome-dlg .instdlg-head{margin-bottom:6px}
+.join .sharecta{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap}
 .instdlg{border:0;border-radius:14px;padding:20px 20px 16px;max-width:min(420px,calc(100vw - 32px));background:var(--surface);color:var(--fg);box-shadow:0 12px 40px rgba(0,0,0,.25)}
 .instdlg::backdrop{background:rgba(20,14,10,.45)}
 .instdlg-head{display:flex;align-items:center;gap:12px}
@@ -487,7 +500,8 @@ footer p{max-width:70ch}
 .inststeps{margin:16px 0 0;padding-left:1.4em;display:grid;gap:10px;font-size:1rem;line-height:1.45}
 .inststeps b{white-space:nowrap}
 @media (max-width:480px){header.top{gap:8px;flex-wrap:nowrap}.nav{gap:6px;flex-wrap:nowrap;flex:none}.nav .lang{padding:7px 9px;font-size:.85rem}.appbtn{gap:4px}.brand{white-space:nowrap;min-width:0;font-size:clamp(1.1rem,5.2vw,1.5rem)!important}}
-@media (max-width:370px){.appbtn span{display:none}}
+@media (max-width:430px){.appbtn span{display:none}.appbtn{padding-inline:10px!important}}
+@media (max-width:370px){.nav{gap:4px}.nav .lang{padding-inline:7px!important}.brand{font-size:1.05rem!important;gap:6px}}
 .dxwatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px}
 .dxw{text-align:left;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);color:var(--fg);cursor:pointer;display:grid;gap:4px;font:inherit}
 .dxw:hover{border-color:var(--brand-bg)}
@@ -1206,10 +1220,10 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <body>
 <div class="topbar">
   <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo"></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
-  <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><button class="link" type="button" id="setPw" data-i18n="acct_setpw"></button><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
+  <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><button class="link" type="button" id="shareAcct" data-i18n="sh_invite"></button><button class="link" type="button" id="setPw" data-i18n="acct_setpw"></button><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
   <header class="wrap top">
     <a class="brand" href="#top"><i aria-hidden="true"></i>Apple Doctor</a>
-    <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
+    <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
   </header>
   <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button><button class="tab" role="tab" id="tt-admin" aria-selected="false" aria-controls="tp-admin" type="button" data-i18n="tt_admin" hidden></button></div></div>
 </div>
@@ -1550,12 +1564,34 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <h2 data-i18n="join_h"></h2>
     <p data-i18n="join_p"></p>
     <div class="soc" id="soc"></div>
+    <h3 style="margin-top:34px" data-i18n="sh_join_h"></h3>
+    <p data-i18n="sh_join_p"></p>
+    <div class="sharecta"><button class="btn wa" type="button" id="shareJoin"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.8-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3z"/></svg><span data-i18n="sh_wa"></span></button></div>
   </div>
 </section>
 
 <footer class="wrap">
   <p data-i18n="foot_note"></p>
 </footer>
+
+<dialog class="sharedlg" id="shareDlg" aria-labelledby="shareH">
+  <h3 id="shareH" data-i18n="sh_h"></h3>
+  <p data-i18n="sh_p"></p>
+  <div class="sharemsg" id="shareMsg"></div>
+  <div class="sharebtns">
+    <a class="btn-s wa" id="shareWa" href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.8-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3z"/></svg><span data-i18n="sh_wa"></span></a>
+    <button class="btn-s" type="button" id="shareMore" data-i18n="sh_more" hidden></button>
+    <button class="btn-s" type="button" id="shareCopy" data-i18n="sh_copy"></button>
+    <button class="btn-s" type="button" id="shareClose" data-i18n="sh_close"></button>
+  </div>
+  <p class="fine" id="shareNote" role="status"></p>
+</dialog>
+
+<dialog class="instdlg welcome-dlg" id="welDlg" aria-labelledby="welH">
+  <div class="instdlg-head"><img src="/icons/icon-192.png" alt="" width="44" height="44"><h3 id="welH" data-i18n="wl_h"></h3></div>
+  <p class="fine" data-i18n="wl_p" style="font-size:1rem"></p>
+  <div class="dels"><button class="btn-s add" type="button" id="welGo"></button><button class="btn-s" type="button" id="welNo" data-i18n="wl_no"></button></div>
+</dialog>
 
 <dialog class="instdlg" id="instDlg" aria-labelledby="instDlgH">
   <div class="instdlg-head"><img src="/icons/icon-192.png" alt="" width="44" height="44"><h3 id="instDlgH" data-i18n="ig_h"></h3></div>
@@ -2061,7 +2097,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (window.ADFeedback) ADFeedback.render();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (window.ADFeedback) ADFeedback.render();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -4920,6 +4956,72 @@ $("instNo").addEventListener("click", () => {
   try { localStorage.setItem("ad-inst-no", String(Date.now() + 14 * 86400000)); } catch (e) {}
   renderInstall();
 });
+/* ---- recommend to friends (share on WhatsApp) ----
+   Shared link: /?invite=CODE. CODE is the sharer's short id when logged in, otherwise "1".
+   Whoever opens it gets a welcome box offering to install the app; the code is kept on their phone
+   and saved on their account (user_metadata.ref) if they create one. */
+Object.assign(T.en, {
+  sh_btn:"Share", sh_invite:"Invite friends", sh_h:"Recommend Apple Doctor", sh_p:"Send this to other apple growers. When they open the link, they can add Apple Doctor to their phone.",
+  sh_wa:"Send on WhatsApp", sh_more:"Share another way", sh_copy:"Copy link", sh_close:"Close", sh_copied:"Link copied. Paste it in any chat.", sh_copy_fail:"Could not copy. Press and hold the message above to copy it.",
+  sh_msg:"Namaste! 🍎 I use Apple Doctor for my orchard. It is free for apple growers: profit calculator, spray schedule, disease check and mandi rates, in Hindi and English.\nOpen this link and add it to your phone:",
+  sh_join_h:"Know another grower?", sh_join_p:"Recommend Apple Doctor to friends and family. It is free, and they can add it to their phone like an app.",
+  wl_h:"Welcome to Apple Doctor", wl_p:"A friend shared Apple Doctor with you. Add it to your phone and open it like an app, any time. It is free.",
+  wl_go:"Add to my phone", wl_how:"Show me how", wl_no:"Maybe later"
+});
+Object.assign(T.hi, {
+  sh_btn:"शेयर", sh_invite:"दोस्तों को बुलाएँ", sh_h:"Apple Doctor की सिफ़ारिश करें", sh_p:"इसे दूसरे सेब बाग़वानों को भेजें। लिंक खोलकर वे Apple Doctor को अपने फ़ोन में जोड़ सकते हैं।",
+  sh_wa:"WhatsApp पर भेजें", sh_more:"दूसरे तरीक़े से भेजें", sh_copy:"लिंक कॉपी करें", sh_close:"बंद करें", sh_copied:"लिंक कॉपी हो गया। किसी भी चैट में पेस्ट करें।", sh_copy_fail:"कॉपी नहीं हो सका। ऊपर वाले संदेश को दबाकर रखें और कॉपी करें।",
+  sh_msg:"नमस्ते! 🍎 मैं अपने बाग़ के लिए Apple Doctor इस्तेमाल करता हूँ। सेब बाग़वानों के लिए मुफ़्त: मुनाफ़ा कैलकुलेटर, स्प्रे शेड्यूल, बीमारी की जाँच और मंडी भाव, हिंदी और अंग्रेज़ी में।\nयह लिंक खोलें और इसे अपने फ़ोन में जोड़ें:",
+  sh_join_h:"कोई और बाग़वान जानते हैं?", sh_join_p:"दोस्तों और परिवार को Apple Doctor के बारे में बताएँ। यह मुफ़्त है, और वे इसे ऐप की तरह फ़ोन में रख सकते हैं।",
+  wl_h:"Apple Doctor में आपका स्वागत है", wl_p:"एक दोस्त ने आपको Apple Doctor भेजा है। इसे फ़ोन में जोड़ें और जब चाहें ऐप की तरह खोलें। यह मुफ़्त है।",
+  wl_go:"मेरे फ़ोन में जोड़ें", wl_how:"तरीक़ा देखें", wl_no:"बाद में"
+});
+const myRef = () => user && user.id ? String(user.id).replace(/-/g, "").slice(0, 8) : "1";
+const shareLink = () => location.origin + "/?invite=" + myRef();
+const shareText = () => tr("sh_msg") + "\n" + shareLink();
+function shareOpen() {
+  set("shareMsg", shareText()); set("shareNote", "");
+  $("shareWa").href = "https://wa.me/?text=" + encodeURIComponent(shareText());
+  $("shareMore").hidden = !navigator.share;
+  const d = $("shareDlg");
+  if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute("open", "");
+}
+const shareShut = () => { const d = $("shareDlg"); if (d.close) d.close(); else d.removeAttribute("open"); };
+$("shareBtn").addEventListener("click", shareOpen);
+$("shareAcct").addEventListener("click", shareOpen);
+$("shareJoin").addEventListener("click", shareOpen);
+$("shareClose").addEventListener("click", shareShut);
+$("shareDlg").addEventListener("click", e => { if (e.target === $("shareDlg")) shareShut(); });
+$("shareMore").addEventListener("click", async () => {
+  try { await navigator.share({title: "Apple Doctor", text: tr("sh_msg"), url: shareLink()}); } catch (e) {}
+});
+$("shareCopy").addEventListener("click", async () => {
+  let ok = false;
+  try { await navigator.clipboard.writeText(shareText()); ok = true; } catch (e) {
+    try { const r = document.createRange(); r.selectNodeContents($("shareMsg")); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); ok = document.execCommand("copy"); } catch (x) {}
+  }
+  set("shareNote", tr(ok ? "sh_copied" : "sh_copy_fail"));
+});
+function renderShare() {
+  $("shareBtn").setAttribute("aria-label", tr("sh_btn")); $("shareBtn").title = tr("sh_btn");
+  if ($("shareDlg").open) set("shareMsg", shareText());
+  set("welGo", tr(instEvt ? "wl_go" : "wl_how"));
+}
+/* someone opened a shared link */
+(function () {
+  const m = /[?&]invite=([A-Za-z0-9]{1,16})/.exec(location.search);
+  if (!m) return;
+  try { if (m[1] !== "1" && !localStorage.getItem("ad-ref")) localStorage.setItem("ad-ref", m[1]); } catch (e) {}
+  try { const u = new URL(location.href); u.searchParams.delete("invite"); history.replaceState(null, "", u.pathname + u.search + u.hash); } catch (e) {}
+  if (instApp()) return;
+  const d = $("welDlg");
+  setTimeout(() => { renderShare(); if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute("open", ""); }, 600);
+})();
+const welShut = () => { const d = $("welDlg"); if (d.close) d.close(); else d.removeAttribute("open"); };
+$("welGo").addEventListener("click", () => { welShut(); instStart(); });
+$("welNo").addEventListener("click", welShut);
+window.addEventListener("beforeinstallprompt", () => setTimeout(renderShare, 0));
+
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
 }

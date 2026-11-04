@@ -1352,6 +1352,8 @@ const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
 let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
 let pendingEmail = "", justSignedIn = false;
+/* who recommended the app (from a shared link), saved on the new account */
+const refData = () => { try { const r = localStorage.getItem("ad-ref"); return r ? {ref: r} : {}; } catch (e) { return {}; } };
 function renderAcct() { if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail)); }
 
 function netMsg(err) {
@@ -1384,7 +1386,7 @@ $("authCreate").addEventListener("click", async () => {
   if (pw.length < 8) { set("authErr", tr("auth_err_pw")); return; }
   authBusy(true); justSignedIn = true;
   let err = null, res = null;
-  try { res = await sb.auth.signUp({email: email, password: pw, options: {emailRedirectTo: HOME}}); err = res.error; } catch (x) { err = x; }
+  try { res = await sb.auth.signUp({email: email, password: pw, options: {emailRedirectTo: HOME, data: refData()}}); err = res.error; } catch (x) { err = x; }
   authBusy(false);
   if (err) { justSignedIn = false; set("authErr", netMsg(err)); return; }
   if (!(res.data && res.data.session)) { justSignedIn = false; set("authInfo", tr("auth_confirm").replace("{e}", email)); }
@@ -1405,7 +1407,7 @@ $("authSend").addEventListener("click", async () => {
   authBusy(true);
   let err = null;
   try {
-    const res = await sb.auth.signInWithOtp({email: email, options: {shouldCreateUser: true, emailRedirectTo: HOME}});
+    const res = await sb.auth.signInWithOtp({email: email, options: {shouldCreateUser: true, emailRedirectTo: HOME, data: refData()}});
     err = res.error;
   } catch (x) { err = x; }
   authBusy(false);
@@ -1514,7 +1516,7 @@ async function phSendCode(channel, errId) {
   set(errId, "");
   ["phSend", "phWa", "phResend"].forEach(id => { $(id).disabled = true; });
   let err = null;
-  try { const res = await sb.auth.signInWithOtp({phone: phone, options: {channel: channel, shouldCreateUser: true}}); err = res.error; } catch (x) { err = x; }
+  try { const res = await sb.auth.signInWithOtp({phone: phone, options: {channel: channel, shouldCreateUser: true, data: refData()}}); err = res.error; } catch (x) { err = x; }
   ["phSend", "phWa"].forEach(id => { $(id).disabled = false; });
   if (err) { renderPhResend(); set(errId, phErrMsg(err)); return; }
   phPending = phone; phChannel = channel;
