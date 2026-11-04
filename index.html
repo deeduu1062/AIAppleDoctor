@@ -514,6 +514,21 @@ footer p{max-width:70ch}
 .dxhist .chip{margin-left:4px}
 /* dashboard showcase (signed out) */
 .promo{display:grid;gap:18px}
+.news{margin:18px 0 22px;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:16px 18px 12px;box-shadow:0 1px 0 rgba(42,27,18,.04),0 10px 24px -20px rgba(42,27,18,.45)}
+.newshead{display:flex;gap:6px 12px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.newshead h3{font-family:var(--display);font-weight:600;font-size:1.3rem;margin:0;display:flex;align-items:center;gap:8px}
+.newshead h3 i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--apple);box-shadow:0 0 0 3px rgba(184,50,31,.18)}
+.newshead .fine{margin:0}
+.newslist{list-style:none;margin:8px 0 0;padding:0}
+.newslist li{border-top:1px solid var(--line)}
+.newslist li:first-child{border-top:0}
+.newslist a{display:block;padding:11px 0;text-decoration:none;color:var(--fg)}
+.newslist a:hover b{text-decoration:underline}
+.newslist b{display:block;font-weight:600;line-height:1.4;overflow-wrap:anywhere}
+.newslist small{display:block;color:var(--muted);font-size:.84rem;margin-top:3px}
+.newsfoot{display:flex;gap:6px 14px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:6px;margin-top:2px}
+.newsfoot .fine{margin:0;font-size:.8rem}
+.newsmsg{color:var(--muted);padding:12px 0 8px;margin:0}
 .promo[hidden]{display:none}
 .prgreet{font-weight:700;color:var(--apple);margin:0 0 4px;font-size:1rem}
 .prhead h3{font-size:1.45rem;font-weight:800;line-height:1.25}
@@ -1499,6 +1514,12 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <div class="promo" id="promo"></div>
       <p id="orIntro" data-i18n="or_p"></p>
 
+      <section class="news" id="news" aria-labelledby="newsH">
+        <div class="newshead"><h3 id="newsH"><i aria-hidden="true"></i><span data-i18n="nw_h"></span></h3><span class="fine" id="newsAt"></span></div>
+        <ul class="newslist" id="newsList"></ul>
+        <div class="newsfoot"><button class="link" type="button" id="newsMore" hidden></button><p class="fine" data-i18n="nw_src"></p></div>
+      </section>
+
 
       <div class="authcard" id="pwCard" hidden>
         <h3 data-i18n="pw_h"></h3>
@@ -2097,7 +2118,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (window.ADFeedback) ADFeedback.render();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof loadNews === "function") loadNews(); if (window.ADFeedback) ADFeedback.render();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -4956,6 +4977,66 @@ $("instNo").addEventListener("click", () => {
   try { localStorage.setItem("ad-inst-no", String(Date.now() + 14 * 86400000)); } catch (e) {}
   renderInstall();
 });
+/* ---- apple news bulletins (from /api/news, Google News headlines; same for everyone) ---- */
+Object.assign(T.en, {
+  nw_h:"Apple news", nw_src:"Headlines from news sites via Google News. Tap one to read it.",
+  nw_more:"Show more news", nw_less:"Show less", nw_loading:"Loading the latest apple news…",
+  nw_err:"News could not load right now. Check your internet and try again later.", nw_retry:"Try again", nw_upd:"Updated {t}"
+});
+Object.assign(T.hi, {
+  nw_h:"सेब समाचार", nw_src:"समाचार साइटों की सुर्ख़ियाँ, Google News से। पढ़ने के लिए किसी पर दबाएँ।",
+  nw_more:"और समाचार देखें", nw_less:"कम दिखाएँ", nw_loading:"सेब से जुड़े ताज़ा समाचार लोड हो रहे हैं…",
+  nw_err:"समाचार अभी लोड नहीं हो सके। इंटरनेट जाँचें और थोड़ी देर बाद फिर देखें।", nw_retry:"दोबारा कोशिश करें", nw_upd:"अपडेट {t}"
+});
+const NEWS = {}, NEWS_SHOW = 4;
+let newsOpen = false, newsBusy = {};
+function newsCached(l) { try { const c = JSON.parse(localStorage.getItem("ad-news-" + l) || "null"); return c && Array.isArray(c.items) ? c : null; } catch (e) { return null; } }
+async function loadNews(force) {
+  const l = lang;
+  if (!NEWS[l]) { const c = newsCached(l); if (c) NEWS[l] = c; }
+  const fresh = NEWS[l] && NEWS[l].got && Date.now() - NEWS[l].got < 20 * 60000;
+  renderNews();
+  if ((fresh && !force) || newsBusy[l]) return;
+  newsBusy[l] = true;
+  let data = null;
+  try {
+    const r = await fetch("/api/news?lang=" + l);
+    if (r.ok) data = await r.json();
+  } catch (e) {}
+  newsBusy[l] = false;
+  if (data && Array.isArray(data.items) && data.items.length) {
+    NEWS[l] = {items: data.items, at: data.at, got: Date.now()};
+    try { localStorage.setItem("ad-news-" + l, JSON.stringify(NEWS[l])); } catch (e) {}
+  } else if (!NEWS[l]) NEWS[l] = {items: [], failed: true};
+  if (l === lang) renderNews();
+}
+function newsWhen(iso) {
+  if (!iso) return "";
+  const d = new Date(iso), mins = Math.round((Date.now() - d) / 60000);
+  if (mins < 60 * 20) {
+    const h = Math.max(1, Math.round(mins / 60));
+    return lang === "hi" ? (mins < 60 ? Math.max(1, mins) + " मिनट पहले" : h + " घंटे पहले") : (mins < 60 ? Math.max(1, mins) + " min ago" : h + (h === 1 ? " hour ago" : " hours ago"));
+  }
+  return adWhen(iso);
+}
+function renderNews() {
+  const n = NEWS[lang];
+  if (!n) { $("newsList").innerHTML = '<li class="newsmsg">' + tr("nw_loading") + "</li>"; $("newsMore").hidden = true; set("newsAt", ""); return; }
+  if (!n.items.length) {
+    $("newsList").innerHTML = '<li class="newsmsg">' + tr("nw_err") + ' <button class="link" type="button" id="newsRetry">' + tr("nw_retry") + "</button></li>";
+    $("newsMore").hidden = true; set("newsAt", ""); return;
+  }
+  const list = newsOpen ? n.items : n.items.slice(0, NEWS_SHOW);
+  $("newsList").innerHTML = list.map(x => '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener"><b>' + esc(x.title) + "</b><small>" +
+    esc([x.source, newsWhen(x.date)].filter(Boolean).join(" · ")) + "</small></a></li>").join("");
+  $("newsMore").hidden = n.items.length <= NEWS_SHOW;
+  set("newsMore", tr(newsOpen ? "nw_less" : "nw_more"));
+  set("newsAt", n.at ? tr("nw_upd").replace("{t}", adWhen(n.at)) : "");
+}
+$("newsMore").addEventListener("click", () => { newsOpen = !newsOpen; renderNews(); if (!newsOpen) $("news").scrollIntoView({block: "nearest"}); });
+$("newsList").addEventListener("click", e => { if (e.target.id === "newsRetry") { delete NEWS[lang]; loadNews(true); } });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) loadNews(); });
+
 /* ---- recommend to friends (share on WhatsApp) ----
    Shared link: /?invite=CODE. CODE is the sharer's short id when logged in, otherwise "1".
    Whoever opens it gets a welcome box offering to install the app; the code is kept on their phone
