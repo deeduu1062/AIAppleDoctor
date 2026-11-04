@@ -1079,9 +1079,8 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
         <p class="kicker" data-i18n="hero_kicker"></p>
         <h1 data-i18n="hero_h1"></h1>
         <p class="greet">“Main hoon aapka apna Apple Doctor.”</p>
-        <p class="sub" data-i18n="hero_p"></p>
         <div class="btns">
-          <a class="btn primary" href="#tools" data-i18n="hero_cta1"></a>
+          <button class="btn primary" type="button" id="heroJoin" data-i18n="pr_join"></button>
           <a class="btn ghost" href="#join" data-i18n="hero_cta2"></a>
         </div>
       </div>
@@ -4724,7 +4723,7 @@ function renderPromo() {
     '</div><div class="prnav"><button class="prarr" type="button" data-prnav="-1" aria-label="' + esc(tr("pr_prev")) + '">&#8249;</button><div class="prdots" id="prDots">' +
       PR_SLIDES.map((k, i) => '<button type="button" data-prdot="' + i + '" aria-label="' + esc(tr(k)) + '"></button>').join("") +
       '</div><button class="prarr" type="button" data-prnav="1" aria-label="' + esc(tr("pr_next")) + '">&#8250;</button></div></div>' +
-    '<div class="dels prcta"><button class="btn-s add" type="button" data-prgo="join">' + tr("pr_join") + '</button><button class="btn-s" type="button" data-prgo="quick">' + tr("pr_quick") + "</button></div>";
+    '<div class="dels prcta"><button class="btn-s" type="button" data-prgo="quick">' + tr("pr_quick") + "</button></div>";
   prSetup();
 }
 /* slideshow: swipe, arrows, dots; moves on by itself until someone touches it */
@@ -4771,7 +4770,7 @@ $("promo").addEventListener("click", e => {
   const g = b.dataset.prgo;
   if (g === "diag") { tabPicked = true; showTool("diag", false, true); }
   else if (g === "quick") { tabPicked = true; showTool("calc", false, true); showSub("quick"); }
-  else if (g === "join") { const c = $("authCard"); if (c && c.scrollIntoView) c.scrollIntoView({block: "start"}); const i = $("phNum") && !$("authPhone").hidden ? $("phNum") : $("authEmail"); setTimeout(() => { try { i.focus({preventScroll: true}); } catch (x) {} }, 300); }
+  else if (g === "join") prJoin();
 });
 
 /* ---- Dashboard: season at a glance (signed in) ---- */
@@ -4856,6 +4855,13 @@ $("dash").addEventListener("click", e => {
   if (g === "exp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); return; }
   if (g === "dx") goDiag("sym");
 });
+function prJoin() {
+  tabPicked = true; showTool("orch", false, false);
+  const c = $("authCard"); if (c && c.scrollIntoView) c.scrollIntoView({block: "start"});
+  const i = $("phNum") && !$("authPhone").hidden ? $("phNum") : $("authEmail");
+  setTimeout(() => { try { i.focus({preventScroll: true}); } catch (x) {} }, 300);
+}
+$("heroJoin").addEventListener("click", prJoin);
 /* ---- install as an app (PWA) ---- */
 Object.assign(T.en, {
   in_android:"Get Apple Doctor as an app on your phone.",
