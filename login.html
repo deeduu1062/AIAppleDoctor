@@ -1259,6 +1259,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="/feedback.js"></script>
 <script>
 /* Apple Doctor login page. After a successful login it goes back to the main page and opens the Dashboard. */
 const T = {
@@ -1564,6 +1565,7 @@ function applyLang() {
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
   renderMode(); renderAuthMethod(); renderAcct();
+  if (window.ADFeedback) ADFeedback.render();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -1576,6 +1578,7 @@ if (sb) {
   sb.auth.onAuthStateChange((ev, session) => { if (session && ev !== "PASSWORD_RECOVERY") goHome(); });
   sb.auth.getSession().then(r => { if (r && r.data && r.data.session) goHome(); }).catch(() => {});
 }
+if (window.ADFeedback) ADFeedback.init({getSb: () => sb, getLang: () => lang, getUser: () => null, getPage: () => mode === "signup" ? "Create account" : "Log in"});
 applyLang();
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("/sw.js"); } catch (e) {} }
 </script>
