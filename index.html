@@ -157,6 +157,16 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .fbadm .tabs{margin-top:0}
 #faList .tablewrap{margin-top:14px}
 #faList table.ledger{min-width:760px}
+#paList .tablewrap{margin-top:14px}
+#paList table.ledger{min-width:900px}
+#paList .tag{display:inline-block;font-size:.78rem;font-weight:600;padding:1px 6px;border-radius:6px;border:1px solid var(--bad);color:var(--bad)}
+.fbst select.pa-pending{border-color:var(--apple);color:var(--apple)}
+.fbst select.pa-approved{border-color:var(--good);color:var(--good)}
+.fbst select.pa-rejected{border-color:var(--muted);color:var(--muted)}
+.palogbox h5{font-family:var(--display);font-size:1.05rem;margin:22px 0 0}
+.palog{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;font-size:.92rem;max-height:320px;overflow:auto}
+.palog li{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow-wrap:anywhere}
+.palog time{display:block;font:500 .8rem var(--mono);color:var(--muted)}
 #faList .ledger td,#faList .ledger th{vertical-align:top;text-align:left}
 #faList .ledger td{font:400 .95rem var(--body)}
 #faList .ledger td.n{font-family:var(--mono);text-align:right;color:var(--muted)}
@@ -1629,6 +1639,19 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <div id="adTable"></div>
         <p class="fine" data-i18n="ad_note"></p>
       </div>
+      <section class="fbadm" aria-labelledby="paAdmH">
+        <h4 id="paAdmH" data-i18n="pa_h"></h4>
+        <p class="fine" data-i18n="pa_p"></p>
+        <div class="ystats" id="paStats"></div>
+        <div class="admbar">
+          <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" id="paPend" aria-selected="true"></button><button class="tab" role="tab" type="button" id="paAll" aria-selected="false"></button></div>
+          <button class="btn-s" type="button" id="paRefresh" data-i18n="ad_refresh"></button>
+          <button class="btn-s" type="button" id="paCsv" data-i18n="pa_csv"></button>
+        </div>
+        <p class="autherr" id="paErr" role="alert"></p>
+        <div id="paList"></div>
+        <div id="paLog" class="palogbox"></div>
+      </section>
       <section class="fbadm" aria-labelledby="laH">
         <h4 id="laH" data-i18n="la_h"></h4>
         <p class="fine" data-i18n="la_p"></p>
@@ -2068,6 +2091,14 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   pay_dup:"This reference number has already been sent.", pay_ok:"Thank you! We'll check your payment and switch on {p}, usually within a day.",
   pay_err:"Couldn't send just now. Please try again.", pay_close:"Close",
   pay_signin_p:"Please sign in first, so your plan is linked to your account.", pay_signin:"Sign in",
+  pa_h:"Payments", pa_p:"UPI payments sent from the Plans section. Check each UTR in PhonePe, then set it to Approved or Rejected. Every change is logged with who made it and when.",
+  pa_s_total:"Total received", pa_s_month:"Received this month", pa_s_pend:"Waiting for check", pa_s_active:"Active paid plans",
+  pa_pend:"Waiting ({n})", pa_all:"All ({n})", pa_csv:"Download CSV", pa_none:"No payments here yet.",
+  pa_c_status:"Status", pa_c_when:"Sent", pa_c_from:"Grower", pa_c_plan:"Plan", pa_c_amt:"Amount", pa_c_utr:"UTR", pa_c_until:"Plan ends", pa_c_by:"Checked",
+  pa_st_pending:"Waiting", pa_st_approved:"Approved", pa_st_rejected:"Rejected", pa_expired:"Ended",
+  pa_ask_ok:"Approve {a} from {e}?\n\nOnly approve after you see UTR {u} for {a} in PhonePe.", pa_ask_no:"Reject the payment with UTR {u} from {e}?", pa_ask_back:"Set UTR {u} back to waiting?",
+  pa_log_h:"Payment log", pa_log_none:"Nothing logged yet.", pa_ev_sent:"{e} sent {a}, UTR {u}", pa_ev_changed:"UTR {u}: {o} → {n} by {b}",
+  pa_err_setup:"The payments table is not set up yet. Run supabase/payments.sql, then supabase/payments_admin.sql, in the Supabase SQL Editor.", pa_err:"Could not load payments: {m}",
   pay_soon:"UPI payment is being set up. Please check back soon."
 },
 hi: {
@@ -2089,6 +2120,14 @@ hi: {
   pay_err:"अभी भेज नहीं पाए। कृपया दोबारा कोशिश करें।", pay_close:"बंद करें",
   pay_signin_p:"पहले साइन इन करें, ताकि प्लान आपके खाते से जुड़े।", pay_signin:"साइन इन",
   pay_soon:"UPI भुगतान की तैयारी चल रही है। जल्द ही दोबारा देखें।",
+  pa_h:"भुगतान", pa_p:"प्लान सेक्शन से भेजे गए UPI भुगतान। हर UTR को PhonePe में जाँचें, फिर मंज़ूर या नामंज़ूर करें। हर बदलाव किसने और कब किया, दर्ज होता है।",
+  pa_s_total:"कुल प्राप्त", pa_s_month:"इस महीने प्राप्त", pa_s_pend:"जाँच बाकी", pa_s_active:"चालू पेड प्लान",
+  pa_pend:"बाकी ({n})", pa_all:"सभी ({n})", pa_csv:"CSV डाउनलोड", pa_none:"यहाँ अभी कोई भुगतान नहीं है।",
+  pa_c_status:"स्थिति", pa_c_when:"भेजा", pa_c_from:"बाग़वान", pa_c_plan:"प्लान", pa_c_amt:"रकम", pa_c_utr:"UTR", pa_c_until:"प्लान ख़त्म", pa_c_by:"जाँचा",
+  pa_st_pending:"बाकी", pa_st_approved:"मंज़ूर", pa_st_rejected:"नामंज़ूर", pa_expired:"ख़त्म",
+  pa_ask_ok:"{e} का {a} मंज़ूर करें?\n\nPhonePe में {a} का UTR {u} दिखने के बाद ही मंज़ूर करें।", pa_ask_no:"{e} का UTR {u} वाला भुगतान नामंज़ूर करें?", pa_ask_back:"UTR {u} को वापस बाकी में डालें?",
+  pa_log_h:"भुगतान रिकॉर्ड", pa_log_none:"अभी कुछ दर्ज नहीं।", pa_ev_sent:"{e} ने {a} भेजा, UTR {u}", pa_ev_changed:"UTR {u}: {o} → {n}, {b} द्वारा",
+  pa_err_setup:"भुगतान टेबल अभी नहीं बनी। Supabase SQL Editor में supabase/payments.sql, फिर supabase/payments_admin.sql चलाएँ।", pa_err:"भुगतान लोड नहीं हो सके: {m}",
   nav_calc:"मुनाफ़ा कैलकुलेटर", nav_plan:"आगे क्या आ रहा है", nav_cal:"सीज़न कैलेंडर", nav_join:"जुड़ें",
   hero_kicker:"हिमाचल और कश्मीर के सेब बागवानों के लिए",
   hero_h1:"आपका बगीचा। आपका साथी।",
@@ -2357,7 +2396,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); renderLA(); } if (window.ADFeedback) ADFeedback.render(); if (typeof renderPlans === "function") renderPlans();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); renderLA(); } if (window.ADFeedback) ADFeedback.render(); if (typeof renderPlans === "function") renderPlans(); if (typeof renderPayAdmin === "function") renderPayAdmin();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -2659,7 +2698,7 @@ function renderAdmin() {
       '<td><span class="tag' + (u.confirmed ? " ok" : "") + '">' + tr(u.confirmed ? "ad_ok" : "ad_no") + "</span></td></tr>").join("") +
     "</tbody></table></div>";
 }
-$("adRefresh").addEventListener("click", () => { loadAdmin(); loadFeedback(); loadLibAdmin(); });
+$("adRefresh").addEventListener("click", () => { loadAdmin(); loadFeedback(); loadLibAdmin(); if (typeof loadPayAdmin === "function") loadPayAdmin(); });
 $("adFind").addEventListener("input", renderAdmin);
 
 /* ---- admin: feedback and suggestions (table public.feedback, see supabase/feedback.sql) ---- */
@@ -5730,7 +5769,7 @@ function showTool(w, focus, scroll) {
     }
   });
   if (scroll && $("tools").scrollIntoView) $("tools").scrollIntoView({block:"start"});
-  if (w === "admin" && !adLoaded) { loadAdmin(); loadFeedback(); loadLibAdmin(); }
+  if (w === "admin" && !adLoaded) { loadAdmin(); loadFeedback(); loadLibAdmin(); if (typeof loadPayAdmin === "function") loadPayAdmin(); }
   if (w === "lib") loadLib();
   if (w === "news") loadNews();
 }
