@@ -866,7 +866,50 @@ legend{font-size:.95rem}
 .months li[aria-current="date"]{background:var(--apple)}
 .months li[aria-current="date"] .m,.months .now{color:#FFE3DE}
 .tabbar .tab[aria-selected="true"]{color:var(--apple)}
+/* ---- landing page for visitors who are not logged in ---- */
+.lpsub{font-size:1.12rem;line-height:1.5;color:var(--fg)!important;max-width:46ch}
+.lplogin{margin-top:16px;color:var(--fg)}
+.lplink{font:700 1rem var(--body);background:none;border:0;padding:6px 2px;color:var(--apple);text-decoration:underline;cursor:pointer}
+.lpticks{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:inherit;gap:8px 18px;font-weight:600;font-size:.95rem}
+.lpticks li::before{content:"✓";color:var(--leaf);font-weight:800;margin-right:6px}
+.lpgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px;margin-top:26px}
+.lpcard{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);transition:border-color .15s,transform .15s}
+.lpcard:hover{border-color:var(--apple)}
+.lpcard:focus-visible{outline:3px solid var(--apple);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.lpcard:hover{transform:translateY(-2px)}}
+.lpcard h3{font-size:1.2rem}
+.lpcard p{margin:0;color:var(--muted);font-size:.98rem;line-height:1.5;flex:1}
+.lptag{align-self:flex-start;font:700 .78rem var(--body);padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--brand)}
+.lptag.acct{background:var(--apple);color:var(--on-apple)}
+.lpgo{font-weight:700;color:var(--apple);margin-top:6px}
+.lpsoon{margin-top:16px}
+.alt.lpsteps,.alt.lpfaq{background:var(--surface-2)}
+.lpol{list-style:none;counter-reset:lp;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px}
+.lpol li{counter-increment:lp;display:grid;gap:6px;padding:18px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.lpol li::before{content:counter(lp);width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--apple);color:var(--on-apple);font:700 1.15rem var(--display)}
+.lpol b{font:700 1.15rem var(--display)}
+.lpol span{color:var(--muted);line-height:1.5}
+.lpbox{background:var(--brand-bg);color:var(--on-brand);border-radius:18px;padding:clamp(22px,5vw,40px)}
+.lpbox h2{color:var(--on-brand)}
+.lpben{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:16px 26px}
+.lpben li{display:grid;gap:4px;padding-left:30px;position:relative}
+.lpben li::before{content:"✓";position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--on-brand);color:var(--brand-bg);display:grid;place-items:center;font-weight:800;font-size:.8rem}
+.lpben b{font-size:1.05rem}
+.lpben span{color:var(--on-brand-soft);line-height:1.5}
+.lpbox .btns{margin-top:26px}
+.btn.lpin{border-color:var(--on-brand-line);color:var(--on-brand);background:transparent}
+.btn.lpin:hover{border-color:var(--on-brand)}
+.lpfine{margin:14px 0 0;color:var(--on-brand-soft);font-size:.92rem}
+.lpqs{display:grid;gap:10px;margin-top:22px;max-width:760px}
+.lpq{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 16px}
+.lpq summary{cursor:pointer;font-weight:700;font-size:1.05rem;padding:15px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.lpq summary::-webkit-details-marker{display:none}
+.lpq summary::after{content:"+";font-size:1.3rem;line-height:1;color:var(--apple)}
+.lpq[open] summary::after{content:"–"}
+.lpq p{margin:0 0 15px;color:var(--muted);line-height:1.55}
+body.guest .rows-bottom{display:block}
 </style>
+
 
 <style>
 /* Yearly net profit: a row per year that opens to every orchard's details */
@@ -1402,10 +1445,13 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <p class="kicker" data-i18n="hero_kicker"></p>
         <h1 data-i18n="hero_h1"></h1>
         <p class="pillars"><span lang="hi">ज्ञान • तकनीक • मुनाफ़ा</span><span lang="en">Knowledge • Technology • Profit</span></p>
+        <p class="sub lpsub lponly" data-i18n="lp_sub" hidden></p>
         <div class="btns">
           <button class="btn primary" type="button" id="heroJoin" data-i18n="pr_join"></button>
           <a class="btn ghost" href="#join" data-i18n="hero_cta2"></a>
         </div>
+        <p class="lplogin lponly" hidden><span data-i18n="lp_have"></span> <button class="lplink" type="button" data-lp="login" data-i18n="ch_login"></button></p>
+        <ul class="lpticks lponly" hidden><li data-i18n="lp_t1"></li><li data-i18n="lp_t2"></li><li data-i18n="lp_t3"></li></ul>
       </div>
     </div>
   </div>
@@ -1429,6 +1475,61 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <rect width="100%" height="40" fill="url(#tree)"/>
   </svg>
 </section>
+
+<div class="lponly" id="landing" hidden>
+<section class="section lpfeat">
+  <div class="wrap">
+    <h2 data-i18n="lp_f_h"></h2>
+    <p class="lede" data-i18n="lp_f_p"></p>
+    <div class="lpgrid">
+      <button class="lpcard" type="button" data-lgo="orch"><span class="lptag acct" data-i18n="lp_tag_acct"></span><h3 data-i18n="lp_reg_h"></h3><p data-i18n="lp_reg_p"></p><span class="lpgo" data-i18n="lp_unlock"></span></button>
+      <button class="lpcard" type="button" data-lgo="diag"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_dx_h"></h3><p data-i18n="lp_dx_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
+      <button class="lpcard" type="button" data-lgo="spray"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_sp_h"></h3><p data-i18n="lp_sp_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
+      <button class="lpcard" type="button" data-lgo="cal"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_cal_h"></h3><p data-i18n="lp_cal_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
+      <button class="lpcard" type="button" data-lgo="chat"><span class="lptag acct" data-i18n="lp_tag_acct"></span><h3 data-i18n="lp_chat_h"></h3><p data-i18n="lp_chat_p"></p><span class="lpgo" data-i18n="lp_unlock"></span></button>
+      <button class="lpcard" type="button" data-lgo="news"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_news_h"></h3><p data-i18n="lp_news_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
+    </div>
+    <p class="fine lpsoon" data-i18n="lp_soon"></p>
+  </div>
+</section>
+<section class="section alt lpsteps">
+  <div class="wrap">
+    <h2 data-i18n="lp_s_h"></h2>
+    <ol class="lpol">
+      <li><b data-i18n="lp_s1_h"></b><span data-i18n="lp_s1_p"></span></li>
+      <li><b data-i18n="lp_s2_h"></b><span data-i18n="lp_s2_p"></span></li>
+      <li><b data-i18n="lp_s3_h"></b><span data-i18n="lp_s3_p"></span></li>
+    </ol>
+  </div>
+</section>
+<section class="section lpwhy">
+  <div class="wrap">
+    <div class="lpbox">
+      <h2 data-i18n="lp_w_h"></h2>
+      <ul class="lpben">
+        <li><b data-i18n="lp_w1_h"></b><span data-i18n="lp_w1_p"></span></li>
+        <li><b data-i18n="lp_w2_h"></b><span data-i18n="lp_w2_p"></span></li>
+        <li><b data-i18n="lp_w3_h"></b><span data-i18n="lp_w3_p"></span></li>
+        <li><b data-i18n="lp_w4_h"></b><span data-i18n="lp_w4_p"></span></li>
+      </ul>
+      <div class="btns"><button class="btn primary" type="button" data-lp="join" data-i18n="pr_join"></button><button class="btn lpin" type="button" data-lp="login" data-i18n="ch_login"></button></div>
+      <p class="lpfine" data-i18n="lp_w_note"></p>
+    </div>
+  </div>
+</section>
+<section class="section alt lpfaq">
+  <div class="wrap">
+    <h2 data-i18n="lp_q_h"></h2>
+    <div class="lpqs">
+      <details class="lpq"><summary data-i18n="lp_q1"></summary><p data-i18n="lp_a1"></p></details>
+      <details class="lpq"><summary data-i18n="lp_q2"></summary><p data-i18n="lp_a2"></p></details>
+      <details class="lpq"><summary data-i18n="lp_q3"></summary><p data-i18n="lp_a3"></p></details>
+      <details class="lpq"><summary data-i18n="lp_q4"></summary><p data-i18n="lp_a4"></p></details>
+      <details class="lpq"><summary data-i18n="lp_q5"></summary><p data-i18n="lp_a5"></p></details>
+    </div>
+  </div>
+</section>
+</div>
 
 <section class="section" id="tools">
   <div class="wrap">
@@ -2715,6 +2816,7 @@ async function applyUser(u) {
   if (isAdminOnly(u)) { location.replace("/admin.html"); return; }
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
+  if (typeof setGuest === "function") setGuest(!u);
   if (!u) {
     curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); spOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
@@ -2722,6 +2824,7 @@ async function applyUser(u) {
   }
   if (changed) await loadMine();
 }
+if (!sb) setGuest(true);
 if (sb) {
   sb.auth.onAuthStateChange((ev, session) => { if (ev === "PASSWORD_RECOVERY") { recovering = true; justSignedIn = true; } setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") renderOrchGate(); }, 0); });
   sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); logVisit(s ? s.user : null); }).catch(() => logVisit(null));
@@ -4937,6 +5040,83 @@ $("dash").addEventListener("click", e => {
   goDiag(b.dataset.dxgo);
 });
 
+Object.assign(T.en, {
+  lp_sub:"Keep your orchard accounts, spot diseases early and follow the right spray at the right time. Free, in Hindi and English.",
+  lp_have:"Already have an account?",
+  lp_t1:"Free to start", lp_t2:"Only your email needed", lp_t3:"Works on any phone",
+  lp_f_h:"Everything for your apple orchard, in one place",
+  lp_f_p:"Most tools work straight away. Make a free account to save your own orchard records and talk to Saathi.",
+  lp_tag_free:"Free, no account", lp_tag_acct:"Free account",
+  lp_open:"Open →", lp_unlock:"Create account →",
+  lp_reg_h:"Apple register and profit", lp_reg_p:"Write every sale lot by grade: boxes, rate, Todan/Bharan, packing and carriage. See what each orchard really earns, year after year.",
+  lp_dx_h:"Disease diagnosis", lp_dx_p:"Tick what you see on the leaves or fruit, or send a photo, and get the likely cause and safe next steps.",
+  lp_sp_h:"Spray schedule", lp_sp_p:"Stage by stage, from bud break to harvest, following official guidance and the product label.",
+  lp_cal_h:"Season calendar", lp_cal_p:"What to do in the orchard this month: pruning, manure, sprays, thinning and picking.",
+  lp_chat_h:"Ask Saathi", lp_chat_p:"Ask any orchard question in Hindi or English and get a simple answer, any time of day.",
+  lp_news_h:"Seb News and library", lp_news_p:"Daily news on mandi prices, weather and government schemes, plus easy guides on pests and diseases.",
+  lp_soon:"Coming soon: daily mandi rates and a place to buy and sell.",
+  lp_s_h:"Start in 3 easy steps",
+  lp_s1_h:"Make your free account", lp_s1_p:"Enter your email and open the link we send. It takes about a minute. No card, no payment.",
+  lp_s2_h:"Add your orchards", lp_s2_p:"Give each orchard a name, then add sale lots and expenses as the season goes on.",
+  lp_s3_h:"See your real profit", lp_s3_p:"Net profit for each orchard and each year, ready on any phone you log in on.",
+  lp_w_h:"Why make a free account?",
+  lp_w1_h:"Your records are saved", lp_w1_p:"No more lost diaries or Excel files. Open your accounts on any phone.",
+  lp_w2_h:"Only you can see them", lp_w2_p:"Your sale figures stay private to you. We never share them or sell them.",
+  lp_w3_h:"Saathi and photo checks", lp_w3_p:"Chat with Saathi and check your leaves and fruit by photo.",
+  lp_w4_h:"Free plan, always", lp_w4_p:"The free plan stays free. Pay later only if you want extra features.",
+  lp_w_note:"Only your email is needed. No card, no payment.",
+  lp_q_h:"Common questions",
+  lp_q1:"Is Seb Saathi really free?", lp_a1:"Yes. The free plan includes the profit calculator, spray schedule, season calendar, library and some photo checks and Saathi questions. Paid plans add more, but you never have to pay.",
+  lp_q2:"Who can see my orchard records?", lp_a2:"Only you. Your records are tied to your account and kept protected. No supplier or trader can see them.",
+  lp_q3:"I am not good with phones. Can I use it?", lp_a3:"Yes. It is made to be simple, with big buttons and plain words. A family member can help you set it up once, and then you just add your lots.",
+  lp_q4:"Does it work in Hindi?", lp_a4:"Yes. Tap हिंदी at the top of the page to switch the whole site to Hindi, and tap again for English.",
+  lp_q5:"Do I need to download an app?", lp_a5:"No. It works in your phone's browser. You can also add it to your home screen so it opens like an app."
+});
+Object.assign(T.hi, {
+  lp_sub:"अपने बाग़ का हिसाब रखें, बीमारी जल्दी पहचानें और सही समय पर सही स्प्रे करें। मुफ़्त, हिंदी और अंग्रेज़ी में।",
+  lp_have:"पहले से खाता है?",
+  lp_t1:"शुरू करना मुफ़्त", lp_t2:"सिर्फ़ ईमेल चाहिए", lp_t3:"हर फ़ोन पर चलता है",
+  lp_f_h:"सेब के बाग़ के लिए सब कुछ, एक ही जगह",
+  lp_f_p:"ज़्यादातर टूल तुरंत चलते हैं। अपने बाग़ का रिकॉर्ड सँभालने और साथी से बात करने के लिए मुफ़्त खाता बनाएँ।",
+  lp_tag_free:"मुफ़्त, बिना खाते के", lp_tag_acct:"मुफ़्त खाता",
+  lp_open:"खोलें →", lp_unlock:"खाता बनाएँ →",
+  lp_reg_h:"सेब रजिस्टर और मुनाफ़ा", lp_reg_p:"ग्रेड के हिसाब से हर लॉट लिखें: पेटियाँ, भाव, तोड़ान/भरान, पैकिंग और ढुलाई। देखें कि हर बाग़ असल में कितना कमाता है, साल दर साल।",
+  lp_dx_h:"बीमारी की पहचान", lp_dx_p:"पत्तियों या फल पर जो दिखे उस पर निशान लगाएँ, या फ़ोटो भेजें, और संभावित कारण और सुरक्षित अगले क़दम पाएँ।",
+  lp_sp_h:"स्प्रे सूची", lp_sp_p:"कली खिलने से तुड़ाई तक, हर अवस्था के लिए, सरकारी मार्गदर्शन और उत्पाद के लेबल के अनुसार।",
+  lp_cal_h:"सीज़न कैलेंडर", lp_cal_p:"इस महीने बाग़ में क्या करना है: छँटाई, खाद, स्प्रे, फल छँटाई और तुड़ाई।",
+  lp_chat_h:"साथी से पूछें", lp_chat_p:"बाग़ का कोई भी सवाल हिंदी या अंग्रेज़ी में पूछें और आसान जवाब पाएँ, किसी भी समय।",
+  lp_news_h:"सेब समाचार और जानकारी", lp_news_p:"मंडी भाव, मौसम और सरकारी योजनाओं की रोज़ की ख़बरें, और कीट व बीमारियों पर आसान गाइड।",
+  lp_soon:"जल्द आ रहा: रोज़ के मंडी भाव और ख़रीद-बिक्री की जगह।",
+  lp_s_h:"3 आसान क़दमों में शुरू करें",
+  lp_s1_h:"मुफ़्त खाता बनाएँ", lp_s1_p:"अपना ईमेल डालें और हमारा भेजा लिंक खोलें। लगभग एक मिनट लगता है। न कार्ड, न भुगतान।",
+  lp_s2_h:"अपने बाग़ जोड़ें", lp_s2_p:"हर बाग़ को नाम दें, फिर सीज़न के साथ-साथ बिक्री के लॉट और ख़र्च जोड़ते जाएँ।",
+  lp_s3_h:"असली मुनाफ़ा देखें", lp_s3_p:"हर बाग़ और हर साल का शुद्ध मुनाफ़ा, जिस भी फ़ोन पर लॉग इन करें, वहीं तैयार।",
+  lp_w_h:"मुफ़्त खाता क्यों बनाएँ?",
+  lp_w1_h:"आपका रिकॉर्ड सुरक्षित रहता है", lp_w1_p:"डायरी या Excel फ़ाइल खोने की चिंता नहीं। किसी भी फ़ोन पर अपना हिसाब खोलें।",
+  lp_w2_h:"सिर्फ़ आपको दिखता है", lp_w2_p:"आपकी बिक्री के आँकड़े सिर्फ़ आपके हैं। हम उन्हें न किसी को दिखाते हैं, न बेचते हैं।",
+  lp_w3_h:"साथी और फ़ोटो जाँच", lp_w3_p:"साथी से बात करें और फ़ोटो से पत्तियों और फल की जाँच करें।",
+  lp_w4_h:"मुफ़्त प्लान, हमेशा", lp_w4_p:"मुफ़्त प्लान हमेशा मुफ़्त रहेगा। ज़्यादा सुविधाएँ चाहिए तो ही बाद में भुगतान करें।",
+  lp_w_note:"सिर्फ़ ईमेल चाहिए। न कार्ड, न भुगतान।",
+  lp_q_h:"आम सवाल",
+  lp_q1:"क्या सेब साथी सच में मुफ़्त है?", lp_a1:"हाँ। मुफ़्त प्लान में मुनाफ़ा कैलकुलेटर, स्प्रे सूची, सीज़न कैलेंडर, जानकारी भंडार और कुछ फ़ोटो जाँच व साथी से सवाल शामिल हैं। पेड प्लान में ज़्यादा सुविधाएँ हैं, पर भुगतान करना ज़रूरी नहीं।",
+  lp_q2:"मेरा बाग़ का रिकॉर्ड कौन देख सकता है?", lp_a2:"सिर्फ़ आप। आपका रिकॉर्ड आपके खाते से जुड़ा है और सुरक्षित रखा जाता है। कोई सप्लायर या आढ़ती उसे नहीं देख सकता।",
+  lp_q3:"मुझे फ़ोन चलाना ज़्यादा नहीं आता। क्या मैं इसे चला पाऊँगा?", lp_a3:"हाँ। इसे आसान बनाया गया है, बड़े बटन और सरल शब्दों के साथ। परिवार का कोई सदस्य एक बार सेट कर दे, फिर आप बस अपने लॉट जोड़ते जाएँ।",
+  lp_q4:"क्या यह हिंदी में चलता है?", lp_a4:"हाँ। पेज के ऊपर English दबाकर अंग्रेज़ी करें और फिर से दबाकर हिंदी।",
+  lp_q5:"क्या ऐप डाउनलोड करना ज़रूरी है?", lp_a5:"नहीं। यह फ़ोन के ब्राउज़र में चलता है। आप इसे होम स्क्रीन पर भी जोड़ सकते हैं ताकि यह ऐप की तरह खुले।"
+});
+function setGuest(g) {
+  document.body.classList.toggle("guest", g);
+  document.querySelectorAll(".lponly").forEach(el => { el.hidden = !g; });
+}
+document.addEventListener("click", e => {
+  const a = e.target.closest("[data-lp]");
+  if (a) { goLogin(a.dataset.lp === "join"); return; }
+  const c = e.target.closest("[data-lgo]"); if (!c) return;
+  const w = c.dataset.lgo;
+  if (w === "orch" && !user) { goLogin(true); return; }
+  if (w === "chat") { $("chatFab").click(); return; }
+  tabPicked = true; showTool(w, false, true);
+});
 /* ---- Dashboard showcase for visitors who are not signed in ---- */
 Object.assign(T.en, {
   pr_h:"Your orchard's money and health, in one place",
