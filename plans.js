@@ -1,6 +1,6 @@
 /* Seb Saathi — plans and UPI payment (Option A: direct UPI, checked by hand).
    Put your UPI ID below. While it is empty, the pay buttons say "being set up". */
-const UPI = { id: "", name: "Seb Saathi" };
+const UPI = { id: "6230366306@ybl", name: "Seb Saathi" };
 const PRICES = { basic: { month: 49, year: 299 }, premium: { month: 149, year: 999 } };
 const QR_SRC = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";
 
