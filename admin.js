@@ -821,9 +821,69 @@ if (document.getElementById("paList")) {
 }
 
 
+/* ---------- overview: feedback and Saathi chat counts ---------- */
+Object.assign(T.en, {
+  adm_t_ov:"Overview", ov_h:"Overview", ov_at:"Updated {t}",
+  ov_fb_h:"Feedback received", ov_fb_total:"Total", ov_fb_new:"New (not done)", ov_fb_7:"Last 7 days", ov_fb_today:"Today",
+  ov_ch_h:"Saathi questions received", ov_ch_today:"Today", ov_ch_7:"Last 7 days", ov_ch_30:"Last 30 days", ov_ch_total:"Total",
+  ov_ch_users:"Growers asking (30 days)", ov_q_h:"Latest questions", ov_q_none:"No questions yet.",
+  ov_err_fb:"Feedback table not set up yet (supabase/feedback.sql).", ov_err_ch:"Saathi chat table not set up yet (supabase/chat.sql).", ov_err:"Could not load: {m}"
+});
+Object.assign(T.hi, {
+  adm_t_ov:"सारांश", ov_h:"सारांश", ov_at:"अपडेट {t}",
+  ov_fb_h:"मिले सुझाव", ov_fb_total:"कुल", ov_fb_new:"नए (बाकी)", ov_fb_7:"पिछले 7 दिन", ov_fb_today:"आज",
+  ov_ch_h:"साथी से पूछे गए सवाल", ov_ch_today:"आज", ov_ch_7:"पिछले 7 दिन", ov_ch_30:"पिछले 30 दिन", ov_ch_total:"कुल",
+  ov_ch_users:"सवाल पूछने वाले बाग़वान (30 दिन)", ov_q_h:"ताज़ा सवाल", ov_q_none:"अभी कोई सवाल नहीं।",
+  ov_err_fb:"सुझाव टेबल अभी नहीं बनी (supabase/feedback.sql)।", ov_err_ch:"साथी चैट टेबल अभी नहीं बनी (supabase/chat.sql)।", ov_err:"लोड नहीं हो सका: {m}"
+});
+let OV = null, ovBusy = false;
+const ovIstDay = () => { const n = new Date(Date.now() + 5.5 * 3600e3); return new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()) - 5.5 * 3600e3).toISOString(); };
+const ovAgo = d => new Date(Date.now() - d * 864e5).toISOString();
+const ovMissing = e => e && (String(e.code || "") === "42P01" || /does not exist|could not find the table|schema cache/i.test(String(e.message || e)));
+async function ovCount(table, f) {
+  let q = sb.from(table).select("id", { count: "exact", head: true });
+  if (f) q = f(q);
+  const r = await q; if (r.error) throw r.error; return r.count || 0;
+}
+async function loadOverview() {
+  if (!isAdmin() || !sb || ovBusy) return;
+  ovBusy = true; set("ovErr", ""); $("ovRefresh").disabled = true;
+  const o = { at: new Date().toISOString(), fb: null, ch: null, q: [] }, errs = [];
+  const today = ovIstDay(), d7 = ovAgo(7), d30 = ovAgo(30);
+  try {
+    const [t, n, w, d] = await Promise.all([ovCount("feedback"), ovCount("feedback", q => q.neq("status", "done")),
+      ovCount("feedback", q => q.gte("created_at", d7)), ovCount("feedback", q => q.gte("created_at", today))]);
+    o.fb = { t, n, w, d };
+  } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_fb") : tr("ov_err").replace("{m}", String(e.message || e))); }
+  try {
+    const u = q => q.eq("role", "user");
+    const [d, w, m, t] = await Promise.all([ovCount("chat_messages", q => u(q).gte("created_at", today)), ovCount("chat_messages", q => u(q).gte("created_at", d7)),
+      ovCount("chat_messages", q => u(q).gte("created_at", d30)), ovCount("chat_messages", u)]);
+    const ids = await sb.from("chat_messages").select("user_id").eq("role", "user").gte("created_at", d30).limit(10000);
+    const g = await sb.from("chat_messages").select("created_at,content,lang").eq("role", "user").order("created_at", { ascending: false }).limit(25);
+    o.ch = { d, w, m, t, users: ids.error ? null : new Set((ids.data || []).map(x => x.user_id)).size };
+    o.q = g.error ? [] : (g.data || []);
+  } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_ch") : tr("ov_err").replace("{m}", String(e.message || e))); }
+  ovBusy = false; $("ovRefresh").disabled = false;
+  OV = o; set("ovErr", errs.join(" ")); renderOverview();
+}
+function renderOverview() {
+  if (!$("ovFb")) return;
+  const st = (k, v, cls) => "<div" + (cls ? ' class="' + cls + '"' : "") + "><span>" + tr(k) + "</span><b>" + (v == null ? "–" : fmtN(v)) + "</b></div>";
+  if (!OV) { $("ovFb").innerHTML = $("ovCh").innerHTML = $("ovQ").innerHTML = ""; set("ovAt", ""); return; }
+  set("ovAt", tr("ov_at").replace("{t}", adWhen(OV.at)));
+  const f = OV.fb || {}, c = OV.ch || {};
+  $("ovFb").innerHTML = st("ov_fb_total", f.t, "main") + st("ov_fb_new", f.n, f.n ? "neg" : "") + st("ov_fb_7", f.w) + st("ov_fb_today", f.d);
+  $("ovCh").innerHTML = st("ov_ch_total", c.t, "main") + st("ov_ch_today", c.d) + st("ov_ch_7", c.w) + st("ov_ch_30", c.m) + st("ov_ch_users", c.users, "pos");
+  const q = OV.q || [];
+  $("ovQ").innerHTML = !q.length ? '<p class="fine">' + tr("ov_q_none") + "</p>" :
+    '<ul class="ovq">' + q.map(x => "<li><time>" + adWhen(x.created_at) + (x.lang ? " · " + esc(String(x.lang).toUpperCase()) : "") + "</time>" + esc(String(x.content).slice(0, 400)) + "</li>").join("") + "</ul>";
+}
+$("ovRefresh").addEventListener("click", loadOverview);
+
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["pay", "users", "fb", "lib"];
-let tab = "pay";
+const TABS = ["ov", "pay", "users", "fb", "lib"];
+let tab = "ov";
 try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; } catch (e) {}
 const loaded = {};
 function showTab(t) {
@@ -832,7 +892,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "fb") loadFeedback(); else if (t === "lib") loadLibAdmin();
+  if (t === "ov") loadOverview(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "fb") loadFeedback(); else if (t === "lib") loadLibAdmin();
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
@@ -841,7 +901,7 @@ function applyLang() {
   set("langBtn", tr("lang_btn"));
   document.title = tr("adm_title");
   renderGate();
-  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA();
+  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => { try { await sb.auth.signOut(); } catch (e) {} location.replace("/"); });
