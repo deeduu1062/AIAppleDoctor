@@ -2568,7 +2568,7 @@ try { if (window.supabase && window.supabase.createClient) sb = window.supabase.
 
 /* ---------- Contact us: saved as a feedback message (page "contact"), read on the admin page ---------- */
 /* Fill these in to show direct buttons next to the form. Leave empty to hide. whatsapp: digits with country code, e.g. "919876543210" */
-const CONTACT = { whatsapp: "", email: "" };
+const CONTACT = { whatsapp: "", email: "admin@sebsaathi.com" };
 function renderContact() {
   const L = [];
   if (CONTACT.whatsapp) L.push('<a class="wa" href="https://wa.me/' + encodeURIComponent(CONTACT.whatsapp) + '" target="_blank" rel="noopener">' + tr("ct_wa") + "</a>");
