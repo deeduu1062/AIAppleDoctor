@@ -1380,6 +1380,14 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 .gate p{margin-top:8px;color:var(--muted)}
 .gate .btn-s{margin-top:16px}
 .ovsub{font-family:var(--display);font-size:1.05rem;margin:22px 0 0}
+#ovTab .tablewrap,#ovQ .tablewrap{margin-top:12px}
+#ovTab table.ledger,#ovQ table.ledger{min-width:0}
+#ovTab .ledger th,#ovTab .ledger td{padding:10px 8px}
+#ovTab .ledger tbody th{white-space:normal;min-width:110px}
+#ovTab tr.sub th{font-weight:500;color:var(--muted)}
+#ovQ .ledger th,#ovQ .ledger td{text-align:left;vertical-align:top;padding:10px 8px}
+#ovQ td.qt{white-space:nowrap;color:var(--muted);font:500 .82rem var(--mono)}
+#ovQ td.qq{white-space:normal;overflow-wrap:anywhere;font:400 .95rem var(--body)}
 .ovq{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
 .ovq li{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow-wrap:anywhere}
 .ovq time{display:block;font:500 .8rem var(--mono);color:var(--muted)}
@@ -1408,10 +1416,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <section class="fbadm solo" aria-labelledby="ovH">
         <div class="admbar"><h4 id="ovH" data-i18n="ov_h" style="margin:0"></h4><button class="btn-s" type="button" id="ovRefresh" data-i18n="ad_refresh"></button><span class="fine" id="ovAt" role="status" style="margin:0"></span></div>
         <p class="autherr" id="ovErr" role="alert"></p>
-        <h5 class="ovsub" data-i18n="ov_fb_h"></h5>
-        <div class="ystats" id="ovFb"></div>
-        <h5 class="ovsub" data-i18n="ov_ch_h"></h5>
-        <div class="ystats" id="ovCh"></div>
+        <div id="ovTab"></div>
         <h5 class="ovsub" data-i18n="ov_q_h"></h5>
         <div id="ovQ"></div>
       </section>

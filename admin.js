@@ -827,6 +827,7 @@ Object.assign(T.en, {
   ov_fb_h:"Feedback received", ov_fb_total:"Total", ov_fb_new:"New (not done)", ov_fb_7:"Last 7 days", ov_fb_today:"Today",
   ov_ch_h:"Saathi questions received", ov_ch_today:"Today", ov_ch_7:"Last 7 days", ov_ch_30:"Last 30 days", ov_ch_total:"Total",
   ov_ch_users:"Growers asking (30 days)", ov_q_h:"Latest questions", ov_q_none:"No questions yet.",
+  ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
   ov_err_fb:"Feedback table not set up yet (supabase/feedback.sql).", ov_err_ch:"Saathi chat table not set up yet (supabase/chat.sql).", ov_err:"Could not load: {m}"
 });
 Object.assign(T.hi, {
@@ -834,6 +835,7 @@ Object.assign(T.hi, {
   ov_fb_h:"मिले सुझाव", ov_fb_total:"कुल", ov_fb_new:"नए (बाकी)", ov_fb_7:"पिछले 7 दिन", ov_fb_today:"आज",
   ov_ch_h:"साथी से पूछे गए सवाल", ov_ch_today:"आज", ov_ch_7:"पिछले 7 दिन", ov_ch_30:"पिछले 30 दिन", ov_ch_total:"कुल",
   ov_ch_users:"सवाल पूछने वाले बाग़वान (30 दिन)", ov_q_h:"ताज़ा सवाल", ov_q_none:"अभी कोई सवाल नहीं।",
+  ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
   ov_err_fb:"सुझाव टेबल अभी नहीं बनी (supabase/feedback.sql)।", ov_err_ch:"साथी चैट टेबल अभी नहीं बनी (supabase/chat.sql)।", ov_err:"लोड नहीं हो सका: {m}"
 });
 let OV = null, ovBusy = false;
@@ -851,9 +853,9 @@ async function loadOverview() {
   const o = { at: new Date().toISOString(), fb: null, ch: null, q: [] }, errs = [];
   const today = ovIstDay(), d7 = ovAgo(7), d30 = ovAgo(30);
   try {
-    const [t, n, w, d] = await Promise.all([ovCount("feedback"), ovCount("feedback", q => q.neq("status", "done")),
-      ovCount("feedback", q => q.gte("created_at", d7)), ovCount("feedback", q => q.gte("created_at", today))]);
-    o.fb = { t, n, w, d };
+    const [t, n, w, d, m] = await Promise.all([ovCount("feedback"), ovCount("feedback", q => q.neq("status", "done")),
+      ovCount("feedback", q => q.gte("created_at", d7)), ovCount("feedback", q => q.gte("created_at", today)), ovCount("feedback", q => q.gte("created_at", d30))]);
+    o.fb = { t, n, w, d, m };
   } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_fb") : tr("ov_err").replace("{m}", String(e.message || e))); }
   try {
     const u = q => q.eq("role", "user");
@@ -868,16 +870,21 @@ async function loadOverview() {
   OV = o; set("ovErr", errs.join(" ")); renderOverview();
 }
 function renderOverview() {
-  if (!$("ovFb")) return;
-  const st = (k, v, cls) => "<div" + (cls ? ' class="' + cls + '"' : "") + "><span>" + tr(k) + "</span><b>" + (v == null ? "–" : fmtN(v)) + "</b></div>";
-  if (!OV) { $("ovFb").innerHTML = $("ovCh").innerHTML = $("ovQ").innerHTML = ""; set("ovAt", ""); return; }
+  if (!$("ovTab")) return;
+  if (!OV) { $("ovTab").innerHTML = $("ovQ").innerHTML = ""; set("ovAt", ""); return; }
   set("ovAt", tr("ov_at").replace("{t}", adWhen(OV.at)));
   const f = OV.fb || {}, c = OV.ch || {};
-  $("ovFb").innerHTML = st("ov_fb_total", f.t, "main") + st("ov_fb_new", f.n, f.n ? "neg" : "") + st("ov_fb_7", f.w) + st("ov_fb_today", f.d);
-  $("ovCh").innerHTML = st("ov_ch_total", c.t, "main") + st("ov_ch_today", c.d) + st("ov_ch_7", c.w) + st("ov_ch_30", c.m) + st("ov_ch_users", c.users, "pos");
+  const v = x => x == null ? "–" : fmtN(x);
+  const row = (k, a, cls) => '<tr' + (cls ? ' class="' + cls + '"' : "") + '><th scope="row">' + tr(k) + "</th>" + a.map(x => '<td class="n">' + v(x) + "</td>").join("") + "</tr>";
+  $("ovTab").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col"></th>' +
+    ["ov_c_today", "ov_c_7", "ov_c_30", "ov_c_total"].map(k => '<th scope="col" class="n">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    row("ov_r_fb", [f.d, f.w, f.m, f.t]) + row("ov_r_fbnew", [null, null, null, f.n], "sub") +
+    row("ov_r_ch", [c.d, c.w, c.m, c.t]) + row("ov_r_users", [null, null, c.users, null], "sub") + "</tbody></table></div>";
   const q = OV.q || [];
   $("ovQ").innerHTML = !q.length ? '<p class="fine">' + tr("ov_q_none") + "</p>" :
-    '<ul class="ovq">' + q.map(x => "<li><time>" + adWhen(x.created_at) + (x.lang ? " · " + esc(String(x.lang).toUpperCase()) : "") + "</time>" + esc(String(x.content).slice(0, 400)) + "</li>").join("") + "</ul>";
+    '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ov_c_when") + '</th><th scope="col">' + tr("ov_c_q") + "</th></tr></thead><tbody>" +
+    q.map(x => '<tr><td class="qt">' + adWhen(x.created_at) + (x.lang ? "<br>" + esc(String(x.lang).toUpperCase()) : "") + '</td><td class="qq">' + esc(String(x.content).slice(0, 400)) + "</td></tr>").join("") +
+    "</tbody></table></div>";
 }
 $("ovRefresh").addEventListener("click", loadOverview);
 
