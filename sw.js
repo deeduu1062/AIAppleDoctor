@@ -2,7 +2,7 @@
 // The page itself: try the internet first (so updates show straight away), fall back to the saved copy when offline.
 // Fonts, icons and the sign-in library: use the saved copy, refresh it in the background.
 // Never touches sign-in, saving, or the photo check (/api, supabase.co): those always need the internet.
-const CACHE = "seb-saathi-v3";
+const CACHE = "seb-saathi-v4";
 const CORE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
@@ -28,6 +28,17 @@ self.addEventListener("fetch", e => {
         if (res.ok) { const copy = res.clone(); const key = url.pathname === "/" || url.pathname === "/index.html" ? "/" : url.pathname; caches.open(CACHE).then(c => c.put(key, copy)); }
         return res;
       }).catch(() => caches.match(url.pathname === "/index.html" ? "/" : url.pathname).then(r => r || caches.match("/")).then(r => r || Response.error()))
+    );
+    return;
+  }
+
+  // The site's own code (.js, .css, .json): internet first so updates show straight away; saved copy only when offline.
+  if (same && /\.(js|css|json)$/.test(url.pathname)) {
+    e.respondWith(
+      fetch(req).then(res => {
+        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
+        return res;
+      }).catch(() => caches.match(req).then(r => r || Response.error()))
     );
     return;
   }
