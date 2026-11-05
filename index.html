@@ -950,6 +950,11 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .wxwarn li{padding:6px 10px;border-left:3px solid #C4851C;background:color-mix(in srgb,#C4851C 12%,transparent);border-radius:0 6px 6px 0;font-size:.9rem}
 .wxwarn li.frost,.wxwarn li.hail{border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
 .wxok{margin:0;color:var(--good);font-size:.9rem}
+.dnews{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:8px}
+.dnews a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);text-decoration:none}
+.dnews b{display:block;font-weight:600;line-height:1.35}
+.dnews small{display:block;margin-top:4px;color:var(--muted);font-size:.82rem}
+[data-dnews]{margin-bottom:10px}
 .ledger.wxtab td{text-align:center;font-family:var(--body);white-space:nowrap}
 .ledger.wxtab th[scope=col]{text-align:center}
 .ledger.wxtab .wd{display:block;font-size:.8rem;color:var(--muted)}
@@ -1821,9 +1826,9 @@ en: {
   d_spent:"Spent since {d}", d_spent_ly:"Same time last year: {x}",
   ds_h:"Due soon", ds_p:"Tasks due in the next 14 days, and sales still not paid after 30 days.", ds_none:"Nothing due in the next 14 days.", ds_pay:"{l}, {y}: {x} not yet received",
   ds_payd:"Waiting {n} days", ds_nodate:"No sale date", ds_wa_all:"Send this list on WhatsApp", ds_wa_head:"Seb Saathi reminder", wa:"WhatsApp", ics:"Add to calendar", late:"Overdue", today:"Today", inN:"In {n} days",
-  wx_h:"Weather, next 5 days", wx_none:"Set each orchard's location (open the orchard, then Location and weather) to see its weather here.", wx_load:"Loading weather…",
+  wx_h:"Weather: today and next 3 days", wx_today:"Today", wx_frost2:"Frost risk {d}: down to {t}°C — protect young fruit and blossom", wx_rain2:"Rain {d}: {mm} mm — avoid spraying just before", wx_none:"Set each orchard's location (open the orchard, then Location and weather) to see its weather here.", wx_load:"Loading weather…",
   wx_err:"Weather could not be loaded. Check the internet connection and open the page again.", wx_src:"Forecast from Open-Meteo. Temperatures are highest / lowest of the day.",
-  wx_frost:"Frost risk {d}: down to {t}°C", wx_hail:"Hail possible {d}", wx_rain:"Heavy rain {d}: {mm} mm", wx_ok:"No frost, hail or heavy rain expected in the next 5 days.",
+  wx_frost:"Frost risk {d}: down to {t}°C", wx_hail:"Hail possible {d}", wx_rain:"Heavy rain {d}: {mm} mm", wx_ok:"No frost, hail or rain expected in the next 3 days.",
   wc_clear:"Clear", wc_cloud:"Cloudy", wc_fog:"Fog", wc_rain:"Rain", wc_snow:"Snow", wc_shower:"Showers", wc_storm:"Thunderstorm", wc_hail:"Storm with hail",
   map_h:"Your orchards on the map", map_none:"Set each orchard's location to see it on the map.", map_err:"The map could not be loaded. Check the internet connection.",
   loc_h:"Location and weather", loc_set:"Location: {c}", loc_notset:"Location not set yet.", loc_gps:"Use my current location", loc_find:"Find village", loc_pick:"Pick on map",
@@ -2105,9 +2110,9 @@ hi: {
   d_spent:"{d} से अब तक ख़र्च", d_spent_ly:"पिछले साल इसी समय तक: {x}",
   ds_h:"जल्द करने वाले काम", ds_p:"अगले 14 दिनों के काम, और वे बिक्री जिनका पैसा 30 दिन बाद भी नहीं मिला।", ds_none:"अगले 14 दिनों में कुछ बाक़ी नहीं है।", ds_pay:"{l}, {y}: {x} अभी नहीं मिला",
   ds_payd:"{n} दिन से इंतज़ार", ds_nodate:"बिक्री की तारीख़ नहीं", ds_wa_all:"यह सूची WhatsApp पर भेजें", ds_wa_head:"सेब साथी याद दिलाना", wa:"WhatsApp", ics:"कैलेंडर में जोड़ें", late:"देर हो गई", today:"आज", inN:"{n} दिन में",
-  wx_h:"मौसम, अगले 5 दिन", wx_none:"यहाँ मौसम देखने के लिए हर बाग़ की जगह सेट करें (बाग़ खोलें, फिर जगह और मौसम)।", wx_load:"मौसम लोड हो रहा है…",
+  wx_h:"मौसम: आज और अगले 3 दिन", wx_today:"आज", wx_frost2:"पाले का ख़तरा {d}: {t}°C तक — फूल और छोटे फल बचाएँ", wx_rain2:"बारिश {d}: {mm} मिमी — ठीक पहले स्प्रे न करें", wx_none:"यहाँ मौसम देखने के लिए हर बाग़ की जगह सेट करें (बाग़ खोलें, फिर जगह और मौसम)।", wx_load:"मौसम लोड हो रहा है…",
   wx_err:"मौसम लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।", wx_src:"पूर्वानुमान Open-Meteo से। तापमान दिन का सबसे ज़्यादा / सबसे कम है।",
-  wx_frost:"पाले का ख़तरा {d}: {t}°C तक", wx_hail:"ओले पड़ सकते हैं {d}", wx_rain:"भारी बारिश {d}: {mm} मिमी", wx_ok:"अगले 5 दिनों में पाला, ओले या भारी बारिश की संभावना नहीं।",
+  wx_frost:"पाले का ख़तरा {d}: {t}°C तक", wx_hail:"ओले पड़ सकते हैं {d}", wx_rain:"भारी बारिश {d}: {mm} मिमी", wx_ok:"अगले 3 दिनों में पाला, ओले या बारिश की संभावना नहीं।",
   wc_clear:"साफ़", wc_cloud:"बादल", wc_fog:"कोहरा", wc_rain:"बारिश", wc_snow:"बर्फ़", wc_shower:"बौछारें", wc_storm:"आँधी-तूफ़ान", wc_hail:"ओलों के साथ तूफ़ान",
   map_h:"नक़्शे पर आपके बाग़", map_none:"नक़्शे पर देखने के लिए हर बाग़ की जगह सेट करें।", map_err:"नक़्शा लोड नहीं हो सका। इंटरनेट जाँचें।",
   loc_h:"जगह और मौसम", loc_set:"जगह: {c}", loc_notset:"जगह अभी सेट नहीं है।", loc_gps:"मेरी अभी की जगह लें", loc_find:"गाँव खोजें", loc_pick:"नक़्शे पर चुनें",
@@ -3217,13 +3222,16 @@ function farmSummaryHtml() {
 function dashOverview() {
   let h = "";
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
+  if (S.orchards.length) {
+    const wl = S.orchards.filter(hasLoc);
+    h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
+  }
+  try { h += dashNewsHtml(); } catch (e) {}
   try { h += glanceHtml(); } catch (e) {}
   h += detailsHtml();
   h += dashDxHtml();
   h += farmSummaryHtml();
   if (S.orchards.length) {
-    const wl = S.orchards.filter(hasLoc);
-    h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
     h += '<section class="osec"><h4>' + tr("map_h") + "</h4>" + (S.orchards.some(hasLoc) ? '<div class="omap farm" data-map="farm"></div>' : '<p class="hint">' + tr("map_none") + "</p>") + "</section>";
   }
   return h;
@@ -3630,20 +3638,24 @@ function wxGet(o) {
   if (c && (c.loading || Date.now() - c.at < 36e5)) return c;
   WX[k] = {loading: true, at: Date.now()};
   fetch("https://api.open-meteo.com/v1/forecast?latitude=" + (+o.profile.lat) + "&longitude=" + (+o.profile.lon) +
-    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Asia%2FKolkata&forecast_days=5")
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Asia%2FKolkata&forecast_days=4")
     .then(r => (r.ok ? r.json() : Promise.reject())).then(j => { if (!j || !j.daily) throw 0; WX[k] = {at: Date.now(), d: j.daily}; refreshWx(); })
     .catch(() => { WX[k] = {at: Date.now() - 33e5, err: true}; refreshWx(); });
   return WX[k];
 }
 const wcWord = c => tr(c === 0 ? "wc_clear" : c <= 3 ? "wc_cloud" : c <= 48 ? "wc_fog" : c <= 67 ? "wc_rain" : c <= 77 ? "wc_snow" : c <= 82 ? "wc_shower" : c <= 86 ? "wc_snow" : c === 95 ? "wc_storm" : "wc_hail");
-const wxDay = iso => new Date(iso + "T00:00:00").toLocaleDateString(dloc(), {weekday: "short", day: "numeric"});
+const wxDay = iso => {
+  const n = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);   // today in India
+  return iso === n ? tr("wx_today") : new Date(iso + "T00:00:00").toLocaleDateString(dloc(), {weekday: "short", day: "numeric"});
+};
 function wxWarn(o, d) {
   const w = [];
   d.time.forEach((t, i) => {
     const mn = d.temperature_2m_min[i], code = d.weather_code[i], rain = d.precipitation_sum[i];
-    if (mn != null && mn <= 0) w.push({c: "frost", t: tr("wx_frost").replace("{d}", wxDay(t)).replace("{t}", Math.round(mn))});
+    if (mn != null && mn <= 2) w.push({c: "frost", t: tr(mn <= 0 ? "wx_frost" : "wx_frost2").replace("{d}", wxDay(t)).replace("{t}", Math.round(mn))});
     if (code === 96 || code === 99) w.push({c: "hail", t: tr("wx_hail").replace("{d}", wxDay(t))});
     if (rain != null && rain >= 30) w.push({c: "rain", t: tr("wx_rain").replace("{d}", wxDay(t)).replace("{mm}", Math.round(rain))});
+    else if (rain != null && rain >= 5) w.push({c: "rain", t: tr("wx_rain2").replace("{d}", wxDay(t)).replace("{mm}", Math.round(rain))});
   });
   return w;
 }
@@ -5299,12 +5311,14 @@ $("tt-lib").addEventListener("click", () => { if (libOpenId) libClose(); loadLib
 
 /* ---- apple news bulletins (from /api/news, Google News headlines; same for everyone) ---- */
 Object.assign(T.en, {
+  dn_h:"Apple news", dn_more:"More news",
   tt_news:"Seb News", nw_pill:"Updated daily", nw_p:"The latest news for apple growers from Himachal, Kashmir and Uttarakhand: mandi prices, weather, crop and government updates.",
   nw_h:"Latest headlines", nw_src:"Headlines from news sites via Google News. Tap one to read it.",
   nw_more:"Show more news", nw_less:"Show less", nw_loading:"Loading the latest apple news…",
   nw_err:"News could not load right now. Check your internet and try again later.", nw_retry:"Try again", nw_upd:"Updated {t}"
 });
 Object.assign(T.hi, {
+  dn_h:"सेब समाचार", dn_more:"और समाचार",
   tt_news:"सेब समाचार", nw_pill:"रोज़ अपडेट", nw_p:"हिमाचल, कश्मीर और उत्तराखंड के सेब बागवानों के लिए ताज़ा समाचार: मंडी भाव, मौसम, फ़सल और सरकारी जानकारी।",
   nw_h:"ताज़ा सुर्ख़ियाँ", nw_src:"समाचार साइटों की सुर्ख़ियाँ, Google News से। पढ़ने के लिए किसी पर दबाएँ।",
   nw_more:"और समाचार देखें", nw_less:"कम दिखाएँ", nw_loading:"सेब से जुड़े ताज़ा समाचार लोड हो रहे हैं…",
@@ -5330,7 +5344,7 @@ async function loadNews(force) {
     NEWS[l] = {items: data.items, at: data.at, got: Date.now()};
     try { localStorage.setItem("ad-news-" + l, JSON.stringify(NEWS[l])); } catch (e) {}
   } else if (!NEWS[l]) NEWS[l] = {items: [], failed: true};
-  if (l === lang) renderNews();
+  if (l === lang) { renderNews(); refreshDashNews(); }
 }
 function newsWhen(iso) {
   if (!iso) return "";
@@ -5355,6 +5369,18 @@ function renderNews() {
   set("newsMore", tr(newsOpen ? "nw_less" : "nw_more"));
   set("newsAt", n.at ? tr("nw_upd").replace("{t}", adWhen(n.at)) : "");
 }
+/* dashboard card: top 3 headlines + "More news" */
+function dashNewsInner() {
+  const n = NEWS[lang];
+  if (!n) { if (!newsBusy[lang]) setTimeout(() => loadNews(), 0); return '<p class="hint">' + tr("nw_loading") + "</p>"; }
+  if (!n.items.length) return '<p class="hint">' + tr("nw_err") + "</p>";
+  return '<ul class="dnews">' + n.items.slice(0, 3).map(x => '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener"><b>' + esc(x.title) + "</b><small>" +
+    esc([x.source, newsWhen(x.date)].filter(Boolean).join(" · ")) + "</small></a></li>").join("") + "</ul>" +
+    '<button class="btn-s" type="button" data-dnmore="1">' + tr("dn_more") + "</button>";
+}
+function dashNewsHtml() { return '<section class="osec"><h4>' + tr("dn_h") + '</h4><div data-dnews="1">' + dashNewsInner() + "</div></section>"; }
+function refreshDashNews() { document.querySelectorAll("[data-dnews]").forEach(el => { el.innerHTML = dashNewsInner(); }); }
+document.addEventListener("click", e => { if (e.target.closest('[data-dnmore="1"]')) { showTool("news", false, true); loadNews(); } });
 $("newsMore").addEventListener("click", () => { newsOpen = !newsOpen; renderNews(); if (!newsOpen) $("news").scrollIntoView({block: "nearest"}); });
 $("newsList").addEventListener("click", e => { if (e.target.id === "newsRetry") { delete NEWS[lang]; loadNews(true); } });
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("tp-news").hidden) loadNews(); });
