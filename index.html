@@ -2582,6 +2582,9 @@ let recovering = false, pwOpen = false;
 
 /* ---------- admin lives on its own page: /admin.html (the real checks are in Supabase) ---------- */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
+/* admin-only accounts never see the grower site: they always land on /admin.html */
+const ADMIN_ONLY = ["admin@sebsaathi.com"];
+const isAdminOnly = u => !!(u && u.email && ADMIN_ONLY.indexOf(u.email.toLowerCase()) >= 0);
 const isAdmin = () => !!(user && user.email && ADMIN_EMAILS.indexOf(user.email.toLowerCase()) >= 0);
 function adWhen(iso) {
   if (!iso) return tr("ad_never");
@@ -2628,6 +2631,7 @@ async function loadMine() {
   else if (!tabPicked) showTool("orch");
 }
 async function applyUser(u) {
+  if (isAdminOnly(u)) { location.replace("/admin.html"); return; }
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
   if (!u) {

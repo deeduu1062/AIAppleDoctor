@@ -483,6 +483,7 @@ function libMd(src) {
 
 /* ---------- admin (the real check is in the admin_overview function in Supabase) ---------- */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
+const ADMIN_ONLY = ["admin@sebsaathi.com"]; /* these accounts only ever see this page */
 const isAdmin = () => !!(user && user.email && ADMIN_EMAILS.indexOf(user.email.toLowerCase()) >= 0);
 let AD = null, adBusy = false, adLoaded = false;
 function adWhen(iso) {
@@ -923,13 +924,15 @@ function applyLang() {
   if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
-$("signOut").addEventListener("click", async () => { try { await sb.auth.signOut(); } catch (e) {} location.replace("/"); });
+$("signOut").addEventListener("click", async () => { try { await sb.auth.signOut(); } catch (e) {} location.replace("/login.html?next=admin"); });
 $("prevX").addEventListener("click", () => { const d = $("prevDlg"); if (d.close) d.close(); else d.removeAttribute("open"); });
 let checked = false;
 function renderGate() {
   const ok = isAdmin();
   $("gate").hidden = ok; $("adminApp").hidden = !ok; $("signOut").hidden = !user;
   set("whoami", user ? (user.email || "") : "");
+  const only = !!(user && user.email && ADMIN_ONLY.indexOf(user.email.toLowerCase()) >= 0);
+  $("siteLink").hidden = only; $("brandLink").setAttribute("href", only ? "/admin.html" : "/");
   if (ok) return;
   $("gateMsg").textContent = !checked ? tr("adm_loading") : user ? tr("adm_gate_no").replace("{e}", user.email || user.phone || "–") : tr("adm_gate_in");
   $("gateLogin").hidden = !checked || !!user;
