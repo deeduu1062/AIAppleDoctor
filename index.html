@@ -950,6 +950,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .wxwarn li{padding:6px 10px;border-left:3px solid #C4851C;background:color-mix(in srgb,#C4851C 12%,transparent);border-radius:0 6px 6px 0;font-size:.9rem}
 .wxwarn li.frost,.wxwarn li.hail{border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
 .wxok{margin:0;color:var(--good);font-size:.9rem}
+.setlocs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .dnews{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:8px}
 .dnews a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);text-decoration:none}
 .dnews b{display:block;font-weight:600;line-height:1.35}
@@ -1832,7 +1833,7 @@ en: {
   wc_clear:"Clear", wc_cloud:"Cloudy", wc_fog:"Fog", wc_rain:"Rain", wc_snow:"Snow", wc_shower:"Showers", wc_storm:"Thunderstorm", wc_hail:"Storm with hail",
   map_h:"Your orchards on the map", map_none:"Set each orchard's location to see it on the map.", map_err:"The map could not be loaded. Check the internet connection.",
   loc_h:"Location and weather", loc_set:"Location: {c}", loc_notset:"Location not set yet.", loc_gps:"Use my current location", loc_find:"Find village", loc_pick:"Pick on map",
-  loc_pickp:"Tap the map where the orchard is.", loc_rm:"Remove location", loc_q:"Village or town", loc_search:"Search", loc_noresult:"No place found. Try a nearby town.",
+  loc_pickp:"Tap the map where the orchard is.", loc_rm:"Remove location", loc_q:"Village or town", loc_search:"Search", loc_noresult:"No place found. Try a nearby town, or use Pick on map.", loc_setfor:"Set location: {o}", loc_searching:"Searching…", loc_gps_wait:"Finding your location…", loc_gps_denied:"Location access is blocked for this site. Allow it in your browser (tap the lock icon next to the address), or search for the village.", loc_gps_none:"This device could not find your location (computers often can't). Search for the village or use Pick on map.",
   loc_gps_err:"Could not get your location. Allow location access, or search for the village.", loc_alt:"Altitude {n} m filled in from the map.", loc_gps_p:"Use my current location works best while standing in the orchard.",
   wp_h:"Spray and work plan", wp_last:"Last spray: {d} ({s}), {n} days ago", wp_last0:"Last spray: {d}, {n} days ago", wp_nolast:"No spray recorded yet.", wp_next:"Next planned spray: {d}",
   wp_nonext:"No spray planned.", wp_plan:"Plan next spray", wp_nextstage:"Next stage: {s}.", td_add:"Add a task", td_due:"Due date", td_kind:"Task", td_text:"Details (optional)", td_save:"Save task",
@@ -2116,7 +2117,7 @@ hi: {
   wc_clear:"साफ़", wc_cloud:"बादल", wc_fog:"कोहरा", wc_rain:"बारिश", wc_snow:"बर्फ़", wc_shower:"बौछारें", wc_storm:"आँधी-तूफ़ान", wc_hail:"ओलों के साथ तूफ़ान",
   map_h:"नक़्शे पर आपके बाग़", map_none:"नक़्शे पर देखने के लिए हर बाग़ की जगह सेट करें।", map_err:"नक़्शा लोड नहीं हो सका। इंटरनेट जाँचें।",
   loc_h:"जगह और मौसम", loc_set:"जगह: {c}", loc_notset:"जगह अभी सेट नहीं है।", loc_gps:"मेरी अभी की जगह लें", loc_find:"गाँव खोजें", loc_pick:"नक़्शे पर चुनें",
-  loc_pickp:"नक़्शे पर वहाँ दबाएँ जहाँ बाग़ है।", loc_rm:"जगह हटाएँ", loc_q:"गाँव या क़स्बा", loc_search:"खोजें", loc_noresult:"कोई जगह नहीं मिली। पास का क़स्बा आज़माएँ।",
+  loc_pickp:"नक़्शे पर वहाँ दबाएँ जहाँ बाग़ है।", loc_rm:"जगह हटाएँ", loc_q:"गाँव या क़स्बा", loc_search:"खोजें", loc_noresult:"कोई जगह नहीं मिली। पास का क़स्बा खोजें, या नक़्शे पर चुनें।", loc_setfor:"जगह सेट करें: {o}", loc_searching:"खोज रहे हैं…", loc_gps_wait:"आपकी जगह ढूँढ रहे हैं…", loc_gps_denied:"इस साइट के लिए जगह की अनुमति बंद है। ब्राउज़र में अनुमति दें (पते के पास ताले वाला निशान), या गाँव खोजें।", loc_gps_none:"यह डिवाइस आपकी जगह नहीं ढूँढ पाया (कंप्यूटर पर अक्सर ऐसा होता है)। गाँव खोजें या नक़्शे पर चुनें।",
   loc_gps_err:"आपकी जगह नहीं मिल सकी। जगह की अनुमति दें, या गाँव खोजें।", loc_alt:"ऊँचाई {n} मीटर नक़्शे से भरी गई।", loc_gps_p:"मेरी अभी की जगह बाग़ में खड़े होकर सबसे अच्छा काम करता है।",
   wp_h:"स्प्रे और काम की योजना", wp_last:"पिछला स्प्रे: {d} ({s}), {n} दिन पहले", wp_last0:"पिछला स्प्रे: {d}, {n} दिन पहले", wp_nolast:"अभी कोई स्प्रे दर्ज नहीं है।", wp_next:"अगला तय स्प्रे: {d}",
   wp_nonext:"कोई स्प्रे तय नहीं है।", wp_plan:"अगला स्प्रे तय करें", wp_nextstage:"अगली अवस्था: {s}।", td_add:"काम जोड़ें", td_due:"कब तक", td_kind:"काम", td_text:"विवरण (वैकल्पिक)", td_save:"काम सहेजें",
@@ -3224,7 +3225,10 @@ function dashOverview() {
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
   if (S.orchards.length) {
     const wl = S.orchards.filter(hasLoc);
-    h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div></section>";
+    const miss = S.orchards.filter(o => !hasLoc(o));
+    h += '<section class="osec"><h4>' + tr("wx_h") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div>" +
+      (miss.length ? '<div class="setlocs">' + miss.map(o => '<button class="btn-s add" type="button" data-xact="setloc" data-o="' + esc(o.id) + '">' + esc(tr("loc_setfor").replace("{o}", o.name || tr("orchard_fallback"))) + "</button>").join("") + "</div>" : "") +
+      "</section>";
   }
   try { h += dashNewsHtml(); } catch (e) {}
   try { h += glanceHtml(); } catch (e) {}
@@ -3890,11 +3894,18 @@ $("dash").addEventListener("click", e => {
   if (a === "dettoggle") { if (detOpen.has(o.id)) { detOpen.delete(o.id); if (detEdit === o.id) detEdit = null; } else detOpen.add(o.id); renderDash(); const nb = document.querySelector('[data-xact=dettoggle][data-o="' + o.id + '"]'); if (nb) nb.focus(); return; }
   if (a === "detedit") { detEdit = o.id; detOpen.add(o.id); renderDash(); vtRefresh(); const n = $("det_village"); if (n) n.focus(); return; }
   if (a === "detcancel") { detEdit = null; renderDash(); const s2 = $("det-" + o.id); if (s2) s2.scrollIntoView({block: "nearest"}); return; }
+  if (a === "setloc") { dashView = o.id; dashYear = null; detEdit = null; xEdit = null; locMode = "find"; locResults = null; renderDash(); const s2 = $("locSec"); if (s2) s2.scrollIntoView({block: "start"}); const q = $("loc_q"); if (q) q.focus({preventScroll: true}); return; }
   if (a === "detloc") { dashView = o.id; dashYear = null; detEdit = null; xEdit = null; locMode = null; renderDash(); const s2 = $("locSec"); if (s2) s2.scrollIntoView({block: "start"}); return; }
   if (a === "cancel") { xEdit = null; xRender(); return; }
   if (a === "locgps") {
     if (!navigator.geolocation) { set("loc_err", tr("loc_gps_err")); return; }
-    navigator.geolocation.getCurrentPosition(p => setLocation(o, p.coords.latitude, p.coords.longitude, p.coords.altitude, ""), () => set("loc_err", tr("loc_gps_err")), {enableHighAccuracy: true, timeout: 15000});
+    set("loc_err", ""); set("loc_msg", tr("loc_gps_wait"));
+    const ok = p => { set("loc_msg", ""); setLocation(o, p.coords.latitude, p.coords.longitude, p.coords.altitude, ""); };
+    const fail = er => { set("loc_msg", ""); set("loc_err", tr(er && er.code === 1 ? "loc_gps_denied" : "loc_gps_none")); };
+    navigator.geolocation.getCurrentPosition(ok, er => {
+      if (er && er.code === 1) return fail(er);
+      navigator.geolocation.getCurrentPosition(ok, fail, {enableHighAccuracy: false, timeout: 20000, maximumAge: 600000});   // second try: rougher but works on more devices
+    }, {enableHighAccuracy: true, timeout: 12000});
     return;
   }
   if (a === "locfind") { locMode = locMode === "find" ? null : "find"; locResults = null; xRender("locSec"); const q = $("loc_q"); if (q) q.focus(); return; }
@@ -3945,11 +3956,14 @@ $("dash").addEventListener("submit", e => {
   if (kind === "locsearch") {
     const q = val("loc_q"); if (!q) return;
     set("loc_err", "");
+    set("loc_msg", tr("loc_searching"));
+    const osm = () => fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=in&limit=8&accept-language=en&q=" + encodeURIComponent(q))
+      .then(r => r.json()).then(j => (Array.isArray(j) ? j : []).map(r => ({lat: +r.lat, lon: +r.lon, elev: null, name: r.name || q, label: r.display_name})));
     fetch("https://geocoding-api.open-meteo.com/v1/search?count=8&language=en&format=json&name=" + encodeURIComponent(q)).then(r => r.json()).then(j => {
-      const res = ((j && j.results) || []).sort((a, b) => (b.country_code === "IN") - (a.country_code === "IN"));
-      locResults = res.map(r => ({lat: r.latitude, lon: r.longitude, elev: r.elevation, name: r.name, label: [r.name, r.admin2, r.admin1, r.country].filter(Boolean).join(", ") + (r.elevation ? " (" + fmtN(r.elevation) + " m)" : "")}));
-      xRender("locSec");
-    }).catch(() => { set("loc_err", tr("wx_err")); });
+      const res = ((j && j.results) || []).filter(r => r.country_code === "IN");
+      const list = res.map(r => ({lat: r.latitude, lon: r.longitude, elev: r.elevation, name: r.name, label: [r.name, r.admin2, r.admin1, r.country].filter(Boolean).join(", ") + (r.elevation ? " (" + fmtN(r.elevation) + " m)" : "")}));
+      return list.length ? list : osm().catch(() => []);
+    }).catch(() => osm()).then(list => { locResults = list; xRender("locSec"); }).catch(() => { set("loc_msg", ""); set("loc_err", tr("wx_err")); });
     return;
   }
   if (kind === "todo") {
