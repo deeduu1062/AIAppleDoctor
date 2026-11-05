@@ -423,6 +423,38 @@ html[lang="hi"] .months .m{text-transform:none;letter-spacing:.02em;font-family:
 .months .now{display:block;margin-top:8px;font:500 .75rem var(--mono);color:var(--on-brand-soft)}
 html[lang="hi"] .months .now{font-family:var(--body);font-size:.85rem}
 
+/* plans + UPI payment */
+.plcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px;margin-top:26px;align-items:stretch}
+.plcard{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.plcard.best{border:2px solid var(--brand)}
+.plbadge{position:absolute;top:-12px;right:16px;background:var(--brand-bg);color:var(--on-brand);font:600 .78rem var(--body);padding:4px 10px;border-radius:6px}
+.plcard h3{font-size:1.25rem;font-weight:700}
+.pltag{color:var(--muted);font-size:.95rem;margin-top:2px}
+.plprice{font-family:var(--display);font-weight:700;font-size:1.9rem;margin-top:14px;line-height:1.1}
+.plprice small{font:500 .95rem var(--body);color:var(--muted)}
+.plsub{color:var(--muted);font-size:.9rem;margin-top:2px}
+.plcard ul{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px;font-size:.96rem}
+.plcard li{position:relative;padding-left:24px;line-height:1.4}
+.plcard li::before{content:"";position:absolute;left:3px;top:.35em;width:11px;height:6px;border-left:2.4px solid var(--brand);border-bottom:2.4px solid var(--brand);transform:rotate(-45deg)}
+.plact{margin-top:auto;padding-top:18px;display:grid;gap:8px}
+.plact .btn-s{width:100%;min-height:46px}
+.plstat{font-weight:600;color:var(--muted);font-size:.92rem}
+.plstat.good{color:var(--good)}
+.paydlg h3{font-size:1.2rem;font-weight:800;margin:0}
+.payper{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}
+.payper button{font:600 .92rem var(--body);min-height:42px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.payper button[aria-checked="true"]{background:var(--brand-bg);color:var(--on-brand);border-color:var(--brand-bg)}
+.payamt{font-family:var(--display);font-weight:700;font-size:2rem;margin-top:12px;text-align:center}
+.payapp{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;margin-top:10px;font-size:1.05rem;text-decoration:none}
+.payqr{width:180px;margin:14px auto 0;background:#fff;padding:6px;border-radius:8px}
+.payqr svg{display:block;width:100%;height:auto}
+#payQrN{text-align:center}
+.payto{margin-top:14px;font-size:.95rem;overflow-wrap:anywhere}
+.payto code{font:500 .92rem var(--mono)}
+.btn-s.sm{min-height:32px;padding:4px 10px;font-size:.85rem;margin-left:4px}
+#payForm{margin-top:14px}
+#payForm label{display:block;font-size:.92rem;margin-bottom:6px}
+
 /* trust + join */
 .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:28px;margin-top:26px}
 .three h3{font-size:1.15rem;font-weight:600}
@@ -1691,6 +1723,17 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </section>
 
 
+<section class="section" id="plans">
+  <div class="wrap">
+    <h2 data-i18n="pl_h"></h2>
+    <p class="lede" data-i18n="pl_p"></p>
+    <div class="plcards" id="plCards"></div>
+    <p class="fine" data-i18n="pl_note"></p>
+  </div>
+</section>
+
+<dialog class="instdlg paydlg" id="payDlg" aria-labelledby="payH"></dialog>
+
 <section class="section alt" id="coming">
   <div class="wrap">
     <h2 data-i18n="plan_h"></h2>
@@ -1781,6 +1824,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="/feedback.js"></script>
+<script src="/plans.js" defer></script>
 <script>
 /* Fill in your page links here and the buttons appear. Leave a value empty to hide it. */
 const SOCIAL = { facebook: "", instagram: "", whatsapp: "" };
@@ -2006,9 +2050,45 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   seg_exp:"Lot expenses", seg_year:"Other yearly expenses", seg_profit:"Net income",
   y_note:"Net income here is the Season Profit net income minus yearly expenses (including lump sums and diary costs). Half boxes count as half when working out the per-box figure.",
   y_sum:"Net profit by harvest year", y_tap:"Tap a harvest year to see every orchard's details.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_gp:"Gross profit", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
-  hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot."
+  hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot.",
+  pl_h:"Plans", pl_p:"Start free. Upgrade when your records grow. Pay by UPI from any app — no card needed.",
+  pl_note:"Paid plans switch on after we check your payment, usually within a day. Some features are still being built and will be added to your plan as they arrive.",
+  pl_free:"Free", pl_basic:"Saathi", pl_prem:"Saathi Plus",
+  pl_free_t:"For every grower", pl_basic_t:"For your own orchards", pl_premium_t:"Full features, no limits",
+  pl_zero:"₹0", pl_always:"Free forever", pl_yr:"/ year", pl_mo:"or ₹{m} a month", pl_best:"Best value",
+  pl_f_free:["Profit calculator (quick check)","Season calendar and spray schedule","Daily mandi rates","3 photo disease checks a month","5 questions a day to Saathi","Video and learning library"],
+  pl_f_basic:["Everything in Free","Apple register for 2 orchards, this season","15 photo disease checks a month","Unlimited Saathi chat","Spray reminders on WhatsApp","Download your season report"],
+  pl_f_premium:["Everything in Saathi","Unlimited orchards and all past years","Year-on-year profit comparison","Unlimited photo disease checks","Spray plan for your height, variety and rootstock","Mandi price alerts","Priority listing in Buy & Sell","Family or munshi access","Expert help on WhatsApp"],
+  pl_go_free:"Start free", pl_go_free_in:"You're on Free", pl_go_pay:"Choose {p}", pl_pending:"Payment sent — being checked", pl_active:"Your plan is active",
+  pay_h:"Get {p}", pay_per:"Payment period", pay_year:"Yearly", pay_month:"Monthly",
+  pay_app:"Pay with UPI app", pay_app_n:"Opens GPay, PhonePe, Paytm or BHIM with the amount filled in.",
+  pay_qr:"On a computer? Scan this with your phone's UPI app.", pay_to:"Pay to", pay_copy:"Copy", pay_copied:"Copied",
+  pay_utr_l:"After paying, enter the 12-digit UPI reference number (UTR) from your payment app", pay_utr_ph:"e.g. 412345678901",
+  pay_send:"Send for checking", pay_sending:"Sending…", pay_bad:"The reference number should be 12 digits.",
+  pay_dup:"This reference number has already been sent.", pay_ok:"Thank you! We'll check your payment and switch on {p}, usually within a day.",
+  pay_err:"Couldn't send just now. Please try again.", pay_close:"Close",
+  pay_signin_p:"Please sign in first, so your plan is linked to your account.", pay_signin:"Sign in",
+  pay_soon:"UPI payment is being set up. Please check back soon."
 },
 hi: {
+  pl_h:"प्लान", pl_p:"मुफ़्त शुरू करें। रिकॉर्ड बढ़ें तो अपग्रेड करें। किसी भी ऐप से UPI से भुगतान — कार्ड की ज़रूरत नहीं।",
+  pl_note:"भुगतान जाँचने के बाद पेड प्लान चालू होता है, आमतौर पर एक दिन में। कुछ सुविधाएँ अभी बन रही हैं, तैयार होते ही आपके प्लान में जुड़ जाएँगी।",
+  pl_free:"मुफ़्त", pl_basic:"साथी", pl_prem:"साथी प्लस",
+  pl_free_t:"हर बाग़वान के लिए", pl_basic_t:"अपने बाग़ों के लिए", pl_premium_t:"पूरी सुविधाएँ, कोई सीमा नहीं",
+  pl_zero:"₹0", pl_always:"हमेशा मुफ़्त", pl_yr:"/ साल", pl_mo:"या ₹{m} महीना", pl_best:"सबसे फ़ायदेमंद",
+  pl_f_free:["मुनाफ़ा कैलकुलेटर (झटपट हिसाब)","सीज़न कैलेंडर और स्प्रे शेड्यूल","रोज़ के मंडी भाव","महीने में 3 फ़ोटो से बीमारी जाँच","साथी से रोज़ 5 सवाल","वीडियो और जानकारी लाइब्रेरी"],
+  pl_f_basic:["मुफ़्त प्लान की सब सुविधाएँ","2 बाग़ों का सेब रजिस्टर, इस सीज़न का","महीने में 15 फ़ोटो से बीमारी जाँच","साथी से असीमित बातचीत","WhatsApp पर स्प्रे रिमाइंडर","सीज़न रिपोर्ट डाउनलोड"],
+  pl_f_premium:["साथी प्लान की सब सुविधाएँ","असीमित बाग़ और पिछले सभी साल","साल-दर-साल मुनाफ़े की तुलना","असीमित फ़ोटो से बीमारी जाँच","आपकी ऊँचाई, किस्म और रूटस्टॉक के हिसाब से स्प्रे प्लान","मंडी भाव अलर्ट","ख़रीद-बिक्री में सबसे ऊपर लिस्टिंग","परिवार या मुंशी को एक्सेस","WhatsApp पर विशेषज्ञ मदद"],
+  pl_go_free:"मुफ़्त शुरू करें", pl_go_free_in:"आप मुफ़्त प्लान पर हैं", pl_go_pay:"{p} चुनें", pl_pending:"भुगतान भेजा — जाँच हो रही है", pl_active:"आपका प्लान चालू है",
+  pay_h:"{p} लें", pay_per:"भुगतान अवधि", pay_year:"सालाना", pay_month:"महीना",
+  pay_app:"UPI ऐप से भुगतान करें", pay_app_n:"GPay, PhonePe, Paytm या BHIM रकम भरकर खुलेगा।",
+  pay_qr:"कंप्यूटर पर हैं? फ़ोन के UPI ऐप से यह स्कैन करें।", pay_to:"भुगतान पाने वाला", pay_copy:"कॉपी", pay_copied:"कॉपी हो गया",
+  pay_utr_l:"भुगतान के बाद, अपने पेमेंट ऐप से 12 अंकों का UPI रेफ़रेंस नंबर (UTR) लिखें", pay_utr_ph:"जैसे 412345678901",
+  pay_send:"जाँच के लिए भेजें", pay_sending:"भेज रहे हैं…", pay_bad:"रेफ़रेंस नंबर 12 अंकों का होना चाहिए।",
+  pay_dup:"यह रेफ़रेंस नंबर पहले ही भेजा जा चुका है।", pay_ok:"धन्यवाद! हम भुगतान जाँचकर {p} चालू कर देंगे, आमतौर पर एक दिन में।",
+  pay_err:"अभी भेज नहीं पाए। कृपया दोबारा कोशिश करें।", pay_close:"बंद करें",
+  pay_signin_p:"पहले साइन इन करें, ताकि प्लान आपके खाते से जुड़े।", pay_signin:"साइन इन",
+  pay_soon:"UPI भुगतान की तैयारी चल रही है। जल्द ही दोबारा देखें।",
   nav_calc:"मुनाफ़ा कैलकुलेटर", nav_plan:"आगे क्या आ रहा है", nav_cal:"सीज़न कैलेंडर", nav_join:"जुड़ें",
   hero_kicker:"हिमाचल और कश्मीर के सेब बागवानों के लिए",
   hero_h1:"आपका बगीचा। आपका साथी।",
@@ -2277,7 +2357,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); renderLA(); } if (window.ADFeedback) ADFeedback.render();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); renderLA(); } if (window.ADFeedback) ADFeedback.render(); if (typeof renderPlans === "function") renderPlans();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
