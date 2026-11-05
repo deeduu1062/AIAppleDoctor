@@ -12,7 +12,7 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
 const LIMIT = Math.max(1, parseInt(process.env.CHAT_DAILY_LIMIT || "25", 10) || 25);
-const ADMIN_EMAILS = ["deeduu@gmail.com"];
+const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 200;
 
 const PERSONA = `You are "Saathi" (साथी), the friendly helper inside the Seb Saathi website for apple growers in Himachal Pradesh and Kashmir (mostly Royal Delicious and other Delicious types, spur types, Gala on clonal rootstocks; orchards at roughly 1,500 to 2,700 m; places like Rohru, Chirgaon, Kotkhai, Kullu, Kinnaur, Shopian, Sopore). Seb Saathi's line: "Your Orchard. Your Companion."

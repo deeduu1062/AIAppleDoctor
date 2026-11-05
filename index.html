@@ -2581,7 +2581,7 @@ function renderAcct() {
 let recovering = false, pwOpen = false;
 
 /* ---------- admin lives on its own page: /admin.html (the real checks are in Supabase) ---------- */
-const ADMIN_EMAILS = ["deeduu@gmail.com"];
+const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const isAdmin = () => !!(user && user.email && ADMIN_EMAILS.indexOf(user.email.toLowerCase()) >= 0);
 function adWhen(iso) {
   if (!iso) return tr("ad_never");

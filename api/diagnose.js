@@ -12,7 +12,7 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
 const LIMIT = Math.max(1, parseInt(process.env.DAILY_LIMIT || "5", 10) || 5);
-const ADMIN_EMAILS = ["deeduu@gmail.com"];
+const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 50;
 
 const IDS = ["scab", "mars", "alt", "pm", "sooty", "pit", "canker", "collar", "wrr", "woolly", "mite", "sjs", "borer", "other", "healthy"];

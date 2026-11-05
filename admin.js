@@ -482,7 +482,7 @@ function libMd(src) {
 }
 
 /* ---------- admin (the real check is in the admin_overview function in Supabase) ---------- */
-const ADMIN_EMAILS = ["deeduu@gmail.com"];
+const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const isAdmin = () => !!(user && user.email && ADMIN_EMAILS.indexOf(user.email.toLowerCase()) >= 0);
 let AD = null, adBusy = false, adLoaded = false;
 function adWhen(iso) {
