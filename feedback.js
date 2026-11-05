@@ -30,7 +30,7 @@
     }
   };
   const CSS = `
-.fbbtn{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;display:inline-flex;align-items:center;gap:7px;
+.fbbtn{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;display:inline-flex;align-items:center;gap:7px;
   font:600 .92rem var(--body,system-ui);padding:9px 14px;min-height:42px;border-radius:999px;border:1px solid var(--line,#ccc);background:var(--surface,#fff);color:var(--fg,#111);
   box-shadow:0 6px 18px -8px rgba(0,0,0,.35);cursor:pointer}
 .fbbtn:hover{border-color:var(--brand,#1F4D34)}

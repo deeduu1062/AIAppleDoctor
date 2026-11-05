@@ -514,6 +514,43 @@ footer p{max-width:70ch}
 .dxhist .chip{margin-left:4px}
 /* dashboard showcase (signed out) */
 .promo{display:grid;gap:18px}
+/* Saathi chatbot */
+.chatfab{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:21;display:inline-flex;align-items:center;gap:8px;
+  font:700 1rem var(--body);padding:8px 16px 8px 8px;min-height:50px;border-radius:999px;border:0;background:#1B5E2B;color:#fff;cursor:pointer;box-shadow:0 8px 22px -8px rgba(0,0,0,.45)}
+.chatfab .av{width:34px;height:34px;border-radius:50%;background:#F6EFE3;display:grid;place-items:center}
+.chatfab:hover{background:#174f24}
+@media print{.chatfab{display:none}}
+.chatdlg{border:0;padding:0;margin:0 0 0 auto;width:min(440px,100vw);max-width:100vw;height:100dvh;max-height:100dvh;background:var(--bg);color:var(--fg);box-shadow:-10px 0 40px rgba(0,0,0,.25)}
+.chatdlg[open]{display:flex;flex-direction:column}
+.chatdlg::backdrop{background:rgba(0,0,0,.35)}
+.chathead{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;background:#1B5E2B;color:#fff}
+.chathead .av{width:42px;height:42px;border-radius:50%;background:#F6EFE3;display:grid;place-items:center;flex:none}
+.chathead b{display:block;font:700 1.15rem var(--display)}
+.chathead small{display:block;color:#CFE8C8;font-size:.82rem}
+.chathead .x{margin-left:auto;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:1.4rem;cursor:pointer;line-height:1}
+.chatbody{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.cmsg{max-width:88%;padding:10px 13px;border-radius:16px;line-height:1.5;font-size:1rem;overflow-wrap:anywhere}
+.cmsg.me{align-self:flex-end;background:#1B5E2B;color:#fff;border-bottom-right-radius:5px;white-space:pre-wrap}
+.cmsg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:5px}
+.cmsg.bot p{margin:0 0 8px;color:inherit;max-width:none}.cmsg.bot p:last-child{margin-bottom:0}
+.cmsg.bot ul{margin:4px 0 8px;padding-left:1.15em}.cmsg.bot li{margin:2px 0}
+.cmsg.bot h4{font-size:1rem;margin:6px 0 4px}
+.cmsg.bot a{color:var(--brand)}
+.cmsg.err{align-self:center;background:transparent;border:1px dashed var(--line);color:var(--muted);font-size:.92rem;text-align:center}
+.ctyping{align-self:flex-start;display:flex;gap:5px;padding:14px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.ctyping i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:cdot 1s infinite ease-in-out}
+.ctyping i:nth-child(2){animation-delay:.15s}.ctyping i:nth-child(3){animation-delay:.3s}
+@keyframes cdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.ctyping i{animation:none}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chips button{font:600 .92rem var(--body);padding:8px 12px;min-height:40px;border-radius:999px;border:1px solid #1B5E2B;background:var(--surface);color:#1B5E2B;cursor:pointer;text-align:left}
+.chatfoot{border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface)}
+.chatform{display:flex;gap:8px;align-items:flex-end}
+.chatform textarea{flex:1;min-height:46px;max-height:140px;resize:none;padding:11px 12px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--fg);font:400 1rem/1.4 var(--body)}
+.chatform button{width:46px;height:46px;border-radius:50%;border:0;background:#1B5E2B;color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.chatform button:disabled{opacity:.5;cursor:default}
+.chatnote{margin:8px 2px 0;font-size:.78rem;color:var(--muted);line-height:1.35}
+.chatgate{padding:4px 0 0;display:grid;gap:10px}
 /* library */
 .libsearch{max-width:420px}
 .libsearch input{font-family:var(--body)!important}
@@ -1698,6 +1735,26 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
   <p data-i18n="foot_note"></p>
 </footer>
 
+<button class="chatfab" type="button" id="chatFab" aria-haspopup="dialog"><span class="av"><svg aria-hidden="true" viewBox="0 0 200 200" width="26" height="26"><path d="M100 62 C 84 48, 42 48, 36 94 C 30 140, 62 178, 84 178 C 92 178, 96 174, 100 174 C 104 174, 108 178, 116 178 C 138 178, 170 140, 164 94 C 158 48, 116 48, 100 62 Z" fill="#D3231E"></path><path d="M22 104 C 14 154, 52 196, 104 196 C 142 196, 172 176, 184 146 C 166 168, 138 182, 104 182 C 64 182, 34 152, 22 104 Z" fill="#2F8F3A"></path><path d="M100 64 C 100 50, 102 40, 106 28" fill="none" stroke="#6B3F22" stroke-width="9" stroke-linecap="round"></path><path d="M108 36 C 118 14, 150 8, 168 18 C 154 40, 130 48, 108 36 Z" fill="#2F8F3A"></path></svg></span><span id="chatFabT"></span></button>
+
+<dialog class="chatdlg" id="chatDlg" aria-labelledby="chatH">
+  <div class="chathead">
+    <span class="av"><svg aria-hidden="true" viewBox="0 0 200 200" width="32" height="32"><path d="M100 62 C 84 48, 42 48, 36 94 C 30 140, 62 178, 84 178 C 92 178, 96 174, 100 174 C 104 174, 108 178, 116 178 C 138 178, 170 140, 164 94 C 158 48, 116 48, 100 62 Z" fill="#D3231E"></path><path d="M22 104 C 14 154, 52 196, 104 196 C 142 196, 172 176, 184 146 C 166 168, 138 182, 104 182 C 64 182, 34 152, 22 104 Z" fill="#2F8F3A"></path><path d="M100 64 C 100 50, 102 40, 106 28" fill="none" stroke="#6B3F22" stroke-width="9" stroke-linecap="round"></path><path d="M108 36 C 118 14, 150 8, 168 18 C 154 40, 130 48, 108 36 Z" fill="#2F8F3A"></path></svg></span>
+    <div><b id="chatH">Saathi · साथी</b><small id="chatSub"></small></div>
+    <button class="x" type="button" id="chatX" aria-label="Close">×</button>
+  </div>
+  <div class="chatbody" id="chatBody" aria-live="polite"></div>
+  <div class="chatfoot">
+    <div id="chatGate" class="chatgate" hidden></div>
+    <form class="chatform" id="chatForm" novalidate>
+      <label for="chatIn" class="sr-only" id="chatInL" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></label>
+      <textarea id="chatIn" rows="1" maxlength="1500"></textarea>
+      <button type="submit" id="chatSend" aria-label="Send"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path d="M4 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </form>
+    <p class="chatnote" id="chatNote"></p>
+  </div>
+</dialog>
+
 <dialog class="sharedlg" id="shareDlg" aria-labelledby="shareH">
   <h3 id="shareH" data-i18n="sh_h"></h3>
   <p data-i18n="sh_p"></p>
@@ -2221,7 +2278,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); renderLA(); } if (window.ADFeedback) ADFeedback.render();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (AD) renderAdmin(); renderFeedback(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); renderLA(); } if (window.ADFeedback) ADFeedback.render();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -2470,6 +2527,7 @@ function renderAcct() {
   if (typeof renderPromo === "function") try { renderPromo(); } catch (e) {}
   if (!isAdmin()) { AD = null; adLoaded = false; FB = null; if (typeof LA !== "undefined") { LA = null; laEdit = null; } if (!$("tp-admin").hidden) showTool(user ? "orch" : "calc"); }
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
+  if (typeof renderChat === "function" && $("chatDlg") && T.en.ch_fab) { if (!user) { CHAT = []; chatLoadedFor = null; chatLeft = null; chatErr = ""; } renderChat(); }
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || fmtPhone(user.phone)));
   $("setPw").hidden = !!(user && !user.email);
 }
@@ -5416,6 +5474,99 @@ function renderNews() {
 $("newsMore").addEventListener("click", () => { newsOpen = !newsOpen; renderNews(); if (!newsOpen) $("news").scrollIntoView({block: "nearest"}); });
 $("newsList").addEventListener("click", e => { if (e.target.id === "newsRetry") { delete NEWS[lang]; loadNews(true); } });
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("tp-news").hidden) loadNews(); });
+
+/* ---- Saathi chatbot (/api/chat; grounded in the Library; logged-in growers; daily limit) ---- */
+Object.assign(T.en, {
+  ch_fab:"Ask Saathi", ch_sub:"Your orchard companion · AI helper", ch_in:"Ask about your orchard…", ch_inl:"Your question for Saathi",
+  ch_hello:"Namaste! Main hoon aapka apna Seb Saathi. 🍎\nAsk me anything about your apple orchard — diseases, sprays, pruning, harvest, selling or using this app. You can write in Hindi, Hinglish or English.",
+  ch_q1:"Patton pe kaale daag kyon aa rahe hain?", ch_q2:"When should I prune my trees?", ch_q3:"Mandi ya ladhani — kaise decide karun?", ch_q4:"How do I add a sale lot in the app?",
+  ch_note:"Saathi is an AI helper and can make mistakes. For sprays, always follow the official spray schedule and the product label.",
+  ch_gate:"Log in to chat with Saathi. It is free.", ch_login:"Log in", ch_join:"Create your free account",
+  ch_e_limit:"You have asked {n} questions today. Saathi will be back tomorrow. Meanwhile, see the Library tab.",
+  ch_e_setup:"Saathi is not switched on yet. Please try again later.", ch_e_signin:"Please log in again to continue.",
+  ch_e_net:"Could not reach Saathi. Check your internet and try again.", ch_left:"{n} questions left today", ch_new:"New chat"
+});
+Object.assign(T.hi, {
+  ch_fab:"साथी से पूछें", ch_sub:"आपके बगीचे का साथी · AI सहायक", ch_in:"अपने बगीचे के बारे में पूछें…", ch_inl:"साथी के लिए आपका सवाल",
+  ch_hello:"नमस्ते! मैं हूँ आपका अपना सेब साथी। 🍎\nअपने सेब के बगीचे के बारे में कुछ भी पूछिए — बीमारी, स्प्रे, छँटाई, तुड़ाई, बिक्री या इस ऐप का इस्तेमाल। हिंदी, हिंग्लिश या अंग्रेज़ी, किसी में भी लिखें।",
+  ch_q1:"पत्तों पर काले धब्बे क्यों आ रहे हैं?", ch_q2:"पेड़ों की छँटाई कब करें?", ch_q3:"मंडी या लदानी — कैसे तय करूँ?", ch_q4:"ऐप में बिक्री का लॉट कैसे जोड़ें?",
+  ch_note:"साथी एक AI सहायक है और ग़लती कर सकता है। स्प्रे के लिए हमेशा सरकारी स्प्रे सूची और दवा का लेबल देखें।",
+  ch_gate:"साथी से बात करने के लिए लॉग इन करें। यह मुफ़्त है।", ch_login:"लॉग इन", ch_join:"अपना मुफ़्त खाता बनाएँ",
+  ch_e_limit:"आज आप {n} सवाल पूछ चुके हैं। साथी कल फिर मिलेगा। तब तक जानकारी टैब देखें।",
+  ch_e_setup:"साथी अभी चालू नहीं है। थोड़ी देर बाद फिर कोशिश करें।", ch_e_signin:"आगे बढ़ने के लिए फिर से लॉग इन करें।",
+  ch_e_net:"साथी से जुड़ नहीं सका। इंटरनेट जाँचें और फिर कोशिश करें।", ch_left:"आज {n} सवाल बाक़ी", ch_new:"नई बातचीत"
+});
+var CHAT = [], chatBusy = false, chatErr = "", chatLeft = null, chatLoadedFor = null;
+function chatOpen() {
+  const d = $("chatDlg");
+  if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute("open", "");
+  try { history.pushState({chat: 1}, "", location.href); } catch (e) {}
+  renderChat(); chatHistory();
+  setTimeout(() => { try { if (user) $("chatIn").focus(); } catch (e) {} }, 60);
+}
+function chatShut(fromPop) {
+  const d = $("chatDlg"); if (!d.open) return;
+  if (d.close) d.close(); else d.removeAttribute("open");
+  if (!fromPop) { try { if (history.state && history.state.chat) history.back(); } catch (e) {} }
+}
+window.addEventListener("popstate", () => { if ($("chatDlg").open) chatShut(true); });
+async function chatHistory() {
+  if (!user || !sb || chatLoadedFor === user.id || CHAT.length) return;
+  chatLoadedFor = user.id;
+  try {
+    const r = await sb.from("chat_messages").select("role,content,created_at").eq("user_id", user.id).order("created_at", {ascending: false}).limit(20);
+    if (!r.error && r.data && r.data.length && !CHAT.length) { CHAT = r.data.reverse().map(m => ({role: m.role, content: m.content})); renderChat(); }
+  } catch (e) {}
+}
+function renderChat() {
+  set("chatFabT", tr("ch_fab")); set("chatSub", tr("ch_sub")); set("chatNote", tr("ch_note"));
+  $("chatIn").placeholder = tr("ch_in"); set("chatInL", tr("ch_inl"));
+  $("chatForm").hidden = !user;
+  $("chatGate").hidden = !!user;
+  if (!user) $("chatGate").innerHTML = "<p style=\"margin:0\">" + tr("ch_gate") + '</p><div class="dels"><a class="btn-s add" href="/login.html">' + tr("ch_login") + '</a><a class="btn-s" href="/login.html?mode=signup">' + tr("ch_join") + "</a></div>";
+  let h = '<div class="cmsg bot">' + libMd(tr("ch_hello")) + "</div>";
+  if (!CHAT.length && user) h += '<div class="chips">' + ["ch_q1", "ch_q2", "ch_q3", "ch_q4"].map(k => '<button type="button" data-ask="' + esc(tr(k)) + '">' + esc(tr(k)) + "</button>").join("") + "</div>";
+  h += CHAT.map(m => m.role === "user" ? '<div class="cmsg me">' + esc(m.content) + "</div>" : '<div class="cmsg bot">' + libMd(m.content) + "</div>").join("");
+  if (chatBusy) h += '<div class="ctyping" aria-label="…"><i></i><i></i><i></i></div>';
+  if (chatErr) h += '<div class="cmsg err">' + esc(chatErr) + "</div>";
+  else if (chatLeft !== null && chatLeft <= 5 && CHAT.length) h += '<div class="cmsg err">' + esc(tr("ch_left").replace("{n}", chatLeft)) + "</div>";
+  $("chatBody").innerHTML = h;
+  $("chatSend").disabled = chatBusy;
+  const b = $("chatBody"); b.scrollTop = b.scrollHeight;
+}
+async function chatAsk(text) {
+  text = String(text || "").trim();
+  if (!text || chatBusy || !user) return;
+  chatErr = ""; CHAT.push({role: "user", content: text}); chatBusy = true;
+  $("chatIn").value = ""; chatGrow(); renderChat();
+  let token = "";
+  try { const r = await sb.auth.getSession(); token = r && r.data && r.data.session ? r.data.session.access_token : ""; } catch (e) {}
+  let data = null, status = 0;
+  if (token) {
+    try {
+      const r = await fetch("/api/chat", {method: "POST", headers: {"Content-Type": "application/json", Authorization: "Bearer " + token},
+        body: JSON.stringify({messages: CHAT.slice(-12), lang})});
+      status = r.status; data = await r.json().catch(() => null);
+    } catch (e) { status = 0; }
+  } else status = 401;
+  chatBusy = false;
+  if (data && data.reply) { CHAT.push({role: "assistant", content: data.reply}); chatLeft = typeof data.left === "number" ? data.left : null; }
+  else {
+    CHAT.pop(); $("chatIn").value = text; chatGrow();
+    const e = data && data.error;
+    chatErr = e === "limit" ? tr("ch_e_limit").replace("{n}", data.limit || "") : e === "not_setup" ? tr("ch_e_setup") : status === 401 ? tr("ch_e_signin") : tr("ch_e_net");
+  }
+  renderChat();
+}
+function chatGrow() { const t = $("chatIn"); t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; }
+$("chatFab").addEventListener("click", chatOpen);
+$("chatX").addEventListener("click", () => chatShut());
+$("chatDlg").addEventListener("cancel", e => { e.preventDefault(); chatShut(); });
+$("chatDlg").addEventListener("click", e => { if (e.target === $("chatDlg")) chatShut(); });
+$("chatForm").addEventListener("submit", e => { e.preventDefault(); chatAsk($("chatIn").value); });
+$("chatIn").addEventListener("input", chatGrow);
+$("chatIn").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing && window.matchMedia && matchMedia("(pointer:fine)").matches) { e.preventDefault(); chatAsk($("chatIn").value); } });
+$("chatBody").addEventListener("click", e => { const b = e.target.closest("[data-ask]"); if (b) chatAsk(b.dataset.ask); });
 
 /* ---- recommend to friends (share on WhatsApp) ----
    Shared link: /?invite=CODE. CODE is the sharer's short id when logged in, otherwise "1".
