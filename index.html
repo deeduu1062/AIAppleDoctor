@@ -433,6 +433,18 @@ html[lang="hi"] .months .m{text-transform:none;letter-spacing:.02em;font-family:
 .months .now{display:block;margin-top:8px;font:500 .75rem var(--mono);color:var(--on-brand-soft)}
 html[lang="hi"] .months .now{font-family:var(--body);font-size:.85rem}
 
+/* contact us */
+.ctgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px;margin-top:22px;align-items:start}
+.ctform{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.ctform textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:400 1rem var(--body);resize:vertical}
+.ctform .btn-s{min-height:46px;justify-self:start;padding-inline:26px}
+.ctform .autherr,.ctform .sentmsg{margin:0}
+.ctother h3{font-size:1.1rem;font-weight:600}
+.ctlinks{display:grid;gap:10px;margin-top:12px}
+.ctlinks a{display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);font-weight:600;text-decoration:none;overflow-wrap:anywhere}
+.ctlinks a.wa{background:#1F7A45;border-color:#1F7A45;color:#fff}
+.footlinks{margin-bottom:6px}.footlinks a{color:inherit;font-weight:600}
+
 /* plans + UPI payment */
 .plcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px;margin-top:26px;align-items:stretch}
 .plcard{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
@@ -1687,19 +1699,24 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 
 <dialog class="instdlg paydlg" id="payDlg" aria-labelledby="payH"></dialog>
 
-<section class="section alt" id="coming">
+<section class="section alt" id="contact">
   <div class="wrap">
-    <h2 data-i18n="plan_h"></h2>
-    <p class="lede" data-i18n="plan_p"></p>
-    <ul class="plan">
-      <li><div><h3 data-i18n="p1_h"></h3><p data-i18n="p1_p"></p></div><span class="pill" data-i18n="s_next"></span></li>
-      <li><div><h3 data-i18n="p2_h"></h3><p data-i18n="p2_p"></p></div><span class="pill" data-i18n="s_plan"></span></li>
-      <li><div><h3 data-i18n="p3_h"></h3><p data-i18n="p3_p"></p></div><span class="pill" data-i18n="s_plan"></span></li>
-      <li><div><h3 data-i18n="p4_h"></h3><p data-i18n="p4_p"></p></div><span class="pill" data-i18n="s_plan"></span></li>
-      <li><div><h3 data-i18n="p5_h"></h3><p data-i18n="p5_p"></p></div><span class="pill" data-i18n="s_later"></span></li>
-      <li><div><h3 data-i18n="p6_h"></h3><p data-i18n="p6_p"></p></div><span class="pill" data-i18n="s_later"></span></li>
-      <li><div><h3 data-i18n="p7_h"></h3><p data-i18n="p7_p"></p></div><span class="pill" data-i18n="s_later"></span></li>
-    </ul>
+    <h2 data-i18n="ct_h"></h2>
+    <p class="lede" data-i18n="ct_p"></p>
+    <div class="ctgrid">
+      <form class="ctform" id="ctForm" novalidate>
+        <div class="field"><label for="ctName" data-i18n="ct_name"></label><input id="ctName" type="text" maxlength="80" autocomplete="name"></div>
+        <div class="field"><label for="ctReach" data-i18n="ct_reach"></label><input id="ctReach" type="text" maxlength="120" autocomplete="tel" inputmode="email"></div>
+        <div class="field"><label for="ctMsg" data-i18n="ct_msg"></label><textarea id="ctMsg" rows="4" maxlength="1800"></textarea></div>
+        <button class="btn-s add" type="submit" id="ctSend" data-i18n="ct_send"></button>
+        <p class="autherr" id="ctErr" role="alert"></p>
+        <p class="sentmsg" id="ctOk" role="status"></p>
+      </form>
+      <div class="ctother" id="ctOther" hidden>
+        <h3 data-i18n="ct_or"></h3>
+        <div class="ctlinks" id="ctLinks"></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1726,6 +1743,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </section>
 
 <footer class="wrap">
+  <p class="footlinks"><a href="#contact" data-i18n="ct_h"></a></p>
   <p class="brandline">Seb Saathi · सेब साथी — Your Orchard. Your Companion. · ज्ञान • तकनीक • मुनाफ़ा</p>
   <p data-i18n="foot_note"></p>
 </footer>
@@ -2004,6 +2022,11 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   y_note:"Net income here is the Season Profit net income minus yearly expenses (including lump sums and diary costs). Half boxes count as half when working out the per-box figure.",
   y_sum:"Net profit by harvest year", y_tap:"Tap a harvest year to see every orchard's details.", y_meta:"{n} orchards, {b} boxes, {p} a box", y_meta1:"1 orchard, {b} boxes, {p} a box", y_pbe:"Per-box expenses", y_yc:"Yearly expenses", y_gp:"Gross profit", y_sp:"Season Profit", y_op:"Orchard page", tab_year:"Yearly totals", tab_edit:"Add or edit lots", edit_row:"Edit",
   hero_real_t:"Your net income, {y}", hero_real_note:"Taken from your records. Open the calculator below to see every lot.",
+  ct_h:"Contact us", ct_p:"Questions about the app, your plan or a payment? Send us a message and we'll get back to you.",
+  ct_name:"Your name", ct_reach:"Mobile number or email (so we can reply)", ct_msg:"Your message",
+  ct_send:"Send message", ct_sending:"Sending…", ct_ok:"Thank you! We've got your message and will reply soon.",
+  ct_need_msg:"Please write your message.", ct_need_reach:"Please add a mobile number or email so we can reply.",
+  ct_err:"Couldn't send just now. Please try again.", ct_or:"Or reach us directly", ct_wa:"WhatsApp us", ct_mail:"Email",
   pl_h:"Plans", pl_p:"Start free. Upgrade when your records grow. Pay by UPI from any app — no card needed.",
   pl_note:"Paid plans switch on after we check your payment, usually within a day. Some features are still being built and will be added to your plan as they arrive.",
   pl_free:"Free", pl_basic:"Saathi", pl_prem:"Saathi Plus",
@@ -2032,6 +2055,11 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   pay_soon:"UPI payment is being set up. Please check back soon."
 },
 hi: {
+  ct_h:"संपर्क करें", ct_p:"ऐप, प्लान या भुगतान के बारे में सवाल? हमें संदेश भेजें, हम जवाब देंगे।",
+  ct_name:"आपका नाम", ct_reach:"मोबाइल नंबर या ईमेल (ताकि हम जवाब दे सकें)", ct_msg:"आपका संदेश",
+  ct_send:"संदेश भेजें", ct_sending:"भेज रहे हैं…", ct_ok:"धन्यवाद! आपका संदेश मिल गया, हम जल्द जवाब देंगे।",
+  ct_need_msg:"कृपया अपना संदेश लिखें।", ct_need_reach:"जवाब के लिए मोबाइल नंबर या ईमेल लिखें।",
+  ct_err:"अभी भेज नहीं पाए। कृपया दोबारा कोशिश करें।", ct_or:"या सीधे संपर्क करें", ct_wa:"WhatsApp करें", ct_mail:"ईमेल",
   pl_h:"प्लान", pl_p:"मुफ़्त शुरू करें। रिकॉर्ड बढ़ें तो अपग्रेड करें। किसी भी ऐप से UPI से भुगतान — कार्ड की ज़रूरत नहीं।",
   pl_note:"भुगतान जाँचने के बाद पेड प्लान चालू होता है, आमतौर पर एक दिन में। कुछ सुविधाएँ अभी बन रही हैं, तैयार होते ही आपके प्लान में जुड़ जाएँगी।",
   pl_free:"मुफ़्त", pl_basic:"साथी", pl_prem:"साथी प्लस",
@@ -2326,7 +2354,7 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").textContent = tr("lang_btn");
-  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); } if (window.ADFeedback) ADFeedback.render(); if (typeof renderPlans === "function") renderPlans();
+  renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); } if (window.ADFeedback) ADFeedback.render(); if (typeof renderPlans === "function") renderPlans(); if (typeof renderContact === "function") renderContact();
 }
 $("langBtn").addEventListener("click", () => {
   lang = lang === "en" ? "hi" : "en";
@@ -2537,6 +2565,34 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
 let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
+
+/* ---------- Contact us: saved as a feedback message (page "contact"), read on the admin page ---------- */
+/* Fill these in to show direct buttons next to the form. Leave empty to hide. whatsapp: digits with country code, e.g. "919876543210" */
+const CONTACT = { whatsapp: "", email: "" };
+function renderContact() {
+  const L = [];
+  if (CONTACT.whatsapp) L.push('<a class="wa" href="https://wa.me/' + encodeURIComponent(CONTACT.whatsapp) + '" target="_blank" rel="noopener">' + tr("ct_wa") + "</a>");
+  if (CONTACT.email) L.push('<a href="mailto:' + encodeURIComponent(CONTACT.email).replace("%40", "@") + '">' + tr("ct_mail") + ": " + CONTACT.email.replace(/[<>&"]/g, "") + "</a>");
+  $("ctLinks").innerHTML = L.join(""); $("ctOther").hidden = !L.length;
+  if (user && !$("ctReach").value) $("ctReach").value = user.email || user.phone || "";
+}
+$("ctForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("ctErr").textContent = ""; $("ctOk").textContent = "";
+  const name = $("ctName").value.trim(), reach = $("ctReach").value.trim(), msg = $("ctMsg").value.trim();
+  if (!msg) { $("ctErr").textContent = tr("ct_need_msg"); return; }
+  if (!reach) { $("ctErr").textContent = tr("ct_need_reach"); return; }
+  if (!sb) { $("ctErr").textContent = tr("ct_err"); return; }
+  const btn = $("ctSend"); btn.disabled = true; btn.textContent = tr("ct_sending");
+  let err = null;
+  try {
+    const r = await sb.from("feedback").insert({ kind: "other", message: (name ? name + ": " : "") + msg, contact: reach.slice(0, 200), page: "contact", lang: lang, agent: String(navigator.userAgent || "").slice(0, 300) });
+    err = r.error;
+  } catch (x) { err = x; }
+  btn.disabled = false; btn.textContent = tr("ct_send");
+  if (err) { $("ctErr").textContent = tr("ct_err"); return; }
+  $("ctMsg").value = ""; $("ctOk").textContent = tr("ct_ok");
+});
 let tabPicked = false;
 let user = null, loaded = false, loadFailed = false;
 let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink|^#dashboard$/.test(String(location.hash) + String(location.search));
@@ -2569,8 +2625,9 @@ window.addEventListener("online", () => { if (isDirty()) flush(); });
 window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
 
 function renderAcct() {
-  $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user; $("coming").hidden = !!user;
+  $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user;
   $("adminLink").hidden = !isAdmin();
+  if (typeof renderContact === "function") renderContact();
   renderDiagAuth();
   if (typeof renderPromo === "function") try { renderPromo(); } catch (e) {}
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
