@@ -924,7 +924,13 @@ function applyLang() {
   if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
-$("signOut").addEventListener("click", async () => { try { await sb.auth.signOut(); } catch (e) {} location.replace("/login.html?next=admin"); });
+$("signOut").addEventListener("click", async () => {
+  $("signOut").disabled = true;
+  try { await sb.auth.signOut(); } catch (e) {}
+  try { await sb.auth.signOut({ scope: "local" }); } catch (e) {}   // always forget the session on this device, even if the server call failed
+  try { Object.keys(localStorage).filter(k => /^sb-.*-auth-token/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  location.replace("/login.html?next=admin");
+});
 $("prevX").addEventListener("click", () => { const d = $("prevDlg"); if (d.close) d.close(); else d.removeAttribute("open"); });
 let checked = false;
 function renderGate() {
