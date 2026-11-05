@@ -2591,7 +2591,7 @@ $("ctForm").addEventListener("submit", async e => {
   } catch (x) { err = x; }
   btn.disabled = false; btn.textContent = tr("ct_send");
   if (err) { $("ctErr").textContent = tr("ct_err"); return; }
-  $("ctMsg").value = ""; $("ctOk").textContent = tr("ct_ok");
+  $("ctName").value = ""; $("ctReach").value = ""; $("ctMsg").value = ""; $("ctOk").textContent = tr("ct_ok");
 });
 let tabPicked = false;
 let user = null, loaded = false, loadFailed = false;
