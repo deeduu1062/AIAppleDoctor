@@ -2569,7 +2569,7 @@ window.addEventListener("online", () => { if (isDirty()) flush(); });
 window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
 
 function renderAcct() {
-  $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user;
+  $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user; $("coming").hidden = !!user;
   $("adminLink").hidden = !isAdmin();
   renderDiagAuth();
   if (typeof renderPromo === "function") try { renderPromo(); } catch (e) {}
