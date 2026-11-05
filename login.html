@@ -1344,7 +1344,7 @@ const tr = k => (T[lang] && T[lang][k]) || T.en[k] || k;
 
 /* the main page; email links (confirm, login link, reset password) land there, as before */
 const HOME = location.origin + "/";
-const goHome = () => { location.replace("/#dashboard"); };
+const goHome = () => { location.replace(/[?&]next=admin\b/.test(location.search) ? "/admin.html" : "/#dashboard"); };
 let mode = /[?&]mode=signup/.test(location.search) ? "signup" : "login";
 
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
