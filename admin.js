@@ -827,7 +827,7 @@ Object.assign(T.en, {
   ov_fb_h:"Feedback received", ov_fb_total:"Total", ov_fb_new:"New (not done)", ov_fb_7:"Last 7 days", ov_fb_today:"Today",
   ov_ch_h:"Saathi questions received", ov_ch_today:"Today", ov_ch_7:"Last 7 days", ov_ch_30:"Last 30 days", ov_ch_total:"Total",
   ov_ch_users:"Growers asking (30 days)", ov_q_h:"Latest questions", ov_q_none:"No questions yet.",
-  ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_t_received:"Received", ov_t_notdone:"Not done yet", ov_t_questions:"Questions", ov_t_growers:"Growers asking", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
+  ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_pa_h:"Payments", ov_t_money:"Money received", ov_t_paid:"Payments approved", ov_t_wait:"Waiting for check", ov_t_active:"Active paid plans", ov_err_pa:"Payments table not set up yet (supabase/payments.sql).", ov_t_received:"Received", ov_t_notdone:"Not done yet", ov_t_questions:"Questions", ov_t_growers:"Growers asking", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
   ov_err_fb:"Feedback table not set up yet (supabase/feedback.sql).", ov_err_ch:"Saathi chat table not set up yet (supabase/chat.sql).", ov_err:"Could not load: {m}"
 });
 Object.assign(T.hi, {
@@ -835,7 +835,7 @@ Object.assign(T.hi, {
   ov_fb_h:"मिले सुझाव", ov_fb_total:"कुल", ov_fb_new:"नए (बाकी)", ov_fb_7:"पिछले 7 दिन", ov_fb_today:"आज",
   ov_ch_h:"साथी से पूछे गए सवाल", ov_ch_today:"आज", ov_ch_7:"पिछले 7 दिन", ov_ch_30:"पिछले 30 दिन", ov_ch_total:"कुल",
   ov_ch_users:"सवाल पूछने वाले बाग़वान (30 दिन)", ov_q_h:"ताज़ा सवाल", ov_q_none:"अभी कोई सवाल नहीं।",
-  ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_t_received:"मिले", ov_t_notdone:"बाकी", ov_t_questions:"सवाल", ov_t_growers:"पूछने वाले बाग़वान", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
+  ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_pa_h:"भुगतान", ov_t_money:"प्राप्त रकम", ov_t_paid:"मंज़ूर भुगतान", ov_t_wait:"जाँच बाकी", ov_t_active:"चालू पेड प्लान", ov_err_pa:"भुगतान टेबल अभी नहीं बनी (supabase/payments.sql)।", ov_t_received:"मिले", ov_t_notdone:"बाकी", ov_t_questions:"सवाल", ov_t_growers:"पूछने वाले बाग़वान", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
   ov_err_fb:"सुझाव टेबल अभी नहीं बनी (supabase/feedback.sql)।", ov_err_ch:"साथी चैट टेबल अभी नहीं बनी (supabase/chat.sql)।", ov_err:"लोड नहीं हो सका: {m}"
 });
 let OV = null, ovBusy = false;
@@ -866,6 +866,17 @@ async function loadOverview() {
     o.ch = { d, w, m, t, users: ids.error ? null : new Set((ids.data || []).map(x => x.user_id)).size };
     o.q = g.error ? [] : (g.data || []);
   } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_ch") : tr("ov_err").replace("{m}", String(e.message || e))); }
+  try {
+    const r = await sb.from("payments").select("status,amount,created_at,valid_until").limit(10000);
+    if (r.error) throw r.error;
+    const P = r.data || [], day = new Date().toISOString().slice(0, 10);
+    const per = (rows, since) => rows.filter(x => !since || x.created_at >= since);
+    const ok = P.filter(x => x.status === "approved"), wait = P.filter(x => x.status === "pending");
+    const sum = a => a.reduce((s, x) => s + (+x.amount || 0), 0);
+    const four = f => [f(today), f(d7), f(d30), f(null)];
+    o.pa = { money: four(s => sum(per(ok, s))), paid: four(s => per(ok, s).length), wait: four(s => per(wait, s).length),
+      active: ok.filter(x => !x.valid_until || x.valid_until >= day).length };
+  } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_pa") : tr("ov_err").replace("{m}", String(e.message || e))); }
   ovBusy = false; $("ovRefresh").disabled = false;
   OV = o; set("ovErr", errs.join(" ")); renderOverview();
 }
@@ -878,7 +889,8 @@ function renderOverview() {
   const row = (k, a, cls) => '<tr' + (cls ? ' class="' + cls + '"' : "") + '><th scope="row">' + tr(k) + "</th>" + a.map(x => '<td class="n">' + v(x) + "</td>").join("") + "</tr>";
   const tbl = (h, rows) => '<h5 class="ovsub">' + tr(h) + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col"></th>' +
     ["ov_c_today", "ov_c_7", "ov_c_30", "ov_c_total"].map(k => '<th scope="col" class="n">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" + rows + "</tbody></table></div>";
-  $("ovTab").innerHTML = tbl("ov_fb_h", row("ov_t_received", [f.d, f.w, f.m, f.t]) + row("ov_t_notdone", [null, null, null, f.n], "sub")) +
+  const pa = OV.pa || {}, money = a => '<tr><th scope="row">' + tr("ov_t_money") + "</th>" + (a || [null, null, null, null]).map(x => '<td class="n">' + (x == null ? "–" : rupees(x)) + "</td>").join("") + "</tr>";
+  $("ovTab").innerHTML = tbl("ov_pa_h", money(pa.money) + row("ov_t_paid", pa.paid || [null, null, null, null]) + row("ov_t_wait", pa.wait || [null, null, null, null], "sub") + row("ov_t_active", [null, null, null, pa.active], "sub")) + tbl("ov_fb_h", row("ov_t_received", [f.d, f.w, f.m, f.t]) + row("ov_t_notdone", [null, null, null, f.n], "sub")) +
     tbl("ov_ch_h", row("ov_t_questions", [c.d, c.w, c.m, c.t]) + row("ov_t_growers", [null, null, c.users, null], "sub"));
   const q = OV.q || [];
   $("ovQ").innerHTML = !q.length ? '<p class="fine">' + tr("ov_q_none") + "</p>" :
@@ -889,7 +901,7 @@ function renderOverview() {
 $("ovRefresh").addEventListener("click", loadOverview);
 
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["ov", "pay", "users", "fb", "lib"];
+const TABS = ["ov", "pay", "users", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
 let tab = "ov";
 try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; } catch (e) {}
 const loaded = {};
@@ -899,7 +911,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "ov") loadOverview(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "fb") loadFeedback(); else if (t === "lib") loadLibAdmin();
+  if (t === "ov") loadOverview(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "fb") loadFeedback();
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
