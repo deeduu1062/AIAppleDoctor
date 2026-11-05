@@ -30,7 +30,7 @@ function renderPlans() {
     if (key === "free") {
       act = typeof user !== "undefined" && user
         ? '<p class="plstat">' + tr("pl_go_free_in") + "</p>"
-        : '<button class="btn-s" type="button" data-pl="free">' + tr("pl_go_free") + "</button>";
+        : '<button class="btn-s add" type="button" data-pl="free">' + tr("pl_go_free") + "</button>";
     } else if (myPay && myPay.plan === key && myPay.status === "approved") {
       act = '<p class="plstat good">' + tr("pl_active") + "</p>";
     } else {
