@@ -2572,6 +2572,24 @@ const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
 let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
 
+/* ---------- site visits for the admin Overview (table public.site_visits, see supabase/visits.sql) ---------- */
+let visitLogged = false;
+function logVisit(u) {
+  if (visitLogged || !sb) return; visitLogged = true;
+  try {
+    if (navigator.webdriver) return;                                         // automated browsers
+    const em = u && u.email ? u.email.toLowerCase() : "";
+    if (em && ADMIN_EMAILS.indexOf(em) >= 0) return;                         // don't count your own visits
+    let vid = null;
+    try { vid = localStorage.getItem("ss-vid"); if (!vid) { vid = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, "").slice(0, 24); localStorage.setItem("ss-vid", vid); } } catch (e) {}
+    if (!vid) vid = "nostore" + Math.random().toString(36).slice(2, 12);
+    let ref = null;
+    try { if (document.referrer) { const h = new URL(document.referrer).hostname.replace(/^www\./, ""); if (h && h !== location.hostname) ref = h.slice(0, 120); } } catch (e) {}
+    const ua = navigator.userAgent || "", device = /iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "mobile" : "desktop";
+    sb.from("site_visits").insert({ visitor: vid, page: "home", ref, device, lang, signed_in: !!u }).then(() => {}, () => {});
+  } catch (e) {}
+}
+
 /* ---------- Contact us: saved as a feedback message (page "contact"), read on the admin page ---------- */
 /* Fill these in to show direct buttons next to the form. Leave empty to hide. whatsapp: digits with country code, e.g. "919876543210" */
 const CONTACT = { whatsapp: "", email: "admin@sebsaathi.com" };
@@ -2706,7 +2724,7 @@ async function applyUser(u) {
 }
 if (sb) {
   sb.auth.onAuthStateChange((ev, session) => { if (ev === "PASSWORD_RECOVERY") { recovering = true; justSignedIn = true; } setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") renderOrchGate(); }, 0); });
-  sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); }).catch(() => {});
+  sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); logVisit(s ? s.user : null); }).catch(() => logVisit(null));
 }
 
 function netMsg(err) {

@@ -828,7 +828,7 @@ Object.assign(T.en, {
   ov_fb_h:"Feedback received", ov_fb_total:"Total", ov_fb_new:"New (not done)", ov_fb_7:"Last 7 days", ov_fb_today:"Today",
   ov_ch_h:"Saathi questions received", ov_ch_today:"Today", ov_ch_7:"Last 7 days", ov_ch_30:"Last 30 days", ov_ch_total:"Total",
   ov_ch_users:"Growers asking (30 days)", ov_q_h:"Latest questions", ov_q_none:"No questions yet.",
-  ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_pa_h:"Payments", ov_t_money:"Money received", ov_t_paid:"Payments approved", ov_t_wait:"Waiting for check", ov_t_active:"Active paid plans", ov_err_pa:"Payments table not set up yet (supabase/payments.sql).", ov_t_received:"Received", ov_t_notdone:"Not done yet", ov_t_questions:"Questions", ov_t_growers:"Growers asking", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
+  ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_sv_h:"Site visits", ov_sv_hits:"Visits (page opens)", ov_sv_uniq:"Different visitors", ov_sv_in:"Visits by logged-in growers", ov_sv_note:"Your own admin visits are not counted. A visitor is one phone or computer.", ov_sv_refs:"Where visitors came from (30 days)", ov_sv_dev:"Phone or computer (30 days)", ov_sv_days:"Last 14 days", ov_sv_day:"Day", ov_sv_n:"Visits", ov_sv_u:"Visitors", ov_sv_direct:"Direct / app / WhatsApp", ov_d_mobile:"Phone", ov_d_desktop:"Computer", ov_d_tablet:"Tablet", ov_sv_src:"Source", ov_sv_devc:"Device", ov_err_sv:"Visit counting not set up yet (supabase/visits.sql).", ov_pa_h:"Payments", ov_t_money:"Money received", ov_t_paid:"Payments approved", ov_t_wait:"Waiting for check", ov_t_active:"Active paid plans", ov_err_pa:"Payments table not set up yet (supabase/payments.sql).", ov_t_received:"Received", ov_t_notdone:"Not done yet", ov_t_questions:"Questions", ov_t_growers:"Growers asking", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
   ov_err_fb:"Feedback table not set up yet (supabase/feedback.sql).", ov_err_ch:"Saathi chat table not set up yet (supabase/chat.sql).", ov_err:"Could not load: {m}"
 });
 Object.assign(T.hi, {
@@ -836,7 +836,7 @@ Object.assign(T.hi, {
   ov_fb_h:"मिले सुझाव", ov_fb_total:"कुल", ov_fb_new:"नए (बाकी)", ov_fb_7:"पिछले 7 दिन", ov_fb_today:"आज",
   ov_ch_h:"साथी से पूछे गए सवाल", ov_ch_today:"आज", ov_ch_7:"पिछले 7 दिन", ov_ch_30:"पिछले 30 दिन", ov_ch_total:"कुल",
   ov_ch_users:"सवाल पूछने वाले बाग़वान (30 दिन)", ov_q_h:"ताज़ा सवाल", ov_q_none:"अभी कोई सवाल नहीं।",
-  ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_pa_h:"भुगतान", ov_t_money:"प्राप्त रकम", ov_t_paid:"मंज़ूर भुगतान", ov_t_wait:"जाँच बाकी", ov_t_active:"चालू पेड प्लान", ov_err_pa:"भुगतान टेबल अभी नहीं बनी (supabase/payments.sql)।", ov_t_received:"मिले", ov_t_notdone:"बाकी", ov_t_questions:"सवाल", ov_t_growers:"पूछने वाले बाग़वान", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
+  ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_sv_h:"साइट विज़िट", ov_sv_hits:"विज़िट (पेज खुले)", ov_sv_uniq:"अलग-अलग विज़िटर", ov_sv_in:"लॉग-इन बाग़वानों की विज़िट", ov_sv_note:"आपकी अपनी एडमिन विज़िट नहीं गिनी जातीं। एक विज़िटर = एक फ़ोन या कंप्यूटर।", ov_sv_refs:"विज़िटर कहाँ से आए (30 दिन)", ov_sv_dev:"फ़ोन या कंप्यूटर (30 दिन)", ov_sv_days:"पिछले 14 दिन", ov_sv_day:"दिन", ov_sv_n:"विज़िट", ov_sv_u:"विज़िटर", ov_sv_direct:"सीधे / ऐप / WhatsApp", ov_d_mobile:"फ़ोन", ov_d_desktop:"कंप्यूटर", ov_d_tablet:"टैबलेट", ov_sv_src:"स्रोत", ov_sv_devc:"डिवाइस", ov_err_sv:"विज़िट गिनती अभी सेट नहीं (supabase/visits.sql)।", ov_pa_h:"भुगतान", ov_t_money:"प्राप्त रकम", ov_t_paid:"मंज़ूर भुगतान", ov_t_wait:"जाँच बाकी", ov_t_active:"चालू पेड प्लान", ov_err_pa:"भुगतान टेबल अभी नहीं बनी (supabase/payments.sql)।", ov_t_received:"मिले", ov_t_notdone:"बाकी", ov_t_questions:"सवाल", ov_t_growers:"पूछने वाले बाग़वान", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
   ov_err_fb:"सुझाव टेबल अभी नहीं बनी (supabase/feedback.sql)।", ov_err_ch:"साथी चैट टेबल अभी नहीं बनी (supabase/chat.sql)।", ov_err:"लोड नहीं हो सका: {m}"
 });
 let OV = null, ovBusy = false;
@@ -868,6 +868,14 @@ async function loadOverview() {
     o.q = g.error ? [] : (g.data || []);
   } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_ch") : tr("ov_err").replace("{m}", String(e.message || e))); }
   try {
+    const r = await sb.rpc("admin_site_stats");
+    if (r.error) throw r.error;
+    o.sv = r.data;
+  } catch (e) {
+    const m = String(e.message || e);
+    errs.push(String(e.code || "") === "PGRST202" || /could not find the function|does not exist|schema cache/i.test(m) ? tr("ov_err_sv") : tr("ov_err").replace("{m}", m));
+  }
+  try {
     const r = await sb.from("payments").select("status,amount,created_at,valid_until").limit(10000);
     if (r.error) throw r.error;
     const P = r.data || [], day = new Date().toISOString().slice(0, 10);
@@ -891,7 +899,17 @@ function renderOverview() {
   const tbl = (h, rows) => '<h5 class="ovsub">' + tr(h) + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col"></th>' +
     ["ov_c_today", "ov_c_7", "ov_c_30", "ov_c_total"].map(k => '<th scope="col" class="n">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" + rows + "</tbody></table></div>";
   const pa = OV.pa || {}, money = a => '<tr><th scope="row">' + tr("ov_t_money") + "</th>" + (a || [null, null, null, null]).map(x => '<td class="n">' + (x == null ? "–" : rupees(x)) + "</td>").join("") + "</tr>";
-  $("ovTab").innerHTML = tbl("ov_pa_h", money(pa.money) + row("ov_t_paid", pa.paid || [null, null, null, null]) + row("ov_t_wait", pa.wait || [null, null, null, null], "sub") + row("ov_t_active", [null, null, null, pa.active], "sub")) + tbl("ov_fb_h", row("ov_t_received", [f.d, f.w, f.m, f.t]) + row("ov_t_notdone", [null, null, null, f.n], "sub")) +
+  const sv = OV.sv || {}, q4 = x => x ? [x.today, x.d7, x.d30, x.total] : [null, null, null, null];
+  const two = (h, c1, c2, rows) => '<h5 class="ovsub">' + tr(h) + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr(c1) + '</th><th scope="col" class="n">' + tr(c2) + "</th></tr></thead><tbody>" +
+    (rows.length ? rows.join("") : '<tr><td colspan="2">–</td></tr>') + "</tbody></table></div>";
+  const svHtml = tbl("ov_sv_h", row("ov_sv_hits", q4(sv.visits)) + row("ov_sv_uniq", q4(sv.visitors)) + row("ov_sv_in", q4(sv.signed), "sub")) +
+    '<p class="fine">' + tr("ov_sv_note") + "</p>" +
+    (OV.sv ? two("ov_sv_refs", "ov_sv_src", "ov_sv_n", (sv.refs || []).map(r => '<tr><th scope="row">' + esc(r.name === "direct" ? tr("ov_sv_direct") : r.name) + '</th><td class="n">' + fmtN(+r.n) + "</td></tr>")) +
+      two("ov_sv_dev", "ov_sv_devc", "ov_sv_n", (sv.devices || []).map(r => '<tr><th scope="row">' + tr("ov_d_" + r.name) + '</th><td class="n">' + fmtN(+r.n) + "</td></tr>")) +
+      '<h5 class="ovsub">' + tr("ov_sv_days") + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ov_sv_day") + '</th><th scope="col" class="n">' + tr("ov_sv_n") + '</th><th scope="col" class="n">' + tr("ov_sv_u") + "</th></tr></thead><tbody>" +
+      ((sv.days || []).length ? sv.days.map(d => '<tr><th scope="row">' + esc(new Date(d.day + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { weekday: "short", day: "numeric", month: "short" })) + '</th><td class="n">' + fmtN(+d.n) + '</td><td class="n">' + fmtN(+d.u) + "</td></tr>").join("") : '<tr><td colspan="3">–</td></tr>') +
+      "</tbody></table></div>" : "");
+  $("ovTab").innerHTML = svHtml + tbl("ov_pa_h", money(pa.money) + row("ov_t_paid", pa.paid || [null, null, null, null]) + row("ov_t_wait", pa.wait || [null, null, null, null], "sub") + row("ov_t_active", [null, null, null, pa.active], "sub")) + tbl("ov_fb_h", row("ov_t_received", [f.d, f.w, f.m, f.t]) + row("ov_t_notdone", [null, null, null, f.n], "sub")) +
     tbl("ov_ch_h", row("ov_t_questions", [c.d, c.w, c.m, c.t]) + row("ov_t_growers", [null, null, c.users, null], "sub"));
   const q = OV.q || [];
   $("ovQ").innerHTML = !q.length ? '<p class="fine">' + tr("ov_q_none") + "</p>" :
