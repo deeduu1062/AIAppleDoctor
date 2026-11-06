@@ -6182,7 +6182,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
 Object.assign(T.en, {
   tt_rec:"My Orchard Record", rc_h:"What an orchard record looks like", rc_pill:"Example",
   rc_p:"This is an example of one orchard's record for a full season. Your own record looks the same once you add your orchards, sales, expenses and sprays.",
-  rc_o:"Upper orchard", rc_vill:"Chirgaon, Shimla", rc_prof:"Orchard details", rc_sum:"2026 season at a glance",
+  rc_o:"Shimla Orchard", rc_vill:"Kufri, Shimla", rc_prof:"Orchard details", rc_sum:"2026 season at a glance",
   rc_lots:"Sales lots, 2026", rc_lot1:"Lot 1 · 12 Aug · Parala mandi", rc_lot2:"Lot 2 · 28 Aug · Dhalli mandi",
   rc_grade:"Grade", rc_boxes:"Boxes", rc_rate:"Rate / box", rc_exp:"Charges / box", rc_net:"Net", rc_paid:"Paid", rc_due:"Due",
   rc_charges:"Charges = Todan/Bharan + Grading/Packing + Carriage + commission",
@@ -6194,7 +6194,7 @@ Object.assign(T.en, {
 Object.assign(T.hi, {
   tt_rec:"मेरा बाग़ रिकॉर्ड", rc_h:"बाग़ का रिकॉर्ड कैसा दिखता है", rc_pill:"उदाहरण",
   rc_p:"यह एक बाग़ के पूरे सीज़न के रिकॉर्ड का उदाहरण है। अपने बाग़, बिक्री, ख़र्च और स्प्रे जोड़ने पर आपका रिकॉर्ड भी ऐसा ही दिखेगा।",
-  rc_o:"ऊपर वाला बाग़", rc_vill:"चिड़गाँव, शिमला", rc_prof:"बाग़ की जानकारी", rc_sum:"2026 सीज़न एक नज़र में",
+  rc_o:"शिमला बाग़", rc_vill:"कुफ़री, शिमला", rc_prof:"बाग़ की जानकारी", rc_sum:"2026 सीज़न एक नज़र में",
   rc_lots:"बिक्री के लॉट, 2026", rc_lot1:"लॉट 1 · 12 अगस्त · पराला मंडी", rc_lot2:"लॉट 2 · 28 अगस्त · ढली मंडी",
   rc_grade:"ग्रेड", rc_boxes:"पेटियाँ", rc_rate:"भाव / पेटी", rc_exp:"ख़र्च / पेटी", rc_net:"शुद्ध", rc_paid:"मिला", rc_due:"बाक़ी",
   rc_charges:"ख़र्च = तोड़ान/भरान + ग्रेडिंग/पैकिंग + ढुलाई + कमीशन",
@@ -6206,7 +6206,7 @@ Object.assign(T.hi, {
 Object.assign(T.hn, {
   tt_rec:"Mera Bagicha Record", rc_h:"Bagiche ka record kaisa dikhta hai", rc_pill:"Example",
   rc_p:"Ye ek bagiche ke poore season ke record ka example hai. Apne bagiche, bikri, kharche aur spray jodne par aapka record bhi aisa hi dikhega.",
-  rc_o:"Upar wala bagicha", rc_vill:"Chirgaon, Shimla", rc_prof:"Bagiche ki jaankari", rc_sum:"2026 season ek nazar mein",
+  rc_o:"Shimla Orchard", rc_vill:"Kufri, Shimla", rc_prof:"Bagiche ki jaankari", rc_sum:"2026 season ek nazar mein",
   rc_lots:"Bikri ke lot, 2026", rc_lot1:"Lot 1 · 12 Aug · Parala mandi", rc_lot2:"Lot 2 · 28 Aug · Dhalli mandi",
   rc_grade:"Grade", rc_boxes:"Petiyan", rc_rate:"Bhaav / peti", rc_exp:"Kharcha / peti", rc_net:"Net", rc_paid:"Mila", rc_due:"Baaki",
   rc_charges:"Kharcha = Todan/Bharan + Grading/Packing + Dhulai + commission",
@@ -6242,11 +6242,11 @@ function renderRec() {
   const yearly = RC.costs.reduce((a, c) => a + c[1], 0), net = gross - lotExp - yearly, trees = RC.trees.reduce((a, t) => a + t[1], 0);
   const tile = (k, v, c) => '<div class="' + (c || "") + '"><span>' + esc(tr(k)) + "</span><b>" + v + "</b></div>";
   let h = '<div class="rcgrid">' +
-    '<section class="rccard rcprof"><div class="rcohead"><span class="rcart" aria-hidden="true">' + treeArt("rc-upper") + '</span><div><b>' + esc(tr("rc_o")) + "</b><small>" + esc(tr("rc_vill")) + "</small></div></div>" +
+    '<section class="rccard rcprof"><div class="rcohead"><span class="rcart" aria-hidden="true">' + treeArt("rc-shimla") + '</span><div><b>' + esc(tr("rc_o")) + "</b><small>" + esc(tr("rc_vill")) + "</small></div></div>" +
     "<h4>" + tr("rc_prof") + '</h4><dl class="rcdl">' +
       "<dt>" + tr("f_trees").replace(/\s*\(.*\)$/, "") + "</dt><dd>" + fmtN(trees) + "</dd>" +
       "<dt>" + tr("p_var") + "</dt><dd>" + RC.trees.map(t => esc(t[0]) + " " + t[1]).join(", ") + "</dd>" +
-      "<dt>" + tr("p_alt") + "</dt><dd>2,100</dd><dt>" + tr("p_area") + "</dt><dd>12</dd>" +
+      "<dt>" + tr("p_alt") + "</dt><dd>2,500</dd><dt>" + tr("p_area") + "</dt><dd>12</dd>" +
       "<dt>" + tr("p_root") + "</dt><dd>" + tr("r_seedling") + ", " + tr("r_mm106") + "</dd><dt>" + tr("p_planted") + "</dt><dd>2008</dd>" +
       "<dt>" + tr("p_irr") + "</dt><dd>" + tr("i_drip") + "</dd><dt>" + tr("p_hail") + "</dt><dd>" + tr("h_part") + "</dd></dl></section>" +
     '<section class="rccard"><h4>' + tr("rc_sum") + '</h4><div class="rcnet"><span>' + tr("gl_net") + "</span><b>" + inr(net) + '</b></div><div class="gltiles">' +
