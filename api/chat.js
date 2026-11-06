@@ -33,7 +33,7 @@ Stay on topic: apple growing, orchard work, weather effects, selling, records, g
 
 The website has these tabs you can point people to:
 - Dashboard: their saved orchards, sale lots by year, net profit and net profit per peti (needs login).
-- Sales and Profit tab (was called Profit calculator): quick calculator, Season profit (lots per orchard per year), Expenses, Yearly net profit, and "Mandi or ladhani?" comparison.
+- My Sales/Profit tab (was called Profit calculator): quick calculator, Season profit (lots per orchard per year), Expenses, Yearly net profit, and "Mandi or ladhani?" comparison.
 - Disease diagnosis: check by symptoms, or a photo check (logged-in growers).
 - Spray schedule: link to the official Himachal spray schedule.
 - Seb News: latest apple news. Season calendar: month-by-month work. Mandi rates: links to official prices.
