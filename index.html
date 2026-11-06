@@ -823,6 +823,53 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .gltiles span{font-size:.8rem}
 .gltiles b{font-size:1.05rem;margin-top:1px}
 .glacts .btn-s{min-height:38px}
+
+/* ---- weather cards with pictures ---- */
+.wxcards{margin-bottom:10px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.wxcard{--sky1:#5AA9E6;--sky2:#2D78C4;border-radius:16px;padding:14px 14px 12px;color:#fff;background:linear-gradient(160deg,var(--sky1),var(--sky2));box-shadow:0 6px 18px rgba(30,60,90,.18);display:grid;gap:12px;min-width:0;overflow:hidden;position:relative}
+.wxcard.sky-sun{--sky1:#FFB547;--sky2:#F07B2E}
+.wxcard.sky-part{--sky1:#6FB6EA;--sky2:#3C86C9}
+.wxcard.sky-cloud,.wxcard.sky-fog{--sky1:#8E9FB2;--sky2:#5F6F82}
+.wxcard.sky-drizzle,.wxcard.sky-rain,.wxcard.sky-shower{--sky1:#5C7C9C;--sky2:#34506E}
+.wxcard.sky-snow{--sky1:#9DB8D6;--sky2:#6D8DB3}
+.wxcard.sky-storm,.wxcard.sky-hail{--sky1:#4C4F6B;--sky2:#2A2C40}
+.wxnow{display:flex;align-items:center;gap:12px}
+.wxnowt{display:grid;gap:1px;min-width:0}
+.wxo{font-weight:700;font-size:.92rem;opacity:.95;overflow-wrap:anywhere}
+.wxtemp{font:700 2.3rem/1 var(--body);letter-spacing:-.02em}
+.wxtemp small{font-size:1.1rem;font-weight:600;opacity:.85;margin-left:4px}
+.wxcond{font-weight:600;font-size:.95rem}
+.wxmeta{font-size:.82rem;opacity:.9}
+.wxdays{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.wxdays li{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:8px 2px 7px;display:grid;justify-items:center;gap:1px;text-align:center;min-width:0}
+.wxdays .wxd{font-size:.78rem;font-weight:700;white-space:nowrap}
+.wxdays .wxw{font-size:.68rem;opacity:.9;line-height:1.15;min-height:2.3em;display:flex;align-items:center;overflow-wrap:anywhere;padding:0 2px}
+.wxdays b{font:700 .95rem var(--body)}
+.wxdays b small{font-weight:500;opacity:.8;font-size:.8rem}
+.wxdays .wxr{font-size:.72rem;opacity:.85;white-space:nowrap}
+.wxdays .wxr.wet{opacity:1;font-weight:700}
+.wi{flex:none;overflow:visible}
+.wi-sun circle{fill:#FFD34E}
+.wi-rays line{stroke:#FFD34E;stroke-width:3.2;stroke-linecap:round}
+.wi-cl{fill:#fff}
+.wi-cl2{fill:#DCE3EC}
+.wi-cl3{fill:#C3CCD8}
+.wi-drops line{stroke:#9FD3FF;stroke-width:3;stroke-linecap:round}
+.wi-flakes circle,.wi-hail circle{fill:#fff}
+.wi-fog line{stroke:#fff;stroke-width:3.2;stroke-linecap:round;opacity:.85}
+.wi-bolt{fill:#FFD34E}
+@media (prefers-reduced-motion:no-preference){
+  .wi-rays{transform-box:fill-box;transform-origin:center;animation:wiSpin 18s linear infinite}
+  .wi-drops line{animation:wiDrop 1.1s ease-in infinite}
+  .wi-flakes circle{animation:wiDrop 2.2s ease-in-out infinite}
+  .wi-cl{animation:wiDrift 6s ease-in-out infinite alternate}
+  .wi-bolt{animation:wiFlash 2.4s steps(1) infinite}
+}
+@keyframes wiSpin{to{transform:rotate(360deg)}}
+@keyframes wiDrop{0%{transform:translateY(-3px);opacity:0}30%{opacity:1}100%{transform:translateY(5px);opacity:0}}
+@keyframes wiDrift{to{transform:translateX(2px)}}
+@keyframes wiFlash{0%,100%{opacity:1}50%{opacity:.35}}
+@media (max-width:420px){.wxtemp{font-size:2rem}.wxdays{gap:4px}.wxdays li{padding:7px 1px 6px}.wxdays .wi{width:36px;height:36px}}
 </style>
 
 <style>
@@ -1953,10 +2000,10 @@ en: {
   d_spent:"Spent since {d}", d_spent_ly:"Same time last year: {x}",
   ds_h:"Due soon", ds_p:"Tasks due in the next 14 days, and sales still not paid after 30 days.", ds_none:"Nothing due in the next 14 days.", ds_pay:"{l}, {y}: {x} not yet received",
   ds_payd:"Waiting {n} days", ds_nodate:"No sale date", ds_wa_all:"Send this list on WhatsApp", ds_wa_head:"Seb Saathi reminder", wa:"WhatsApp", ics:"Add to calendar", late:"Overdue", today:"Today", inN:"In {n} days",
-  wx_h:"Weather: today and next 3 days", wx_today:"Today", wx_frost2:"Frost risk {d}: down to {t}°C — protect young fruit and blossom", wx_rain2:"Rain {d}: {mm} mm — avoid spraying just before", wx_none:"Set each orchard's location (open the orchard, then Location and weather) to see its weather here.", wx_load:"Loading weather…",
+  wx_h:"Weather: today and next 5 days", wx_today:"Today", wx_frost2:"Frost risk {d}: down to {t}°C — protect young fruit and blossom", wx_rain2:"Rain {d}: {mm} mm — avoid spraying just before", wx_none:"Set each orchard's location (open the orchard, then Location and weather) to see its weather here.", wx_load:"Loading weather…",
   wx_err:"Weather could not be loaded. Check the internet connection and open the page again.", wx_src:"Forecast from Open-Meteo. Temperatures are highest / lowest of the day.",
-  wx_frost:"Frost risk {d}: down to {t}°C", wx_hail:"Hail possible {d}", wx_rain:"Heavy rain {d}: {mm} mm", wx_ok:"No frost, hail or rain expected in the next 3 days.",
-  wc_clear:"Clear", wc_cloud:"Cloudy", wc_fog:"Fog", wc_rain:"Rain", wc_snow:"Snow", wc_shower:"Showers", wc_storm:"Thunderstorm", wc_hail:"Storm with hail",
+  wx_frost:"Frost risk {d}: down to {t}°C", wx_hail:"Hail possible {d}", wx_rain:"Heavy rain {d}: {mm} mm", wx_ok:"No frost, hail or rain expected in the next 5 days.",
+  wc_clear:"Sunny", wc_part:"Partly cloudy", wx_rain_g:"Rain {d}: avoid spraying just before", wx_frost_g:"Frost risk {d}: down to {t}°C", wx_hail_g:"Hail possible {d}", wx_chance:"{p}% chance of rain", wx_hi:"High", wx_lo:"Low", wx_wind:"Wind {w} km/h", wc_cloud:"Cloudy", wc_fog:"Fog", wc_rain:"Rain", wc_snow:"Snow", wc_shower:"Showers", wc_storm:"Storm", wc_hail:"Storm with hail",
   map_h:"Your orchards on the map", map_none:"Set each orchard's location to see it on the map.", map_err:"The map could not be loaded. Check the internet connection.",
   loc_h:"Location and weather", loc_set:"Location: {c}", loc_notset:"Location not set yet.", loc_gps:"Use my current location", loc_find:"Find village", loc_pick:"Pick on map",
   loc_pickp:"Tap the map where the orchard is.", loc_rm:"Remove location", loc_q:"Village or town", loc_search:"Search", loc_noresult:"No place found. Try a nearby town, or use Pick on map.", loc_setfor:"Set location: {o}", loc_searching:"Searching…", loc_gps_wait:"Finding your location…", loc_gps_denied:"Location access is blocked for this site. Allow it in your browser (tap the lock icon next to the address), or search for the village.", loc_gps_none:"This device could not find your location (computers often can't). Search for the village or use Pick on map.",
@@ -2237,10 +2284,10 @@ hi: {
   d_spent:"{d} से अब तक ख़र्च", d_spent_ly:"पिछले साल इसी समय तक: {x}",
   ds_h:"जल्द करने वाले काम", ds_p:"अगले 14 दिनों के काम, और वे बिक्री जिनका पैसा 30 दिन बाद भी नहीं मिला।", ds_none:"अगले 14 दिनों में कुछ बाक़ी नहीं है।", ds_pay:"{l}, {y}: {x} अभी नहीं मिला",
   ds_payd:"{n} दिन से इंतज़ार", ds_nodate:"बिक्री की तारीख़ नहीं", ds_wa_all:"यह सूची WhatsApp पर भेजें", ds_wa_head:"सेब साथी याद दिलाना", wa:"WhatsApp", ics:"कैलेंडर में जोड़ें", late:"देर हो गई", today:"आज", inN:"{n} दिन में",
-  wx_h:"मौसम: आज और अगले 3 दिन", wx_today:"आज", wx_frost2:"पाले का ख़तरा {d}: {t}°C तक — फूल और छोटे फल बचाएँ", wx_rain2:"बारिश {d}: {mm} मिमी — ठीक पहले स्प्रे न करें", wx_none:"यहाँ मौसम देखने के लिए हर बाग़ की जगह सेट करें (बाग़ खोलें, फिर जगह और मौसम)।", wx_load:"मौसम लोड हो रहा है…",
+  wx_h:"मौसम: आज और अगले 5 दिन", wx_today:"आज", wx_frost2:"पाले का ख़तरा {d}: {t}°C तक — फूल और छोटे फल बचाएँ", wx_rain2:"बारिश {d}: {mm} मिमी — ठीक पहले स्प्रे न करें", wx_none:"यहाँ मौसम देखने के लिए हर बाग़ की जगह सेट करें (बाग़ खोलें, फिर जगह और मौसम)।", wx_load:"मौसम लोड हो रहा है…",
   wx_err:"मौसम लोड नहीं हो सका। इंटरनेट जाँचें और पेज दोबारा खोलें।", wx_src:"पूर्वानुमान Open-Meteo से। तापमान दिन का सबसे ज़्यादा / सबसे कम है।",
-  wx_frost:"पाले का ख़तरा {d}: {t}°C तक", wx_hail:"ओले पड़ सकते हैं {d}", wx_rain:"भारी बारिश {d}: {mm} मिमी", wx_ok:"अगले 3 दिनों में पाला, ओले या बारिश की संभावना नहीं।",
-  wc_clear:"साफ़", wc_cloud:"बादल", wc_fog:"कोहरा", wc_rain:"बारिश", wc_snow:"बर्फ़", wc_shower:"बौछारें", wc_storm:"आँधी-तूफ़ान", wc_hail:"ओलों के साथ तूफ़ान",
+  wx_frost:"पाले का ख़तरा {d}: {t}°C तक", wx_hail:"ओले पड़ सकते हैं {d}", wx_rain:"भारी बारिश {d}: {mm} मिमी", wx_ok:"अगले 5 दिनों में पाला, ओले या बारिश की संभावना नहीं।",
+  wc_clear:"धूप", wc_part:"हल्के बादल", wx_rain_g:"बारिश {d}: ठीक पहले स्प्रे न करें", wx_frost_g:"पाले का ख़तरा {d}: {t}°C तक", wx_hail_g:"ओले संभव {d}", wx_chance:"बारिश की संभावना {p}%", wx_hi:"अधिकतम", wx_lo:"न्यूनतम", wx_wind:"हवा {w} किमी/घंटा", wc_cloud:"बादल", wc_fog:"कोहरा", wc_rain:"बारिश", wc_snow:"बर्फ़", wc_shower:"बौछारें", wc_storm:"आँधी-तूफ़ान", wc_hail:"ओलों के साथ तूफ़ान",
   map_h:"नक़्शे पर आपके बाग़", map_none:"नक़्शे पर देखने के लिए हर बाग़ की जगह सेट करें।", map_err:"नक़्शा लोड नहीं हो सका। इंटरनेट जाँचें।",
   loc_h:"जगह और मौसम", loc_set:"जगह: {c}", loc_notset:"जगह अभी सेट नहीं है।", loc_gps:"मेरी अभी की जगह लें", loc_find:"गाँव खोजें", loc_pick:"नक़्शे पर चुनें",
   loc_pickp:"नक़्शे पर वहाँ दबाएँ जहाँ बाग़ है।", loc_rm:"जगह हटाएँ", loc_q:"गाँव या क़स्बा", loc_search:"खोजें", loc_noresult:"कोई जगह नहीं मिली। पास का क़स्बा खोजें, या नक़्शे पर चुनें।", loc_setfor:"जगह सेट करें: {o}", loc_searching:"खोज रहे हैं…", loc_gps_wait:"आपकी जगह ढूँढ रहे हैं…", loc_gps_denied:"इस साइट के लिए जगह की अनुमति बंद है। ब्राउज़र में अनुमति दें (पते के पास ताले वाला निशान), या गाँव खोजें।", loc_gps_none:"यह डिवाइस आपकी जगह नहीं ढूँढ पाया (कंप्यूटर पर अक्सर ऐसा होता है)। गाँव खोजें या नक़्शे पर चुनें।",
@@ -3788,12 +3835,12 @@ function wxGet(o) {
   if (c && (c.loading || Date.now() - c.at < 36e5)) return c;
   WX[k] = {loading: true, at: Date.now()};
   fetch("https://api.open-meteo.com/v1/forecast?latitude=" + (+o.profile.lat) + "&longitude=" + (+o.profile.lon) +
-    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Asia%2FKolkata&forecast_days=4")
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max&timezone=Asia%2FKolkata&forecast_days=6")
     .then(r => (r.ok ? r.json() : Promise.reject())).then(j => { if (!j || !j.daily) throw 0; WX[k] = {at: Date.now(), d: j.daily}; refreshWx(); })
     .catch(() => { WX[k] = {at: Date.now() - 33e5, err: true}; refreshWx(); });
   return WX[k];
 }
-const wcWord = c => tr(c === 0 ? "wc_clear" : c <= 3 ? "wc_cloud" : c <= 48 ? "wc_fog" : c <= 67 ? "wc_rain" : c <= 77 ? "wc_snow" : c <= 82 ? "wc_shower" : c <= 86 ? "wc_snow" : c === 95 ? "wc_storm" : "wc_hail");
+const wcWord = c => tr(c === 0 ? "wc_clear" : c <= 2 ? "wc_part" : c === 3 ? "wc_cloud" : c <= 48 ? "wc_fog" : c <= 67 ? "wc_rain" : c <= 77 ? "wc_snow" : c <= 82 ? "wc_shower" : c <= 86 ? "wc_snow" : c === 95 ? "wc_storm" : "wc_hail");
 const wxDay = iso => {
   const n = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);   // today in India
   return iso === n ? tr("wx_today") : new Date(iso + "T00:00:00").toLocaleDateString(dloc(), {weekday: "short", day: "numeric"});
@@ -3813,25 +3860,74 @@ function wxCells(d) {
   return d.time.map((t, i) => '<td><span class="wd">' + esc(wcWord(d.weather_code[i])) + '</span><b>' + Math.round(d.temperature_2m_max[i]) + "° / " + Math.round(d.temperature_2m_min[i]) + "°</b>" +
     (d.precipitation_sum[i] >= 1 ? '<span class="wr">' + Math.round(d.precipitation_sum[i]) + " mm</span>" : "") + "</td>").join("");
 }
+/* weather picture for an Open-Meteo weather code */
+function wxKind(c) {
+  return c === 0 ? "sun" : c <= 2 ? "part" : c === 3 ? "cloud" : c <= 48 ? "fog" : c <= 55 ? "drizzle" : c <= 67 ? "rain" : c <= 77 ? "snow" : c <= 82 ? "shower" : c <= 86 ? "snow" : c === 95 ? "storm" : "hail";
+}
+function wxIcon(c, big) {
+  const k = wxKind(c), sz = big ? 72 : 44;
+  const sun = (x, y, r) => '<g class="wi-sun"><g class="wi-rays">' + [0, 45, 90, 135, 180, 225, 270, 315].map(a => '<line x1="' + x + '" y1="' + (y - r - 4) + '" x2="' + x + '" y2="' + (y - r - 9) + '" transform="rotate(' + a + " " + x + " " + y + ')"/>').join("") + '</g><circle cx="' + x + '" cy="' + y + '" r="' + r + '"/></g>';
+  const cloud = (cls, dx, dy) => '<g transform="translate(' + (dx || 0) + " " + (dy || 0) + ')"><path class="' + cls + '" d="M18 46h30a10 10 0 0 0 1-20 14 14 0 0 0-27-3 11 11 0 0 0-4 23z"/></g>';
+  const drops = n => '<g class="wi-drops">' + [[22, 52], [32, 54], [42, 52], [27, 60], [37, 61]].slice(0, n).map(([x, y], i) => '<line style="animation-delay:' + (i * 0.25) + 's" x1="' + x + '" y1="' + y + '" x2="' + (x - 3) + '" y2="' + (y + 7) + '"/>').join("") + "</g>";
+  const flakes = '<g class="wi-flakes">' + [[22, 55], [33, 58], [44, 55], [28, 64], [39, 65]].map(([x, y], i) => '<circle style="animation-delay:' + (i * 0.3) + 's" cx="' + x + '" cy="' + y + '" r="2.4"/>').join("") + "</g>";
+  let g;
+  if (k === "sun") g = sun(32, 32, 12);
+  else if (k === "part") g = sun(24, 24, 9) + cloud("wi-cl", 4, 6);
+  else if (k === "cloud") g = cloud("wi-cl2", -6, -4) + cloud("wi-cl", 2, 4);
+  else if (k === "fog") g = cloud("wi-cl2", 0, -6) + '<g class="wi-fog"><line x1="12" y1="50" x2="52" y2="50"/><line x1="16" y1="57" x2="48" y2="57"/></g>';
+  else if (k === "drizzle") g = cloud("wi-cl", 0, -4) + drops(3);
+  else if (k === "rain") g = cloud("wi-cl3", 0, -4) + drops(5);
+  else if (k === "shower") g = sun(22, 20, 8) + cloud("wi-cl", 4, -2) + drops(3);
+  else if (k === "snow") g = cloud("wi-cl", 0, -4) + flakes;
+  else g = cloud("wi-cl3", 0, -6) + '<path class="wi-bolt" d="M34 42l-8 12h7l-4 11 11-15h-7l4-8z"/>' + (k === "hail" ? '<g class="wi-hail"><circle cx="20" cy="56" r="2.6"/><circle cx="46" cy="58" r="2.6"/></g>' : "");
+  return '<svg class="wi wi-' + k + '" viewBox="0 0 64 70" width="' + sz + '" height="' + sz + '" aria-hidden="true" focusable="false">' + g + "</svg>";
+}
+/* one short line per kind of warning (frost, hail, rain), listing the days, instead of one line per day */
+function wxWarnG(d) {
+  const fr = [], ha = [], ra = []; let low = null;
+  d.time.forEach((t, i) => {
+    const mn = d.temperature_2m_min[i], code = d.weather_code[i], rain = d.precipitation_sum[i];
+    if (mn != null && mn <= 2) { fr.push(wxDay(t)); low = low == null ? mn : Math.min(low, mn); }
+    if (code === 96 || code === 99) ha.push(wxDay(t));
+    if (rain != null && rain >= 5) ra.push(wxDay(t) + " (" + Math.round(rain) + " mm)");
+  });
+  const w = [];
+  if (fr.length) w.push({c: "frost", t: tr("wx_frost_g").replace("{d}", fr.join(", ")).replace("{t}", Math.round(low))});
+  if (ha.length) w.push({c: "hail", t: tr("wx_hail_g").replace("{d}", ha.join(", "))});
+  if (ra.length) w.push({c: "rain", t: tr("wx_rain_g").replace("{d}", ra.join(", "))});
+  return w;
+}
+function wxCard(o, d, showName) {
+  const i0 = 0, k0 = wxKind(d.weather_code[i0]);
+  const num = (a, i) => (a && a[i] != null ? a[i] : null);
+  const chance = i => num(d.precipitation_probability_max, i), wind = i => num(d.wind_speed_10m_max, i);
+  let h = '<article class="wxcard sky-' + k0 + '"><div class="wxnow">' + wxIcon(d.weather_code[i0], true) +
+    '<div class="wxnowt">' + (showName ? '<span class="wxo">' + esc(o.name || tr("orchard_fallback")) + (o.profile && o.profile.village ? " · " + esc(o.profile.village) : "") + "</span>" : "") +
+    '<b class="wxtemp">' + Math.round(d.temperature_2m_max[i0]) + '°<small>/ ' + Math.round(d.temperature_2m_min[i0]) + "°</small></b>" +
+    '<span class="wxcond">' + esc(tr("wx_today")) + " · " + esc(wcWord(d.weather_code[i0])) + "</span>" +
+    '<span class="wxmeta">' + (chance(i0) != null ? esc(tr("wx_chance").replace("{p}", Math.round(chance(i0)))) : "") +
+    (wind(i0) != null ? (chance(i0) != null ? " · " : "") + esc(tr("wx_wind").replace("{w}", Math.round(wind(i0)))) : "") + "</span></div></div>";
+  h += '<ol class="wxdays">' + d.time.slice(1, 6).map((t, j) => {
+    const i = j + 1, mm = num(d.precipitation_sum, i), p = chance(i);
+    return '<li><span class="wxd">' + esc(wxDay(t)) + "</span>" + wxIcon(d.weather_code[i], false) + '<span class="wxw">' + esc(wcWord(d.weather_code[i])) + "</span>" +
+      '<b>' + Math.round(d.temperature_2m_max[i]) + "°<small> " + Math.round(d.temperature_2m_min[i]) + "°</small></b>" +
+      '<span class="wxr' + ((mm || 0) >= 1 || (p || 0) >= 50 ? " wet" : "") + '">' + ((mm || 0) >= 1 ? Math.round(mm) + " mm" : p != null ? "💧 " + Math.round(p) + "%" : "&nbsp;") + "</span></li>";
+  }).join("") + "</ol></article>";
+  return h;
+}
 function wxBlock(list, one) {
   const ready = list.map(o => ({o, c: wxGet(o)}));
-  const first = ready.find(x => x.c.d);
-  if (!first) {
+  if (!ready.some(x => x.c.d)) {
     if (ready.some(x => x.c.loading)) return '<p class="hint">' + tr("wx_load") + "</p>";
     return '<p class="hint">' + tr("wx_err") + "</p>";
   }
-  let warns = [];
-  let h = '<div class="tablewrap"><table class="ledger sm wxtab"><thead><tr>' + (one ? "" : '<th scope="col">' + tr("cmp_o") + "</th>") +
-    first.c.d.time.map(t => '<th scope="col">' + esc(wxDay(t)) + "</th>").join("") + "</tr></thead><tbody>";
+  let warns = [], cards = "";
   ready.forEach(x => {
-    h += "<tr>" + (one ? "" : '<th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th>");
-    if (x.c.d) { h += wxCells(x.c.d); wxWarn(x.o, x.c.d).forEach(w => { const f = warns.find(q => q.t === w.t); if (f) f.n.push(x.o.name || ""); else warns.push({c: w.c, t: w.t, n: [x.o.name || ""]}); }); }
-    else h += '<td colspan="' + first.c.d.time.length + '" class="t none">' + tr(x.c.loading ? "wx_load" : "wx_err") + "</td>";
-    h += "</tr>";
+    if (x.c.d) { cards += wxCard(x.o, x.c.d, !one); wxWarnG(x.c.d).forEach(w => { const f = warns.find(q => q.t === w.t); if (f) f.n.push(x.o.name || ""); else warns.push({c: w.c, t: w.t, n: [x.o.name || ""]}); }); }
+    else cards += '<p class="hint">' + esc(x.o.name || "") + ": " + tr(x.c.loading ? "wx_load" : "wx_err") + "</p>";
   });
-  h += "</tbody></table></div>";
   const wl = warns.length ? '<ul class="wxwarn">' + warns.map(w => '<li class="' + w.c + '">' + esc(w.t + (one ? "" : " (" + w.n.join(", ") + ")")) + "</li>").join("") + "</ul>" : '<p class="wxok">' + tr("wx_ok") + "</p>";
-  return wl + h + '<p class="fine">' + tr("wx_src") + "</p>";
+  return '<div class="wxcards">' + cards + "</div>" + wl + '<p class="fine">' + tr("wx_src") + "</p>";
 }
 function refreshWx() {
   document.querySelectorAll("[data-wx]").forEach(el => {
