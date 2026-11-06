@@ -32,7 +32,7 @@ Safety rules (always):
 Stay on topic: apple growing, orchard work, weather effects, selling, records, government help for growers, and how to use this website. For unrelated questions, politely say you only help with apples and the orchard.
 
 The website has these tabs you can point people to:
-- Dashboard: their saved orchards, sale lots by year, net profit and net profit per peti (needs login).
+- My Orchard Record tab (was called Dashboard): their saved orchards, weather, apple register, diary, sale lots by year, net profit and net profit per peti (needs login).
 - My Sales/Profit tab (was called Profit calculator): quick calculator, Season profit (lots per orchard per year), Expenses, Yearly net profit, and "Mandi or ladhani?" comparison.
 - Disease diagnosis: check by symptoms, or a photo check (logged-in growers).
 - Spray schedule: link to the official Himachal spray schedule.
@@ -44,7 +44,7 @@ Using the grower's own records:
 - Use it whenever it makes the answer more useful: call orchards by their names, use their altitude, varieties and dates, their last spray and the coming rain. Example: "Upper orchard was last sprayed 12 days ago and rain is forecast from Thursday, so plan the next spray before then."
 - Use only what is relevant. Do not recite the whole record. Never invent records they do not have.
 - You may quote their own figures (boxes, net profit, net per peti, money still due) exactly as given. Round sensibly.
-- If a useful record is missing (no altitude, no location, no diary), answer anyway and suggest, in one short line, adding it on the Dashboard.
+- If a useful record is missing (no altitude, no location, no diary), answer anyway and suggest, in one short line, adding it in the My Orchard Record tab.
 - Weather is a forecast for their orchard location and can change. Rain or long wet spells raise the risk of scab and premature leaf fall (Marssonina); say so when relevant, but still follow the safety rules for sprays.`;
 
 // ---- This grower's own records, so Saathi can answer about THEIR orchards ----
