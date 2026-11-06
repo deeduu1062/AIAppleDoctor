@@ -115,7 +115,7 @@ module.exports = async (req, res) => {
   }
   const part = PARTS.includes(body.part) ? body.part : "";
   const note = String(body.note || "").slice(0, 400);
-  const lang = body.lang === "hi" ? "hi" : "en";
+  const lang = body.lang === "hi" || body.lang === "hn" ? body.lang : "en";
 
   // 3. Daily limit (counts this grower's checks today, India time)
   const isAdmin = ADMIN_EMAILS.includes(String(user.email || "").toLowerCase());
@@ -131,7 +131,7 @@ module.exports = async (req, res) => {
   const partWord = { leaf: "leaves", fruit: "fruit", bark: "branch, bark or trunk", tree: "whole tree or roots" }[part] || "not said";
   const userText = "Part of the tree in the photo: " + partWord + ".\n" +
     (note ? "Grower's note: " + note + "\n" : "") +
-    "LANGUAGE: " + (lang === "hi" ? "Hindi" : "English");
+    "LANGUAGE: " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (simple Hindi written in English/Roman letters, like \"Patton par kaale daag hain\")" : "English");
   let result;
   try {
     const r = await fetch("https://api.anthropic.com/v1/messages", {

@@ -1,5 +1,5 @@
 // Seb Saathi — "Saathi" chatbot (Vercel serverless function)
-// POST /api/chat  { messages: [{role:"user"|"assistant", content}], lang: "en"|"hi" }
+// POST /api/chat  { messages: [{role:"user"|"assistant", content}], lang: "en"|"hi"|"hn" (Hinglish) }
 // Header: Authorization: Bearer <Supabase access token of the logged-in grower>
 //
 // Uses the same ANTHROPIC_API_KEY as the photo check. Optional Vercel environment variables:
@@ -197,7 +197,7 @@ module.exports = async (req, res) => {
   // 2. Check the conversation
   let body = req.body;
   if (typeof body === "string") { try { body = JSON.parse(body); } catch (e) { body = null; } }
-  const lang = body && body.lang === "hi" ? "hi" : "en";
+  const lang = body && (body.lang === "hi" || body.lang === "hn") ? body.lang : "en";
   const raw = body && Array.isArray(body.messages) ? body.messages.slice(-12) : [];
   const msgs = [];
   for (const m of raw) {
@@ -227,7 +227,7 @@ module.exports = async (req, res) => {
   const system = [{ type: "text", text: PERSONA }];
   if (kb) system.push({ type: "text", text: "Seb Saathi knowledge base (trusted background; prefer it. There is no Library tab on the site, so never tell growers to open one):\n\n" + kb, cache_control: { type: "ephemeral" } });
   if (mine) system.push({ type: "text", text: "This grower's records (private to them):\n" + mine });
-  system.push({ type: "text", text: "The website is currently set to " + (lang === "hi" ? "Hindi" : "English") + ". Still reply in the language the grower writes in." });
+  system.push({ type: "text", text: "The website is currently set to " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (Hindi written in English letters, e.g. \"Patton par daag hain to spray kab karein?\")" : "English") + ". Still reply in the language the grower writes in; if unclear, use the website's language." });
   let reply = "";
   try {
     const r = await fetch("https://api.anthropic.com/v1/messages", {

@@ -16,6 +16,18 @@
       e_net: "Could not send. Check your internet and try again.", e_fail: "Could not send: {m}",
       page: "Sent from: {p}"
     },
+    hn: {
+      btn: "Feedback", h: "Feedback ya koi dikkat?",
+      p: "Batayein kya theek nahi chala, ya Seb Saathi ko aur achha kaise banayein. Hum har message padhte hain.",
+      kind: "Kis baare mein hai?", k_problem: "Kuch kaam nahi kar raha", k_idea: "Ek sujhav", k_other: "Kuch aur",
+      msg: "Aapka message", msg_ph: "Jaise: Dashboard par Save button dabane par kuch nahi hua.",
+      contact: "Jawab chahiye to email ya mobile number (zaroori nahi)",
+      send: "Bhejein", cancel: "Band karein", sending: "Bhej rahe hain…",
+      ok: "Dhanyavaad! Aapka message humein mil gaya.",
+      e_empty: "Pehle kuch shabd likhein.", e_long: "Kripya 2,000 akshar se kam rakhein.",
+      e_net: "Bheja nahi ja saka. Internet check karke dobara try karein.", e_fail: "Bheja nahi ja saka: {m}",
+      page: "Yahan se bheja: {p}"
+    },
     hi: {
       btn: "सुझाव", h: "सुझाव या कोई दिक़्क़त?",
       p: "बताइए क्या ठीक नहीं चला, या सेब साथी को और अच्छा कैसे बनाएँ। हम हर संदेश पढ़ते हैं।",

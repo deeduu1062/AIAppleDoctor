@@ -68,7 +68,7 @@ function send(res, code, obj, cache) {
 module.exports = async (req, res) => {
   if (req.method !== "GET") return send(res, 405, { error: "method" });
   const q = new URL(req.url, "http://x").searchParams;
-  const lang = q.get("lang") === "hi" ? "hi" : "en";
+  const lang = q.get("lang") === "hi" || q.get("lang") === "hn" ? "hi" : "en";
   const lists = await Promise.all(FEEDS[lang].map(f => feed(f, lang)));
   const seen = new Set(), items = [];
   for (const x of lists.flat().sort((a, b) => b.date - a.date)) {

@@ -605,6 +605,9 @@ footer p{max-width:70ch}
 .instrow img{border-radius:8px;flex:none}
 .instrow span{flex:1 1 200px;font-size:.95rem}
 .instrow .link{padding:6px 0}
+
+.langsel{appearance:none;-webkit-appearance:none;padding-right:26px!important;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 13px) 55%,calc(100% - 8px) 55%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+@media (max-width:480px){.nav .langsel{font-size:.8rem;padding-left:8px!important;padding-right:19px!important;background-position:calc(100% - 10px) 55%,calc(100% - 5px) 55%}}
 </style>
 
 <style>
@@ -1198,7 +1201,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <div class="topbar">
   <header class="wrap top">
     <a class="brand" href="/"><i aria-hidden="true"></i>Seb Saathi</a>
-    <nav class="nav" aria-label="Language"><button class="lang" id="langBtn" type="button" aria-label="Language">हिंदी</button></nav>
+    <nav class="nav" aria-label="Language"><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
 </div>
 
@@ -1334,10 +1337,11 @@ Object.assign(T.hi, {
 });
 const $ = id => document.getElementById(id);
 const set = (id, t) => { $(id).textContent = t; };
+T.hn = {"hdr_signin": "Login", "auth_h": "Login karein ya account banayein", "auth_p": "Email aur password se login karein. Naye hain? Password chunein aur Account banayein dabayein. Password ki jagah email par login link bhi maang sakte hain.", "auth_email": "Email address", "auth_send": "Iske bajaye mujhe login link email karein", "auth_pw": "Password", "auth_signin": "Login", "auth_create": "Account banayein", "auth_forgot": "Password bhool gaye?", "auth_err_pw": "Kam se kam 8 akshar ka password likhein.", "auth_err_cred": "Email ya password galat hai.", "auth_confirm": "Agar {e} naya hai, to humne confirmation email bheja hai: use kholein, link dabayein, phir login karein. Agar is email se pehle se account hai, to Login dabayein, ya password set karne ke liye Password bhool gaye? dabayein.", "auth_reset_sent": "Agar {e} ka account hai, to humne password reset ka link bheja hai.", "auth_sent": "Humne {e} par email bheja hai. Use isi phone par kholein aur link dabayein. Agar usmein 6 ankon ka code hai, to code neeche likhein.", "auth_code": "6 ankon ka code (agar email mein hai)", "auth_verify": "Code se login karein", "auth_other": "Doosra email use karein", "auth_err_email": "Sahi email address likhein.", "auth_err_lib": "Login load nahi ho saka. Internet check karein aur page refresh karein.", "auth_err_send": "Email nahi bhej sake: {m}", "auth_err_net": "Login service tak nahi pahunch sake. Internet check karein. Login sirf live website par chalta hai, Claude ke preview mein nahi.", "auth_err_code": "Ye code nahi chala. Check karke dobara try karein, ya naya email maangein.", "auth_as": "{e}", "auth_out": "Logout", "lang_btn": "Hinglish", "lg_kicker": "Seb Saathi account", "lg_back": "← Seb Saathi par wapas", "lg_h_login": "Login", "lg_p_login": "Email aur password se login karein, ya email par login link maangein.", "lg_h_signup": "Apna free account banayein", "lg_p_signup": "Apna email daalein aur password chunein (kam se kam 8 akshar), phir Account banayein dabayein. Aapke bagiche aur record sirf aapke rehte hain.", "lg_sw_login": "Seb Saathi par naye hain?", "lg_sw_login_a": "Apna free account banayein", "lg_sw_signup": "Pehle se account hai?", "lg_sw_signup_a": "Login", "ph_tab": "Mobile number", "em_tab": "Email", "ph_p": "Apne mobile number se login karein. Hum {c} par 6 ankon ka code bhejte hain. Naye hain? Yahi kadam aapka account bana dete hain.", "ph_c_whatsapp": "WhatsApp", "ph_c_sms": "SMS", "ph_num": "Mobile number", "ph_send": "SMS se code bhejein", "ph_wa": "WhatsApp par code bhejein", "ph_sent": "Humne {p} par 6 ankon ka code bheja hai. Neeche likhein. Aane mein ek minute lag sakta hai.", "ph_sent_wa": "Humne WhatsApp par {p} ko 6 ankon ka code bheja hai. Neeche likhein.", "ph_code": "6 ankon ka code", "ph_verify": "Login", "ph_resend": "Phir se bhejein", "ph_resend_in": "{n}s mein phir se bhejein", "ph_other": "Doosra number use karein", "ph_e_num": "10 ankon ka mobile number likhein, jaise 98765 43210.", "ph_e_code": "Ye code nahi chala. Check karke dobara try karein, ya Phir se bhejein dabayein.", "ph_e_wait": "Naya code maangne se pehle ek minute rukein.", "ph_e_off": "Mobile se login abhi chalu nahi hai. Abhi Email use karein.", "ph_e_send": "Code nahi bhej sake: {m}"};  /* Hinglish */
 let lang = "en";
 try {
   const s = localStorage.getItem("ad-lang");
-  if (s === "hi" || s === "en") lang = s;
+  if (s === "hi" || s === "en" || s === "hn") lang = s;
   else if ((navigator.language || "").toLowerCase().startsWith("hi")) lang = "hi";
 } catch (e) {}
 const tr = k => (T[lang] && T[lang][k]) || T.en[k] || k;
@@ -1563,14 +1567,14 @@ $("swA").addEventListener("click", e => {
   authClear(); renderMode(); try { $("authEmail").focus(); } catch (x) {}
 });
 function applyLang() {
-  document.documentElement.lang = lang;
+  document.documentElement.lang = lang === "hn" ? "hi-Latn" : lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
-  $("langBtn").textContent = tr("lang_btn");
+  $("langBtn").value = lang;
   renderMode(); renderAuthMethod(); renderAcct();
   if (window.ADFeedback) ADFeedback.render();
 }
-$("langBtn").addEventListener("click", () => {
-  lang = lang === "en" ? "hi" : "en";
+$("langBtn").addEventListener("change", () => {
+  const v = $("langBtn").value; lang = v === "hi" || v === "hn" ? v : "en";
   try { localStorage.setItem("ad-lang", lang); } catch (e) {}
   applyLang();
 });
