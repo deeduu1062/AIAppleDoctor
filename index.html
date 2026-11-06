@@ -966,6 +966,45 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 /* language picker: English / हिंदी / Hinglish */
 .langsel{appearance:none;-webkit-appearance:none;padding-right:26px!important;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 13px) 55%,calc(100% - 8px) 55%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
 @media (max-width:480px){.nav .langsel{font-size:.8rem;padding-left:8px!important;padding-right:19px!important;background-position:calc(100% - 10px) 55%,calc(100% - 5px) 55%}}
+
+/* ---- Orchards Record example tab ---- */
+#tp-rec.tpanel{max-width:none}
+.rcgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))}
+#recSample{display:grid;gap:14px}
+.rccard{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+.rccard h4{font-size:1.08rem;font-weight:700}
+.rcohead{display:flex;gap:12px;align-items:center}
+.rcart svg{border-radius:10px;display:block}
+.rcohead b{display:block;font:800 1.25rem var(--body)}
+.rcohead small{color:var(--muted)}
+.rcdl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:.95rem}
+.rcdl dt{color:var(--muted)}
+.rcdl dd{margin:0;font-weight:600}
+.rcnet{border-radius:12px;padding:10px 16px;background:var(--brand-bg);color:var(--on-brand);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.rcnet b{font:600 1.7rem var(--mono)}
+.rclot{display:grid;gap:4px}
+.rclh{margin:0;font-weight:700;font-size:.92rem}
+.rclot .tablewrap{margin-top:0}
+.rclot td.ok{color:var(--good);font-weight:700}
+.rclot td.due{color:var(--apple);font-weight:700}
+.rclot tfoot td{font-weight:700;border-top:2px solid var(--line)}
+.gltiles .rcdue b{color:var(--apple)}
+@media (max-width:520px){.rclot .cx{display:none}.rclot table.ledger{min-width:0;font-size:.85rem}.rclot table.ledger th,.rclot table.ledger td{padding:6px 6px}}
+.rccost{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rccost li{display:flex;justify-content:space-between;gap:10px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.rccost li b{font:500 1rem var(--mono)}
+.rccost li.tot{border:0;font-weight:700}
+.rccost li.tot b{font-weight:700}
+.rcdiary{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.rcdiary li{display:grid;grid-template-columns:62px 1fr;gap:10px;padding-left:10px;border-left:3px solid var(--line);font-size:.92rem;line-height:1.4}
+.rcdiary li.k-dk_spray{border-left-color:#2F6FA8}
+.rcdiary li.k-dk_frost{border-left-color:var(--bad)}
+.rcdiary li.k-dk_hstart,.rcdiary li.k-dk_hend{border-left-color:var(--apple)}
+.rcdiary li.k-dk_flower{border-left-color:#D98BB0}
+.rcdiary .dd{color:var(--muted);font-weight:600}
+.rcdiary small{color:var(--muted)}
+.rccta{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;border-radius:14px;padding:16px;background:var(--surface-2);border:1px dashed var(--line)}
+.rccta p{margin:2px 0 0;color:var(--muted)}
 </style>
 
 <style>
@@ -1600,7 +1639,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <a class="brand" href="#top"><i aria-hidden="true"></i>Seb Saathi</a>
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-mandi" aria-selected="false" aria-controls="tp-mandi" type="button" data-i18n="tt_mandi"></button><button class="tab" role="tab" id="tt-buy" aria-selected="false" aria-controls="tp-buy" type="button" data-i18n="tt_buy"></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -1900,6 +1939,12 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <p class="sub2" data-i18n="sp_stage_p"></p>
         <ol class="stages"><li><b data-i18n="st1"></b><span data-i18n="sd1"></span></li><li><b data-i18n="st2"></b><span data-i18n="sd2"></span></li><li><b data-i18n="st3"></b><span data-i18n="sd3"></span></li><li><b data-i18n="st4"></b><span data-i18n="sd4"></span></li><li><b data-i18n="st5"></b><span data-i18n="sd5"></span></li><li><b data-i18n="st6"></b><span data-i18n="sd6"></span></li><li><b data-i18n="st7"></b><span data-i18n="sd7"></span></li><li><b data-i18n="st8"></b><span data-i18n="sd8"></span></li><li><b data-i18n="st9"></b><span data-i18n="sd9"></span></li></ol>
       </div>
+    </div>
+
+    <div class="tpanel" id="tp-rec" role="tabpanel" aria-labelledby="tt-rec" hidden>
+      <div class="thead"><h3 data-i18n="rc_h"></h3><span class="pill" data-i18n="rc_pill"></span></div>
+      <p data-i18n="rc_p"></p>
+      <div id="recSample"></div>
     </div>
 
     <div class="tpanel" id="tp-cal" role="tabpanel" aria-labelledby="tt-cal" hidden>
@@ -2638,6 +2683,7 @@ function applyLang() {
   document.documentElement.lang = lang === "hn" ? "hi-Latn" : lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   $("langBtn").value = lang;
+  if (T.en.rc_h && !$("tp-rec").hidden) renderRec();
   renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); } if (window.ADFeedback) ADFeedback.render(); if (typeof renderPlans === "function") renderPlans(); if (typeof renderContact === "function") renderContact();
 }
 $("langBtn").addEventListener("change", () => {
@@ -6116,8 +6162,91 @@ window.addEventListener("beforeinstallprompt", () => setTimeout(renderShare, 0))
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
 }
+
+/* ---- "Orchards Record" tab: a filled-in example of one orchard's record, so growers see what they will keep ---- */
+Object.assign(T.en, {
+  tt_rec:"Orchards Record", rc_h:"What an orchard record looks like", rc_pill:"Example",
+  rc_p:"This is an example of one orchard's record for a full season. Your own record looks the same once you add your orchards, sales, expenses and sprays.",
+  rc_o:"Upper orchard", rc_vill:"Chirgaon, Shimla", rc_prof:"Orchard details", rc_sum:"2026 season at a glance",
+  rc_lots:"Sales lots, 2026", rc_lot1:"Lot 1 · 12 Aug · Parala mandi", rc_lot2:"Lot 2 · 28 Aug · Dhalli mandi",
+  rc_grade:"Grade", rc_boxes:"Boxes", rc_rate:"Rate / box", rc_exp:"Charges / box", rc_net:"Net", rc_paid:"Paid", rc_due:"Due",
+  rc_charges:"Charges = Todan/Bharan + Grading/Packing + Carriage + commission",
+  rc_year:"Yearly expenses, 2026", rc_diary:"Spray and work diary, 2026", rc_tot:"Total",
+  rc_d:["6 workers × 4 days","Whole orchard, before buds open","Against scab, after the rain","Royal Delicious in full bloom","Two nights below 0°C, some blossom lost","Against scab and powdery mildew","Against premature leaf fall","Gala first, then Royal Delicious","355 boxes in total"],
+  rc_rep:"Hail net repair",
+  rc_cta_h:"Start your own orchard record", rc_cta_p:"Free. Only you can see it, on any phone you log in on.", rc_cta_in:"Open my Dashboard"
+});
+Object.assign(T.hi, {
+  tt_rec:"बाग़ का रिकॉर्ड", rc_h:"बाग़ का रिकॉर्ड कैसा दिखता है", rc_pill:"उदाहरण",
+  rc_p:"यह एक बाग़ के पूरे सीज़न के रिकॉर्ड का उदाहरण है। अपने बाग़, बिक्री, ख़र्च और स्प्रे जोड़ने पर आपका रिकॉर्ड भी ऐसा ही दिखेगा।",
+  rc_o:"ऊपर वाला बाग़", rc_vill:"चिड़गाँव, शिमला", rc_prof:"बाग़ की जानकारी", rc_sum:"2026 सीज़न एक नज़र में",
+  rc_lots:"बिक्री के लॉट, 2026", rc_lot1:"लॉट 1 · 12 अगस्त · पराला मंडी", rc_lot2:"लॉट 2 · 28 अगस्त · ढली मंडी",
+  rc_grade:"ग्रेड", rc_boxes:"पेटियाँ", rc_rate:"भाव / पेटी", rc_exp:"ख़र्च / पेटी", rc_net:"शुद्ध", rc_paid:"मिला", rc_due:"बाक़ी",
+  rc_charges:"ख़र्च = तोड़ान/भरान + ग्रेडिंग/पैकिंग + ढुलाई + कमीशन",
+  rc_year:"साल के ख़र्च, 2026", rc_diary:"स्प्रे और काम की डायरी, 2026", rc_tot:"कुल",
+  rc_d:["6 मज़दूर × 4 दिन","पूरा बाग़, कलियाँ खुलने से पहले","बारिश के बाद, स्कैब के लिए","रॉयल डिलीशियस पूरे फूल पर","दो रात 0°C से नीचे, कुछ फूल गिरे","स्कैब और पाउडरी मिल्ड्यू के लिए","समय से पहले पत्ती गिरने के लिए","पहले गाला, फिर रॉयल डिलीशियस","कुल 355 पेटियाँ"],
+  rc_rep:"हेल नेट की मरम्मत",
+  rc_cta_h:"अपने बाग़ का रिकॉर्ड शुरू करें", rc_cta_p:"मुफ़्त। सिर्फ़ आपको दिखता है, जिस भी फ़ोन पर लॉग इन करें।", rc_cta_in:"मेरा डैशबोर्ड खोलें"
+});
+Object.assign(T.hn, {
+  tt_rec:"Bagiche ka Record", rc_h:"Bagiche ka record kaisa dikhta hai", rc_pill:"Example",
+  rc_p:"Ye ek bagiche ke poore season ke record ka example hai. Apne bagiche, bikri, kharche aur spray jodne par aapka record bhi aisa hi dikhega.",
+  rc_o:"Upar wala bagicha", rc_vill:"Chirgaon, Shimla", rc_prof:"Bagiche ki jaankari", rc_sum:"2026 season ek nazar mein",
+  rc_lots:"Bikri ke lot, 2026", rc_lot1:"Lot 1 · 12 Aug · Parala mandi", rc_lot2:"Lot 2 · 28 Aug · Dhalli mandi",
+  rc_grade:"Grade", rc_boxes:"Petiyan", rc_rate:"Bhaav / peti", rc_exp:"Kharcha / peti", rc_net:"Net", rc_paid:"Mila", rc_due:"Baaki",
+  rc_charges:"Kharcha = Todan/Bharan + Grading/Packing + Dhulai + commission",
+  rc_year:"Saal ke kharche, 2026", rc_diary:"Spray aur kaam ki diary, 2026", rc_tot:"Total",
+  rc_d:["6 mazdoor × 4 din","Poora bagicha, kaliyan khulne se pehle","Baarish ke baad, scab ke liye","Royal Delicious poore phool par","Do raat 0°C se neeche, kuch phool gire","Scab aur powdery mildew ke liye","Samay se pehle patta girne ke liye","Pehle Gala, phir Royal Delicious","Kul 355 petiyan"],
+  rc_rep:"Hail net ki marammat",
+  rc_cta_h:"Apne bagiche ka record shuru karein", rc_cta_p:"Free. Sirf aapko dikhta hai, jis bhi phone par login karein.", rc_cta_in:"Mera Dashboard kholein"
+});
+const RC = {
+  trees: [["Royal Delicious", 200], ["Gala", 70], ["Scarlet Spur", 50]],
+  lots: [
+    {k: "rc_lot1", lines: [["gk_a", 120, 1850, 230, 1], ["gk_b", 60, 1200, 190, 1], ["gk_rg", 25, 1500, 210, 1]]},
+    {k: "rc_lot2", lines: [["gk_a", 90, 2100, 250, 1], ["gk_b", 40, 1350, 200, 0], ["gk_gift", 20, 900, 160, 0]]}
+  ],
+  costs: [["yc_spray", 38000], ["yc_fert", 22000], ["yc_labour", 30000], ["yc_prune", 12000], ["rc_rep", 6000]],
+  diary: [["01-18", "dk_prune", 0, null, 12000], ["02-20", "dk_spray", 1, "st1"], ["03-22", "dk_spray", 2, "st2"], ["04-08", "dk_flower", 3], ["04-14", "dk_frost", 4],
+          ["04-28", "dk_spray", 5, "st5"], ["07-16", "dk_spray", 6, "st7"], ["08-10", "dk_hstart", 7], ["08-30", "dk_hend", 8]]
+};
+function renderRec() {
+  const el = $("recSample"); if (!el) return;
+  const D = tr("rc_d") || [], dfmt = md => new Date("2026-" + md + "T00:00:00").toLocaleDateString(dloc(), {day: "numeric", month: "short"});
+  let boxes = 0, gross = 0, lotExp = 0, due = 0;
+  const lotHtml = RC.lots.map(L => {
+    let lb = 0, lg = 0, le = 0;
+    const rows = L.lines.map(([g, b, r, e, paid]) => {
+      const gr = b * r, ex = b * e; lb += b; lg += gr; le += ex; if (!paid) due += gr;
+      return "<tr><td>" + esc(tr(g)) + "</td><td>" + fmtN(b) + "</td><td>" + inr(r) + "</td><td class=\"cx\">" + inr(e) + "</td><td>" + inr(gr - ex) + '</td><td class="' + (paid ? "ok" : "due") + '">' + esc(tr(paid ? "rc_paid" : "rc_due")) + "</td></tr>";
+    }).join("");
+    boxes += lb; gross += lg; lotExp += le;
+    return '<div class="rclot"><p class="rclh">' + esc(tr(L.k)) + '</p><div class="tablewrap"><table class="ledger sm"><thead><tr><th>' + tr("rc_grade") + "</th><th>" + tr("rc_boxes") + "</th><th>" + tr("rc_rate") + "</th><th class=\"cx\">" + tr("rc_exp") + "</th><th>" + tr("rc_net") + "</th><th></th></tr></thead><tbody>" + rows +
+      '</tbody><tfoot><tr><td>' + tr("rc_tot") + "</td><td>" + fmtN(lb) + "</td><td></td><td class=\"cx\"></td><td>" + inr(lg - le) + "</td><td></td></tr></tfoot></table></div></div>";
+  }).join("");
+  const yearly = RC.costs.reduce((a, c) => a + c[1], 0), net = gross - lotExp - yearly, trees = RC.trees.reduce((a, t) => a + t[1], 0);
+  const tile = (k, v, c) => '<div class="' + (c || "") + '"><span>' + esc(tr(k)) + "</span><b>" + v + "</b></div>";
+  let h = '<div class="rcgrid">' +
+    '<section class="rccard rcprof"><div class="rcohead"><span class="rcart" aria-hidden="true">' + treeArt("rc-upper") + '</span><div><b>' + esc(tr("rc_o")) + "</b><small>" + esc(tr("rc_vill")) + "</small></div></div>" +
+    "<h4>" + tr("rc_prof") + '</h4><dl class="rcdl">' +
+      "<dt>" + tr("f_trees").replace(/\s*\(.*\)$/, "") + "</dt><dd>" + fmtN(trees) + "</dd>" +
+      "<dt>" + tr("p_var") + "</dt><dd>" + RC.trees.map(t => esc(t[0]) + " " + t[1]).join(", ") + "</dd>" +
+      "<dt>" + tr("p_alt") + "</dt><dd>2,100</dd><dt>" + tr("p_area") + "</dt><dd>12</dd>" +
+      "<dt>" + tr("p_root") + "</dt><dd>" + tr("r_seedling") + ", " + tr("r_mm106") + "</dd><dt>" + tr("p_planted") + "</dt><dd>2008</dd>" +
+      "<dt>" + tr("p_irr") + "</dt><dd>" + tr("i_drip") + "</dd><dt>" + tr("p_hail") + "</dt><dd>" + tr("h_part") + "</dd></dl></section>" +
+    '<section class="rccard"><h4>' + tr("rc_sum") + '</h4><div class="rcnet"><span>' + tr("gl_net") + "</span><b>" + inr(net) + '</b></div><div class="gltiles">' +
+      tile("gl_sales", inr(gross)) + tile("gl_exp", inr(lotExp + yearly)) + tile("gl_boxes", fmtN(boxes)) + tile("gl_ppp", inr(net / boxes)) + tile("k_npt", inr(net / trees)) + tile("gl_due", inr(due), "rcdue") +
+    "</div></section></div>";
+  h += '<section class="rccard"><h4>' + tr("rc_lots") + "</h4>" + lotHtml + '<p class="fine">' + tr("rc_charges") + "</p></section>";
+  h += '<div class="rcgrid"><section class="rccard"><h4>' + tr("rc_year") + '</h4><ul class="rccost">' + RC.costs.map(c => "<li><span>" + esc(tr(c[0])) + "</span><b>" + inr(c[1]) + "</b></li>").join("") +
+    '<li class="tot"><span>' + tr("rc_tot") + "</span><b>" + inr(yearly) + "</b></li></ul></section>" +
+    '<section class="rccard"><h4>' + tr("rc_diary") + '</h4><ol class="rcdiary">' + RC.diary.map(([md, k, di, st, cost]) => '<li class="k-' + k + '"><span class="dd">' + esc(dfmt(md)) + "</span><span><b>" + esc(tr(k)) + "</b>" + (st ? " <small>(" + esc(tr(st)) + ")</small>" : "") + "<br>" + esc(D[di] || "") + (cost ? " · " + inr(cost) : "") + "</span></li>").join("") + "</ol></section></div>";
+  h += '<div class="rccta"><div><b>' + tr("rc_cta_h") + "</b><p>" + tr("rc_cta_p") + '</p></div><button class="btn primary" type="button" data-lp="' + (user ? "dash" : "join") + '">' + esc(tr(user ? "rc_cta_in" : "pr_join")) + "</button></div>";
+  el.innerHTML = h;
+}
+document.addEventListener("click", e => { const b = e.target.closest('#recSample [data-lp="dash"]'); if (b) { tabPicked = true; showTool("orch", false, true); } });
 /* ---- top tabs ---- */
-const TT = ["orch","calc","diag","spray","news","cal","mandi","buy"];  /* Library tab removed from the site; its articles still feed Saathi */
+const TT = ["orch","rec","calc","diag","spray","news","cal","mandi","buy"];  /* Library tab removed from the site; its articles still feed Saathi */
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -6131,6 +6260,7 @@ function showTool(w, focus, scroll) {
   });
   if (scroll && $("tools").scrollIntoView) $("tools").scrollIntoView({block:"start"});
   if (w === "news") loadNews();
+  if (w === "rec") renderRec();
 }
 TT.forEach((n, i) => {
   const b = $("tt-" + n);
