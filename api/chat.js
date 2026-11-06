@@ -242,15 +242,17 @@ module.exports = async (req, res) => {
     if (!reply) return send(res, 502, { error: "ai" });
   } catch (e) { console.error("ai-fail", e); return send(res, 502, { error: "ai" }); }
 
-  // 5. Save the question and answer (counts toward the limit; lets the grower see past chats)
+  // 5. Save the question and answer (counts toward the limit; lets the grower see past chats and rate answers)
+  let savedId = null;
   try {
     const ins = await fetch(SB_URL + "/rest/v1/chat_messages", {
       method: "POST",
-      headers: sbHeaders(token, { Prefer: "return=minimal" }),
+      headers: sbHeaders(token, { Prefer: "return=representation" }),
       body: JSON.stringify([{ user_id: user.id, role: "user", content: question.slice(0, 4000), lang }, { user_id: user.id, role: "assistant", content: reply.slice(0, 8000), lang }])
     });
     if (!ins.ok) console.error("save", ins.status, await ins.text());
+    else { const rows = await ins.json().catch(() => []); const a = (rows || []).find(x => x && x.role === "assistant"); if (a) savedId = a.id; }
   } catch (e) { console.error("save-fail", e); }
 
-  return send(res, 200, { reply, left: Math.max(0, limit - used - 1) });
+  return send(res, 200, { reply, id: savedId, left: Math.max(0, limit - used - 1) });
 };

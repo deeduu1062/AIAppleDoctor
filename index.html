@@ -596,6 +596,13 @@ footer p{max-width:70ch}
 .ctyping i:nth-child(2){animation-delay:.15s}.ctyping i:nth-child(3){animation-delay:.3s}
 @keyframes cdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 @media (prefers-reduced-motion:reduce){.ctyping i{animation:none}}
+.crate{align-self:flex-start;display:flex;align-items:center;gap:6px;margin:-4px 0 2px 4px;font-size:.86rem;color:var(--muted);flex-wrap:wrap}
+.crate button{min-width:40px;min-height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:1.05rem;line-height:1}
+.crate button:hover{border-color:#1B5E2B}
+.crate.done{margin:-4px 0 2px 4px}
+.crate.why{display:grid;gap:6px;width:min(100%,320px)}
+.crate.why textarea{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);resize:vertical}
+.crate.why .btn-s{justify-self:start;min-height:36px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .chips button{font:600 .92rem var(--body);padding:8px 12px;min-height:40px;border-radius:999px;border:1px solid #1B5E2B;background:var(--surface);color:#1B5E2B;cursor:pointer;text-align:left}
 .chatfoot{border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface)}
@@ -5601,6 +5608,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && !$
 Object.assign(T.en, {
   ch_fab:"Ask Saathi", ch_sub:"Your orchard companion · AI helper", ch_in:"Ask about your orchard…", ch_inl:"Your question for Saathi",
   ch_hello:"Namaste! Main Saathi hoon. 🍎\nAsk me anything about your apple orchard — diseases, sprays, pruning, harvest, selling or using this app. You can write in Hindi, Hinglish or English.",
+  ch_r_q:"Was this helpful?", ch_r_up:"Yes, helpful", ch_r_down:"No, not helpful", ch_r_thanks:"Thank you! This helps Saathi get better.", ch_r_why:"What was wrong or missing? (optional)", ch_r_send:"Send", ch_r_noted:"Thanks, we will check this answer.",
   ch_q1:"Patton pe kaale daag kyon aa rahe hain?", ch_q2:"When should I prune my trees?", ch_q3:"Mandi ya ladhani — kaise decide karun?", ch_q4:"Should I spray this week?",
   ch_note:"Saathi is an AI helper and can make mistakes. For sprays, always follow the official spray schedule and the product label.",
   ch_gate:"Log in to chat with Saathi. It is free.", ch_login:"Log in", ch_join:"Create your free account",
@@ -5611,6 +5619,7 @@ Object.assign(T.en, {
 Object.assign(T.hi, {
   ch_fab:"साथी से पूछें", ch_sub:"आपके बगीचे का साथी · AI सहायक", ch_in:"अपने बगीचे के बारे में पूछें…", ch_inl:"साथी के लिए आपका सवाल",
   ch_hello:"नमस्ते! मैं साथी हूँ। 🍎\nअपने सेब के बगीचे के बारे में कुछ भी पूछिए — बीमारी, स्प्रे, छँटाई, तुड़ाई, बिक्री या इस ऐप का इस्तेमाल। हिंदी, हिंग्लिश या अंग्रेज़ी, किसी में भी लिखें।",
+  ch_r_q:"क्या यह काम आया?", ch_r_up:"हाँ, काम आया", ch_r_down:"नहीं, काम नहीं आया", ch_r_thanks:"धन्यवाद! इससे साथी और बेहतर बनता है।", ch_r_why:"क्या ग़लत था या क्या कमी थी? (वैकल्पिक)", ch_r_send:"भेजें", ch_r_noted:"धन्यवाद, हम इस जवाब को जाँचेंगे।",
   ch_q1:"पत्तों पर काले धब्बे क्यों आ रहे हैं?", ch_q2:"पेड़ों की छँटाई कब करें?", ch_q3:"मंडी या लदानी — कैसे तय करूँ?", ch_q4:"क्या इस हफ़्ते स्प्रे करूँ?",
   ch_note:"साथी एक AI सहायक है और ग़लती कर सकता है। स्प्रे के लिए हमेशा सरकारी स्प्रे सूची और दवा का लेबल देखें।",
   ch_gate:"साथी से बात करने के लिए लॉग इन करें। यह मुफ़्त है।", ch_login:"लॉग इन", ch_join:"अपना मुफ़्त खाता बनाएँ",
@@ -5636,8 +5645,10 @@ async function chatHistory() {
   if (!user || !sb || chatLoadedFor === user.id || CHAT.length) return;
   chatLoadedFor = user.id;
   try {
-    const r = await sb.from("chat_messages").select("role,content,created_at").eq("user_id", user.id).order("created_at", {ascending: false}).limit(20);
-    if (!r.error && r.data && r.data.length && !CHAT.length) { CHAT = r.data.reverse().map(m => ({role: m.role, content: m.content})); renderChat(); }
+    const q = cols => sb.from("chat_messages").select(cols).eq("user_id", user.id).order("created_at", {ascending: false}).limit(20);
+    let r = await q("id,role,content,created_at,feedback");
+    if (r.error) r = await q("id,role,content,created_at");
+    if (!r.error && r.data && r.data.length && !CHAT.length) { CHAT = r.data.reverse().map(m => ({role: m.role, content: m.content, id: m.id, fb: m.feedback || 0})); renderChat(); }
   } catch (e) {}
 }
 function renderChat() {
@@ -5648,7 +5659,7 @@ function renderChat() {
   if (!user) $("chatGate").innerHTML = "<p style=\"margin:0\">" + tr("ch_gate") + '</p><div class="dels"><a class="btn-s add" href="/login.html">' + tr("ch_login") + '</a><a class="btn-s" href="/login.html?mode=signup">' + tr("ch_join") + "</a></div>";
   let h = '<div class="cmsg bot">' + libMd(tr("ch_hello")) + "</div>";
   if (!CHAT.length && user) h += '<div class="chips">' + ["ch_q1", "ch_q2", "ch_q3", "ch_q4"].map(k => '<button type="button" data-ask="' + esc(tr(k)) + '">' + esc(tr(k)) + "</button>").join("") + "</div>";
-  h += CHAT.map(m => m.role === "user" ? '<div class="cmsg me">' + esc(m.content) + "</div>" : '<div class="cmsg bot">' + libMd(m.content) + "</div>").join("");
+  h += CHAT.map((m, i) => m.role === "user" ? '<div class="cmsg me">' + esc(m.content) + "</div>" : '<div class="cmsg bot">' + libMd(m.content) + "</div>" + chatRate(m, i)).join("");
   if (chatBusy) h += '<div class="ctyping" aria-label="…"><i></i><i></i><i></i></div>';
   if (chatErr) h += '<div class="cmsg err">' + esc(chatErr) + "</div>";
   else if (chatLeft !== null && chatLeft <= 5 && CHAT.length) h += '<div class="cmsg err">' + esc(tr("ch_left").replace("{n}", chatLeft)) + "</div>";
@@ -5672,7 +5683,7 @@ async function chatAsk(text) {
     } catch (e) { status = 0; }
   } else status = 401;
   chatBusy = false;
-  if (data && data.reply) { CHAT.push({role: "assistant", content: data.reply}); chatLeft = typeof data.left === "number" ? data.left : null; }
+  if (data && data.reply) { CHAT.push({role: "assistant", content: data.reply, id: data.id || null, fb: 0}); chatLeft = typeof data.left === "number" ? data.left : null; }
   else {
     CHAT.pop(); $("chatIn").value = text; chatGrow();
     const e = data && data.error;
@@ -5688,7 +5699,29 @@ $("chatDlg").addEventListener("click", e => { if (e.target === $("chatDlg")) cha
 $("chatForm").addEventListener("submit", e => { e.preventDefault(); chatAsk($("chatIn").value); });
 $("chatIn").addEventListener("input", chatGrow);
 $("chatIn").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing && window.matchMedia && matchMedia("(pointer:fine)").matches) { e.preventDefault(); chatAsk($("chatIn").value); } });
-$("chatBody").addEventListener("click", e => { const b = e.target.closest("[data-ask]"); if (b) chatAsk(b.dataset.ask); });
+$("chatBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-ask]"); if (b) { chatAsk(b.dataset.ask); return; }
+  const r = e.target.closest("[data-rate]"); if (r) { chatRateSet(+r.dataset.i, +r.dataset.rate); return; }
+  const s = e.target.closest("[data-why]"); if (s) { const m = CHAT[+s.dataset.why], t = $("chatWhy" + s.dataset.why); if (m && t) chatRateSet(+s.dataset.why, -1, t.value); }
+});
+/* thumbs up / down on Saathi's answers (table columns from supabase/chat_feedback.sql); admins review the thumbs-down ones */
+let chatWhyOpen = -1;
+function chatRate(m, i) {
+  if (!m.id || !user) return "";
+  if (m.fb === 1) return '<p class="crate done">' + esc(tr("ch_r_thanks")) + "</p>";
+  if (m.fb === -1 && chatWhyOpen === i) return '<div class="crate why"><label for="chatWhy' + i + '">' + esc(tr("ch_r_why")) + '</label><textarea id="chatWhy' + i + '" rows="2" maxlength="500"></textarea><button class="btn-s add" type="button" data-why="' + i + '">' + esc(tr("ch_r_send")) + "</button></div>";
+  if (m.fb === -1) return '<p class="crate done">' + esc(tr("ch_r_noted")) + "</p>";
+  return '<div class="crate"><span>' + esc(tr("ch_r_q")) + '</span><button type="button" data-rate="1" data-i="' + i + '" aria-label="' + esc(tr("ch_r_up")) + '">👍</button><button type="button" data-rate="-1" data-i="' + i + '" aria-label="' + esc(tr("ch_r_down")) + '">👎</button></div>';
+}
+async function chatRateSet(i, v, note) {
+  const m = CHAT[i]; if (!m || !m.id || !sb) return;
+  const final = v === 1 || note !== undefined;
+  m.fb = v; if (final) m.sent = true; chatWhyOpen = v === -1 && !final ? i : -1;
+  renderChat();
+  if (v === -1 && !final) setTimeout(() => { const t = $("chatWhy" + i); if (t) t.focus(); }, 30);
+  const row = {feedback: v}; if (note !== undefined) row.feedback_note = String(note || "").trim().slice(0, 500) || null;
+  try { await sb.from("chat_messages").update(row).eq("id", m.id); } catch (e) {}
+}
 
 /* ---- recommend to friends (share on WhatsApp) ----
    Shared link: /?invite=CODE. CODE is the sharer's short id when logged in, otherwise "1".

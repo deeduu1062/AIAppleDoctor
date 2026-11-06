@@ -1390,6 +1390,14 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 #ovQ .ledger th,#ovQ .ledger td{text-align:left;vertical-align:top;padding:10px 8px}
 #ovQ td.qt{white-space:nowrap;color:var(--muted);font:500 .82rem var(--mono)}
 #ovQ td.qq{white-space:normal;overflow-wrap:anywhere;font:400 .95rem var(--body)}
+#ovRv .rvsum{display:flex;gap:10px 22px;flex-wrap:wrap;margin:10px 0 4px;font-weight:600}
+#ovRv .rvlist{display:grid;gap:12px;margin-top:12px}
+#ovRv .rv{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface);display:grid;gap:8px}
+#ovRv .rv .meta{font:500 .82rem var(--mono);color:var(--muted)}
+#ovRv .rv .q{font-weight:600;overflow-wrap:anywhere}
+#ovRv .rv .a{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.93rem;color:var(--muted);max-height:9.5em;overflow:auto;border-left:3px solid var(--line);padding-left:10px}
+#ovRv .rv .note{overflow-wrap:anywhere;font-size:.95rem}
+#ovRv .rv .btn-s{justify-self:start}
 .ovq{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
 .ovq li{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow-wrap:anywhere}
 .ovq time{display:block;font:500 .8rem var(--mono);color:var(--muted)}
@@ -1420,6 +1428,9 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <div id="ovTab"></div>
         <h5 class="ovsub" data-i18n="ov_q_h"></h5>
         <div id="ovQ"></div>
+        <h5 class="ovsub" data-i18n="rv_h"></h5>
+        <p class="fine" data-i18n="rv_p"></p>
+        <div id="ovRv"></div>
       </section>
     </div>
     <div class="adm" id="ap-pay" role="tabpanel" aria-labelledby="at-pay" hidden>

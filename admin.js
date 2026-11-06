@@ -829,6 +829,8 @@ Object.assign(T.en, {
   ov_ch_h:"Saathi questions received", ov_ch_today:"Today", ov_ch_7:"Last 7 days", ov_ch_30:"Last 30 days", ov_ch_total:"Total",
   ov_ch_users:"Growers asking (30 days)", ov_q_h:"Latest questions", ov_q_none:"No questions yet.",
   ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_sv_h:"Site visits", ov_sv_hits:"Visits (page opens)", ov_sv_uniq:"Different visitors", ov_sv_in:"Visits by logged-in growers", ov_sv_note:"Your own admin visits are not counted. A visitor is one phone or computer.", ov_sv_refs:"Where visitors came from (30 days)", ov_sv_dev:"Phone or computer (30 days)", ov_sv_days:"Last 14 days", ov_sv_day:"Day", ov_sv_n:"Visits", ov_sv_u:"Visitors", ov_sv_direct:"Direct / app / WhatsApp", ov_d_mobile:"Phone", ov_d_desktop:"Computer", ov_d_tablet:"Tablet", ov_sv_src:"Source", ov_sv_devc:"Device", ov_err_sv:"Visit counting not set up yet (supabase/visits.sql).", ov_pa_h:"Payments", ov_t_money:"Money received", ov_t_paid:"Payments approved", ov_t_wait:"Waiting for check", ov_t_active:"Active paid plans", ov_err_pa:"Payments table not set up yet (supabase/payments.sql).", ov_t_received:"Received", ov_t_notdone:"Not done yet", ov_t_questions:"Questions", ov_t_growers:"Growers asking", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
+  rv_h:"Saathi answers to check", rv_p:"Answers growers marked 👎. Fix the Library guide that covers it (Saathi reads the Library before every answer), then mark it checked.",
+  rv_up:"👍 Helpful (30 days): {n}", rv_down:"👎 Not helpful (30 days): {n}", rv_none:"Nothing to check. No 👎 answers waiting.", rv_q:"Question", rv_note:"Grower's note", rv_done:"Mark as checked", rv_setup:"Ratings not set up yet: run supabase/chat_feedback.sql in Supabase.",
   ov_err_fb:"Feedback table not set up yet (supabase/feedback.sql).", ov_err_ch:"Saathi chat table not set up yet (supabase/chat.sql).", ov_err:"Could not load: {m}"
 });
 Object.assign(T.hi, {
@@ -837,6 +839,8 @@ Object.assign(T.hi, {
   ov_ch_h:"साथी से पूछे गए सवाल", ov_ch_today:"आज", ov_ch_7:"पिछले 7 दिन", ov_ch_30:"पिछले 30 दिन", ov_ch_total:"कुल",
   ov_ch_users:"सवाल पूछने वाले बाग़वान (30 दिन)", ov_q_h:"ताज़ा सवाल", ov_q_none:"अभी कोई सवाल नहीं।",
   ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_sv_h:"साइट विज़िट", ov_sv_hits:"विज़िट (पेज खुले)", ov_sv_uniq:"अलग-अलग विज़िटर", ov_sv_in:"लॉग-इन बाग़वानों की विज़िट", ov_sv_note:"आपकी अपनी एडमिन विज़िट नहीं गिनी जातीं। एक विज़िटर = एक फ़ोन या कंप्यूटर।", ov_sv_refs:"विज़िटर कहाँ से आए (30 दिन)", ov_sv_dev:"फ़ोन या कंप्यूटर (30 दिन)", ov_sv_days:"पिछले 14 दिन", ov_sv_day:"दिन", ov_sv_n:"विज़िट", ov_sv_u:"विज़िटर", ov_sv_direct:"सीधे / ऐप / WhatsApp", ov_d_mobile:"फ़ोन", ov_d_desktop:"कंप्यूटर", ov_d_tablet:"टैबलेट", ov_sv_src:"स्रोत", ov_sv_devc:"डिवाइस", ov_err_sv:"विज़िट गिनती अभी सेट नहीं (supabase/visits.sql)।", ov_pa_h:"भुगतान", ov_t_money:"प्राप्त रकम", ov_t_paid:"मंज़ूर भुगतान", ov_t_wait:"जाँच बाकी", ov_t_active:"चालू पेड प्लान", ov_err_pa:"भुगतान टेबल अभी नहीं बनी (supabase/payments.sql)।", ov_t_received:"मिले", ov_t_notdone:"बाकी", ov_t_questions:"सवाल", ov_t_growers:"पूछने वाले बाग़वान", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
+  rv_h:"जाँचने वाले साथी के जवाब", rv_p:"जिन जवाबों पर बाग़वानों ने 👎 दिया। उस विषय की जानकारी भंडार गाइड ठीक करें (साथी हर जवाब से पहले उसे पढ़ता है), फिर जाँचा हुआ मार्क करें।",
+  rv_up:"👍 काम आया (30 दिन): {n}", rv_down:"👎 काम नहीं आया (30 दिन): {n}", rv_none:"जाँचने को कुछ नहीं। कोई 👎 जवाब बाक़ी नहीं।", rv_q:"सवाल", rv_note:"बाग़वान की टिप्पणी", rv_done:"जाँचा हुआ मार्क करें", rv_setup:"रेटिंग अभी सेट नहीं है: Supabase में supabase/chat_feedback.sql चलाएँ।",
   ov_err_fb:"सुझाव टेबल अभी नहीं बनी (supabase/feedback.sql)।", ov_err_ch:"साथी चैट टेबल अभी नहीं बनी (supabase/chat.sql)।", ov_err:"लोड नहीं हो सका: {m}"
 });
 let OV = null, ovBusy = false;
@@ -886,6 +890,17 @@ async function loadOverview() {
     o.pa = { money: four(s => sum(per(ok, s))), paid: four(s => per(ok, s).length), wait: four(s => per(wait, s).length),
       active: ok.filter(x => !x.valid_until || x.valid_until >= day).length };
   } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_pa") : tr("ov_err").replace("{m}", String(e.message || e))); }
+  try {
+    const [up, down, bad] = await Promise.all([ovCount("chat_messages", q => q.eq("feedback", 1).gte("created_at", d30)), ovCount("chat_messages", q => q.eq("feedback", -1).gte("created_at", d30)),
+      sb.from("chat_messages").select("id,user_id,created_at,content,lang,feedback_note").eq("role", "assistant").eq("feedback", -1).eq("reviewed", false).order("created_at", { ascending: false }).limit(30)]);
+    if (bad.error) throw bad.error;
+    const rows = bad.data || [], qs = {};
+    if (rows.length) {
+      const r = await sb.from("chat_messages").select("user_id,created_at,content").eq("role", "user").in("created_at", rows.map(x => x.created_at)).limit(200);
+      (r.data || []).forEach(x => { qs[x.user_id + "|" + x.created_at] = x.content; });
+    }
+    o.rv = { up, down, rows: rows.map(x => Object.assign(x, { question: qs[x.user_id + "|" + x.created_at] || "" })) };
+  } catch (e) { o.rv = { err: true }; }
   ovBusy = false; $("ovRefresh").disabled = false;
   OV = o; set("ovErr", errs.join(" ")); renderOverview();
 }
@@ -916,8 +931,29 @@ function renderOverview() {
     '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ov_c_when") + '</th><th scope="col">' + tr("ov_c_q") + "</th></tr></thead><tbody>" +
     q.map(x => '<tr><td class="qt">' + adWhen(x.created_at) + (x.lang ? "<br>" + esc(String(x.lang).toUpperCase()) : "") + '</td><td class="qq">' + esc(String(x.content).slice(0, 400)) + "</td></tr>").join("") +
     "</tbody></table></div>";
+  renderReview();
 }
 $("ovRefresh").addEventListener("click", loadOverview);
+function renderReview() {
+  const el = $("ovRv"); if (!el) return;
+  const rv = OV && OV.rv; if (!rv) { el.innerHTML = ""; return; }
+  if (rv.err) { el.innerHTML = '<p class="fine">' + esc(tr("rv_setup")) + "</p>"; return; }
+  el.innerHTML = '<p class="rvsum"><span>' + esc(tr("rv_up").replace("{n}", fmtN(rv.up))) + "</span><span>" + esc(tr("rv_down").replace("{n}", fmtN(rv.down))) + "</span></p>" +
+    (!rv.rows.length ? '<p class="fine">' + esc(tr("rv_none")) + "</p>" :
+    '<div class="rvlist">' + rv.rows.map(x => '<article class="rv"><span class="meta">' + adWhen(x.created_at) + (x.lang ? " · " + esc(String(x.lang).toUpperCase()) : "") + "</span>" +
+      (x.question ? '<div class="q">' + esc(tr("rv_q")) + ": " + esc(String(x.question).slice(0, 600)) + "</div>" : "") +
+      '<div class="a">' + esc(String(x.content).slice(0, 3000)) + "</div>" +
+      (x.feedback_note ? '<div class="note"><b>' + esc(tr("rv_note")) + ":</b> " + esc(x.feedback_note) + "</div>" : "") +
+      '<button class="btn-s" type="button" data-rvdone="' + esc(x.id) + '">' + esc(tr("rv_done")) + "</button></article>").join("") + "</div>");
+}
+$("ovRv").addEventListener("click", async e => {
+  const b = e.target.closest("[data-rvdone]"); if (!b || !sb) return;
+  b.disabled = true;
+  const r = await sb.from("chat_messages").update({ reviewed: true }).eq("id", b.dataset.rvdone);
+  if (r.error) { b.disabled = false; set("ovErr", tr("ov_err").replace("{m}", r.error.message || "")); return; }
+  if (OV && OV.rv && OV.rv.rows) OV.rv.rows = OV.rv.rows.filter(x => x.id !== b.dataset.rvdone);
+  renderReview();
+});
 
 /* ---------- page: tabs, language, sign-in gate ---------- */
 const TABS = ["ov", "pay", "users", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
