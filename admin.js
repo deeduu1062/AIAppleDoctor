@@ -56,7 +56,7 @@ const T = {
 "Daily mandi rates",
 "3 photo disease checks a month",
 "5 questions a day to Saathi",
-"Video and learning library"
+"Daily apple news"
 ],
 "pl_f_basic": [
 "Everything in Free",
@@ -241,7 +241,7 @@ const T = {
 "रोज़ के मंडी भाव",
 "महीने में 3 फ़ोटो से बीमारी जाँच",
 "साथी से रोज़ 5 सवाल",
-"वीडियो और जानकारी लाइब्रेरी"
+"रोज़ सेब समाचार"
 ],
 "pl_f_basic": [
 "मुफ़्त प्लान की सब सुविधाएँ",

@@ -36,7 +36,6 @@ The website has these tabs you can point people to:
 - Profit calculator: quick calculator, Season profit (lots per orchard per year), Expenses, Yearly net profit, and "Mandi or ladhani?" comparison.
 - Disease diagnosis: check by symptoms, or a photo check (logged-in growers).
 - Spray schedule: link to the official Himachal spray schedule.
-- Library: guides on diseases, pests, sprays, nutrition, pruning, harvest, selling and schemes.
 - Seb News: latest apple news. Season calendar: month-by-month work. Mandi rates: links to official prices.
 - Feedback button on every page to report problems or suggestions.
 
@@ -226,7 +225,7 @@ module.exports = async (req, res) => {
   // 4. Ask the AI, with the Library and this grower's own records as background
   const [kb, mine] = await Promise.all([knowledge(), growerContext(token, user.id).catch(() => "")]);
   const system = [{ type: "text", text: PERSONA }];
-  if (kb) system.push({ type: "text", text: "Seb Saathi Library (trusted background; prefer it, and mention the Library tab when a guide covers the question):\n\n" + kb, cache_control: { type: "ephemeral" } });
+  if (kb) system.push({ type: "text", text: "Seb Saathi knowledge base (trusted background; prefer it. There is no Library tab on the site, so never tell growers to open one):\n\n" + kb, cache_control: { type: "ephemeral" } });
   if (mine) system.push({ type: "text", text: "This grower's records (private to them):\n" + mine });
   system.push({ type: "text", text: "The website is currently set to " + (lang === "hi" ? "Hindi" : "English") + ". Still reply in the language the grower writes in." });
   let reply = "";
