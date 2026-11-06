@@ -944,12 +944,24 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 /* ---- landing: "manage your whole orchard" ---- */
 .lpwhat{margin-top:12px;display:inline-block;font:800 clamp(1.15rem,4.6vw,1.45rem)/1.25 var(--body);color:var(--kraft-ink,var(--fg));background:rgba(255,255,255,.55);border-left:5px solid var(--apple);padding:6px 12px;border-radius:0 8px 8px 0}
 .mggrid{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;counter-reset:mg}
-.mggrid li{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:3px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
-.mgi{grid-row:1 / span 2;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:1.5rem;background:var(--surface-2)}
+.mggrid li{display:flex}
+.mgcard{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:auto 1fr;column-gap:12px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--fg);transition:border-color .15s,transform .15s}
+.mgcard:hover{border-color:var(--apple)}
+.mgcard:focus-visible,.mgnote:focus-visible,.mgnews:focus-visible{outline:3px solid var(--apple);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.mgcard:hover{transform:translateY(-2px)}}
+.mgi{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:1.5rem;background:var(--surface-2);align-self:start}
+.mgtx{display:grid;gap:3px;justify-items:start}
 .mggrid b{font:700 1.08rem var(--display,var(--body))}
-.mggrid span:not(.mgi){color:var(--muted);line-height:1.5;font-size:.95rem}
-.mgnote{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-weight:600}
+.mgp{color:var(--muted);line-height:1.5;font-size:.95rem}
+.mgcard .lpgo{margin-top:4px}
+.mgnote{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-weight:600;line-height:1.45}
 .mgnote::before{content:"💬 "}
+.mgnote:hover{background:var(--line)}
+.mgnews{all:unset;box-sizing:border-box;cursor:pointer;width:100%;margin-top:10px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);line-height:1.45}
+.mgnews:hover{border-color:var(--apple)}
+.mgnews .mgi{width:40px;height:40px;font-size:1.2rem}
+.mgnews > span:nth-child(2) > span{color:var(--muted)}
+.lpmanage .lpsoon{margin-top:12px}
 
 /* language picker: English / हिंदी / Hinglish */
 .langsel{appearance:none;-webkit-appearance:none;padding-right:26px!important;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 13px) 55%,calc(100% - 8px) 55%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
@@ -1639,28 +1651,15 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <h2 data-i18n="lp_m_h"></h2>
     <p class="lede" data-i18n="lp_m_p"></p>
     <ol class="mggrid">
-      <li><span class="mgi" aria-hidden="true">🌳</span><b data-i18n="lp_m1_h"></b><span data-i18n="lp_m1_p"></span></li>
-      <li><span class="mgi" aria-hidden="true">📦</span><b data-i18n="lp_m6_h"></b><span data-i18n="lp_m6_p"></span></li>
-      <li><span class="mgi" aria-hidden="true">🔍</span><b data-i18n="lp_m4_h"></b><span data-i18n="lp_m4_p"></span></li>
-      <li><span class="mgi" aria-hidden="true">💧</span><b data-i18n="lp_m2_h"></b><span data-i18n="lp_m2_p"></span></li>
-      <li><span class="mgi" aria-hidden="true">🌦️</span><b data-i18n="lp_m3_h"></b><span data-i18n="lp_m3_p"></span></li>
-      <li><span class="mgi" aria-hidden="true">🗓️</span><b data-i18n="lp_m5_h"></b><span data-i18n="lp_m5_p"></span></li>
+      <li><button class="mgcard" type="button" data-lgo="orch"><span class="mgi" aria-hidden="true">🌳</span><span class="mgtx"><span class="lptag acct" data-i18n="lp_tag_acct"></span><b data-i18n="lp_m1_h"></b><span class="mgp" data-i18n="lp_m1_p"></span><span class="lpgo" data-i18n="lp_unlock"></span></span></button></li>
+      <li><button class="mgcard" type="button" data-lgo="calc"><span class="mgi" aria-hidden="true">📦</span><span class="mgtx"><span class="lptag" data-i18n="lp_tag_free"></span><b data-i18n="lp_m6_h"></b><span class="mgp" data-i18n="lp_m6_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
+      <li><button class="mgcard" type="button" data-lgo="diag"><span class="mgi" aria-hidden="true">🔍</span><span class="mgtx"><span class="lptag" data-i18n="lp_tag_free"></span><b data-i18n="lp_m4_h"></b><span class="mgp" data-i18n="lp_m4_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
+      <li><button class="mgcard" type="button" data-lgo="orch"><span class="mgi" aria-hidden="true">💧</span><span class="mgtx"><span class="lptag acct" data-i18n="lp_tag_acct"></span><b data-i18n="lp_m2_h"></b><span class="mgp" data-i18n="lp_m2_p"></span><span class="lpgo" data-i18n="lp_unlock"></span></span></button></li>
+      <li><button class="mgcard" type="button" data-lgo="orch"><span class="mgi" aria-hidden="true">🌦️</span><span class="mgtx"><span class="lptag acct" data-i18n="lp_tag_acct"></span><b data-i18n="lp_m3_h"></b><span class="mgp" data-i18n="lp_m3_p"></span><span class="lpgo" data-i18n="lp_unlock"></span></span></button></li>
+      <li><button class="mgcard" type="button" data-lgo="cal"><span class="mgi" aria-hidden="true">🗓️</span><span class="mgtx"><span class="lptag" data-i18n="lp_tag_free"></span><b data-i18n="lp_m5_h"></b><span class="mgp" data-i18n="lp_m5_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
     </ol>
-    <p class="mgnote" data-i18n="lp_m_note"></p>
-  </div>
-</section>
-<section class="section lpfeat">
-  <div class="wrap">
-    <h2 data-i18n="lp_f_h"></h2>
-    <p class="lede" data-i18n="lp_f_p"></p>
-    <div class="lpgrid">
-      <button class="lpcard" type="button" data-lgo="orch"><span class="lptag acct" data-i18n="lp_tag_acct"></span><h3 data-i18n="lp_reg_h"></h3><p data-i18n="lp_reg_p"></p><span class="lpgo" data-i18n="lp_unlock"></span></button>
-      <button class="lpcard" type="button" data-lgo="diag"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_dx_h"></h3><p data-i18n="lp_dx_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
-      <button class="lpcard" type="button" data-lgo="spray"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_sp_h"></h3><p data-i18n="lp_sp_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
-      <button class="lpcard" type="button" data-lgo="cal"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_cal_h"></h3><p data-i18n="lp_cal_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
-      <button class="lpcard" type="button" data-lgo="chat"><span class="lptag acct" data-i18n="lp_tag_acct"></span><h3 data-i18n="lp_chat_h"></h3><p data-i18n="lp_chat_p"></p><span class="lpgo" data-i18n="lp_unlock"></span></button>
-      <button class="lpcard" type="button" data-lgo="news"><span class="lptag" data-i18n="lp_tag_free"></span><h3 data-i18n="lp_news_h"></h3><p data-i18n="lp_news_p"></p><span class="lpgo" data-i18n="lp_open"></span></button>
-    </div>
+    <button class="mgnote" type="button" data-lgo="chat"><span data-i18n="lp_m_note"></span></button>
+    <button class="mgnews" type="button" data-lgo="news"><span class="mgi" aria-hidden="true">📰</span><span><b data-i18n="lp_news_h"></b> <span data-i18n="lp_news_p"></span></span><span class="lpgo" data-i18n="lp_open"></span></button>
     <p class="fine lpsoon" data-i18n="lp_soon"></p>
   </div>
 </section>
