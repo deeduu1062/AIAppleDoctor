@@ -915,6 +915,31 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .tklab .tkl{margin-left:6px}.tkmore .tks{display:none}
 #dash > .ticker{margin-bottom:-6px}
 @media (max-width:600px){.tklab{padding:0 9px;font-size:1rem}.tklab .tkl{display:none}.tkmore{padding:0 9px;font-size:.8rem}.tkmore .tkl{display:none}.tkmore .tks{display:inline}}
+
+/* ---- apple register on the Dashboard ---- */
+.rglist{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr))}
+.rgcard{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 12px 10px;display:grid;gap:8px;min-width:0}
+.rghead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.rghead b{font:700 1.08rem var(--body)}
+.rgcount{font-size:.82rem;color:var(--muted);font-weight:600}
+.rgcount.full{color:var(--good)}
+.rgbar{display:block;height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.rgbar i{display:block;height:100%;background:linear-gradient(90deg,#3E9A4F,#1B5E2B);border-radius:99px}
+.rgitems{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:6px}
+.rgitems button{width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;text-align:left;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;cursor:pointer;min-height:52px}
+.rgitems button:hover{border-color:var(--apple)}
+.rgitems button.todo{border-style:dashed;background:var(--surface-2)}
+.rgi{font-size:1.15rem;width:26px;text-align:center}
+.rgt{display:grid;min-width:0}
+.rgt b{font-size:.88rem}
+.rgt small{font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.rgs{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.8rem}
+.ok .rgs{background:#3E9A4F;color:#fff}
+.todo .rgs{border:1.5px solid var(--apple);color:var(--apple)}
+@media (max-width:520px){.rgitems{grid-template-columns:1fr 1fr}.rgitems button{grid-template-columns:1fr auto;padding:7px 8px;gap:6px;min-height:48px}.rgi{display:none}}
+.rgtips{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 14px}
+.rgtips summary{cursor:pointer;font-weight:700;padding:10px 0}
+.rgtips ul{margin:0 0 12px;padding-left:20px;display:grid;gap:4px;font-size:.92rem;color:var(--muted)}
 </style>
 
 <style>
@@ -3469,6 +3494,7 @@ function dashOverview() {
       (miss.length ? '<div class="setlocs">' + miss.map(o => '<button class="btn-s add" type="button" data-xact="setloc" data-o="' + esc(o.id) + '">' + esc(tr("loc_setfor").replace("{o}", o.name || tr("orchard_fallback"))) + "</button>").join("") + "</div>" : "") +
       "</section>";
   }
+  try { h += registerHtml(); } catch (e) {}
   h += detailsHtml();
   h += dashDxHtml();
   h += farmSummaryHtml();
@@ -3685,6 +3711,72 @@ function orchardPage(o) {
   return h;
 }
 
+
+/* ---- "Your apple register": what each orchard has recorded, and one tap to fill what is missing ---- */
+Object.assign(T.en, {
+  rg_h:"Your apple register", rg_p:"Keep every orchard's records in one place: sales lots, expenses, sprays and work. Complete records show your real profit, year after year, and help Saathi give advice for your own trees.",
+  rg_done:"{n} of {t} kept up to date", rg_all:"All records up to date",
+  rg_det:"Orchard details", rg_det_ok:"{t} trees · {v}", rg_det_no:"Add trees, varieties and height",
+  rg_loc:"Location", rg_loc_ok:"Weather is on", rg_loc_no:"Set it for weather",
+  rg_sale:"Sales", rg_sale_ok:"{y}: {b} boxes, {r}", rg_sale_no:"Add your first sale lot",
+  rg_exp:"Expenses", rg_exp_ok:"{y}: {r}", rg_exp_no:"Add spray, labour, manure costs",
+  rg_spray:"Spray record", rg_spray_ok:"Last spray {d} ({n} days ago)", rg_spray_no:"Log each spray with its date",
+  rg_diary:"Work diary", rg_diary_ok:"{n} entries this season", rg_diary_no:"Note pruning, manure and other work",
+  rg_tips_h:"Good habits", rg_tips:["Add each sale lot on the day you sell: grade, boxes, rate and charges.","Write every spray in the diary with date and stage, so you know when the next is due.","Note money still to come from the aadhti, and tick it when paid.","Add a photo of each orchard once a season to see how it changes."]
+});
+Object.assign(T.hi, {
+  rg_h:"आपका सेब रजिस्टर", rg_p:"हर बाग़ का पूरा हिसाब एक जगह रखें: बिक्री के लॉट, ख़र्च, स्प्रे और काम। पूरा रिकॉर्ड साल दर साल आपका असली मुनाफ़ा दिखाता है, और साथी आपके पेड़ों के हिसाब से सलाह दे पाता है।",
+  rg_done:"{t} में से {n} अपडेट", rg_all:"सारा रिकॉर्ड अपडेट है",
+  rg_det:"बाग़ की जानकारी", rg_det_ok:"{t} पेड़ · {v}", rg_det_no:"पेड़, किस्में और ऊँचाई जोड़ें",
+  rg_loc:"जगह", rg_loc_ok:"मौसम चालू है", rg_loc_no:"मौसम के लिए जगह जोड़ें",
+  rg_sale:"बिक्री", rg_sale_ok:"{y}: {b} पेटियाँ, {r}", rg_sale_no:"पहला बिक्री लॉट जोड़ें",
+  rg_exp:"ख़र्च", rg_exp_ok:"{y}: {r}", rg_exp_no:"स्प्रे, मज़दूरी, खाद का ख़र्च जोड़ें",
+  rg_spray:"स्प्रे रिकॉर्ड", rg_spray_ok:"आख़िरी स्प्रे {d} ({n} दिन पहले)", rg_spray_no:"हर स्प्रे तारीख़ के साथ लिखें",
+  rg_diary:"काम की डायरी", rg_diary_ok:"इस सीज़न {n} एंट्री", rg_diary_no:"छँटाई, खाद और दूसरे काम लिखें",
+  rg_tips_h:"अच्छी आदतें", rg_tips:["जिस दिन बेचें, उसी दिन लॉट जोड़ें: ग्रेड, पेटियाँ, भाव और ख़र्च।","हर स्प्रे तारीख़ और अवस्था के साथ डायरी में लिखें, ताकि अगला स्प्रे कब है पता रहे।","आढ़ती से बाक़ी पैसा लिखें, और मिलने पर निशान लगाएँ।","हर सीज़न में एक बार हर बाग़ की फ़ोटो जोड़ें, ताकि बदलाव दिखे।"]
+});
+function regItems(o) {
+  const P = o.profile || {}, cy = curHYear(), today = todayIso();
+  const trees = +o.trees || vtList(o).reduce((a, x) => a + (+x.n || 0), 0), vars = vtList(o).map(x => x.v).join(", ") || P.var || "";
+  const ys = S.seasons.filter(x => x.oid === o.id).map(x => x.year).sort((a, b) => b - a);
+  const saleY = ys.find(y => { const se = seFor(o.id, y); return se && se.lots.length; });
+  const expY = ys.find(y => { const se = seFor(o.id, y); if (!se) return false; const c = seasonCalc(se); return c.lotExp + c.yearly > 0; });
+  const diary = (o.diary || []).filter(d => d.date && d.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const spray = diary.find(d => d.kind === "spray"), thisSeason = diary.filter(d => hYear(d.date) === cy).length;
+  const it = [];
+  it.push({k: "det", ok: trees > 0 && !!vars && +P.alt > 0, txt: trees > 0 && vars ? tr("rg_det_ok").replace("{t}", fmtN(trees)).replace("{v}", vars) : tr("rg_det_no"), act: 'data-dact="rgprof" data-o="' + esc(o.id) + '"'});
+  it.push({k: "loc", ok: hasLoc(o), txt: tr(hasLoc(o) ? "rg_loc_ok" : "rg_loc_no"), act: 'data-xact="setloc" data-o="' + esc(o.id) + '"'});
+  if (saleY) { const c = seasonCalc(seFor(o.id, saleY)); it.push({k: "sale", ok: true, txt: tr("rg_sale_ok").replace("{y}", saleY).replace("{b}", fmtN(c.boxes)).replace("{r}", inr(c.rev)), act: 'data-dact="open" data-o="' + esc(o.id) + '"'}); }
+  else it.push({k: "sale", ok: false, txt: tr("rg_sale_no"), act: 'data-dact="addsale" data-o="' + esc(o.id) + '"'});
+  if (expY) { const c = seasonCalc(seFor(o.id, expY)); it.push({k: "exp", ok: true, txt: tr("rg_exp_ok").replace("{y}", expY).replace("{r}", inr(c.lotExp + c.yearly)), act: 'data-dact="rgexp"'}); }
+  else it.push({k: "exp", ok: false, txt: tr("rg_exp_no"), act: 'data-dact="rgexp"'});
+  if (spray) { const n = Math.max(0, dayDiff(spray.date, today)); it.push({k: "spray", ok: true, txt: tr("rg_spray_ok").replace("{d}", fmtDay(spray.date)).replace("{n}", n), act: 'data-dact="rgnote" data-o="' + esc(o.id) + '"'}); }
+  else it.push({k: "spray", ok: false, txt: tr("rg_spray_no"), act: 'data-dact="rgnote" data-o="' + esc(o.id) + '"'});
+  it.push({k: "diary", ok: thisSeason > 0, txt: thisSeason ? tr("rg_diary_ok").replace("{n}", thisSeason) : tr("rg_diary_no"), act: 'data-dact="rgnote" data-o="' + esc(o.id) + '"'});
+  return it;
+}
+const RG_ICON = {det: "🌳", loc: "📍", sale: "📦", exp: "₹", spray: "💧", diary: "📒"};
+function registerHtml() {
+  const list = S.orchards.filter(o => !o.ex || S.orchards.every(x => x.ex));
+  if (!list.length) return "";
+  let h = '<section class="osec rgsec"><h4>' + tr("rg_h") + '</h4><p class="hint">' + tr("rg_p") + '</p><div class="rglist">';
+  list.forEach(o => {
+    const it = regItems(o), n = it.filter(x => x.ok).length;
+    h += '<article class="rgcard"><div class="rghead"><b>' + esc(o.name || tr("orchard_fallback")) + '</b><span class="rgcount' + (n === it.length ? " full" : "") + '">' + esc(n === it.length ? tr("rg_all") : tr("rg_done").replace("{n}", n).replace("{t}", it.length)) + "</span></div>" +
+      '<span class="rgbar" aria-hidden="true"><i style="width:' + Math.round(n / it.length * 100) + '%"></i></span><ul class="rgitems">' +
+      it.map(x => '<li><button type="button" class="' + (x.ok ? "ok" : "todo") + '" ' + x.act + '><span class="rgi" aria-hidden="true">' + RG_ICON[x.k] + '</span><span class="rgt"><b>' + esc(tr("rg_" + x.k)) + '</b><small>' + esc(x.txt) + '</small></span><span class="rgs" aria-hidden="true">' + (x.ok ? "✓" : "+") + "</span></button></li>").join("") +
+      "</ul></article>";
+  });
+  h += '</div><details class="rgtips"><summary>' + tr("rg_tips_h") + "</summary><ul>" + (tr("rg_tips") || []).map(t => "<li>" + esc(t) + "</li>").join("") + "</ul></details></section>";
+  return h;
+}
+$("dash").addEventListener("click", e => {
+  const b = e.target.closest("[data-dact]"); if (!b) return;
+  const a = b.dataset.dact, oid = b.dataset.o;
+  if (a === "rgprof") { dashView = oid; dashYear = null; profEdit = true; diaryEdit = null; renderDash(); dashTop(); const i = $("p_village"); if (i) i.focus(); }
+  else if (a === "rgnote") { dashView = oid; dashYear = null; profEdit = false; diaryEdit = null; renderDash(); const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); }
+  else if (a === "rgexp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); }
+});
 function syncStage() { const k = $("d_kind"), w = $("d_stagewrap"); if (k && w) w.hidden = k.value !== "spray"; }
 function renderDash() {
   const el = $("dash"); if (!el) return;
