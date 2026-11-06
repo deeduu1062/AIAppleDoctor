@@ -891,6 +891,30 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 #dash .wxsec h4{font-size:1.05rem}
 #dash .wxwarn.mini{gap:3px;margin:0;padding:0;list-style:none}
 @media (max-width:480px){.wxmini{flex-direction:column;align-items:stretch;gap:2px;padding:6px 6px 4px}.wxmini .wxo{max-width:none;padding-left:4px}}
+
+/* ---- news ticker at the top of the Dashboard ---- */
+.ticker{display:flex;align-items:stretch;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--line);min-height:40px;font-size:.9rem}
+.tklab{flex:none;display:flex;align-items:center;padding:0 10px;background:var(--apple);color:#fff;font-weight:700;white-space:nowrap;font-size:.82rem}
+.tkmsg{flex:1;display:flex;align-items:center;padding:0 10px;color:var(--muted);min-width:0}
+.tkview{flex:1;overflow:hidden;min-width:0;display:flex;align-items:center;mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
+.tktrack{display:flex;width:max-content}
+.tkset{list-style:none;margin:0;padding:0;display:flex;flex:none}
+.tkset li{flex:none;display:flex;align-items:center}
+.tkset li::after{content:"•";color:var(--apple);padding:0 14px}
+.tkset a{color:var(--fg);text-decoration:none;font-weight:600;white-space:nowrap;padding:8px 0}
+.tkset a:hover,.tkset a:focus-visible{text-decoration:underline;color:var(--apple)}
+.tkset small{font-weight:400;color:var(--muted);font-size:.78rem;margin-left:4px}
+.tkmore{flex:none;border:0;border-left:1px solid var(--line);background:var(--surface-2);color:var(--apple);font:700 .82rem var(--body);padding:0 10px;cursor:pointer;white-space:nowrap}
+.tkmore:hover{background:var(--line)}
+@media (prefers-reduced-motion:no-preference){
+  .tktrack{animation:tkMove var(--tkdur,40s) linear infinite}
+  .tkview:hover .tktrack,.tkview:focus-within .tktrack{animation-play-state:paused}
+}
+@media (prefers-reduced-motion:reduce){.tkview{overflow-x:auto}.tkset[aria-hidden]{display:none}}
+@keyframes tkMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tklab .tkl{margin-left:6px}.tkmore .tks{display:none}
+#dash > .ticker{margin-bottom:-6px}
+@media (max-width:600px){.tklab{padding:0 9px;font-size:1rem}.tklab .tkl{display:none}.tkmore{padding:0 9px;font-size:.8rem}.tkmore .tkl{display:none}.tkmore .tks{display:inline}}
 </style>
 
 <style>
@@ -3436,6 +3460,7 @@ function farmSummaryHtml() {
 }
 function dashOverview() {
   let h = "";
+  try { h += dashNewsHtml(); } catch (e) {}
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
   if (S.orchards.length) {
     const wl = S.orchards.filter(hasLoc);
@@ -3444,7 +3469,6 @@ function dashOverview() {
       (miss.length ? '<div class="setlocs">' + miss.map(o => '<button class="btn-s add" type="button" data-xact="setloc" data-o="' + esc(o.id) + '">' + esc(tr("loc_setfor").replace("{o}", o.name || tr("orchard_fallback"))) + "</button>").join("") + "</div>" : "") +
       "</section>";
   }
-  try { h += dashNewsHtml(); } catch (e) {}
   h += detailsHtml();
   h += dashDxHtml();
   h += farmSummaryHtml();
@@ -5684,14 +5708,14 @@ $("tt-lib").addEventListener("click", () => { if (libOpenId) libClose(); loadLib
 
 /* ---- apple news bulletins (from /api/news, Google News headlines; same for everyone) ---- */
 Object.assign(T.en, {
-  dn_h:"Apple news", dn_more:"More news",
+  dn_h:"Apple news", dn_more:"More news", dn_more_s:"More",
   tt_news:"Seb News", nw_pill:"Updated daily", nw_p:"The latest news for apple growers from Himachal, Kashmir and Uttarakhand: mandi prices, weather, crop and government updates.",
   nw_h:"Latest headlines", nw_src:"Headlines from news sites via Google News. Tap one to read it.",
   nw_more:"Show more news", nw_less:"Show less", nw_loading:"Loading the latest apple news…",
   nw_err:"News could not load right now. Check your internet and try again later.", nw_retry:"Try again", nw_upd:"Updated {t}"
 });
 Object.assign(T.hi, {
-  dn_h:"सेब समाचार", dn_more:"और समाचार",
+  dn_h:"सेब समाचार", dn_more:"और समाचार", dn_more_s:"और",
   tt_news:"सेब समाचार", nw_pill:"रोज़ अपडेट", nw_p:"हिमाचल, कश्मीर और उत्तराखंड के सेब बागवानों के लिए ताज़ा समाचार: मंडी भाव, मौसम, फ़सल और सरकारी जानकारी।",
   nw_h:"ताज़ा सुर्ख़ियाँ", nw_src:"समाचार साइटों की सुर्ख़ियाँ, Google News से। पढ़ने के लिए किसी पर दबाएँ।",
   nw_more:"और समाचार देखें", nw_less:"कम दिखाएँ", nw_loading:"सेब से जुड़े ताज़ा समाचार लोड हो रहे हैं…",
@@ -5742,16 +5766,19 @@ function renderNews() {
   set("newsMore", tr(newsOpen ? "nw_less" : "nw_more"));
   set("newsAt", n.at ? tr("nw_upd").replace("{t}", adWhen(n.at)) : "");
 }
-/* dashboard card: top 3 headlines + "More news" */
+/* dashboard news ticker: headlines move right to left; tap one to read it, or "More news" for the Seb News tab */
 function dashNewsInner() {
-  const n = NEWS[lang];
-  if (!n) { if (!newsBusy[lang]) setTimeout(() => loadNews(), 0); return '<p class="hint">' + tr("nw_loading") + "</p>"; }
-  if (!n.items.length) return '<p class="hint">' + tr("nw_err") + "</p>";
-  return '<ul class="dnews">' + n.items.slice(0, 3).map(x => '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener"><b>' + esc(x.title) + "</b><small>" +
-    esc([x.source, newsWhen(x.date)].filter(Boolean).join(" · ")) + "</small></a></li>").join("") + "</ul>" +
-    '<button class="btn-s" type="button" data-dnmore="1">' + tr("dn_more") + "</button>";
+  const n = NEWS[lang], lab = '<span class="tklab" title="' + esc(tr("dn_h")) + '"><span aria-hidden="true">📰</span><span class="tkl">' + esc(tr("dn_h")) + "</span></span>",
+    more = '<button class="tkmore" type="button" data-dnmore="1" aria-label="' + esc(tr("dn_more")) + '"><span class="tkl">' + esc(tr("dn_more")) + '</span><span class="tks">' + esc(tr("dn_more_s")) + "</span> →</button>";
+  if (!n) { if (!newsBusy[lang]) setTimeout(() => loadNews(), 0); return lab + '<span class="tkmsg">' + esc(tr("nw_loading")) + "</span>" + more; }
+  if (!n.items.length) return lab + '<span class="tkmsg">' + esc(tr("nw_err")) + "</span>" + more;
+  const items = n.items.slice(0, 10);
+  const one = hide => '<ul class="tkset"' + (hide ? ' aria-hidden="true"' : "") + ">" + items.map(x => '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener"' + (hide ? ' tabindex="-1"' : "") + ">" + esc(x.title) +
+    (x.source ? ' <small>' + esc(x.source) + "</small>" : "") + "</a></li>").join("") + "</ul>";
+  const chars = items.reduce((a, x) => a + String(x.title).length + String(x.source || "").length + 6, 0);
+  return lab + '<div class="tkview" style="--tkdur:' + Math.max(25, Math.round(chars * 0.2)) + 's"><div class="tktrack">' + one(false) + one(true) + "</div></div>" + more;
 }
-function dashNewsHtml() { return '<section class="osec"><h4>' + tr("dn_h") + '</h4><div data-dnews="1">' + dashNewsInner() + "</div></section>"; }
+function dashNewsHtml() { return '<div class="ticker" data-dnews="1">' + dashNewsInner() + "</div>"; }
 function refreshDashNews() { document.querySelectorAll("[data-dnews]").forEach(el => { el.innerHTML = dashNewsInner(); }); }
 document.addEventListener("click", e => { if (e.target.closest('[data-dnmore="1"]')) { showTool("news", false, true); loadNews(); } });
 $("newsMore").addEventListener("click", () => { newsOpen = !newsOpen; renderNews(); if (!newsOpen) $("news").scrollIntoView({block: "nearest"}); });
