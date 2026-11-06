@@ -5527,7 +5527,7 @@ function renderPromo() {
   const el = $("promo"); if (!el) return;
   $("tp-orch").classList.toggle("guest", !user);
   /* the example slideshow is replaced by the full example record in My Orchard Record (#recGuest) */
-  el.hidden = true; el.innerHTML = ""; $("orchHead").hidden = false; return;
+  el.hidden = true; el.innerHTML = ""; $("orchHead").hidden = !!user; return;
   const now = new Date(), y = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
   const years = [[y - 2, 210000], [y - 1, 305000], [y, 392000]], maxY = 392000;
   const orch = [["pr_o1", 155000, 1190], ["pr_o2", 148000, 1080], ["pr_o3", 89000, 760]], maxO = 155000;
