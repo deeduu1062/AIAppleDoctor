@@ -60,7 +60,7 @@ const T = {
 ],
 "pl_f_basic": [
 "Everything in Free",
-"Apple register for 2 orchards, this season",
+"Apple register for 2 orchards, 2 years",
 "15 photo disease checks a month",
 "Unlimited Saathi chat",
 "Spray reminders on WhatsApp",
@@ -68,7 +68,7 @@ const T = {
 ],
 "pl_f_premium": [
 "Everything in Saathi",
-"Unlimited orchards and all past years",
+"Apple register for 5 orchards, 5 years",
 "Year-on-year profit comparison",
 "Unlimited photo disease checks",
 "Spray plan for your height, variety and rootstock",
@@ -245,7 +245,7 @@ const T = {
 ],
 "pl_f_basic": [
 "मुफ़्त प्लान की सब सुविधाएँ",
-"2 बाग़ों का सेब रजिस्टर, इस सीज़न का",
+"2 बाग़ों का सेब रजिस्टर, 2 साल का",
 "महीने में 15 फ़ोटो से बीमारी जाँच",
 "साथी से असीमित बातचीत",
 "WhatsApp पर स्प्रे रिमाइंडर",
@@ -253,7 +253,7 @@ const T = {
 ],
 "pl_f_premium": [
 "साथी प्लान की सब सुविधाएँ",
-"असीमित बाग़ और पिछले सभी साल",
+"5 बाग़ों का सेब रजिस्टर, 5 साल का",
 "साल-दर-साल मुनाफ़े की तुलना",
 "असीमित फ़ोटो से बीमारी जाँच",
 "आपकी ऊँचाई, किस्म और रूटस्टॉक के हिसाब से स्प्रे प्लान",
