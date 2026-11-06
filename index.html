@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Seb Saathi: Your Orchard. Your Companion. Knowledge, technology and profit for apple growers in Himachal Pradesh and Kashmir.">
+<meta name="description" content="Seb Saathi: the complete app to manage your apple orchard. Sprays and work diary, weather alerts, disease checks, season planning, sales and profit, for apple growers in Himachal Pradesh and Kashmir.">
 <title>Seb Saathi – Your Orchard. Your Companion.</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#F2F4EF">
@@ -940,6 +940,16 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .rgtips{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 14px}
 .rgtips summary{cursor:pointer;font-weight:700;padding:10px 0}
 .rgtips ul{margin:0 0 12px;padding-left:20px;display:grid;gap:4px;font-size:.92rem;color:var(--muted)}
+
+/* ---- landing: "manage your whole orchard" ---- */
+.lpwhat{margin-top:12px;display:inline-block;font:800 clamp(1.15rem,4.6vw,1.45rem)/1.25 var(--body);color:var(--kraft-ink,var(--fg));background:rgba(255,255,255,.55);border-left:5px solid var(--apple);padding:6px 12px;border-radius:0 8px 8px 0}
+.mggrid{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;counter-reset:mg}
+.mggrid li{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:3px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.mgi{grid-row:1 / span 2;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:1.5rem;background:var(--surface-2)}
+.mggrid b{font:700 1.08rem var(--display,var(--body))}
+.mggrid span:not(.mgi){color:var(--muted);line-height:1.5;font-size:.95rem}
+.mgnote{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-weight:600}
+.mgnote::before{content:"💬 "}
 </style>
 
 <style>
@@ -1587,6 +1597,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <p class="kicker" data-i18n="hero_kicker"></p>
         <h1 data-i18n="hero_h1"></h1>
         <p class="pillars"><span lang="hi">ज्ञान • तकनीक • मुनाफ़ा</span><span lang="en">Knowledge • Technology • Profit</span></p>
+        <p class="lpwhat lponly" data-i18n="lp_what" hidden></p>
         <p class="sub lpsub lponly" data-i18n="lp_sub" hidden></p>
         <div class="btns">
           <button class="btn primary" type="button" id="heroJoin" data-i18n="pr_join"></button>
@@ -1619,6 +1630,21 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </section>
 
 <div class="lponly" id="landing" hidden>
+<section class="section lpmanage">
+  <div class="wrap">
+    <h2 data-i18n="lp_m_h"></h2>
+    <p class="lede" data-i18n="lp_m_p"></p>
+    <ol class="mggrid">
+      <li><span class="mgi" aria-hidden="true">🌳</span><b data-i18n="lp_m1_h"></b><span data-i18n="lp_m1_p"></span></li>
+      <li><span class="mgi" aria-hidden="true">💧</span><b data-i18n="lp_m2_h"></b><span data-i18n="lp_m2_p"></span></li>
+      <li><span class="mgi" aria-hidden="true">🌦️</span><b data-i18n="lp_m3_h"></b><span data-i18n="lp_m3_p"></span></li>
+      <li><span class="mgi" aria-hidden="true">🔍</span><b data-i18n="lp_m4_h"></b><span data-i18n="lp_m4_p"></span></li>
+      <li><span class="mgi" aria-hidden="true">🗓️</span><b data-i18n="lp_m5_h"></b><span data-i18n="lp_m5_p"></span></li>
+      <li><span class="mgi" aria-hidden="true">📦</span><b data-i18n="lp_m6_h"></b><span data-i18n="lp_m6_p"></span></li>
+    </ol>
+    <p class="mgnote" data-i18n="lp_m_note"></p>
+  </div>
+</section>
 <section class="section lpfeat">
   <div class="wrap">
     <h2 data-i18n="lp_f_h"></h2>
@@ -5318,7 +5344,15 @@ $("dash").addEventListener("click", e => {
 });
 
 Object.assign(T.en, {
-  lp_sub:"Keep your orchard accounts, spot diseases early and follow the right spray at the right time. Free, in Hindi and English.",
+  lp_what:"The complete app to manage your apple orchard", lp_sub:"From pruning to the mandi: plan the season, log every spray and job, watch the weather, catch diseases early and keep your sales and costs. Free, in Hindi and English.",
+  lp_m_h:"Manage your whole orchard, not just the accounts", lp_m_p:"Seb Saathi follows your orchard through the full season, from winter pruning to the last box sold.",
+  lp_m1_h:"Orchards and trees", lp_m1_p:"Each orchard with its trees, varieties, rootstock, height, location and photo.",
+  lp_m2_h:"Sprays and work diary", lp_m2_p:"Log every spray with its stage, plus pruning, manure, irrigation and labour. Plan the next jobs with reminders.",
+  lp_m3_h:"Weather and alerts", lp_m3_p:"5-day forecast at each orchard, with frost, hail and rain warnings before you spray.",
+  lp_m4_h:"Pests and diseases", lp_m4_p:"Check leaves and fruit by symptoms or photo, and get safe next steps.",
+  lp_m5_h:"Season planning", lp_m5_p:"Month-by-month calendar and the spray schedule for each stage of the tree.",
+  lp_m6_h:"Sales and profit", lp_m6_p:"Every lot by grade, money still due from the aadhti, and real profit per orchard and per peti.",
+  lp_m_note:"Ask Saathi any orchard question in Hindi or English. It knows your own orchards and the weather there.",
   lp_have:"Already have an account?",
   lp_t1:"Free to start", lp_t2:"Only your email needed", lp_t3:"Works on any phone",
   lp_f_h:"Everything for your apple orchard, in one place",
@@ -5334,10 +5368,10 @@ Object.assign(T.en, {
   lp_soon:"Coming soon: daily mandi rates and a place to buy and sell.",
   lp_s_h:"Start in 3 easy steps",
   lp_s1_h:"Make your free account", lp_s1_p:"Enter your email and open the link we send. It takes about a minute. No card, no payment.",
-  lp_s2_h:"Add your orchards", lp_s2_p:"Give each orchard a name, then add sale lots and expenses as the season goes on.",
-  lp_s3_h:"See your real profit", lp_s3_p:"Net profit for each orchard and each year, ready on any phone you log in on.",
+  lp_s2_h:"Add your orchards", lp_s2_p:"Name each orchard and add its trees, varieties and location. Then log sprays, work and sales as the season goes on.",
+  lp_s3_h:"Manage the whole season", lp_s3_p:"Weather alerts, spray and work reminders, disease checks and real profit for each orchard, on any phone.",
   lp_w_h:"Why make a free account?",
-  lp_w1_h:"Your records are saved", lp_w1_p:"No more lost diaries or Excel files. Open your accounts on any phone.",
+  lp_w1_h:"Your records are saved", lp_w1_p:"No more lost diaries or Excel files. Your orchards, sprays, work and sales on any phone.",
   lp_w2_h:"Only you can see them", lp_w2_p:"Your sale figures stay private to you. We never share them or sell them.",
   lp_w3_h:"Saathi and photo checks", lp_w3_p:"Chat with Saathi and check your leaves and fruit by photo.",
   lp_w4_h:"Free plan, always", lp_w4_p:"The free plan stays free. Pay later only if you want extra features.",
@@ -5350,7 +5384,15 @@ Object.assign(T.en, {
   lp_q5:"Do I need to download an app?", lp_a5:"No. It works in your phone's browser. You can also add it to your home screen so it opens like an app."
 });
 Object.assign(T.hi, {
-  lp_sub:"अपने बाग़ का हिसाब रखें, बीमारी जल्दी पहचानें और सही समय पर सही स्प्रे करें। मुफ़्त, हिंदी और अंग्रेज़ी में।",
+  lp_what:"सेब के बाग़ की पूरी देखभाल का ऐप", lp_sub:"छँटाई से मंडी तक: सीज़न की योजना बनाएँ, हर स्प्रे और काम लिखें, मौसम देखें, बीमारी जल्दी पहचानें और बिक्री व ख़र्च का हिसाब रखें। मुफ़्त, हिंदी और अंग्रेज़ी में।",
+  lp_m_h:"पूरे बाग़ की देखभाल, सिर्फ़ हिसाब नहीं", lp_m_p:"सेब साथी पूरे सीज़न आपके बाग़ के साथ चलता है, सर्दियों की छँटाई से आख़िरी पेटी बिकने तक।",
+  lp_m1_h:"बाग़ और पेड़", lp_m1_p:"हर बाग़ के पेड़, किस्में, रूटस्टॉक, ऊँचाई, जगह और फ़ोटो।",
+  lp_m2_h:"स्प्रे और काम की डायरी", lp_m2_p:"हर स्प्रे अवस्था के साथ लिखें, साथ में छँटाई, खाद, सिंचाई और मज़दूरी। रिमाइंडर के साथ अगले काम तय करें।",
+  lp_m3_h:"मौसम और चेतावनी", lp_m3_p:"हर बाग़ के लिए 5 दिन का मौसम, स्प्रे से पहले पाला, ओले और बारिश की चेतावनी।",
+  lp_m4_h:"कीट और बीमारियाँ", lp_m4_p:"लक्षण या फ़ोटो से पत्ते और फल जाँचें, और सुरक्षित अगले क़दम जानें।",
+  lp_m5_h:"सीज़न की योजना", lp_m5_p:"महीने दर महीने कैलेंडर और पेड़ की हर अवस्था के लिए स्प्रे सूची।",
+  lp_m6_h:"बिक्री और मुनाफ़ा", lp_m6_p:"ग्रेड के हिसाब से हर लॉट, आढ़ती से बाक़ी पैसा, और हर बाग़ व हर पेटी का असली मुनाफ़ा।",
+  lp_m_note:"बाग़ का कोई भी सवाल हिंदी या अंग्रेज़ी में साथी से पूछें। वह आपके बाग़ और वहाँ के मौसम को जानता है।",
   lp_have:"पहले से खाता है?",
   lp_t1:"शुरू करना मुफ़्त", lp_t2:"सिर्फ़ ईमेल चाहिए", lp_t3:"हर फ़ोन पर चलता है",
   lp_f_h:"सेब के बाग़ के लिए सब कुछ, एक ही जगह",
@@ -5366,10 +5408,10 @@ Object.assign(T.hi, {
   lp_soon:"जल्द आ रहा: रोज़ के मंडी भाव और ख़रीद-बिक्री की जगह।",
   lp_s_h:"3 आसान क़दमों में शुरू करें",
   lp_s1_h:"मुफ़्त खाता बनाएँ", lp_s1_p:"अपना ईमेल डालें और हमारा भेजा लिंक खोलें। लगभग एक मिनट लगता है। न कार्ड, न भुगतान।",
-  lp_s2_h:"अपने बाग़ जोड़ें", lp_s2_p:"हर बाग़ को नाम दें, फिर सीज़न के साथ-साथ बिक्री के लॉट और ख़र्च जोड़ते जाएँ।",
-  lp_s3_h:"असली मुनाफ़ा देखें", lp_s3_p:"हर बाग़ और हर साल का शुद्ध मुनाफ़ा, जिस भी फ़ोन पर लॉग इन करें, वहीं तैयार।",
+  lp_s2_h:"अपने बाग़ जोड़ें", lp_s2_p:"हर बाग़ को नाम दें और उसके पेड़, किस्में और जगह जोड़ें। फिर सीज़न के साथ स्प्रे, काम और बिक्री लिखते जाएँ।",
+  lp_s3_h:"पूरे सीज़न की देखभाल", lp_s3_p:"हर बाग़ के लिए मौसम की चेतावनी, स्प्रे और काम के रिमाइंडर, बीमारी जाँच और असली मुनाफ़ा, किसी भी फ़ोन पर।",
   lp_w_h:"मुफ़्त खाता क्यों बनाएँ?",
-  lp_w1_h:"आपका रिकॉर्ड सुरक्षित रहता है", lp_w1_p:"डायरी या Excel फ़ाइल खोने की चिंता नहीं। किसी भी फ़ोन पर अपना हिसाब खोलें।",
+  lp_w1_h:"आपका रिकॉर्ड सुरक्षित रहता है", lp_w1_p:"डायरी या Excel फ़ाइल खोने की चिंता नहीं। आपके बाग़, स्प्रे, काम और बिक्री, किसी भी फ़ोन पर।",
   lp_w2_h:"सिर्फ़ आपको दिखता है", lp_w2_p:"आपकी बिक्री के आँकड़े सिर्फ़ आपके हैं। हम उन्हें न किसी को दिखाते हैं, न बेचते हैं।",
   lp_w3_h:"साथी और फ़ोटो जाँच", lp_w3_p:"साथी से बात करें और फ़ोटो से पत्तियों और फल की जाँच करें।",
   lp_w4_h:"मुफ़्त प्लान, हमेशा", lp_w4_p:"मुफ़्त प्लान हमेशा मुफ़्त रहेगा। ज़्यादा सुविधाएँ चाहिए तो ही बाद में भुगतान करें।",
