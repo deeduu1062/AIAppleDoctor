@@ -2657,11 +2657,10 @@ const THEMES = {
 const $ = id => document.getElementById(id);
 const set = (id, t) => { $(id).textContent = t; };
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let lang = "en";
+let lang = "hn";   /* Hinglish by default; a saved choice (this phone, or the grower's account) wins */
 try {
   const s = localStorage.getItem("ad-lang");
   if (s === "hi" || s === "en" || s === "hn") lang = s;
-  else if ((navigator.language || "").toLowerCase().startsWith("hi")) lang = "hi";
 } catch (e) {}
 const tr = k => { const t = T[lang], v = t && t[k]; return v != null ? v : T.en[k]; };
 function renderHero() {
@@ -2698,6 +2697,7 @@ function applyLang() {
 }
 $("langBtn").addEventListener("change", () => {
   const v = $("langBtn").value; lang = v === "hi" || v === "hn" ? v : "en";
+  saveLangToAccount();
   try { localStorage.setItem("ad-lang", lang); } catch (e) {}
   applyLang();
 });
@@ -3053,10 +3053,29 @@ async function loadMine() {
   if (justSignedIn) { justSignedIn = false; showTool("orch", false, true); if (location.hash === "#dashboard") try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
   else if (!tabPicked) showTool("orch");
 }
+/* each grower's language is kept in their account, so it follows them to any phone */
+const LANGS = ["en", "hi", "hn"];
+function saveLangToAccount() {
+  if (!sb || !user) return;
+  const m = user.user_metadata || {};
+  if (m.lang === lang) return;
+  try { sb.auth.updateUser({data: {lang: lang}}).then(r => { if (r && r.data && r.data.user) user = r.data.user; }, () => {}); } catch (e) {}
+}
+function langFromAccount(u) {
+  const m = (u && u.user_metadata) || {};
+  if (LANGS.indexOf(m.lang) >= 0) {
+    if (m.lang !== lang) { lang = m.lang; try { localStorage.setItem("ad-lang", lang); } catch (e) {} return true; }
+    return false;
+  }
+  setTimeout(saveLangToAccount, 0);   /* older accounts: remember the language they use now */
+  return false;
+}
 async function applyUser(u) {
   if (isAdminOnly(u)) { location.replace("/admin.html"); return; }
+  const langChanged = u ? langFromAccount(u) : false;
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
+  if (langChanged && typeof applyLang === "function") try { applyLang(); } catch (e) {}
   if (typeof setGuest === "function") setGuest(!u);
   if (!u) {
     curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); spOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
