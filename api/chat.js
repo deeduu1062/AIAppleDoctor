@@ -38,7 +38,117 @@ The website has these tabs you can point people to:
 - Spray schedule: link to the official Himachal spray schedule.
 - Library: guides on diseases, pests, sprays, nutrition, pruning, harvest, selling and schemes.
 - Seb News: latest apple news. Season calendar: month-by-month work. Mandi rates: links to official prices.
-- Feedback button on every page to report problems or suggestions.`;
+- Feedback button on every page to report problems or suggestions.
+
+Using the grower's own records:
+- You may be given "This grower's records": their orchards, seasons, diary, tasks, recent photo checks and the weather forecast at their orchards. This is private data the grower typed in themselves.
+- Use it whenever it makes the answer more useful: call orchards by their names, use their altitude, varieties and dates, their last spray and the coming rain. Example: "Upper orchard was last sprayed 12 days ago and rain is forecast from Thursday, so plan the next spray before then."
+- Use only what is relevant. Do not recite the whole record. Never invent records they do not have.
+- You may quote their own figures (boxes, net profit, net per peti, money still due) exactly as given. Round sensibly.
+- If a useful record is missing (no altitude, no location, no diary), answer anyway and suggest, in one short line, adding it on the Dashboard.
+- Weather is a forecast for their orchard location and can change. Rain or long wet spells raise the risk of scab and premature leaf fall (Marssonina); say so when relevant, but still follow the safety rules for sprays.`;
+
+// ---- This grower's own records, so Saathi can answer about THEIR orchards ----
+const T = ms => (typeof AbortSignal !== "undefined" && AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined);
+const COST_KEYS = ["spray", "fert", "labour", "prune", "irrig", "other"];
+const DIARY_COST = { spray: "spray", fert: "fert", prune: "prune", irrig: "irrig", labour: "labour" };
+const n0 = v => (isFinite(+v) ? +v : 0);
+const inr = v => "Rs " + Math.round(v).toLocaleString("en-IN");
+const clip = (t, k) => String(t || "").replace(/\s+/g, " ").trim().slice(0, k);
+const hYear = d => { const m = /^(\d{4})-/.exec(String(d || "")); return m ? +m[1] : NaN; };
+function istToday() { return new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10); }
+function daysAgo(d, today) { const a = Date.parse(d), b = Date.parse(today); return isFinite(a) && isFinite(b) ? Math.round((b - a) / 86400000) : null; }
+
+function seasonFigures(se, o) {
+  let boxes = 0, eq = 0, rev = 0, lotExp = 0, due = 0;
+  (se.lots || []).forEach(l => (l.lines || []).forEach(n => {
+    const b = n0(n.boxes), r = n0(n.rate), e = n0(n.tod) + n0(n.grd) + n0(n.car) + n0(n.exp);
+    const gross = b * r, com = gross * Math.min(Math.max(n0(n.com), 0), 100) / 100;
+    boxes += b; eq += n.half ? b / 2 : b; rev += gross; lotExp += b * e + com; if (!n.paid) due += gross;
+  }));
+  let yearly = COST_KEYS.reduce((a, k) => a + n0(se.costs && se.costs[k]), 0);
+  ((o && o.diary) || []).forEach(d => { if (n0(d.cost) > 0 && hYear(d.date) === +se.year) yearly += n0(d.cost); });
+  ((o && o.labour) || []).forEach(e => { if (e && e.type === "work" && hYear(e.date) === +se.year) yearly += n0(e.days) * n0(e.rate); });
+  const cost = lotExp + yearly, profit = rev - cost;
+  return { boxes, rev, cost, profit, ppb: eq ? profit / eq : 0, due };
+}
+
+async function weatherFor(o) {
+  const P = o.profile || {};
+  if (!isFinite(parseFloat(P.lat)) || !isFinite(parseFloat(P.lon))) return "";
+  try {
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + (+P.lat) + "&longitude=" + (+P.lon) +
+      "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&past_days=7&forecast_days=6&timezone=Asia%2FKolkata", { signal: T(3500) });
+    if (!r.ok) return "";
+    const d = (await r.json()).daily; if (!d || !d.time) return "";
+    const today = istToday(); let past = 0, wetPast = 0; const next = [];
+    d.time.forEach((t, i) => {
+      const rain = n0(d.precipitation_sum[i]);
+      if (t < today) { past += rain; if (rain >= 1) wetPast++; }
+      else next.push(t.slice(5) + ": " + Math.round(n0(d.temperature_2m_min[i])) + "-" + Math.round(n0(d.temperature_2m_max[i])) + "C, rain " + rain.toFixed(1) + " mm (" + Math.round(n0(d.precipitation_probability_max[i])) + "%)");
+    });
+    return "  Weather at " + clip(o.name, 40) + ": last 7 days rain " + past.toFixed(1) + " mm on " + wetPast + " days. Next days: " + next.join("; ");
+  } catch (e) { return ""; }
+}
+
+async function growerContext(token, userId) {
+  const today = istToday(), yearNow = +today.slice(0, 4);
+  let data = null, checks = [];
+  try {
+    const [lr, dr] = await Promise.all([
+      fetch(SB_URL + "/rest/v1/ledgers?select=data&user_id=eq." + encodeURIComponent(userId), { headers: sbHeaders(token), signal: T(3500) }),
+      fetch(SB_URL + "/rest/v1/diagnoses?select=created_at,part,result&user_id=eq." + encodeURIComponent(userId) + "&order=created_at.desc&limit=5", { headers: sbHeaders(token), signal: T(3500) })
+    ]);
+    if (lr.ok) { const rows = await lr.json(); data = rows && rows[0] ? rows[0].data : null; }
+    if (dr.ok) checks = await dr.json();
+  } catch (e) { /* answer without records */ }
+
+  const L = ["Today is " + today + " (India time)."];
+  const orch = data && Array.isArray(data.orchards) ? data.orchards.filter(o => o && o.id && !o.ex).slice(0, 8) : [];
+  if (!orch.length) L.push("This grower has not added any orchards yet.");
+  orch.forEach(o => {
+    const P = o.profile || {}, facts = [];
+    if (P.village) facts.push(clip(P.village, 50));
+    if (n0(P.alt)) facts.push(Math.round(n0(P.alt)) + " m");
+    if (n0(P.area)) facts.push(n0(P.area) + " bigha");
+    if (n0(o.trees)) facts.push(n0(o.trees) + " trees");
+    if (P.var) facts.push("varieties: " + clip(P.var, 80));
+    if (P.root) facts.push("rootstock: " + clip(P.root, 40));
+    if (n0(P.planted)) facts.push("planted " + n0(P.planted));
+    if (P.irr) facts.push("irrigation: " + clip(P.irr, 30));
+    if (P.hail) facts.push("hail net: " + clip(P.hail, 30));
+    L.push("Orchard \"" + clip(o.name || "Orchard", 40) + "\"" + (facts.length ? ": " + facts.join(", ") : " (no details added)"));
+
+    const seasons = (data.seasons || []).filter(s => s && s.oid === o.id && isFinite(+s.year)).sort((a, b) => b.year - a.year).slice(0, 4);
+    seasons.forEach(se => {
+      const f = seasonFigures(se, o);
+      if (!f.boxes && !f.cost) return;
+      L.push("  " + se.year + ": " + Math.round(f.boxes) + " boxes sold for " + inr(f.rev) + ", costs " + inr(f.cost) + ", net profit " + inr(f.profit) +
+        (f.boxes ? " (" + inr(f.ppb) + " per peti)" : "") + (f.due > 0 ? ", " + inr(f.due) + " still to be paid" : ""));
+    });
+
+    const diary = (o.diary || []).filter(d => d && d.date && d.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1));
+    const lastSpray = diary.find(d => d.kind === "spray");
+    if (lastSpray) L.push("  Last spray: " + lastSpray.date + " (" + daysAgo(lastSpray.date, today) + " days ago)" + (lastSpray.stage ? ", stage " + clip(lastSpray.stage, 30) : "") + (lastSpray.text ? ", " + clip(lastSpray.text, 80) : ""));
+    else L.push("  No spray recorded in the diary.");
+    const recent = diary.filter(d => { const k = daysAgo(d.date, today); return k != null && k <= 90; }).slice(0, 10);
+    if (recent.length) L.push("  Diary, last 90 days: " + recent.map(d => d.date + " " + d.kind + (d.stage ? " [" + clip(d.stage, 25) + "]" : "") + (d.text ? " - " + clip(d.text, 70) : "") + (n0(d.cost) ? " (" + inr(d.cost) + ")" : "")).join("; "));
+    const todos = (o.todos || []).filter(x => x && !x.done).sort((a, b) => String(a.due || "9").localeCompare(String(b.due || "9"))).slice(0, 5);
+    if (todos.length) L.push("  Open tasks: " + todos.map(x => (x.due ? x.due + " " : "") + clip(x.kind, 20) + (x.text ? " - " + clip(x.text, 60) : "")).join("; "));
+  });
+  if (orch.length && !orch.some(o => (data.seasons || []).some(s => s.oid === o.id && s.year === yearNow))) L.push("No season added yet for " + yearNow + ".");
+
+  const wx = (await Promise.all(orch.slice(0, 3).map(weatherFor))).filter(Boolean);
+  if (wx.length) L.push("Weather forecast (Open-Meteo):", ...wx);
+  else if (orch.length) L.push("No orchard location saved, so no local weather.");
+
+  const ck = (checks || []).map(c => {
+    const m = c.result && Array.isArray(c.result.matches) && c.result.matches[0];
+    return String(c.created_at || "").slice(0, 10) + (c.part ? " " + clip(c.part, 20) : "") + ": " + (m ? m.id + " (" + m.confidence + ")" : "unclear photo");
+  });
+  if (ck.length) L.push("Recent photo checks: " + ck.join("; "));
+  return L.join("\n").slice(0, 7000);
+}
 
 let KB = { at: 0, text: "" };
 async function knowledge() {
@@ -113,10 +223,11 @@ module.exports = async (req, res) => {
     if (used >= limit) return send(res, 429, { error: "limit", limit });
   } catch (e) { return send(res, 502, { error: "db_down" }); }
 
-  // 4. Ask the AI, with the Library as background knowledge
-  const kb = await knowledge();
+  // 4. Ask the AI, with the Library and this grower's own records as background
+  const [kb, mine] = await Promise.all([knowledge(), growerContext(token, user.id).catch(() => "")]);
   const system = [{ type: "text", text: PERSONA }];
   if (kb) system.push({ type: "text", text: "Seb Saathi Library (trusted background; prefer it, and mention the Library tab when a guide covers the question):\n\n" + kb, cache_control: { type: "ephemeral" } });
+  if (mine) system.push({ type: "text", text: "This grower's records (private to them):\n" + mine });
   system.push({ type: "text", text: "The website is currently set to " + (lang === "hi" ? "Hindi" : "English") + ". Still reply in the language the grower writes in." });
   let reply = "";
   try {
