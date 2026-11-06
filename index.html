@@ -1013,6 +1013,22 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 #recGuest{display:grid;gap:14px}
 #recGuest[hidden]{display:none}
 .rcsub h4{font-size:1.15rem;font-weight:700}
+
+/* ---- guest dashboard ---- */
+#guestDash{display:grid;gap:16px}
+#guestDash[hidden]{display:none}
+.gdsec{display:grid;gap:8px}
+.gdsec h4{font-size:1.08rem;font-weight:700}
+.gdhead{display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.gdplace{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--muted)}
+.gdplace select{font:600 .95rem var(--body);padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-height:38px}
+.gdtools{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(46%,170px),1fr));gap:8px}
+.gdtool{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:700 .95rem var(--body);cursor:pointer;text-align:left;min-height:54px}
+.gdtool span{font-size:1.35rem}
+.gdtool:hover{border-color:var(--apple)}
+.gdjoin{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:var(--surface-2);border:1px dashed var(--line)}
+.gdjoin b{display:block}
+.gdjoin span{color:var(--muted);font-size:.92rem}
 </style>
 
 <style>
@@ -1986,7 +2002,8 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <div class="tpanel" id="tp-orch" role="tabpanel" aria-labelledby="tt-orch" hidden>
       <div class="thead" id="orchHead"><h3 data-i18n="tab_orch"></h3><span class="pill" id="orchPill"></span></div>
       <div class="promo" id="promo"></div>
-      <p id="orIntro" data-i18n="or_p"></p>
+      <p id="orIntro" data-i18n="or_p" hidden></p>
+      <div id="guestDash" hidden></div>
 
 
       <div class="authcard" id="pwCard" hidden>
@@ -2983,7 +3000,7 @@ window.addEventListener("online", () => { if (isDirty()) flush(); });
 window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
 
 function renderAcct() {
-  $("acctBar").hidden = !user; $("orIntro").hidden = !!user; $("top").hidden = !!user;
+  $("acctBar").hidden = !user; $("orIntro").hidden = true; $("top").hidden = !!user;
   $("adminLink").hidden = !isAdmin();
   if (typeof renderContact === "function") renderContact();
   renderDiagAuth();
@@ -4207,6 +4224,7 @@ function refreshWx() {
   document.querySelectorAll("[data-wx]").forEach(el => {
     const id = el.dataset.wx;
     if (id === "dash") { const list = S.orchards.filter(hasLoc); el.innerHTML = list.length ? wxBlock(list, false, true) : '<p class="hint">' + tr("wx_none") + "</p>"; }
+    else if (id === "guest") el.innerHTML = wxBlock([guestPlace()], false, true);
     else { const o = S.orchards.find(x => x.id === id); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true); }
   });
 }
@@ -5561,9 +5579,9 @@ function renderPromo() {
   const el = $("promo"); if (!el) return;
   $("tp-orch").classList.toggle("guest", !user);
   /* the example slideshow is replaced by the full example record in My Orchard Record (#recGuest) */
-  el.hidden = !!user;
   $("orchHead").hidden = true;
-  if (user) { el.innerHTML = ""; return; }
+  el.hidden = true; el.innerHTML = "";   /* the slideshow is replaced by the live guest dashboard below */
+  renderGuestDash(); return;
   const now = new Date(), y = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
   const years = [[y - 2, 210000], [y - 1, 305000], [y, 392000]], maxY = 392000;
   const orch = [["pr_o1", 155000, 1190], ["pr_o2", 148000, 1080], ["pr_o3", 89000, 760]], maxO = 155000;
@@ -6284,6 +6302,43 @@ function renderRec() {
   el.innerHTML = h;
 }
 document.addEventListener("click", e => { const b = e.target.closest('#recSample [data-lp="dash"]'); if (b) { tabPicked = true; showTool("orch", false, true); } });
+
+/* ---- Dashboard for visitors who are not logged in: news, weather for their area, quick tools, sign-up ---- */
+Object.assign(T.en, { gd_place:"Your area", gd_tools:"Quick tools", gd_t_diag:"Check a disease", gd_t_calc:"Quick profit calculator", gd_t_spray:"Spray schedule", gd_t_chat:"Ask Saathi",
+  gd_join_h:"Keep your own orchard record", gd_join_p:"Free account: weather for each orchard, spray reminders, sales and profit." });
+Object.assign(T.hi, { gd_place:"आपका इलाक़ा", gd_tools:"झटपट टूल", gd_t_diag:"बीमारी जाँचें", gd_t_calc:"झटपट मुनाफ़ा कैलकुलेटर", gd_t_spray:"स्प्रे सूची", gd_t_chat:"साथी से पूछें",
+  gd_join_h:"अपने बाग़ का रिकॉर्ड रखें", gd_join_p:"मुफ़्त खाता: हर बाग़ का मौसम, स्प्रे रिमाइंडर, बिक्री और मुनाफ़ा।" });
+Object.assign(T.hn, { gd_place:"Aapka ilaaka", gd_tools:"Jhatpat tools", gd_t_diag:"Bimari jaanchein", gd_t_calc:"Jhatpat munafa calculator", gd_t_spray:"Spray schedule", gd_t_chat:"Saathi se poochhein",
+  gd_join_h:"Apne bagiche ka record rakhein", gd_join_p:"Free account: har bagiche ka mausam, spray reminder, bikri aur munafa." });
+/* apple areas of Himachal and Kashmir (approximate centres, for the forecast) */
+const PLACES = [
+  ["rohru", "Rohru", "रोहड़ू", 31.204, 77.751], ["chirgaon", "Chirgaon", "चिड़गाँव", 31.240, 77.830], ["jubbal", "Jubbal", "जुब्बल", 31.110, 77.655],
+  ["kotkhai", "Kotkhai", "कोटखाई", 31.117, 77.536], ["theog", "Theog", "ठियोग", 31.120, 77.355], ["narkanda", "Narkanda", "नारकंडा", 31.257, 77.457],
+  ["kufri", "Kufri", "कुफ़री", 31.098, 77.267], ["karsog", "Karsog", "करसोग", 31.383, 77.200], ["kullu", "Kullu", "कुल्लू", 31.958, 77.109],
+  ["kinnaur", "Kinnaur (Reckong Peo)", "किन्नौर (रिकांग पिओ)", 31.538, 78.270], ["chamba", "Chamba", "चंबा", 32.556, 76.125],
+  ["shopian", "Shopian", "शोपियां", 33.717, 74.833], ["sopore", "Sopore", "सोपोर", 34.300, 74.467]
+];
+function guestPlaceId() { try { const v = localStorage.getItem("ad-place"); if (PLACES.some(p => p[0] === v)) return v; } catch (e) {} return "rohru"; }
+function guestPlace() {
+  const p = PLACES.find(x => x[0] === guestPlaceId()) || PLACES[0];
+  return {id: "place-" + p[0], name: lang === "hi" ? p[2] : p[1], profile: {lat: p[3], lon: p[4]}};
+}
+function renderGuestDash() {
+  const el = $("guestDash"); if (!el) return;
+  el.hidden = !!user;
+  if (user || !T.en.gd_place) { el.innerHTML = ""; return; }
+  const pid = guestPlaceId();
+  const tool = (go, ic, k) => '<button class="gdtool" type="button" data-lgo="' + go + '"><span aria-hidden="true">' + ic + "</span>" + esc(tr(k)) + "</button>";
+  el.innerHTML = '<div class="ticker" data-dnews="1">' + dashNewsInner() + "</div>" +
+    '<section class="gdsec"><div class="gdhead"><h4>' + tr("wx_h_dash") + '</h4><label class="gdplace"><span>' + tr("gd_place") + '</span><select id="gdPlace">' +
+      PLACES.map(p => '<option value="' + p[0] + '"' + (p[0] === pid ? " selected" : "") + ">" + esc(lang === "hi" ? p[2] : p[1]) + "</option>").join("") + "</select></label></div>" +
+      '<div data-wx="guest">' + wxBlock([guestPlace()], false, true) + "</div></section>" +
+    '<section class="gdsec"><h4>' + tr("gd_tools") + '</h4><div class="gdtools">' + tool("diag", "🔍", "gd_t_diag") + tool("calc", "🧮", "gd_t_calc") + tool("spray", "💧", "gd_t_spray") + tool("chat", "💬", "gd_t_chat") + "</div></section>" +
+    '<div class="gdjoin"><div><b>' + tr("gd_join_h") + "</b><span>" + tr("gd_join_p") + '</span></div><button class="btn primary" type="button" data-lp="join">' + esc(tr("pr_join")) + "</button></div>";
+}
+document.addEventListener("change", e => {
+  if (e.target && e.target.id === "gdPlace") { try { localStorage.setItem("ad-place", e.target.value); } catch (x) {} const w = document.querySelector('[data-wx="guest"]'); if (w) w.innerHTML = wxBlock([guestPlace()], false, true); }
+});
 /* ---- top tabs ---- */
 const TT = ["orch","rec","calc","diag","spray","news","cal","mandi","buy"];  /* Library tab removed from the site; its articles still feed Saathi */
 function showTool(w, focus, scroll) {
