@@ -6134,7 +6134,8 @@ Object.assign(T.hi, {
 });
 const myRef = () => user && user.id ? String(user.id).replace(/-/g, "").slice(0, 8) : "1";
 const shareLink = () => location.origin + "/?invite=" + myRef();
-const shareText = () => tr("sh_msg") + "\n" + shareLink();
+const shareMsg = () => (T.hn && T.hn.sh_msg) || tr("sh_msg");  /* invite message is always sent in Hinglish */
+const shareText = () => shareMsg() + "\n" + shareLink();
 function shareOpen() {
   set("shareMsg", shareText()); set("shareNote", "");
   $("shareWa").href = "https://wa.me/?text=" + encodeURIComponent(shareText());
@@ -6149,7 +6150,7 @@ $("shareJoin").addEventListener("click", shareOpen);
 $("shareClose").addEventListener("click", shareShut);
 $("shareDlg").addEventListener("click", e => { if (e.target === $("shareDlg")) shareShut(); });
 $("shareMore").addEventListener("click", async () => {
-  try { await navigator.share({title: "Seb Saathi", text: tr("sh_msg"), url: shareLink()}); } catch (e) {}
+  try { await navigator.share({title: "Seb Saathi", text: shareMsg(), url: shareLink()}); } catch (e) {}
 });
 $("shareCopy").addEventListener("click", async () => {
   let ok = false;
