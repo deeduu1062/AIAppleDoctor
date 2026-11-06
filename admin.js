@@ -51,7 +51,7 @@ const T = {
 "pl_mo": "or ₹{m} a month",
 "pl_best": "Best value",
 "pl_f_free": [
-"Profit calculator (quick check)",
+"Quick profit calculator",
 "Season calendar and spray schedule",
 "Daily mandi rates",
 "3 photo disease checks a month",
@@ -236,7 +236,7 @@ const T = {
 "pl_mo": "या ₹{m} महीना",
 "pl_best": "सबसे फ़ायदेमंद",
 "pl_f_free": [
-"मुनाफ़ा कैलकुलेटर (झटपट हिसाब)",
+"झटपट मुनाफ़ा कैलकुलेटर",
 "सीज़न कैलेंडर और स्प्रे शेड्यूल",
 "रोज़ के मंडी भाव",
 "महीने में 3 फ़ोटो से बीमारी जाँच",
