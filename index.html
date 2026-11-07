@@ -1297,7 +1297,9 @@ details.dsec > summary h4{display:inline}
 .detlist{margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:0 28px}
 .detlist div{display:grid;grid-template-columns:minmax(0,9rem) minmax(0,1fr);gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
 .detlist dt{color:var(--muted);font-size:.88rem}.detlist dd{margin:0;font-weight:500;overflow-wrap:anywhere}
-.detlist dd .link{padding:0;font-size:inherit}.detlist .none{color:var(--muted);font-weight:400}
+.detlist dd .link{padding:0;font-size:inherit}
+.detadd{width:28px;height:28px;padding:0;border-radius:50%;border:1.5px dashed var(--apple);background:var(--surface);color:var(--apple);font:800 1.05rem/1 var(--body);display:inline-grid;place-items:center;cursor:pointer;vertical-align:middle}
+.detadd:hover,.detadd:focus-visible{background:var(--apple);color:#fff;border-style:solid}.detlist .none{color:var(--muted);font-weight:400}
 .detrows .ybody .oacts{display:flex;gap:8px;flex-wrap:wrap}
 .detrows .ybody form.detcard{margin-top:10px}
 .vtbox{border:1px solid var(--line);border-radius:10px;padding:10px 12px 12px;margin:0;display:grid;gap:8px;background:var(--surface)}
@@ -3638,7 +3640,6 @@ function dashOverview() {
       (miss.length ? '<div class="setlocs">' + miss.map(o => '<button class="btn-s add" type="button" data-xact="setloc" data-o="' + esc(o.id) + '">' + esc(tr("loc_setfor").replace("{o}", o.name || tr("orchard_fallback"))) + "</button>").join("") + "</div>" : "") +
       "</section>";
   }
-  try { h += registerHtml(); } catch (e) {}
   h += detailsHtml();
   h += dashDxHtml();
   h += farmSummaryHtml();
@@ -4030,14 +4031,16 @@ function detailsHtml() {
       const nt = nextTodo(o), lsp = lastSpray(o);
       r += '' +
         (function () {
-          const row = (lab, v) => "<div><dt>" + lab + "</dt><dd>" + (v || '<span class="none">–</span>') + "</dd></div>";
-          const loc = hasLoc(o) ? tr("det_yes") : '<button class="link" type="button" data-xact="detloc" data-o="' + esc(o.id) + '">' + tr("det_set") + "</button>";
+          const plus = (lab, act) => '<button class="detadd" type="button" ' + act + ' data-o="' + esc(o.id) + '" aria-label="' + esc(lab) + ' +" title="' + esc(lab) + '">+</button>';
+          const row = (lab, v, f) => "<div><dt>" + lab + "</dt><dd>" + (v || (f ? plus(lab, f) : '<span class="none">–</span>')) + "</dd></div>";
+          const fld = k => 'data-xact="detfield" data-f="' + k + '"';
+          const loc = hasLoc(o) ? tr("det_yes") : plus(tr("det_loc"), 'data-xact="detloc"');
           const grp = (k, rows) => '<section class="dgrp"><h6>' + tr(k) + '</h6><dl class="detlist">' + rows.join("") + "</dl></section>";
           return '<div class="dgroups">' +
-            grp("dg_place", [row(tr("p_village"), show("village")), row(tr("p_alt"), show("alt")), row(tr("p_area"), show("area")), row(tr("det_loc"), loc)]) +
-            grp("dg_trees", [row(tr("d_trees"), show("trees")), row(tr("p_var"), vtList(o).length ? vtList(o).map(x => esc(x.v) + " " + fmtN(+x.n)).join(", ") : show("var")), row(tr("p_root"), show("root", "r_")), row(tr("p_planted"), show("planted"))]) +
-            grp("dg_care", [row(tr("p_irr"), show("irr", "i_")), row(tr("p_hail"), show("hail", "h_")),
-              row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : ""), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "")]) + "</div>";
+            grp("dg_place", [row(tr("p_village"), show("village"), fld("village")), row(tr("p_alt"), show("alt"), fld("alt")), row(tr("p_area"), show("area"), fld("area")), row(tr("det_loc"), loc)]) +
+            grp("dg_trees", [row(tr("d_trees"), show("trees"), fld("trees")), row(tr("p_var"), vtList(o).length ? vtList(o).map(x => esc(x.v) + " " + fmtN(+x.n)).join(", ") : show("var"), fld("var")), row(tr("p_root"), show("root", "r_"), fld("root")), row(tr("p_planted"), show("planted"), fld("planted"))]) +
+            grp("dg_care", [row(tr("p_irr"), show("irr", "i_"), fld("irr")), row(tr("p_hail"), show("hail", "h_"), fld("hail")),
+              row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : "", 'data-dact="rgnote"'), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "", 'data-xact="detnext"')]) + "</div>";
         })() +
         '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + '</button><button class="btn-s add" type="button" data-dact="view" data-o="' + esc(o.id) + '">' + tr("o_view") +
         '</button><button class="btn-s" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + "</button></div>";
@@ -4443,6 +4446,11 @@ $("dash").addEventListener("click", e => {
   const id = b.dataset.id, armed = () => { if (b.dataset.armed) return true; const back = b.textContent; b.dataset.armed = "1"; b.textContent = tr("dy_sure"); setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = back; } }, 4000); return false; };
   if (a === "ics") { const x = (o.todos || []).find(q => q.id === id); if (x) downloadIcs(o, x); return; }
   if (a === "dettoggle") { if (detOpen.has(o.id)) { detOpen.delete(o.id); if (detEdit === o.id) detEdit = null; } else detOpen.add(o.id); renderDash(); const nb = document.querySelector('[data-xact=dettoggle][data-o="' + o.id + '"]'); if (nb) nb.focus(); return; }
+  if (a === "detfield") { const f = b.dataset.f; detEdit = o.id; detOpen.add(o.id); renderDash(); vtRefresh();
+    const n = (f === "var" || (f === "trees" && vtList(o).length)) ? document.querySelector("#vt_rows .vt-v") : $("det_" + f);
+    if (n) { n.scrollIntoView({block: "center"}); n.focus(); } return; }
+  if (a === "detnext") { dashView = o.id; dashYear = null; detEdit = null; profEdit = false; diaryEdit = null; renderDash(); xEdit = {sec: "todo", v: {due: addDays(todayIso(), 7), kind: ""}}; todoDone = null; xRender("workSec");
+    const s2 = $("workSec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("td_kind"); if (k) k.focus(); return; }
   if (a === "detedit") { detEdit = o.id; detOpen.add(o.id); renderDash(); vtRefresh(); const n = $("det_village"); if (n) n.focus(); return; }
   if (a === "detcancel") { detEdit = null; renderDash(); const s2 = $("det-" + o.id); if (s2) s2.scrollIntoView({block: "nearest"}); return; }
   if (a === "setloc") { dashView = o.id; dashYear = null; detEdit = null; xEdit = null; locMode = "find"; locResults = null; renderDash(); const s2 = $("locSec"); if (s2) s2.scrollIntoView({block: "start"}); const q = $("loc_q"); if (q) q.focus({preventScroll: true}); return; }
