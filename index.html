@@ -1912,6 +1912,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <div class="tpanel" id="tp-rec" role="tabpanel" aria-labelledby="tt-rec" hidden>
       <div class="thead"><h3 data-i18n="tt_rec"></h3></div>
       <div id="recGuest">
+        <div id="recNews"></div>
         <div id="recWx" class="gdsec recwx"></div>
         <p data-i18n="rc_p"></p>
         <div class="thead rcsub"><h4 data-i18n="rc_h"></h4><span class="pill" data-i18n="rc_pill"></span></div>
@@ -6330,8 +6331,9 @@ function guestPlace() {
 }
 /* weather for visitors: shown at the top of My Orchard Record, like the logged-in record page */
 function renderGuestWx() {
-  const el = $("recWx"); if (!el) return;
-  if (user || !T.en.gd_place) { el.innerHTML = ""; return; }
+  const el = $("recWx"), nw = $("recNews"); if (!el) return;
+  if (user || !T.en.gd_place) { el.innerHTML = ""; if (nw) nw.innerHTML = ""; return; }
+  if (nw) try { nw.innerHTML = dashNewsHtml(); } catch (e) { nw.innerHTML = ""; }
   el.innerHTML = '<h4>' + tr("wx_h_dash") + "</h4>" +
     '<div data-wx="guest">' + wxBlock([guestPlace()], false, true) + "</div>";
 }
@@ -6340,7 +6342,7 @@ function renderGuestDash() {
   el.hidden = !!user;
   if (user || !T.en.gd_place) { el.innerHTML = ""; return; }
   renderGuestWx();
-  el.innerHTML = '<div class="ticker" data-dnews="1">' + dashNewsInner() + "</div>";
+  el.innerHTML = "";   /* news and weather now sit at the top of My Orchard Record */
 }
 /* ---- top tabs ---- */
 const TT = ["orch","rec","calc","diag","spray","news","cal","mandi","buy"];  /* Library tab removed from the site; its articles still feed Saathi */
