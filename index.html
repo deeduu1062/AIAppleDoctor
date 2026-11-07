@@ -6339,10 +6339,8 @@ function renderGuestDash() {
   const el = $("guestDash"); if (!el) return;
   el.hidden = !!user;
   if (user || !T.en.gd_place) { el.innerHTML = ""; return; }
-  const tool = (go, ic, k) => '<button class="gdtool" type="button" data-lgo="' + go + '"><span aria-hidden="true">' + ic + "</span>" + esc(tr(k)) + "</button>";
   renderGuestWx();
   el.innerHTML = '<div class="ticker" data-dnews="1">' + dashNewsInner() + "</div>" +
-    '<section class="gdsec"><h4>' + tr("gd_tools") + '</h4><div class="gdtools">' + tool("diag", "🔍", "gd_t_diag") + tool("calc", "🧮", "gd_t_calc") + tool("spray", "💧", "gd_t_spray") + tool("chat", "💬", "gd_t_chat") + "</div></section>" +
     '<div class="gdjoin"><div><b>' + tr("gd_join_h") + "</b><span>" + tr("gd_join_p") + '</span></div><button class="btn primary" type="button" data-lp="join">' + esc(tr("pr_join")) + "</button></div>";
 }
 /* ---- top tabs ---- */
