@@ -1017,6 +1017,8 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 /* ---- guest dashboard ---- */
 #guestDash{display:grid;gap:16px}
 #guestDash[hidden]{display:none}
+.recwx{margin-bottom:16px}
+.recwx:empty{display:none}
 .gdsec{display:grid;gap:8px}
 .gdsec h4{font-size:1.08rem;font-weight:700}
 .gdhead{display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap}
@@ -1910,6 +1912,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <div class="tpanel" id="tp-rec" role="tabpanel" aria-labelledby="tt-rec" hidden>
       <div class="thead"><h3 data-i18n="tt_rec"></h3></div>
       <div id="recGuest">
+        <div id="recWx" class="gdsec recwx"></div>
         <p data-i18n="rc_p"></p>
         <div class="thead rcsub"><h4 data-i18n="rc_h"></h4><span class="pill" data-i18n="rc_pill"></span></div>
         <div id="recSample"></div>
@@ -6270,6 +6273,7 @@ const RC = {
 };
 function renderRec() {
   const el = $("recSample"); if (!el) return;
+  try { renderGuestWx(); } catch (e) {}
   const D = tr("rc_d") || [], dfmt = md => new Date("2026-" + md + "T00:00:00").toLocaleDateString(dloc(), {day: "numeric", month: "short"});
   let boxes = 0, gross = 0, lotExp = 0, due = 0;
   const lotHtml = RC.lots.map(L => {
@@ -6324,16 +6328,22 @@ function guestPlace() {
   const p = PLACES.find(x => x[0] === guestPlaceId()) || PLACES[0];
   return {id: "place-" + p[0], name: lang === "hi" ? p[2] : p[1], profile: {lat: p[3], lon: p[4]}};
 }
+/* weather for visitors: shown at the top of My Orchard Record, like the logged-in record page */
+function renderGuestWx() {
+  const el = $("recWx"); if (!el) return;
+  if (user || !T.en.gd_place) { el.innerHTML = ""; return; }
+  const pid = guestPlaceId();
+  el.innerHTML = '<div class="gdhead"><h4>' + tr("wx_h_dash") + '</h4><label class="gdplace"><span>' + tr("gd_place") + '</span><select id="gdPlace">' +
+      PLACES.map(p => '<option value="' + p[0] + '"' + (p[0] === pid ? " selected" : "") + ">" + esc(lang === "hi" ? p[2] : p[1]) + "</option>").join("") + "</select></label></div>" +
+    '<div data-wx="guest">' + wxBlock([guestPlace()], false, true) + "</div>";
+}
 function renderGuestDash() {
   const el = $("guestDash"); if (!el) return;
   el.hidden = !!user;
   if (user || !T.en.gd_place) { el.innerHTML = ""; return; }
-  const pid = guestPlaceId();
   const tool = (go, ic, k) => '<button class="gdtool" type="button" data-lgo="' + go + '"><span aria-hidden="true">' + ic + "</span>" + esc(tr(k)) + "</button>";
+  renderGuestWx();
   el.innerHTML = '<div class="ticker" data-dnews="1">' + dashNewsInner() + "</div>" +
-    '<section class="gdsec"><div class="gdhead"><h4>' + tr("wx_h_dash") + '</h4><label class="gdplace"><span>' + tr("gd_place") + '</span><select id="gdPlace">' +
-      PLACES.map(p => '<option value="' + p[0] + '"' + (p[0] === pid ? " selected" : "") + ">" + esc(lang === "hi" ? p[2] : p[1]) + "</option>").join("") + "</select></label></div>" +
-      '<div data-wx="guest">' + wxBlock([guestPlace()], false, true) + "</div></section>" +
     '<section class="gdsec"><h4>' + tr("gd_tools") + '</h4><div class="gdtools">' + tool("diag", "🔍", "gd_t_diag") + tool("calc", "🧮", "gd_t_calc") + tool("spray", "💧", "gd_t_spray") + tool("chat", "💬", "gd_t_chat") + "</div></section>" +
     '<div class="gdjoin"><div><b>' + tr("gd_join_h") + "</b><span>" + tr("gd_join_p") + '</span></div><button class="btn primary" type="button" data-lp="join">' + esc(tr("pr_join")) + "</button></div>";
 }
