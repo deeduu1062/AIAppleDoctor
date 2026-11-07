@@ -1552,6 +1552,13 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 .pbars .ys{grid-column:2/4;color:var(--muted);font-size:.82rem;margin-top:-4px}
 .ledger.sm th[scope=row] .link{padding:0;font-size:inherit}
 .dlist .subhead{margin:8px 0 2px}
+.dyears{display:grid;gap:8px}
+.dyear{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 14px}
+.dyear > summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;padding:12px 0;min-height:44px}
+.dyear[open] > summary{border-bottom:1px solid var(--line)}
+.dyear .dysum{margin-left:auto;color:var(--muted);font-size:.9rem;font-family:var(--mono)}
+.dyear li:last-child{border-bottom:0}
+.dlist .dt .dorch{color:var(--brand);font-weight:600;font-size:.88rem}
 .dlist ul{list-style:none;margin:0;padding:0}
 .dlist li{display:grid;grid-template-columns:5rem minmax(0,1fr) auto auto;gap:4px 12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)}
 .dlist li.editing{background:var(--surface-2)}
@@ -2341,7 +2348,7 @@ o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_seas
   d_days:"{n} days", d_tot:"Total pending", d_due_note:"Mark a sale as paid in Season Profit (Edit, then More) once the money arrives.",
   s_years:"Year by year", y_costs:"Costs",
   s_diary:"Season diary", s_diary_p:"Note sprays, fertiliser, weather and key dates as the season goes. Costs you add here are counted in that harvest year's net income (1 November to 31 October) and show in Yearly expenses.",
-  dy_add:"Add diary note", dy_pick:"Choose", dy_date:"Date", dy_kind:"What", dy_stage:"Tree stage", dy_cost:"Cost (₹, optional)", dy_text:"Details",
+  dy_add:"Add diary note", dy_h_all:"Work diary: all orchards", dy_cur:"This season", dy_count:"{n} notes", dy_noorch:"Add an orchard first, then note its work here.", dy_pick:"Choose", dy_date:"Date", dy_kind:"What", dy_stage:"Tree stage", dy_cost:"Cost (₹, optional)", dy_text:"Details",
   dy_text_ph:"For example product and dose, or what you saw", dy_save:"Save note", dy_update:"Update note", dy_edit:"Edit", dy_del:"Delete", dy_sure:"Tap again",
   dy_none:"No notes yet.", dy_err:"Choose a date and what happened.",
   dg_work:"Work", dg_weather:"Weather", dg_dates:"Season dates", dg_other:"Other",
@@ -3675,6 +3682,7 @@ function dashOverview() {
       (miss.length ? '<div class="setlocs">' + miss.map(o => '<button class="btn-s add" type="button" data-xact="setloc" data-o="' + esc(o.id) + '">' + esc(tr("loc_setfor").replace("{o}", o.name || tr("orchard_fallback"))) + "</button>").join("") + "</div>" : "") +
       "</section>";
   }
+  h += diaryHtml(null);
   h += detailsHtml();
   h += dashDxHtml();
   h += farmSummaryHtml();
@@ -3846,15 +3854,24 @@ function yearsHtml(o) {
     }).join("") + "</tbody></table></div></section>";
 }
 
+/* work diary: on one orchard's page (o given) or for all orchards on the Orchard Record overview (o null).
+   History is grouped by harvest year; the current harvest year is open, older years are collapsed. */
+let diaryYrOpen = new Set(), diaryYrShut = new Set();
 function diaryHtml(o) {
-  const all = (o.diary || []).slice().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-  const ed = diaryEdit ? all.find(d => d.id === diaryEdit) : null;
+  const many = !o, list = many ? S.orchards : [o];
+  const all = [];
+  list.forEach(x => (x.diary || []).forEach(d => all.push({d, o: x})));
+  all.sort((a, b) => (a.d.date < b.d.date ? 1 : a.d.date > b.d.date ? -1 : 0));
+  const edE = diaryEdit ? all.find(x => x.d.id === diaryEdit) : null, ed = edE ? edE.d : null;
   const v = ed || {date: todayIso(), kind: "", text: "", cost: "", stage: ""};
   const kindSel = '<select id="d_kind"><option value="">' + tr("dy_pick") + "</option>" + DIARY_KINDS.map(([gk, ks]) => '<optgroup label="' + esc(tr("dg_" + gk)) + '">' +
     ks.map(k => '<option value="' + k + '"' + (k === v.kind ? " selected" : "") + ">" + tr("dk_" + k) + "</option>").join("") + "</optgroup>").join("") + "</select>";
   const stageSel = '<select id="d_stage"><option value="">–</option>' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '"' + ("st" + i === v.stage ? " selected" : "") + ">" + tr("st" + i) + "</option>").join("") + "</select>";
-  let h = '<section class="osec" id="diarySec"><h4>' + tr("s_diary") + '</h4><p class="hint">' + tr("s_diary_p") + "</p>" +
-    '<form class="dform" data-dform="diary">' +
+  const oSel = many ? '<div class="field"><label for="d_orch">' + tr("lbl_orchard") + '</label><select id="d_orch">' +
+    S.orchards.map(x => '<option value="' + esc(x.id) + '"' + ((edE ? edE.o.id : diaryLastO) === x.id ? " selected" : "") + ">" + esc(x.name || tr("orchard_fallback")) + "</option>").join("") + "</select></div>" : "";
+  let h = '<section class="osec" id="diarySec"><h4>' + tr(many ? "dy_h_all" : "s_diary") + '</h4><p class="hint">' + tr("s_diary_p") + "</p>";
+  if (many && !S.orchards.length) return h + '<p class="hint">' + tr("dy_noorch") + "</p></section>";
+  h += '<form class="dform" data-dform="diary">' + oSel +
     '<div class="field"><label for="d_date">' + tr("dy_date") + '</label><input id="d_date" type="date" value="' + esc(v.date) + '"></div>' +
     '<div class="field"><label for="d_kind">' + tr("dy_kind") + "</label>" + kindSel + "</div>" +
     '<div class="field" id="d_stagewrap"><label for="d_stage">' + tr("dy_stage") + "</label>" + stageSel + "</div>" +
@@ -3864,18 +3881,25 @@ function diaryHtml(o) {
     '<div class="dels wide"><button class="btn-s add" type="submit">' + tr(ed ? "dy_update" : "dy_save") + "</button>" + (ed ? '<button class="btn-s" type="button" data-dact="dcancel">' + tr("d_cancel") + "</button>" : "") +
     '<button class="link" type="button" data-dact="spray">' + tr("o_spray_link") + "</button></div></form>";
   if (!all.length) return h + '<p class="hint">' + tr("dy_none") + "</p></section>";
-  let yr = null;
-  h += '<div class="dlist">';
-  all.forEach(d => {
-    const y = hYear(d.date);
-    if (y !== yr) { if (yr !== null) h += "</ul>"; yr = y; h += '<p class="subhead">' + tr("hy_label").replace("{y}", y) + "</p><ul>"; }
-    h += '<li' + (d.id === diaryEdit ? ' class="editing"' : "") + '><span class="dd">' + fmtDay(d.date) + '</span><span class="dt"><b>' + tr("dk_" + d.kind) + "</b>" +
-      (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : "") + (d.text ? "<span>" + esc(d.text) + "</span>" : "") + "</span>" +
-      '<span class="dc">' + (+d.cost ? inr(+d.cost) : "") + '</span><span class="da"><button class="link" type="button" data-dact="dedit" data-id="' + esc(d.id) + '">' + tr("dy_edit") +
-      '</button><button class="link del" type="button" data-dact="ddel" data-id="' + esc(d.id) + '">' + tr("dy_del") + "</button></span></li>";
-  });
-  return h + "</ul></div></section>";
+  const curY = hYear(todayIso()), byY = {};
+  all.forEach(x => { const y = hYear(x.d.date); (byY[y] = byY[y] || []).push(x); });
+  const ys = Object.keys(byY).map(Number).sort((a, b) => b - a);
+  h += '<div class="dlist dyears">' + ys.map(y => {
+    const items = byY[y], cost = items.reduce((a, x) => a + (+x.d.cost || 0), 0);
+    const open = !diaryYrShut.has(y) && (y === curY || diaryYrOpen.has(y) || (edE && hYear(edE.d.date) === y) || (y === ys[0] && ys.indexOf(curY) < 0));
+    return '<details class="dyear" data-dy="' + y + '"' + (open ? " open" : "") + '><summary><b>' + tr("hy_label").replace("{y}", y) + "</b>" + (y === curY ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") +
+      '<span class="dysum">' + tr("dy_count").replace("{n}", items.length) + (cost ? " · " + inr(cost) : "") + "</span></summary><ul>" +
+      items.map(({d, o: x}) => '<li' + (d.id === diaryEdit ? ' class="editing"' : "") + '><span class="dd">' + fmtDay(d.date) + '</span><span class="dt"><b>' + tr("dk_" + d.kind) + "</b>" +
+        (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : "") + (many ? '<span class="dorch">' + esc(x.name || tr("orchard_fallback")) + "</span>" : "") + (d.text ? "<span>" + esc(d.text) + "</span>" : "") + "</span>" +
+        '<span class="dc">' + (+d.cost ? inr(+d.cost) : "") + '</span><span class="da"><button class="link" type="button" data-dact="dedit" data-o="' + esc(x.id) + '" data-id="' + esc(d.id) + '">' + tr("dy_edit") +
+        '</button><button class="link del" type="button" data-dact="ddel" data-o="' + esc(x.id) + '" data-id="' + esc(d.id) + '">' + tr("dy_del") + "</button></span></li>").join("") +
+      "</ul></details>";
+  }).join("") + "</div>";
+  return h + "</section>";
 }
+let diaryLastO = null;
+/* remember only years the grower opens or closes by tapping */
+document.addEventListener("click", e => { const sm = e.target.closest && e.target.closest(".dyear > summary"); if (!sm) return; const d = sm.parentElement, y = +d.dataset.dy; if (d.open) { diaryYrOpen.delete(y); diaryYrShut.add(y); } else { diaryYrOpen.add(y); diaryYrShut.delete(y); } });
 
 function orchardPage(o) {
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
@@ -3895,7 +3919,7 @@ function orchardPage(o) {
     '<div class="oacts2"><button class="btn-s add" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("d_open") +
     '</button><button class="btn-s" type="button" data-dact="note">' + tr("dy_add") + "</button></div>" +
     '<div class="oyear field"><label for="o_season">' + tr("o_season") + '</label><select id="o_season">' + yrs.map(y => '<option value="' + y + '"' + (y === dashYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>" +
-    locationHtml(o) + workHtml(o) + insightsHtml(o, dashYear) + labourHtml(o) + blocksHtml(o) + soilHtml(o) + diaryHtml(o) + "</div>";
+    locationHtml(o) + workHtml(o) + diaryHtml(o) + insightsHtml(o, dashYear) + labourHtml(o) + blocksHtml(o) + soilHtml(o) + "</div>";
   return h;
 }
 
@@ -4691,7 +4715,7 @@ $("dash").addEventListener("change", async e => {
 $("dash").addEventListener("submit", e => {
   const f = e.target.closest("[data-dform]"); if (!f) return;
   e.preventDefault();
-  const kind = f.dataset.dform, o = S.orchards.find(x => x.id === dashView);
+  const kind = f.dataset.dform, o = S.orchards.find(x => x.id === (kind === "diary" && !dashView && $("d_orch") ? $("d_orch").value : dashView));
   if (kind === "add") {
     const nm = $("dn_new").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.filter(x => !x.ex).length + 1));
     const no = {id: newId(), name: nm, trees: numOf($("dn_newtrees").value)};
@@ -4710,11 +4734,12 @@ $("dash").addEventListener("submit", e => {
     const date = $("d_date").value, k = $("d_kind").value;
     if (!date || !k) { set("d_err", tr("dy_err")); return; }
     const entry = {id: diaryEdit || newId(), date: date, kind: k, text: $("d_text").value.trim(), cost: numOf($("d_cost").value), stage: k === "spray" ? $("d_stage").value : ""};
-    const old = (o.diary || []).find(d => d.id === entry.id);
-    o.diary = (o.diary || []).filter(d => d.id !== entry.id).concat([entry]);
+    let old = null, oldO = null;
+    S.orchards.forEach(x => { const f2 = (x.diary || []).find(d => d.id === entry.id); if (f2) { old = f2; oldO = x; x.diary = x.diary.filter(d => d.id !== entry.id); } });
+    o.diary = (o.diary || []).concat([entry]);
     if (entry.cost > 0) ensureSeason(o.id, hYear(entry.date));
-    if (old) pruneSeason(o.id, hYear(old.date));
-    diaryEdit = null;
+    if (old) pruneSeason(oldO.id, hYear(old.date));
+    diaryEdit = null; diaryLastO = o.id; diaryYrOpen.add(hYear(entry.date)); diaryYrShut.delete(hYear(entry.date));
   }
   fixSel(); save(); renderAll();
 });
@@ -6415,6 +6440,8 @@ document.addEventListener("click", e => { if (e.target.closest("#recSample [data
 document.addEventListener("click", e => { const b = e.target.closest('#recSample [data-lp="dash"]'); if (b) { tabPicked = true; showTool("orch", false, true); } });
 
 /* ---- Sales/Profit example for visitors: Yearly, Season and Expenses with example numbers (same Shimla Orchard as the Orchard Record example) ---- */
+Object.assign(T.hi, { dy_h_all:"काम की डायरी: सभी बाग़", dy_cur:"यह सीज़न", dy_count:"{n} नोट", dy_noorch:"पहले एक बाग़ जोड़ें, फिर उसका काम यहाँ लिखें।" });
+Object.assign(T.hn, { dy_h_all:"Kaam ki diary: sabhi bagiche", dy_cur:"Ye season", dy_count:"{n} note", dy_noorch:"Pehle ek bagicha jodein, phir uska kaam yahan likhein." });
 Object.assign(T.hi, { o_fullsales:"पूरी बिक्री और मुनाफ़ा देखें →", sp_more_h:"{o}, {y}: ग्रेड, भाव और ख़र्च" });
 Object.assign(T.hn, { o_fullsales:"Poori bikri aur munafa dekhein →", sp_more_h:"{o}, {y}: grade, bhaav aur kharche" });
 Object.assign(T.en, { gx_note:"Example numbers for two orchards over three harvest years. After you log in, these tabs show your own orchards and sales.",
