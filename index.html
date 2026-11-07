@@ -1994,7 +1994,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <li><button class="mgcard" type="button" data-lgo="calc"><span class="mgi" aria-hidden="true">📦</span><span class="mgtx"><span class="lptag" data-i18n="lp_tag_free"></span><b data-i18n="lp_m6_h"></b><span class="mgp" data-i18n="lp_m6_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
       <li><button class="mgcard" type="button" data-lgo="diag"><span class="mgi" aria-hidden="true">🔍</span><span class="mgtx"><span class="lptag" data-i18n="lp_tag_free"></span><b data-i18n="lp_m4_h"></b><span class="mgp" data-i18n="lp_m4_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
       <li><button class="mgcard" type="button" data-lgo="rec"><span class="mgi" aria-hidden="true">💧</span><span class="mgtx"><span class="lptag acct" data-i18n="lp_tag_acct"></span><b data-i18n="lp_m2_h"></b><span class="mgp" data-i18n="lp_m2_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
-      <li><button class="mgcard" type="button" data-lgo="orch"><span class="mgi" aria-hidden="true">🌦️</span><span class="mgtx"><span class="lptag acct" data-i18n="lp_tag_acct"></span><b data-i18n="lp_m3_h"></b><span class="mgp" data-i18n="lp_m3_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
+      <li><button class="mgcard" type="button" data-lgo="wx"><span class="mgi" aria-hidden="true">🌦️</span><span class="mgtx"><span class="lptag acct" data-i18n="lp_tag_acct"></span><b data-i18n="lp_m3_h"></b><span class="mgp" data-i18n="lp_m3_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
       <li><button class="mgcard" type="button" data-lgo="cal"><span class="mgi" aria-hidden="true">🗓️</span><span class="mgtx"><span class="lptag" data-i18n="lp_tag_free"></span><b data-i18n="lp_m5_h"></b><span class="mgp" data-i18n="lp_m5_p"></span><span class="lpgo" data-i18n="lp_open"></span></span></button></li>
     </ol>
     <button class="mgnote" type="button" data-lgo="chat"><span data-i18n="lp_m_note"></span></button>
@@ -5549,6 +5549,19 @@ document.addEventListener("click", e => {
   let w = c.dataset.lgo;
   if (w === "rec" && user) w = "orch";   /* logged in: My Orchard Record is their own record */
   if (w === "chat") { $("chatFab").click(); return; }
+  if (w === "wx") {   /* Weather and alerts: open My Orchard Record at its weather section */
+    tabPicked = true;
+    if (user) { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, false); }
+    else showTool("rec", false, false);
+    const t = user ? document.querySelector("#dash .wxsec") : $("recWx");
+    if (t) {   /* scroll so the weather sits just below the sticky header and tabs */
+      const tb = $("tabbar"), top = tb ? tb.getBoundingClientRect().bottom : 0, hh = Math.max(0, Math.min(top, 200));
+      window.scrollTo({top: window.scrollY + t.getBoundingClientRect().top - hh - 10});
+      const after = tb ? tb.getBoundingClientRect().bottom : 0;
+      if (after > hh + 1) window.scrollBy(0, -(after - hh));
+    } else if ($("tools").scrollIntoView) $("tools").scrollIntoView({block: "start"});
+    return;
+  }
   tabPicked = true; showTool(w, false, true);
 });
 /* ---- Dashboard showcase for visitors who are not signed in ---- */
