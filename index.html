@@ -1493,6 +1493,9 @@ table.ledger.ytab{min-width:0;width:100%}
 .gc-a{background:var(--g-a)}.gc-b{background:var(--g-b)}.gc-rg{background:var(--g-rg)}.gc-gift{background:var(--g-gift)}.gc-none{background:var(--g-none)}
 .ocard .ofacts1{color:var(--muted);font-size:.9rem;margin:-6px 0 0}
 .osec{border-top:1px solid var(--line);padding-top:18px;display:grid;gap:10px;min-width:0}
+.spmore{display:grid;gap:18px;margin-top:22px}
+.spmore:empty{display:none}
+.osales{margin:6px 0 0;font-weight:600}
 .osec h4{font-size:1.3rem;font-weight:700}
 .osec .hint{margin:0}
 .osec .fine{margin:0}
@@ -1806,6 +1809,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         </details>
         <div class="headline" id="headline" hidden><span id="hl_label"></span><b id="hl_val"></b></div>
         <div id="editor"></div>
+        <div class="spmore" id="spMore"></div>
       </div>
       <div class="result" id="resBox">
         <p class="big-label" id="o_label"></p>
@@ -2318,7 +2322,7 @@ en: {
   pc_rec:"To save every lot for each orchard and see your totals by year, log in and use Season Profit. Your records stay private to your account.",
 o_view:"View orchard", o_back:"← All orchards", o_editp:"Edit profile", o_season:"Season", o_photo_add:"Add photo", o_photo_chg:"Change photo", o_photo_rm:"Remove photo",
   o_photo_alt:"Photo of {o} orchard", o_photo_err:"That photo could not be read. Try a JPG or PNG.", o_spray_link:"Open the spray schedule",
-  o_noprof:"Add the location, varieties and more so this page tells the whole story of the orchard.", o_nosales:"No sales recorded for {y} yet.",
+  o_noprof:"Add the location, varieties and more so this page tells the whole story of the orchard.", o_nosales:"No sales recorded for {y} yet.", o_fullsales:"See full sales and profit →", sp_more_h:"{o}, {y}: grades, prices and costs",
   p_village:"Village or location", p_alt:"Altitude (metres)", p_area:"Area (bigha)", p_var:"Varieties", p_var_ph:"For example Royal Delicious, Gala", p_root:"Rootstock",
   p_planted:"Planting year", p_irr:"Irrigation", p_hail:"Hail net", p_age:"{n} years old", p_m:"{n} m", p_bigha:"{n} bigha",
   r_seedling:"Seedling", r_m9:"M9", r_mm106:"MM106", r_m7:"M7", r_mm111:"MM111", r_other:"Other",
@@ -3091,7 +3095,7 @@ function dropEmptySeasons() {
   const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
   if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded) save(); }
 }
-function renderAll() { dropEmptySeasons(); renderEditor(); renderResults(); renderSummary(); renderDash(); if (typeof renderExp === "function") renderExp(); }
+function renderAll() { dropEmptySeasons(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -3728,13 +3732,20 @@ function insightsHtml(o, Y) {
     h += '<div class="ystats">' + tile("k_net", inr(r.profit), "main " + dcls(r.profit)) +
       tile("k_npt", trees ? inr(r.profit / trees) : "–", "", trees ? "" : noT) + tile("k_bpt", trees ? fmtD(r.boxes / trees) : "–", "", trees ? "" : noT) +
       tile("k_avg", inr(r.boxes ? r.rev / r.boxes : 0)) + tile("k_ash", pct(g.a.b, r.boxes), "", tr("k_ofb").replace("{n}", fmtN(g.a.b)).replace("{m}", fmtN(r.boxes))) +
-      tile("k_due", inr(r.due)) + "</div>";
+      tile("k_due", inr(r.due)) + "</div>" +
+      '<p class="osales"><button class="link" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("o_fullsales") + "</button></p>";
   }
   // season timeline from the diary
   const tl = ((o.diary || []).filter(d => hYear(d.date) === +Y && TIMELINE_KINDS.indexOf(d.kind) >= 0)).sort((a, b) => (a.date < b.date ? -1 : 1));
   h += '<section class="osec"><h4>' + tr("s_timeline") + "</h4>" + (tl.length
     ? '<ol class="tl">' + tl.map(d => '<li class="k-' + d.kind + '"><b>' + fmtDay(d.date) + "</b> " + tr("dk_" + d.kind) + (d.text ? '<span class="tlt">' + esc(d.text) + "</span>" : "") + "</li>").join("") + "</ol>"
     : '<p class="hint">' + tr("s_tl_none") + "</p>") + "</section>";
+  return h;
+}
+/* money analysis for one orchard and year: shown under Sales/Profit > Season Profit (moved from the orchard page so the numbers are not repeated) */
+function salesMoreHtml(o, Y) {
+  const se = seFor(o.id, Y), trees = +o.trees;
+  let h = "";
   if (!se) return h;
   const r = seasonCalc(se), g = gradeSplit(se);
 
@@ -3884,7 +3895,7 @@ function orchardPage(o) {
     '<div class="oacts2"><button class="btn-s add" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("d_open") +
     '</button><button class="btn-s" type="button" data-dact="note">' + tr("dy_add") + "</button></div>" +
     '<div class="oyear field"><label for="o_season">' + tr("o_season") + '</label><select id="o_season">' + yrs.map(y => '<option value="' + y + '"' + (y === dashYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>" +
-    locationHtml(o) + workHtml(o) + insightsHtml(o, dashYear) + dueHtml(o) + yearsHtml(o) + labourHtml(o) + blocksHtml(o) + soilHtml(o) + diaryHtml(o) + "</div>";
+    locationHtml(o) + workHtml(o) + insightsHtml(o, dashYear) + labourHtml(o) + blocksHtml(o) + soilHtml(o) + diaryHtml(o) + "</div>";
   return h;
 }
 
@@ -3953,6 +3964,20 @@ $("dash").addEventListener("click", e => {
   if (a === "rgprof") { dashView = oid; dashYear = null; profEdit = true; diaryEdit = null; renderDash(); dashTop(); const i = $("p_village"); if (i) i.focus(); }
   else if (a === "rgnote") { dashView = oid; dashYear = null; profEdit = false; diaryEdit = null; renderDash(); const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); }
   else if (a === "rgexp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); }
+});
+function renderSpMore() {
+  const el = $("spMore"); if (!el) return;
+  const o = curOrchard();
+  let h = "";
+  if (o && !addingO && !entryOpen) {
+    try { h = '<h3 class="ysub">' + esc(tr("sp_more_h").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y)) + "</h3>" + salesMoreHtml(o, sel.y) + dueHtml(o) + yearsHtml(o); } catch (e) { h = ""; }
+  }
+  el.innerHTML = h;
+}
+$("spMore").addEventListener("click", e => {
+  const b = e.target.closest("[data-dact=year]"); if (!b) return;
+  closeEditLine(); sel.y = +b.dataset.y; fixSel(); renderAll(); showSub("orch");
+  const y = $("selYear"); if (y && y.scrollIntoView) y.scrollIntoView({block: "start"});
 });
 function syncStage() { const k = $("d_kind"), w = $("d_stagewrap"); if (k && w) w.hidden = k.value !== "spray"; }
 function renderDash() {
@@ -6380,17 +6405,18 @@ function renderRec() {
       "<dt>" + tr("p_irr") + "</dt><dd>" + tr("i_drip") + "</dd><dt>" + tr("p_hail") + "</dt><dd>" + tr("h_part") + "</dd></dl></section>" +
     '<section class="rccard"><h4>' + tr("rc_sum") + '</h4><div class="rcnet"><span>' + tr("gl_net") + "</span><b>" + inr(net) + '</b></div><div class="gltiles">' +
       tile("gl_sales", inr(gross)) + tile("gl_exp", inr(lotExp + yearly)) + tile("gl_boxes", fmtN(boxes)) + tile("gl_ppp", inr(net / boxes)) + tile("k_npt", inr(net / trees)) + tile("gl_due", inr(due), "rcdue") +
-    "</div></section></div>";
-  h += '<section class="rccard"><h4>' + tr("rc_lots") + "</h4>" + lotHtml + '<p class="fine">' + tr("rc_charges") + "</p></section>";
-  h += '<div class="rcgrid"><section class="rccard"><h4>' + tr("rc_year") + '</h4><ul class="rccost">' + RC.costs.map(c => "<li><span>" + esc(tr(c[0])) + "</span><b>" + inr(c[1]) + "</b></li>").join("") +
-    '<li class="tot"><span>' + tr("rc_tot") + "</span><b>" + inr(yearly) + "</b></li></ul></section>" +
-    '<section class="rccard"><h4>' + tr("rc_diary") + '</h4><ol class="rcdiary">' + RC.diary.map(([md, k, di, st, cost]) => '<li class="k-' + k + '"><span class="dd">' + esc(dfmt(md)) + "</span><span><b>" + esc(tr(k)) + "</b>" + (st ? " <small>(" + esc(tr(st)) + ")</small>" : "") + "<br>" + esc(D[di] || "") + (cost ? " · " + inr(cost) : "") + "</span></li>").join("") + "</ol></section></div>";
+    '</div><p class="osales"><button class="link" type="button" data-rcsales="1">' + tr("o_fullsales") + "</button></p></section></div>";
+  /* lot tables and yearly expenses live in the Sales/Profit example; this card links there */
+  h += '<div class="rcgrid"><section class="rccard"><h4>' + tr("rc_diary") + '</h4><ol class="rcdiary">' + RC.diary.map(([md, k, di, st, cost]) => '<li class="k-' + k + '"><span class="dd">' + esc(dfmt(md)) + "</span><span><b>" + esc(tr(k)) + "</b>" + (st ? " <small>(" + esc(tr(st)) + ")</small>" : "") + "<br>" + esc(D[di] || "") + (cost ? " · " + inr(cost) : "") + "</span></li>").join("") + "</ol></section></div>";
   h += '<div class="rccta"><div><b>' + tr("rc_cta_h") + "</b><p>" + tr("rc_cta_p") + '</p></div><button class="btn primary" type="button" data-lp="' + (user ? "dash" : "join") + '">' + esc(tr(user ? "rc_cta_in" : "pr_join")) + "</button></div>";
   el.innerHTML = h;
 }
+document.addEventListener("click", e => { if (e.target.closest("#recSample [data-rcsales]")) { tabPicked = true; gxO = 0; gxY = 2026; showTool("calc", false, true); showSub("orch"); } });
 document.addEventListener("click", e => { const b = e.target.closest('#recSample [data-lp="dash"]'); if (b) { tabPicked = true; showTool("orch", false, true); } });
 
 /* ---- Sales/Profit example for visitors: Yearly, Season and Expenses with example numbers (same Shimla Orchard as the Orchard Record example) ---- */
+Object.assign(T.hi, { o_fullsales:"पूरी बिक्री और मुनाफ़ा देखें →", sp_more_h:"{o}, {y}: ग्रेड, भाव और ख़र्च" });
+Object.assign(T.hn, { o_fullsales:"Poori bikri aur munafa dekhein →", sp_more_h:"{o}, {y}: grade, bhaav aur kharche" });
 Object.assign(T.en, { gx_note:"Example numbers for two orchards over three harvest years. After you log in, these tabs show your own orchards and sales.",
   gx_o2:"Narkanda Orchard", gx_chart:"Net profit, all orchards, year by year", gx_byo:"Net profit by orchard and year", gx_rows:"Each harvest year: gross profit minus yearly expenses",
   gx_season:"{o}, harvest year {y}", gx_grades:"Sales by grade", gx_avg:"Average rate", gx_where:"Where the sale money went", gx_pbe:"Per-box expenses (picking, grading, carriage, commission)",
