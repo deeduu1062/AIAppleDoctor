@@ -6340,8 +6340,7 @@ function renderGuestDash() {
   el.hidden = !!user;
   if (user || !T.en.gd_place) { el.innerHTML = ""; return; }
   renderGuestWx();
-  el.innerHTML = '<div class="ticker" data-dnews="1">' + dashNewsInner() + "</div>" +
-    '<div class="gdjoin"><div><b>' + tr("gd_join_h") + "</b><span>" + tr("gd_join_p") + '</span></div><button class="btn primary" type="button" data-lp="join">' + esc(tr("pr_join")) + "</button></div>";
+  el.innerHTML = '<div class="ticker" data-dnews="1">' + dashNewsInner() + "</div>";
 }
 /* ---- top tabs ---- */
 const TT = ["orch","rec","calc","diag","spray","news","cal","mandi","buy"];  /* Library tab removed from the site; its articles still feed Saathi */
