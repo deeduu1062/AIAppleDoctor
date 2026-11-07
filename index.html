@@ -878,6 +878,9 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .wxmini.sky-cloud,.wxmini.sky-fog{--sky1:#8E9FB2;--sky2:#5F6F82}.wxmini.sky-drizzle,.wxmini.sky-rain,.wxmini.sky-shower{--sky1:#5C7C9C;--sky2:#34506E}
 .wxmini.sky-snow{--sky1:#9DB8D6;--sky2:#6D8DB3}.wxmini.sky-storm,.wxmini.sky-hail{--sky1:#4C4F6B;--sky2:#2A2C40}
 .wxmini .wxo{font-weight:700;font-size:.85rem;flex:0 0 auto;max-width:7.5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wxmini .wxnow{display:block;font-weight:600;font-size:.8rem;opacity:.95;overflow:hidden;text-overflow:ellipsis}
+.rcnow{display:flex;align-items:center;gap:4px;margin-top:2px;font-size:.88rem;font-weight:600;color:var(--fg)}
+.rcnow .wi{width:28px;height:28px;flex:0 0 auto}
 .wxrow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;flex:1;min-width:0}
 .wxrow li{display:grid;grid-template-rows:auto 28px auto auto;align-content:start;justify-items:center;gap:0;text-align:center;padding:2px 0;border-radius:8px;min-width:0}
 .wxrow li.now{background:rgba(255,255,255,.18)}
@@ -890,7 +893,7 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 #dash .wxsec{gap:6px;border-top:0;padding-top:0}
 #dash .wxsec h4{font-size:1.05rem}
 #dash .wxwarn.mini{gap:3px;margin:0;padding:0;list-style:none}
-@media (max-width:480px){.wxmini{flex-direction:column;align-items:stretch;gap:2px;padding:6px 6px 4px}.wxmini .wxo{max-width:none;padding-left:4px}}
+@media (max-width:480px){.wxmini{flex-direction:column;align-items:stretch;gap:2px;padding:6px 6px 4px}.wxmini .wxo{max-width:none;padding-left:4px}.wxmini .wxnow{display:inline;margin-left:8px}}
 
 /* ---- news ticker at the top of the Dashboard ---- */
 .ticker{display:flex;align-items:stretch;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--line);min-height:40px;font-size:.9rem}
@@ -4109,11 +4112,17 @@ const wxKey = o => (+o.profile.lat).toFixed(3) + "," + (+o.profile.lon).toFixed(
 function wxGet(o) {
   const k = wxKey(o), c = WX[k];
   if (c && (c.loading || Date.now() - c.at < 36e5)) return c;
-  WX[k] = {loading: true, at: Date.now()};
+  const tries = c && c.err ? (c.n || 0) : 0;
+  WX[k] = {loading: true, at: Date.now(), n: tries};
   fetch("https://api.open-meteo.com/v1/forecast?latitude=" + (+o.profile.lat) + "&longitude=" + (+o.profile.lon) +
+    "&current=temperature_2m,weather_code,wind_speed_10m" +
     "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max&timezone=Asia%2FKolkata&forecast_days=6")
-    .then(r => (r.ok ? r.json() : Promise.reject())).then(j => { if (!j || !j.daily) throw 0; WX[k] = {at: Date.now(), d: j.daily}; refreshWx(); })
-    .catch(() => { WX[k] = {at: Date.now() - 33e5, err: true}; refreshWx(); });
+    .then(r => (r.ok ? r.json() : Promise.reject())).then(j => { if (!j || !j.daily) throw 0; const d = j.daily; if (j.current && j.current.temperature_2m != null) d.cur = j.current; WX[k] = {at: Date.now(), d}; refreshWx(); })
+    .catch(() => {
+      /* try again soon: after 15 s, 30 s, 60 s, then every 3 minutes */
+      const n = tries + 1, wait = n <= 3 ? 15e3 * Math.pow(2, n - 1) : 18e4;
+      WX[k] = {at: Date.now() - 36e5 + wait, err: true, n}; refreshWx(); setTimeout(refreshWx, wait + 500);
+    });
   return WX[k];
 }
 const wcWord = c => tr(c === 0 ? "wc_clear" : c <= 2 ? "wc_part" : c === 3 ? "wc_cloud" : c <= 48 ? "wc_fog" : c <= 67 ? "wc_rain" : c <= 77 ? "wc_snow" : c <= 82 ? "wc_shower" : c <= 86 ? "wc_snow" : c === 95 ? "wc_storm" : "wc_hail");
@@ -4196,13 +4205,14 @@ function wxMini(o, d) {
   const day = (i, today) => '<li' + (today ? ' class="now"' : "") + '><span class="wxd">' + esc(today ? tr("wx_today") : wxDay(d.time[i])) + "</span>" + wxIcon(d.weather_code[i], false) +
     "<b>" + Math.round(d.temperature_2m_max[i]) + "°<small>" + Math.round(d.temperature_2m_min[i]) + "°</small></b>" +
     '<span class="wxr">' + ((d.precipitation_sum[i] || 0) >= 1 ? Math.round(d.precipitation_sum[i]) + " mm" : "&nbsp;") + "</span></li>";
-  return '<article class="wxmini sky-' + wxKind(d.weather_code[0]) + '" title="' + esc(wcWord(d.weather_code[0])) + '"><span class="wxo">' + esc(o.name || tr("orchard_fallback")) + "</span>" +
+  const now = d.cur ? '<small class="wxnow">' + esc(tr("wx_now")) + " " + Math.round(d.cur.temperature_2m) + "° · " + esc(wcWord(d.cur.weather_code)) + "</small>" : "";
+  return '<article class="wxmini sky-' + wxKind(d.cur ? d.cur.weather_code : d.weather_code[0]) + '" title="' + esc(wcWord(d.weather_code[0])) + '"><span class="wxo">' + esc(o.name || tr("orchard_fallback")) + now + "</span>" +
     '<ol class="wxrow">' + d.time.slice(0, 6).map((t, i) => day(i, i === 0)).join("") + "</ol></article>";
 }
 function wxBlock(list, one, mini) {
   const ready = list.map(o => ({o, c: wxGet(o)}));
   if (!ready.some(x => x.c.d)) {
-    if (ready.some(x => x.c.loading)) return '<p class="hint">' + tr("wx_load") + "</p>";
+    if (ready.some(x => x.c.loading || (x.c.err && x.c.n <= 3))) return '<p class="hint">' + tr("wx_load") + "</p>";   /* still retrying */
     return '<p class="hint">' + tr("wx_err") + "</p>";
   }
   let warns = [], cards = "";
@@ -4230,6 +4240,7 @@ function refreshWx() {
     const id = el.dataset.wx;
     if (id === "dash") { const list = S.orchards.filter(hasLoc); el.innerHTML = list.length ? wxBlock(list, false, true) : '<p class="hint">' + tr("wx_none") + "</p>"; }
     else if (id === "guest") el.innerHTML = wxBlock([guestPlace()], false, true);
+    else if (id === "guestnow") el.innerHTML = guestNowHtml();
     else { const o = S.orchards.find(x => x.id === id); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true); }
   });
 }
@@ -6303,7 +6314,7 @@ function renderRec() {
   const yearly = RC.costs.reduce((a, c) => a + c[1], 0), net = gross - lotExp - yearly, trees = RC.trees.reduce((a, t) => a + t[1], 0);
   const tile = (k, v, c) => '<div class="' + (c || "") + '"><span>' + esc(tr(k)) + "</span><b>" + v + "</b></div>";
   let h = '<div class="rcgrid">' +
-    '<section class="rccard rcprof"><div class="rcohead"><span class="rcart" aria-hidden="true">' + treeArt("rc-shimla") + '</span><div><b>' + esc(tr("rc_o")) + "</b><small>" + esc(tr("rc_vill")) + "</small></div></div>" +
+    '<section class="rccard rcprof"><div class="rcohead"><span class="rcart" aria-hidden="true">' + treeArt("rc-shimla") + '</span><div><b>' + esc(tr("rc_o")) + "</b><small>" + esc(tr("rc_vill")) + '</small><span class="rcnow" data-wx="guestnow">' + guestNowHtml() + "</span></div></div>" +
     "<h4>" + tr("rc_prof") + '</h4><dl class="rcdl">' +
       "<dt>" + tr("f_trees").replace(/\s*\(.*\)$/, "") + "</dt><dd>" + fmtN(trees) + "</dd>" +
       "<dt>" + tr("p_var") + "</dt><dd>" + RC.trees.map(t => esc(t[0]) + " " + t[1]).join(", ") + "</dd>" +
@@ -6323,11 +6334,11 @@ function renderRec() {
 document.addEventListener("click", e => { const b = e.target.closest('#recSample [data-lp="dash"]'); if (b) { tabPicked = true; showTool("orch", false, true); } });
 
 /* ---- Dashboard for visitors who are not logged in: news, weather for their area, quick tools, sign-up ---- */
-Object.assign(T.en, { gd_place:"Your area", gd_tools:"Quick tools", gd_t_diag:"Check a disease", gd_t_calc:"Quick profit calculator", gd_t_spray:"Spray schedule", gd_t_chat:"Ask Saathi",
+Object.assign(T.en, { wx_now:"Now", gd_place:"Your area", gd_tools:"Quick tools", gd_t_diag:"Check a disease", gd_t_calc:"Quick profit calculator", gd_t_spray:"Spray schedule", gd_t_chat:"Ask Saathi",
   gd_join_h:"Keep your own orchard record", gd_join_p:"Free account: weather for each orchard, spray reminders, sales and profit." });
-Object.assign(T.hi, { gd_place:"आपका इलाक़ा", gd_tools:"झटपट टूल", gd_t_diag:"बीमारी जाँचें", gd_t_calc:"झटपट मुनाफ़ा कैलकुलेटर", gd_t_spray:"स्प्रे सूची", gd_t_chat:"साथी से पूछें",
+Object.assign(T.hi, { wx_now:"अभी", gd_place:"आपका इलाक़ा", gd_tools:"झटपट टूल", gd_t_diag:"बीमारी जाँचें", gd_t_calc:"झटपट मुनाफ़ा कैलकुलेटर", gd_t_spray:"स्प्रे सूची", gd_t_chat:"साथी से पूछें",
   gd_join_h:"अपने बाग़ का रिकॉर्ड रखें", gd_join_p:"मुफ़्त खाता: हर बाग़ का मौसम, स्प्रे रिमाइंडर, बिक्री और मुनाफ़ा।" });
-Object.assign(T.hn, { gd_place:"Aapka ilaaka", gd_tools:"Jhatpat tools", gd_t_diag:"Bimari jaanchein", gd_t_calc:"Jhatpat munafa calculator", gd_t_spray:"Spray schedule", gd_t_chat:"Saathi se poochhein",
+Object.assign(T.hn, { wx_now:"Abhi", gd_place:"Aapka ilaaka", gd_tools:"Jhatpat tools", gd_t_diag:"Bimari jaanchein", gd_t_calc:"Jhatpat munafa calculator", gd_t_spray:"Spray schedule", gd_t_chat:"Saathi se poochhein",
   gd_join_h:"Apne bagiche ka record rakhein", gd_join_p:"Free account: har bagiche ka mausam, spray reminder, bikri aur munafa." });
 /* apple areas of Himachal and Kashmir (approximate centres, for the forecast) */
 const PLACES = [
@@ -6341,6 +6352,13 @@ function guestPlace() {
   /* visitors see the weather for the example orchard in Kufri (the same orchard as the example record) */
   const p = PLACES.find(x => x[0] === "kufri");
   return {id: "place-" + p[0], name: tr("rc_o") + ", " + (lang === "hi" ? p[2] : p[1]), profile: {lat: p[3], lon: p[4]}};
+}
+/* current Kufri weather line for the example orchard card */
+function guestNowHtml() {
+  const c = wxGet(guestPlace()), d = c.d;
+  if (d && d.cur) return wxIcon(d.cur.weather_code, false) + esc(tr("wx_now") + " " + Math.round(d.cur.temperature_2m) + "° · " + wcWord(d.cur.weather_code));
+  if (d) return wxIcon(d.weather_code[0], false) + esc(wcWord(d.weather_code[0]) + " · " + Math.round(d.temperature_2m_max[0]) + "° / " + Math.round(d.temperature_2m_min[0]) + "°");
+  return esc(tr("wx_load"));
 }
 /* weather for visitors: shown at the top of My Orchard Record, like the logged-in record page */
 function renderGuestWx() {
