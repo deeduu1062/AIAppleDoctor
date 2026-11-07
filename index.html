@@ -394,7 +394,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 #tools{scroll-margin-top:120px;padding-top:18px}
 
 /* tools */
-.tpanel{margin-top:24px;display:grid;gap:24px;max-width:880px}
+.tpanel{margin-top:24px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px;max-width:880px}
 .tpanel[hidden]{display:none}
 .thead{display:flex;gap:8px 14px;align-items:center;flex-wrap:wrap}
 .thead h3{font-size:1.5rem;font-weight:800}
@@ -997,7 +997,8 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .rclot td.due{color:var(--apple);font-weight:700}
 .rclot tfoot td{font-weight:700;border-top:2px solid var(--line)}
 .gltiles .rcdue b{color:var(--apple)}
-@media (max-width:520px){.rclot .cx{display:none}.rclot table.ledger{min-width:0;font-size:.85rem}.rclot table.ledger th,.rclot table.ledger td{padding:6px 6px}}
+@media (max-width:520px){.rclot .cx{display:none}.rclot table.ledger{min-width:0;font-size:.85rem}.rclot table.ledger th,.rclot table.ledger td{padding:6px 4px}.rclot table.ledger thead th{white-space:normal;vertical-align:bottom}.rclot table.ledger th:first-child,.rclot table.ledger td:first-child{padding-left:8px}.rclot table.ledger th:last-child,.rclot table.ledger td:last-child{padding-right:8px}}
+@media (max-width:400px){.rclot table.ledger{font-size:.78rem}.rclot table.ledger th,.rclot table.ledger td{padding:6px 3px}}
 .rccost{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .rccost li{display:flex;justify-content:space-between;gap:10px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
 .rccost li b{font:500 1rem var(--mono)}
@@ -1013,7 +1014,7 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .rcdiary small{color:var(--muted)}
 .rccta{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;border-radius:14px;padding:16px;background:var(--surface-2);border:1px dashed var(--line)}
 .rccta p{margin:2px 0 0;color:var(--muted)}
-#recGuest{display:grid;gap:14px}
+#recGuest{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 #recGuest[hidden]{display:none}
 .rcsub h4{font-size:1.15rem;font-weight:700}
 
