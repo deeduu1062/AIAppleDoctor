@@ -1008,6 +1008,30 @@ body.guest .lpmanage{padding-top:28px}
 .rccost li b{font:500 1rem var(--mono)}
 .rccost li.tot{border:0;font-weight:700}
 .rccost li.tot b{font-weight:700}
+/* ---- Sales/Profit example for visitors (Yearly, Season, Expenses) ---- */
+.gxdemo{display:grid;gap:14px;margin-top:14px}
+.gxnote{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-left:4px solid var(--apple);background:var(--surface-2);border-radius:10px;padding:10px 14px;font-size:.95rem}
+.gxnote .pill{background:var(--apple);color:var(--on-apple);border-color:var(--apple)}
+.gxbars{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:14px;align-items:end;height:215px;padding-top:6px}
+.gxbar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;min-width:0}
+.gxbar b{font:600 .9rem var(--mono);white-space:nowrap}
+.gxbar i{display:block;width:100%;max-width:84px;border-radius:8px 8px 0 0;background:var(--seg-profit)}
+.gxbar.now i{background:var(--brand)}
+.gxbar span{font-weight:700}
+.gxbar small{color:var(--good);font-size:.8rem;font-weight:600}
+.gxbar small.neg{color:var(--bad)}
+.gxpick{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:end}
+.gxpick .field{min-width:150px}
+.gxlegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;margin:8px 0 0;padding:0;list-style:none}
+.gxlegend li{display:flex;align-items:center;gap:6px}
+.gxlegend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.gxcat{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.gxcat li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:baseline}
+.gxcat li b{font:500 1rem var(--mono)}
+.gxcat li .gxtrack{grid-column:1/-1;height:10px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.gxcat li .gxtrack i{display:block;height:100%;background:var(--seg-year);border-radius:5px}
+.gxcat li.tot{border-top:2px solid var(--line);padding-top:8px;font-weight:700}
+.gxdemo td.pos{color:var(--good);font-weight:700}.gxdemo td.neg{color:var(--bad);font-weight:700}
 .rcdiary{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .rcdiary li{display:grid;grid-template-columns:62px 1fr;gap:10px;padding-left:10px;border-left:3px solid var(--line);font-size:.92rem;line-height:1.4}
 .rcdiary li.k-dk_spray{border-left-color:#2F6FA8}
@@ -1734,6 +1758,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <p data-i18n="pg_p"></p>
         <div class="dels"><button class="btn-s add" type="button" id="pcSignIn" data-i18n="pg_btn"></button></div>
       </div>
+      <div class="gxdemo" id="pcDemo" hidden></div>
     <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year" hidden>
       <div>
         <p class="hynote" data-i18n="hy_note"></p>
@@ -3183,8 +3208,10 @@ function showSub(w) {
     $("rp-" + n).hidden = n !== curSub || (n !== "quick" && !ready);
     $("rt-" + n).setAttribute("aria-selected", n === curSub ? "true" : "false");
   });
-  $("pcGate").hidden = curSub === "quick" || ready;
+  const demo = !user && curSub !== "quick";   /* visitors: read-only example instead of the login wall */
+  $("pcGate").hidden = curSub === "quick" || ready || demo;
   $("status").hidden = curSub === "quick" || !ready;
+  const pd = $("pcDemo"); if (pd) { pd.hidden = !demo; if (demo && typeof renderPcDemo === "function") renderPcDemo(); }
 }
 $("rt-quick").addEventListener("click", () => showSub("quick"));
 $("pcSignIn").addEventListener("click", () => goLogin(false));
@@ -6362,6 +6389,107 @@ function renderRec() {
   el.innerHTML = h;
 }
 document.addEventListener("click", e => { const b = e.target.closest('#recSample [data-lp="dash"]'); if (b) { tabPicked = true; showTool("orch", false, true); } });
+
+/* ---- Sales/Profit example for visitors: Yearly, Season and Expenses with example numbers (same Shimla Orchard as the Orchard Record example) ---- */
+Object.assign(T.en, { gx_note:"Example numbers for two orchards over three harvest years. After you log in, these tabs show your own orchards and sales.",
+  gx_o2:"Narkanda Orchard", gx_chart:"Net profit, all orchards, year by year", gx_byo:"Net profit by orchard and year", gx_rows:"Each harvest year: gross profit minus yearly expenses",
+  gx_season:"{o}, harvest year {y}", gx_grades:"Sales by grade", gx_avg:"Average rate", gx_where:"Where the sale money went", gx_pbe:"Per-box expenses (picking, grading, carriage, commission)",
+  gx_exp_h:"Yearly expenses, harvest year {y}", gx_all:"Both orchards", gx_epb:"Yearly expenses per peti", gx_eyrs:"Yearly expenses, year by year", gx_cat:"Expense" });
+Object.assign(T.hi, { gx_note:"दो बाग़ों के तीन फ़सल वर्षों के उदाहरण आँकड़े। लॉग इन करने के बाद इन टैब में आपके अपने बाग़ और बिक्री दिखेंगे।",
+  gx_o2:"नारकंडा बाग़", gx_chart:"सभी बाग़ों का शुद्ध मुनाफ़ा, साल-दर-साल", gx_byo:"बाग़ और साल के हिसाब से शुद्ध मुनाफ़ा", gx_rows:"हर फ़सल वर्ष: सकल मुनाफ़ा घटा साल भर के ख़र्च",
+  gx_season:"{o}, फ़सल वर्ष {y}", gx_grades:"ग्रेड के हिसाब से बिक्री", gx_avg:"औसत भाव", gx_where:"बिक्री का पैसा कहाँ गया", gx_pbe:"प्रति पेटी ख़र्च (तुड़ाई, ग्रेडिंग, ढुलाई, कमीशन)",
+  gx_exp_h:"साल भर के ख़र्च, फ़सल वर्ष {y}", gx_all:"दोनों बाग़", gx_epb:"प्रति पेटी साल भर का ख़र्च", gx_eyrs:"साल भर के ख़र्च, साल-दर-साल", gx_cat:"ख़र्च" });
+Object.assign(T.hn, { gx_note:"Do bagichon ke teen harvest saal ke example numbers. Login karne ke baad in tabs mein aapke apne bagiche aur bikri dikhenge.",
+  gx_o2:"Narkanda Orchard", gx_chart:"Sabhi bagichon ka net munafa, saal dar saal", gx_byo:"Bagiche aur saal ke hisaab se net munafa", gx_rows:"Har harvest saal: gross munafa minus saal ke kharche",
+  gx_season:"{o}, harvest saal {y}", gx_grades:"Grade ke hisaab se bikri", gx_avg:"Ausat bhaav", gx_where:"Bikri ka paisa kahan gaya", gx_pbe:"Per peti kharche (todan, grading, dhulai, commission)",
+  gx_exp_h:"Saal ke kharche, harvest saal {y}", gx_all:"Dono bagiche", gx_epb:"Saal ka kharcha per peti", gx_eyrs:"Saal ke kharche, saal dar saal", gx_cat:"Kharcha" });
+/* lines: [grade key, boxes, rate per box, expense per box]; costs: spray, fert, labour, prune, irrig, other. Shimla 2026 matches the Orchard Record example. */
+const GX = {
+  years: [2024, 2025, 2026],
+  orch: [
+    {k: "rc_o", trees: 320, s: {
+      2024: {l: [["gk_a",150,1700,220],["gk_b",90,1100,180],["gk_rg",40,1300,200],["gk_gift",30,800,150]], c: [32000,20000,28000,11000,4000,5000]},
+      2025: {l: [["gk_a",180,1800,225],["gk_b",85,1150,185],["gk_rg",35,1400,205],["gk_gift",30,850,155]], c: [35000,21000,29000,12000,4000,5000]},
+      2026: {l: [["gk_a",120,1850,230],["gk_a",90,2100,250],["gk_b",60,1200,190],["gk_b",40,1350,200],["gk_rg",25,1500,210],["gk_gift",20,900,160]], c: [38000,22000,30000,12000,0,6000]}}},
+    {k: "gx_o2", trees: 150, s: {
+      2024: {l: [["gk_a",70,1600,210],["gk_b",45,1050,175],["gk_gift",25,800,150]], c: [18000,11000,15000,7000,3000,2000]},
+      2025: {l: [["gk_a",85,1750,220],["gk_b",50,1100,180],["gk_gift",25,850,150]], c: [19000,12000,16000,7000,3000,3000]},
+      2026: {l: [["gk_a",100,1900,230],["gk_b",55,1250,190],["gk_rg",15,1400,200],["gk_gift",10,900,160]], c: [20000,12000,17000,8000,3000,4000]}}}
+  ]
+};
+let gxO = 0, gxY = 2026, gxEY = 2026;
+function gxCalc(oi, y) {
+  const se = GX.orch[oi].s[y], r = {boxes: 0, rev: 0, lot: 0, g: {}};
+  se.l.forEach(([g, b, rt, e]) => { r.boxes += b; r.rev += b * rt; r.lot += b * e; const x = r.g[g] || (r.g[g] = {b: 0, rev: 0}); x.b += b; x.rev += b * rt; });
+  r.yearly = se.c.reduce((a, v) => a + v, 0); r.gp = r.rev - r.lot; r.net = r.gp - r.yearly;
+  return r;
+}
+function gxYear(y) { const t = {boxes: 0, rev: 0, lot: 0, yearly: 0, gp: 0, net: 0}; GX.orch.forEach((o, i) => { const r = gxCalc(i, y); Object.keys(t).forEach(k => { t[k] += r[k]; }); }); return t; }
+function gxYearHtml() {
+  const tots = GX.years.map(gxYear), max = Math.max.apply(null, tots.map(t => t.net)), last = GX.years.length - 1;
+  const cls = n => (n < 0 ? "neg" : "pos");
+  const bars = GX.years.map((y, i) => {
+    const t = tots[i], prev = i ? tots[i - 1].net : 0, ch = i && prev ? Math.round((t.net - prev) / Math.abs(prev) * 100) : null;
+    return '<div class="gxbar' + (i === last ? " now" : "") + '"><b>' + shortInr(t.net) + '</b><i style="height:' + Math.max(6, Math.round(t.net / max * 130)) + 'px"></i><span>' + y + "</span>" +
+      (ch == null ? "<small>&nbsp;</small>" : '<small class="' + (ch < 0 ? "neg" : "") + '">' + (ch >= 0 ? "+" : "−") + Math.abs(ch) + "%</small>") + "</div>";
+  }).join("");
+  const rows = GX.years.slice().reverse().map(y => { const t = gxYear(y), f = (k, v, c) => yfig(tr(k), v, c);
+    return '<div class="yrow"><div class="yhead"><span class="yy">' + y + '</span><span class="yfigs">' + f("y_gp", mny(t.gp)) + '<span class="yop" aria-hidden="true">−</span>' + f("y_yc", mny(t.yearly)) +
+      '<span class="yop" aria-hidden="true">=</span>' + f("ls_net", mny(t.net), "ynet " + cls(t.net)) + "</span></div></div>"; }).join("");
+  const tbl = '<div class="tablewrap"><table class="ledger sm ytab"><thead><tr><th scope="col">' + tr("y_orch") + "</th>" + GX.years.slice().reverse().map(y => '<th scope="col">' + y + "</th>").join("") + "</tr></thead><tbody>" +
+    GX.orch.map((o, i) => '<tr><th scope="row">' + esc(tr(o.k)) + "</th>" + GX.years.slice().reverse().map(y => { const n = gxCalc(i, y).net; return '<td class="' + cls(n) + '">' + inr(n) + "</td>"; }).join("") + "</tr>").join("") +
+    '</tbody><tfoot><tr><th scope="row">' + tr("y_all") + "</th>" + tots.slice().reverse().map(t => '<td class="' + cls(t.net) + '">' + inr(t.net) + "</td>").join("") + "</tr></tfoot></table></div>";
+  return '<section class="rccard"><h4>' + tr("gx_chart") + '</h4><div class="gxbars" role="img" aria-label="' + esc(tr("gx_chart")) + '">' + bars + "</div></section>" +
+    '<section class="rccard"><h4>' + tr("gx_rows") + '</h4><div class="ylist figrows">' + rows + "</div></section>" +
+    '<section class="rccard"><h4>' + tr("gx_byo") + "</h4>" + tbl + "</section>";
+}
+function gxPick(id, opts, v) {
+  return '<div class="field"><label for="' + id + '">' + tr(id === "gxSelO" ? "lbl_orchard" : "lbl_year") + '</label><select id="' + id + '">' +
+    opts.map(([val, lab]) => '<option value="' + val + '"' + (String(val) === String(v) ? " selected" : "") + ">" + esc(lab) + "</option>").join("") + "</select></div>";
+}
+function gxSeasonHtml() {
+  const o = GX.orch[gxO], r = gxCalc(gxO, gxY), prev = GX.orch[gxO].s[gxY - 1] ? gxCalc(gxO, gxY - 1) : null;
+  const tile = (k, v) => "<div><span>" + esc(tr(k)) + "</span><b>" + v + "</b></div>";
+  const pct = n => (n / r.rev * 100).toFixed(1) + "%";
+  const segs = [["seg-pack", r.lot, "gx_pbe"], ["seg-year", r.yearly, "y_yc"], ["seg-profit", r.net, "ls_net"]];
+  const vs = prev ? tr("gl_vs").replace("{s}", (r.net >= prev.net ? "+" : "−") + Math.abs(Math.round((r.net - prev.net) / Math.abs(prev.net) * 100)) + "%").replace("{y}", gxY - 1) : "";
+  const order = ["gk_a", "gk_b", "gk_rg", "gk_gift"].filter(g => r.g[g]);
+  return '<div class="gxpick">' + gxPick("gxSelO", GX.orch.map((x, i) => [i, tr(x.k)]), gxO) + gxPick("gxSelY", GX.years.slice().reverse().map(y => [y, y]), gxY) + "</div>" +
+    '<div class="rcgrid"><section class="rccard"><h4>' + esc(tr("gx_season").replace("{o}", tr(o.k)).replace("{y}", gxY)) + '</h4><div class="rcnet"><span>' + tr("gl_net") + "</span><b>" + inr(r.net) + "</b>" + (vs ? "<small>" + esc(vs) + "</small>" : "") + "</div>" +
+      '<div class="gltiles">' + tile("gl_sales", inr(r.rev)) + tile("y_pbe", inr(r.lot)) + tile("y_yc", inr(r.yearly)) + tile("gl_boxes", fmtN(r.boxes)) + tile("gl_ppp", inr(r.net / r.boxes)) + tile("k_npt", inr(r.net / o.trees)) + "</div></section>" +
+    '<section class="rccard"><h4>' + tr("gx_where") + '</h4><div class="stack" role="img" aria-label="' + esc(tr("gx_where")) + '">' + segs.map(s => '<span style="width:' + Math.max(0, s[1] / r.rev * 100) + "%;background:var(--" + s[0] + ')"></span>').join("") + "</div>" +
+      '<ul class="gxlegend">' + segs.map(s => '<li><i style="background:var(--' + s[0] + ')"></i>' + esc(tr(s[2])) + ": <b>" + inr(s[1]) + "</b> (" + pct(s[1]) + ")</li>").join("") + "</ul></section></div>" +
+    '<section class="rccard"><h4>' + tr("gx_grades") + '</h4><div class="tablewrap"><table class="ledger sm"><thead><tr><th scope="col">' + tr("rc_grade") + '</th><th scope="col">' + tr("rc_boxes") + '</th><th scope="col">' + tr("gx_avg") + '</th><th scope="col">' + tr("gl_sales") + "</th></tr></thead><tbody>" +
+      order.map(g => "<tr><td>" + esc(tr(g)) + "</td><td>" + fmtN(r.g[g].b) + "</td><td>" + inr(r.g[g].rev / r.g[g].b) + "</td><td>" + inr(r.g[g].rev) + "</td></tr>").join("") +
+      "</tbody><tfoot><tr><td>" + tr("rc_tot") + "</td><td>" + fmtN(r.boxes) + "</td><td>" + inr(r.rev / r.boxes) + "</td><td>" + inr(r.rev) + "</td></tr></tfoot></table></div></section>";
+}
+function gxExpHtml() {
+  const keys = COST_KEYS.map(k => "yc_" + k), per = GX.orch.map(o => o.s[gxEY].c);
+  const tot = keys.map((k, j) => per.reduce((a, c) => a + c[j], 0)), all = tot.reduce((a, v) => a + v, 0), max = Math.max.apply(null, tot);
+  const boxes = GX.orch.reduce((a, o, i) => a + gxCalc(i, gxEY).boxes, 0);
+  const cats = keys.map((k, j) => tot[j] ? "<li><span>" + esc(tr(k)) + "</span><b>" + inr(tot[j]) + '</b><span class="gxtrack"><i style="width:' + (tot[j] / max * 100) + '%"></i></span></li>' : "").join("") +
+    '<li class="tot"><span>' + tr("rc_tot") + "</span><b>" + inr(all) + "</b></li>";
+  const tbl = '<div class="tablewrap"><table class="ledger sm ytab"><thead><tr><th scope="col">' + tr("gx_cat") + "</th>" + GX.orch.map(o => '<th scope="col">' + esc(tr(o.k)) + "</th>").join("") + "</tr></thead><tbody>" +
+    keys.map((k, j) => tot[j] ? '<tr><th scope="row">' + esc(tr(k)) + "</th>" + per.map(c => "<td>" + inr(c[j]) + "</td>").join("") + "</tr>" : "").join("") +
+    '</tbody><tfoot><tr><th scope="row">' + tr("rc_tot") + "</th>" + per.map(c => "<td>" + inr(c.reduce((a, v) => a + v, 0)) + "</td>").join("") + "</tr></tfoot></table></div>";
+  const yrs = '<ul class="rccost">' + GX.years.slice().reverse().map(y => "<li><span>" + y + "</span><b>" + inr(gxYear(y).yearly) + "</b></li>").join("") + "</ul>";
+  return '<div class="gxpick">' + gxPick("gxSelEY", GX.years.slice().reverse().map(y => [y, y]), gxEY) + "</div>" +
+    '<div class="rcgrid"><section class="rccard"><h4>' + esc(tr("gx_exp_h").replace("{y}", gxEY)) + " · " + esc(tr("gx_all")) + '</h4><ul class="gxcat">' + cats + "</ul>" +
+      '<div class="gltiles"><div><span>' + esc(tr("gx_epb")) + "</span><b>" + inr(all / boxes) + "</b></div></div></section>" +
+    '<section class="rccard"><h4>' + tr("y_orch") + "</h4>" + tbl + "<h4>" + tr("gx_eyrs") + "</h4>" + yrs + "</section></div>";
+}
+function renderPcDemo() {
+  const el = $("pcDemo"); if (!el || !T.en.gx_note) return;
+  let body = "";
+  try { body = curSub === "year" ? gxYearHtml() : curSub === "orch" ? gxSeasonHtml() : gxExpHtml(); } catch (e) { body = ""; }
+  el.innerHTML = '<p class="gxnote"><span class="pill">' + esc(tr("rc_pill")) + "</span><span>" + esc(tr("gx_note")) + "</span></p>" + body +
+    '<div class="rccta"><div><b>' + tr("rc_cta_h") + "</b><p>" + tr("rc_cta_p") + '</p></div><button class="btn primary" type="button" data-lp="join">' + esc(tr("pr_join")) + "</button></div>";
+}
+$("pcDemo").addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "gxSelO") gxO = +t.value; else if (t.id === "gxSelY") gxY = +t.value; else if (t.id === "gxSelEY") gxEY = +t.value; else return;
+  renderPcDemo(); const n = $(t.id); if (n) n.focus();
+});
 
 /* ---- Dashboard for visitors who are not logged in: news, weather for their area, quick tools, sign-up ---- */
 Object.assign(T.en, { wx_now:"Now", gd_place:"Your area", gd_tools:"Quick tools", gd_t_diag:"Check a disease", gd_t_calc:"Quick profit calculator", gd_t_spray:"Spray schedule", gd_t_chat:"Ask Saathi",
