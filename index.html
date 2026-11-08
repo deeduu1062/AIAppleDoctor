@@ -3745,12 +3745,6 @@ function dashOverview() {
   try { h += dashNewsHtml(); } catch (e) {}
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
   h += detailsHtml();
-  h += dashDxHtml();
-  h += farmSummaryHtml();
-  h += soilReportHtml();
-  if (S.orchards.length) {
-    h += '<section class="osec"><h4>' + tr("map_h") + "</h4>" + (S.orchards.some(hasLoc) ? '<div class="omap farm" data-map="farm"></div>' : '<p class="hint">' + tr("map_none") + "</p>") + "</section>";
-  }
   return h;
 }
 
