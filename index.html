@@ -1711,7 +1711,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <body>
 <div class="topbar">
   <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo"></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
-  <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><button class="link" type="button" id="shareAcct" data-i18n="sh_invite"></button><button class="link" type="button" id="setPw" data-i18n="acct_setpw"></button><a class="link" href="/admin.html" id="adminLink" data-i18n="tt_admin" hidden></a><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
+  <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><a class="link" href="/admin.html" id="adminLink" data-i18n="tt_admin" hidden></a><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
   <header class="wrap top">
     <a class="brand" href="#top"><i aria-hidden="true"></i>Seb Saathi</a>
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
@@ -3045,7 +3045,6 @@ function renderAcct() {
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (typeof renderChat === "function" && $("chatDlg") && T.en.ch_fab) { if (!user) { CHAT = []; chatLoadedFor = null; chatLeft = null; chatErr = ""; } renderChat(); }
   if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || fmtPhone(user.phone)));
-  $("setPw").hidden = !!(user && !user.email);
 }
 let recovering = false, pwOpen = false;
 
@@ -3148,7 +3147,6 @@ function netMsg(err) {
   const m = String((err && err.message) || err || "");
   return /fetch|network|failed|load/i.test(m) ? tr("auth_err_net") : tr("auth_err_send").replace("{m}", m);
 }
-$("setPw").addEventListener("click", () => { showTool("orch", false, true); pwOpen = true; set("pwErr", ""); set("pwOk", ""); $("pwNew").value = ""; renderOrchGate(); $("pwCard").scrollIntoView({block: "center"}); });
 $("pwCancel").addEventListener("click", () => { pwOpen = false; recovering = false; renderOrchGate(); if (user && !loaded && !loadFailed) loadMine(); });
 $("pwForm").addEventListener("submit", async e => {
   e.preventDefault(); set("pwErr", ""); set("pwOk", "");
@@ -6311,7 +6309,6 @@ function shareOpen() {
 }
 const shareShut = () => { const d = $("shareDlg"); if (d.close) d.close(); else d.removeAttribute("open"); };
 $("shareBtn").addEventListener("click", shareOpen);
-$("shareAcct").addEventListener("click", shareOpen);
 $("shareJoin").addEventListener("click", shareOpen);
 $("shareClose").addEventListener("click", shareShut);
 $("shareDlg").addEventListener("click", e => { if (e.target === $("shareDlg")) shareShut(); });
