@@ -1268,7 +1268,16 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .otabs{margin:0 0 14px;gap:6px}
 .otabs .tab{padding:8px 14px;min-height:40px;font-size:.95rem}
 .otphoto{margin:0 0 12px;max-width:180px}
-.ovlist{margin-top:12px}
+.ovlist{margin-top:8px;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr))}
+.ovlist div{padding:4px 0;grid-template-columns:auto minmax(0,1fr);gap:8px}
+.ovlist dt{font-size:.82rem}.ovlist dd{font-size:.9rem;text-align:right}
+.ystats.ovstats,.ybody .ystats.ovstats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}
+.ovstats div{padding:6px 10px;border-radius:8px}
+.ovstats span{font-size:.74rem;line-height:1.2}
+.ovstats b{font-size:1rem;margin-top:1px}
+.ovstats .main b{font-size:1.1rem}
+@media (min-width:700px){.ystats.ovstats,.ybody .ystats.ovstats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.ybody .detwx + .ystats.ovstats{margin-top:0}
 .detwx .wxmini .wxo{font-size:0}
 .detwx .wxmini .wxo .wxnow{font-size:.8rem;margin-left:0}
 .detwx .hint{margin:0 0 8px}
@@ -4185,7 +4194,7 @@ function otOverviewHtml(o, lsp, nt) {
   const Y = sy.length ? Math.max.apply(null, sy) : null, se = Y ? seFor(o.id, Y) : null, r = se ? seasonCalc(se) : null;
   const tile = (lab, val, extra) => "<div" + (extra ? ' class="' + extra + '"' : "") + "><span>" + lab + "</span><b>" + val + "</b></div>";
   const ex = expTotals(o, hYear(todayIso())).total;
-  let h = '<div class="ystats">' +
+  let h = '<div class="ystats ovstats">' +
     (r ? tile(esc(tr("ov_net").replace("{y}", Y)), inr(r.profit), "main " + dcls(r.profit)) + tile(esc(tr("ov_boxes").replace("{y}", Y)), fmtN(r.boxes)) + tile(tr("k_due"), inr(r.due))
        : tile(tr("k_net"), tr("ov_nosale"), "main")) +
     tile(tr("ov_exp"), inr(ex)) + "</div>";
