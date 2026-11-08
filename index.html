@@ -1521,7 +1521,7 @@ table.ledger.ytab{min-width:0;width:100%}
 .ystats.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
 .opage{display:grid;gap:20px;min-width:0}
 .obar .link{padding:4px 0;font-size:1rem}
-.ohead{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:22px;align-items:start}
+.ohead{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-items:start}
 .ophoto{margin:0;display:grid;gap:6px}
 .ophoto img,.ophoto .nophoto{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
 .ophoto .nophoto{background:repeating-linear-gradient(90deg,rgba(70,45,25,.05) 0 2px,transparent 2px 9px),var(--kraft);position:relative}
@@ -3909,11 +3909,8 @@ function orchardPage(o) {
     const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year);
     dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0];
   }
-  const photo = o.photo ? '<img src="' + o.photo + '" alt="' + esc(tr("o_photo_alt").replace("{o}", o.name || "")) + '">' : '<span class="nophoto" aria-hidden="true"></span>';
   let h = '<div class="opage"><div class="obar"><button class="link" type="button" data-dact="back">' + tr("o_back") + "</button></div>" + (delAsk === o.id ? delAskHtml(o) : "") +
-    '<div class="ohead"><figure class="ophoto">' + photo + '<figcaption><button class="link" type="button" data-dact="photo">' + tr(o.photo ? "o_photo_chg" : "o_photo_add") + "</button>" +
-    (o.photo ? '<button class="link" type="button" data-dact="photorm">' + tr("o_photo_rm") + "</button>" : "") + '<input type="file" id="o_photo_in" accept="image/*" hidden></figcaption>' +
-    '<p class="autherr" id="o_photo_err" role="alert"></p></figure>' +
+    '<div class="ohead">' +
     '<div class="oinfo"><div class="otitle"><h3>' + esc(o.name || tr("orchard_fallback")) + "</h3>" + (profEdit ? "" : '<button class="btn-s" type="button" data-dact="prof">' + tr("o_editp") + "</button>") + "</div>" +
     profileHtml(o) + "</div></div>" +
     '<div class="oacts2"><button class="btn-s add" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("d_open") +
@@ -4018,21 +4015,6 @@ function goSeason(oid, year) {
   sel.o = oid; sel.y = year; spOpen.add(year); fixSel(); renderAll();
   tabPicked = true; showTool("calc", false, true); showSub("orch");
   const blk = $("spo-" + oid + "-" + year); if (blk && blk.scrollIntoView) blk.scrollIntoView({block: "start"});
-}
-function shrinkPhoto(file) {
-  return new Promise((ok, bad) => {
-    const img = new Image(), url = URL.createObjectURL(file);
-    img.onload = () => {
-      const k = Math.min(1, 720 / Math.max(img.width, img.height)), c = document.createElement("canvas");
-      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
-      let q = 0.75, d = c.toDataURL("image/jpeg", q);
-      while (d.length > 160000 && q > 0.35) { q -= 0.1; d = c.toDataURL("image/jpeg", q); }
-      ok(d);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); bad(); };
-    img.src = url;
-  });
 }
 /* ---------- Dashboard extras: location + map, weather, spray and work plan, blocks, soil tests, labour, reminders ---------- */
 const TODO_KINDS = ["spray", "fert", "prune", "irrig", "hailnet", "labour", "xother"];
@@ -4198,12 +4180,6 @@ const OTABS = ["ov", "det", "work", "money"];
 function otabsHtml(o) {
   return '<div class="tabs otabs" role="tablist">' + OTABS.map(k => '<button class="tab" role="tab" type="button" data-otab="' + k + '" aria-selected="' + (otab === k) + '">' + tr("ot_" + k) + "</button>").join("") + "</div>";
 }
-function otPhotoHtml(o) {
-  const photo = o.photo ? '<img src="' + o.photo + '" alt="' + esc(tr("o_photo_alt").replace("{o}", o.name || "")) + '">' : '<span class="nophoto" aria-hidden="true"></span>';
-  return '<figure class="ophoto otphoto">' + photo + '<figcaption><button class="link" type="button" data-dact="photo">' + tr(o.photo ? "o_photo_chg" : "o_photo_add") + "</button>" +
-    (o.photo ? '<button class="link" type="button" data-dact="photorm">' + tr("o_photo_rm") + "</button>" : "") + '<input type="file" id="o_photo_in" accept="image/*" hidden></figcaption>' +
-    '<p class="autherr" id="o_photo_err" role="alert"></p></figure>';
-}
 function otOverviewHtml(o, lsp, nt) {
   const sy = S.seasons.filter(x => x.oid === o.id && x.lots.some(l => l.lines.some(n => +n.boxes))).map(x => x.year);
   const Y = sy.length ? Math.max.apply(null, sy) : null, se = Y ? seFor(o.id, Y) : null, r = se ? seasonCalc(se) : null;
@@ -4283,7 +4259,7 @@ function detailsHtml() {
               row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : "", 'data-dact="rgnote"'), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "", 'data-xact="detnext"')]) + "</div>";
         })();
       r += otabsHtml(o);
-      if (otab === "det") r += otPhotoHtml(o) + groups +
+      if (otab === "det") r += groups +
         '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>" +
         locationHtml(o, true) + blocksHtml(o) + soilHtml(o) +
         '<div class="odel"><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></div>";
@@ -4842,8 +4818,6 @@ $("dash").addEventListener("click", e => {
   else if (a === "pcancel") { profEdit = false; renderDash(); }
   else if (a === "note") { otab = "work"; diaryEdit = null; renderDash(); const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); }
   else if (a === "spray") { tabPicked = true; showTool("spray", false, true); }
-  else if (a === "photo") { const i = $("o_photo_in"); if (i) i.click(); }
-  else if (a === "photorm") { if (o) { delete o.photo; save(); renderDash(); } }
   else if (a === "dedit") { diaryEdit = b.dataset.id; renderDash(); const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); }
   else if (a === "dcancel") { diaryEdit = null; renderDash(); }
   else if (a === "ddel" || a === "del") {
@@ -4873,11 +4847,6 @@ $("dash").addEventListener("change", async e => {
   const t = e.target;
   if (t.id === "o_season") { dashYear = +t.value; renderDash(); return; }
   if (t.id === "d_kind") { syncStage(); return; }
-  if (t.id === "o_photo_in") {
-    const f = t.files && t.files[0], o = S.orchards.find(x => x.id === dashView); if (!f || !o) return;
-    try { o.photo = await shrinkPhoto(f); save(); renderDash(); }
-    catch (x) { set("o_photo_err", tr("o_photo_err")); }
-  }
 });
 $("dash").addEventListener("submit", e => {
   const f = e.target.closest("[data-dform]"); if (!f) return;
