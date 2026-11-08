@@ -29,7 +29,7 @@ function renderPlans() {
     let act;
     if (key === "free") {
       act = typeof user !== "undefined" && user
-        ? '<p class="plstat">' + tr("pl_go_free_in") + "</p>"
+        ? '<p class="plstat">' + tr(myPay && myPay.status === "approved" ? "pl_incl" : "pl_go_free_in") + "</p>"
         : '<button class="btn-s add" type="button" data-pl="free">' + tr("pl_go_free") + "</button>";
     } else if (myPay && myPay.plan === key && myPay.status === "approved") {
       act = '<p class="plstat good">' + tr("pl_active") + "</p>";
@@ -42,7 +42,26 @@ function renderPlans() {
       "<ul>" + feats.map(f => "<li>" + plEsc(f) + "</li>").join("") + '</ul><div class="plact">' + act + "</div></article>";
   };
   box.innerHTML = card("free") + card("basic") + card("premium", true);
+  renderMyPlan();
   if (document.getElementById("payDlg") && document.getElementById("payDlg").open) renderPay();
+}
+
+/* the grower's current plan, shown in the account bar at the top */
+function renderMyPlan() {
+  const el = document.getElementById("acctPlan");
+  if (!el) return;
+  if (typeof user === "undefined" || !user) { el.hidden = true; return; }
+  let t, good = false;
+  if (myPay && myPay.status === "approved") {
+    good = true;
+    t = tr("pl_my").replace("{p}", plName(myPay.plan)) + " ✓";
+    if (myPay.valid_until) { const d = typeof fmtDay === "function" ? fmtDay(myPay.valid_until, true) : myPay.valid_until; t += " · " + tr("pl_till").replace("{d}", d); }
+  } else if (myPay && myPay.status === "pending") {
+    t = tr("pl_my").replace("{p}", plName("free")) + " · " + tr("pl_my_pend").replace("{p}", plName(myPay.plan));
+  } else {
+    t = tr("pl_my").replace("{p}", plName("free")) + " · " + tr("pl_upg");
+  }
+  el.textContent = t; el.classList.toggle("good", good); el.hidden = false;
 }
 
 function loadQr() {
