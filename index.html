@@ -4247,7 +4247,9 @@ function otMoneyHtml(o) {
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-otab]"); if (!b) return;
   otab = b.dataset.otab; xEdit = null; locMode = null; locResults = null; detEdit = null; profEdit = false; diaryEdit = null;
-  renderDash(); const n = document.querySelector('[data-otab="' + otab + '"]'); if (n) n.focus();
+  renderDash(); const n = document.querySelector('[data-otab="' + otab + '"]'); if (n) n.focus({preventScroll: true});
+  const card = dashView && $("det-" + dashView), tb = document.querySelector(".topbar");
+  if (card) window.scrollTo({top: Math.max(0, card.getBoundingClientRect().top + window.scrollY - (tb ? tb.offsetHeight : 0) - 8)});
 });
 function detailsHtml() {
   let h = '<section class="osec" id="detSec"><h4>' + tr("det_h") + "</h4>";
