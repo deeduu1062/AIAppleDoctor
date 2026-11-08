@@ -51,17 +51,19 @@ function renderMyPlan() {
   const el = document.getElementById("acctPlan");
   if (!el) return;
   if (typeof user === "undefined" || !user) { el.hidden = true; return; }
-  let t, good = false;
+  let chip, more, cls = "";
   if (myPay && myPay.status === "approved") {
-    good = true;
-    t = tr("pl_my").replace("{p}", plName(myPay.plan)) + " ✓";
-    if (myPay.valid_until) { const d = typeof fmtDay === "function" ? fmtDay(myPay.valid_until, true) : myPay.valid_until; t += " · " + tr("pl_till").replace("{d}", d); }
+    cls = "good"; chip = "★ " + plName(myPay.plan);
+    more = myPay.valid_until ? tr("pl_till").replace("{d}", typeof fmtDay === "function" ? fmtDay(myPay.valid_until, true) : myPay.valid_until) : "";
   } else if (myPay && myPay.status === "pending") {
-    t = tr("pl_my").replace("{p}", plName("free")) + " · " + tr("pl_my_pend").replace("{p}", plName(myPay.plan));
+    cls = "pend"; chip = plName("free"); more = tr("pl_my_pend").replace("{p}", plName(myPay.plan));
   } else {
-    t = tr("pl_my").replace("{p}", plName("free")) + " · " + tr("pl_upg");
+    chip = plName("free"); more = tr("pl_upg") + " →";
   }
-  el.textContent = t; el.classList.toggle("good", good); el.hidden = false;
+  el.className = "link acctplan " + cls;
+  el.setAttribute("aria-label", tr("pl_my").replace("{p}", plName(myPay && myPay.status === "approved" ? myPay.plan : "free")));
+  el.innerHTML = '<span class="plchip">' + plEsc(chip) + "</span>" + (more ? '<span class="plmore">' + plEsc(more) + "</span>" : "");
+  el.hidden = false;
 }
 
 function loadQr() {

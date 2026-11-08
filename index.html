@@ -1131,8 +1131,12 @@ body.guest .lpmanage{padding-top:28px}
 #recApp .dash > *{margin-top:0}
 
 #recApp .dethead .btn-s{padding:5px 12px;min-height:34px;font-size:.85rem;border-radius:8px}
-.acctrow .acctplan{font-weight:600;color:var(--brand-bg)}
-.acctrow .acctplan.good{color:var(--good)}
+.acctrow .acctplan{display:inline-flex;align-items:center;gap:8px;text-decoration:none;padding:4px 0;font-size:.8rem;color:var(--muted)}
+.acctplan .plchip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-weight:700;font-size:.8rem;background:var(--surface);border:1px solid var(--line);color:var(--fg)}
+.acctplan.good .plchip{background:#E6F2EA;border-color:#9CC9AC;color:#1F5C35}
+.acctplan.pend .plchip{background:#FFF4DC;border-color:#E8C979;color:#7A5A12}
+.acctplan .plmore{font-weight:600;color:var(--brand-bg);text-decoration:underline;text-underline-offset:2px}
+.acctplan.pend .plmore,.acctplan.good .plmore{color:var(--muted);text-decoration:none;font-weight:500}
 </style>
 
 <style>
@@ -2266,7 +2270,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="/feedback.js?v=2"></script>
-<script src="/plans.js?v=4" defer></script>
+<script src="/plans.js?v=5" defer></script>
 <script>
 /* Fill in your page links here and the buttons appear. Leave a value empty to hide it. */
 const SOCIAL = { facebook: "", instagram: "", whatsapp: "" };
@@ -3106,8 +3110,9 @@ const isDirty = () => rev > savedRev;
 function setStatus(k) {
   let show = k;
   if (k === "st_cloud") { let seen = false; try { seen = localStorage.getItem("ad_saved_seen") === "1"; if (!seen) localStorage.setItem("ad_saved_seen", "1"); } catch (e) { seen = false; } if (seen) show = "st_saved"; }
-  ["status", "status2"].forEach(id => { const el = $(id); el.textContent = tr(show); el.dataset.k = show; el.classList.toggle("chip", show === "st_saved" || show === "st_saving"); el.classList.toggle("err", k === "st_err"); });
-  $("status").hidden = false;
+  if (show === "st_saved" || show === "st_saving") show = "";
+  ["status", "status2"].forEach(id => { const el = $(id); el.textContent = show ? tr(show) : ""; el.dataset.k = show; el.classList.toggle("chip", show === "st_saved" || show === "st_saving"); el.classList.toggle("err", k === "st_err"); });
+  $("status").hidden = !show;
 }
 function save() { if (!user || !loaded) return; rev++; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
 async function flush() {
