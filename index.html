@@ -1120,6 +1120,15 @@ body.guest .lpmanage{padding-top:28px}
 .dcard .dform .field label{font-size:.8rem}
 .dcard .dform .field input{min-height:38px;padding:6px 10px;font-size:.95rem}
 .dcard .dform .wide,.dcard .dform .dels{grid-column:1/-1}
+
+/* Orchard Record: tight spacing */
+#tp-orch.tpanel{gap:8px}
+#tp-orch .status:empty{display:none}
+#recApp .dash{gap:10px;margin-top:0}
+#recApp .dash .banner{margin-top:0}
+#recApp #detSec{border-top:0;padding-top:0;gap:8px}
+#recApp #detSec > .hint{margin:0;font-size:.85rem}
+#recApp .dash > *{margin-top:0}
 </style>
 
 <style>
@@ -2083,12 +2092,6 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <div id="recApp" hidden>
         <p class="status" id="status2" aria-live="polite"></p>
         <div class="dash" id="dash"></div>
-        <details class="manage" id="bk">
-          <summary data-i18n="bk_h"></summary>
-          <p class="hint" data-i18n="bk_p"></p>
-          <div class="dels"><button class="btn-s" type="button" id="bkDown" data-i18n="bk_down"></button><button class="btn-s" type="button" id="bkPick" data-i18n="bk_import"></button><input id="bkFile" type="file" accept=".json,application/json" hidden></div>
-          <p class="fine" id="bkMsg" role="status"></p>
-        </details>
       </div>
     </div>
   </div>
@@ -3255,30 +3258,6 @@ function fmtPhone(p) {
 $("signOut").addEventListener("click", async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} applyUser(null); });
 $("loadRetry").addEventListener("click", () => { if (user) loadMine(); });
 $("signBtn").addEventListener("click", () => { if (user) showTool("orch", false, true); else goLogin(false); });
-
-/* ---- backup and import ---- */
-function bkMsg(k) { set("bkMsg", tr(k)); }
-$("bkDown").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(S)], {type: "application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "seb-saathi-records.json";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-});
-$("bkPick").addEventListener("click", () => $("bkFile").click());
-$("bkFile").addEventListener("change", async e => {
-  const f = e.target.files && e.target.files[0]; if (!f) return;
-  try {
-    const parsed = sanitize(JSON.parse(await f.text()));
-    if (!parsed || !parsed.orchards.length) throw new Error("bad");
-    parsed.orchards.forEach(o => { const i = S.orchards.findIndex(x => x.id === o.id); if (i >= 0) S.orchards[i] = o; else S.orchards.push(o); });
-    parsed.seasons.forEach(s => { const i = S.seasons.findIndex(x => x.id === s.id); if (i >= 0) S.seasons[i] = s; else S.seasons.push(s); });
-    const ex = S.orchards.filter(x => x.ex).map(x => x.id);
-    S.orchards = S.orchards.filter(x => !x.ex); S.seasons = S.seasons.filter(s => ex.indexOf(s.oid) < 0);
-    fixSel(); save(); renderAll(); bkMsg("bk_ok");
-  } catch (err) { bkMsg("bk_bad"); }
-  e.target.value = "";
-});
 
 let curSub = "quick";
 function showSub(w) {
