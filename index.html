@@ -4271,7 +4271,7 @@ function detailsHtml() {
           const plus = (lab, act) => '<button class="detadd" type="button" ' + act + ' data-o="' + esc(o.id) + '" aria-label="' + esc(lab) + ' +" title="' + esc(lab) + '">+</button>';
           const row = (lab, v, f) => "<div><dt>" + lab + "</dt><dd>" + (v || (f ? plus(lab, f) : '<span class="none">–</span>')) + "</dd></div>";
           const fld = k => 'data-xact="detfield" data-f="' + k + '"';
-          const loc = hasLoc(o) ? tr("det_yes") : plus(tr("det_loc"), 'data-xact="detloc"');
+          const loc = hasLoc(o) ? '<button class="link" type="button" data-xact="detloc" data-o="' + esc(o.id) + '">' + tr("det_yes") + "</button>" : plus(tr("det_loc"), 'data-xact="detloc"');
           const treesGrp = () => {
             const V = vtList(o), tot = +o.trees || V.reduce((a, x) => a + +x.n, 0);
             if (!V.length && !tot) return grp("dg_trees", [row(tr("d_trees"), show("trees"), fld("trees")), row(tr("p_var"), show("var"), fld("var")), row(tr("p_root"), show("root", "r_"), fld("root")), row(tr("p_planted"), show("planted"), fld("planted"))]);
@@ -4289,7 +4289,7 @@ function detailsHtml() {
       r += otabsHtml(o);
       if (otab === "det") r += detWxHtml(o) + groups +
         '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>" +
-        '<div class="dgroups dcards">' + soilCardHtml(o) + locCardHtml(o) + "</div>" +
+        '<div class="dgroups dcards">' + soilCardHtml(o) + (locMode ? locCardHtml(o) : "") + "</div>" +
         '<div class="odel"><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></div>";
       else r += '<div class="owork">' + workHtml(o) + diaryHtml(o) + "</div>" +
         '<section class="osec omoney" id="oMoney"><h4>' + tr("ot_hisab") + "</h4>" + otMoneyHtml(o) + "</section>";
@@ -4658,7 +4658,7 @@ function locCardHtml(o) {
     "<div><dt>" + tr("det_loc") + "</dt><dd>" + (on ? (+P.lat).toFixed(4) + ", " + (+P.lon).toFixed(4) : '<span class="none">' + tr("loc_notset") + "</span>") + "</dd></div>" +
     (+P.alt ? "<div><dt>" + tr("p_alt") + "</dt><dd>" + fmtN(+P.alt) + " m</dd></div>" : "") + "</dl>";
   h += '<div class="dcbtns"><button class="btn-s" type="button" data-xact="locgps">' + tr("loc_gps") + '</button><button class="btn-s" type="button" data-xact="locfind">' + tr("loc_find") +
-    '</button><button class="btn-s" type="button" data-xact="locmap">' + tr("loc_pick") + "</button>" + (on ? '<button class="link del" type="button" data-xact="locrm">' + tr("loc_rm") + "</button>" : "") + "</div>" +
+    '</button><button class="btn-s" type="button" data-xact="locmap">' + tr("loc_pick") + "</button>" + (on ? '<button class="link del" type="button" data-xact="locrm">' + tr("loc_rm") + "</button>" : "") + '<button class="link" type="button" data-xact="loccancel">' + tr("d_cancel") + "</button></div>" +
     '<p class="fine">' + tr("loc_gps_p") + '</p><p class="autherr" id="loc_err" role="alert"></p><p class="okmsg" id="loc_msg" role="status"></p>';
   if (locMode === "find") {
     h += '<form class="dform locform" data-xform="locsearch"><div class="field"><label for="loc_q">' + tr("loc_q") + '</label><input id="loc_q" type="search" maxlength="80" value="' + esc(P.village || "") + '"></div>' +
@@ -4757,7 +4757,8 @@ $("dash").addEventListener("click", e => {
   if (a === "detedit") { detEdit = o.id; dashView = o.id; otab = "det"; renderDash(); vtRefresh(); const n = $("det_village"); if (n) n.focus(); return; }
   if (a === "detcancel") { detEdit = null; renderDash(); const s2 = $("det-" + o.id); if (s2) s2.scrollIntoView({block: "nearest"}); return; }
   if (a === "setloc") { dashView = o.id; otab = "det"; dashYear = null; detEdit = null; xEdit = null; locMode = "find"; locResults = null; renderDash(); const s2 = $("locSec"); if (s2) s2.scrollIntoView({block: "start"}); const q = $("loc_q"); if (q) q.focus({preventScroll: true}); return; }
-  if (a === "detloc") { dashView = o.id; otab = "det"; dashYear = null; detEdit = null; xEdit = null; locMode = null; renderDash(); const s2 = $("locSec"); if (s2) s2.scrollIntoView({block: "start"}); return; }
+  if (a === "loccancel") { locMode = null; locResults = null; renderDash(); return; }
+  if (a === "detloc") { dashView = o.id; otab = "det"; dashYear = null; detEdit = null; xEdit = null; locMode = "find"; locResults = null; renderDash(); const s2 = $("locSec"); if (s2) s2.scrollIntoView({block: "start"}); return; }
   if (a === "slopen") { dashView = o.id; otab = "det"; dashYear = null; detEdit = null; profEdit = false; diaryEdit = null; xEdit = (o.soil || []).length ? null : {sec: "sl"}; xRender("slSec"); const d = $("slSec"); if (d) d.open = true; return; }
   if (a === "cancel") { xEdit = null; xRender(); return; }
   if (a === "locgps") {
