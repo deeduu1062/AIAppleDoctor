@@ -8,6 +8,12 @@ let payPlan = "basic", payPer = "year", myPay = null, qrLoad = null;
 
 const plName = p => tr(p === "premium" ? "pl_prem" : p === "basic" ? "pl_basic" : "pl_free");
 const plEsc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+/* what the grower already has: plan key, days left, and whether it is time to renew (30 days or less) */
+function myPlanState() {
+  const paid = myPay && myPay.status === "approved" ? myPay.plan : null;
+  const left = paid && myPay.valid_until ? Math.ceil((new Date(myPay.valid_until + "T00:00:00") - new Date()) / 864e5) : null;
+  return { paid, left, renew: !!paid && left != null && left <= 30 };
+}
 const rupees = n => "₹" + Number(n).toLocaleString("en-IN");
 
 function upiLink(plan, per) {
@@ -32,7 +38,8 @@ function renderPlans() {
         ? '<p class="plstat">' + tr(myPay && myPay.status === "approved" ? "pl_incl" : "pl_go_free_in") + "</p>"
         : '<button class="btn-s add" type="button" data-pl="free">' + tr("pl_go_free") + "</button>";
     } else if (myPay && myPay.plan === key && myPay.status === "approved") {
-      act = '<p class="plstat good">' + tr("pl_active") + "</p>";
+      act = myPlanState().renew ? '<button class="btn-s add" type="button" data-pl="' + key + '">' + tr("pl_renew").replace("{p}", plName(key)) + "</button>"
+        : '<p class="plstat good">' + tr("pl_active") + "</p>";
     } else {
       act = (myPay && myPay.plan === key && myPay.status === "pending" ? '<p class="plstat">' + tr("pl_pending") + "</p>" : "") +
         '<button class="btn-s add" type="button" data-pl="' + key + '">' + tr("pl_go_pay").replace("{p}", plName(key)) + "</button>";
@@ -41,7 +48,15 @@ function renderPlans() {
       "<h3>" + plName(key) + '</h3><p class="pltag">' + tr("pl_" + key + "_t") + "</p>" + price +
       "<ul>" + feats.map(f => "<li>" + plEsc(f) + "</li>").join("") + '</ul><div class="plact">' + act + "</div></article>";
   };
-  box.innerHTML = card("free") + card("basic") + card("premium", true);
+  const st = myPlanState(), sec = document.getElementById("plans"), h = document.getElementById("plH"), p = document.getElementById("plP");
+  let cards, hk = "pl_h", pk = "pl_p";
+  if (st.paid === "premium") cards = st.renew ? card("premium") : "";
+  else if (st.paid === "basic") { cards = (st.renew ? card("basic") : "") + card("premium", true); if (!st.renew) { hk = "pl_up_h"; pk = "pl_up_p"; } }
+  else cards = card("free") + card("basic") + card("premium", true);
+  if (sec) sec.hidden = !cards;
+  if (h) { h.setAttribute("data-i18n", hk); h.textContent = tr(hk); }
+  if (p) { p.setAttribute("data-i18n", pk); p.textContent = tr(pk); }
+  box.innerHTML = cards;
   renderMyPlan();
   if (document.getElementById("payDlg") && document.getElementById("payDlg").open) renderPay();
 }
@@ -51,18 +66,22 @@ function renderMyPlan() {
   const el = document.getElementById("acctPlan");
   if (!el) return;
   if (typeof user === "undefined" || !user) { el.hidden = true; return; }
-  let chip, more, cls = "";
-  if (myPay && myPay.status === "approved") {
-    cls = "good"; chip = "★ " + plName(myPay.plan);
+  const st = myPlanState();
+  let chip, more, cls = "", link = true;
+  if (st.paid) {
+    cls = st.renew ? "good renew" : "good"; chip = "★ " + plName(st.paid);
     more = myPay.valid_until ? tr("pl_till").replace("{d}", typeof fmtDay === "function" ? fmtDay(myPay.valid_until, true) : myPay.valid_until) : "";
+    link = st.renew || st.paid === "basic";
   } else if (myPay && myPay.status === "pending") {
     cls = "pend"; chip = plName("free"); more = tr("pl_my_pend").replace("{p}", plName(myPay.plan));
   } else {
     chip = plName("free"); more = tr("pl_upg") + " →";
   }
   el.className = "link acctplan " + cls;
-  el.setAttribute("aria-label", tr("pl_my").replace("{p}", plName(myPay && myPay.status === "approved" ? myPay.plan : "free")));
-  el.innerHTML = '<span class="plchip">' + plEsc(chip) + "</span>" + (more ? '<span class="plmore">' + plEsc(more) + "</span>" : "");
+  if (link) el.setAttribute("href", "#plans"); else el.removeAttribute("href");
+  el.setAttribute("aria-label", tr("pl_my").replace("{p}", plName(st.paid || "free")));
+  el.innerHTML = '<span class="plchip">' + plEsc(chip) + "</span>" + (more ? '<span class="plmore">' + plEsc(more) + "</span>" : "") +
+    (st.renew ? '<span class="plrenew">' + plEsc(tr("pl_renew_s")) + "</span>" : "");
   el.hidden = false;
 }
 
