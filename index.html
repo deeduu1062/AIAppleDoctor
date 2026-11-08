@@ -1574,6 +1574,8 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 .dyear .dysum{margin-left:auto;color:var(--muted);font-size:.9rem;font-family:var(--mono)}
 .dyear li:last-child{border-bottom:0}
 .xyear .xhedit{margin:6px 0 12px}
+.detxh{margin-top:12px}
+.detxh h6{margin-bottom:8px}
 .dlist .dt .dorch{color:var(--brand);font-weight:600;font-size:.88rem}
 .dlist ul{list-style:none;margin:0;padding:0}
 .dlist li{display:grid;grid-template-columns:5rem minmax(0,1fr) auto auto;gap:4px 12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)}
@@ -4104,16 +4106,15 @@ document.addEventListener("click", e => {
 });
 /* expense history on the Orchard Record overview: every orchard, by harvest year, latest first */
 let xhOpen = new Set(), xhShut = new Set();
-function expHistHtml() {
-  if (!S.orchards.length) return "";
-  let h = '<section class="osec" id="xhSec"><h4>' + tr("xh_h") + '</h4><p class="hint">' + tr("xh_p") + "</p>";
-  const curY = hYear(todayIso());
-  const ys = expYearsAll().filter(y => S.orchards.some(o => expTotals(o, y).total > 0));
-  if (!ys.length) return h + '<p class="hint">' + tr("xh_none") + "</p></section>";
-  h += '<div class="dlist dyears">' + ys.map((y, i) => {
+/* years list for the given orchards; key keeps open/closed state apart (overview "all", or one orchard's id) */
+function expYearsHtml(orchs, key) {
+  const curY = hYear(todayIso()), one = orchs.length === 1;
+  const ys = expYearsAll().filter(y => orchs.some(o => expTotals(o, y).total > 0));
+  if (!ys.length) return '<p class="hint">' + tr("xh_none") + "</p>";
+  return '<div class="dlist dyears">' + ys.map((y, i) => {
     const rows = [];
     let total = 0;
-    S.orchards.forEach(o => {
+    orchs.forEach(o => {
       const t = expTotals(o, y); total += t.total;
       t.ents.forEach(d => rows.push({date: d.date, o, kind: tr("dk_" + d.kind) + (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : ""), text: d.text, cost: +d.cost}));
       const se = seFor(o.id, y);
@@ -4121,20 +4122,23 @@ function expHistHtml() {
       if (t.lw) rows.push({date: "", o, kind: esc(tr("xh_lab")), text: "", cost: t.lw});
     });
     rows.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-    const open = !xhShut.has(y) && (xhOpen.has(y) || i === 0);
-    return '<details class="dyear xyear" data-xy="' + y + '"' + (open ? " open" : "") + '><summary><b>' + tr("hy_label").replace("{y}", y) + "</b>" + (y === curY ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") +
+    const sk = key + ":" + y, open = !xhShut.has(sk) && (xhOpen.has(sk) || i === 0);
+    return '<details class="dyear xyear" data-xk="' + esc(sk) + '"' + (open ? " open" : "") + '><summary><b>' + tr("hy_label").replace("{y}", y) + "</b>" + (y === curY ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") +
       '<span class="dysum">' + tr("xh_n").replace("{n}", rows.length) + " · " + inr(total) + "</span></summary><ul>" +
-      rows.map(r => '<li><span class="dd">' + (r.date ? fmtDay(r.date) : "–") + '</span><span class="dt"><b>' + r.kind + '</b><span class="dorch">' + esc(r.o.name || tr("orchard_fallback")) + "</span>" +
+      rows.map(r => '<li><span class="dd">' + (r.date ? fmtDay(r.date) : "–") + '</span><span class="dt"><b>' + r.kind + "</b>" + (one ? "" : '<span class="dorch">' + esc(r.o.name || tr("orchard_fallback")) + "</span>") +
         (r.text ? "<span>" + esc(r.text) + "</span>" : "") + '</span><span class="dc">' + inr(r.cost) + "</span></li>").join("") +
-      '</ul><p class="xhedit"><button class="link" type="button" data-xhedit="' + y + '">' + tr("xh_edit") + "</button></p></details>";
+      '</ul><p class="xhedit"><button class="link" type="button" data-xhedit="' + y + '"' + (one ? ' data-o="' + esc(orchs[0].id) + '"' : "") + ">" + tr("xh_edit") + "</button></p></details>";
   }).join("") + "</div>";
-  return h + "</section>";
+}
+function expHistHtml() {
+  if (!S.orchards.length) return "";
+  return '<section class="osec" id="xhSec"><h4>' + tr("xh_h") + '</h4><p class="hint">' + tr("xh_p") + "</p>" + expYearsHtml(S.orchards, "all") + "</section>";
 }
 document.addEventListener("click", e => {
   const sm = e.target.closest && e.target.closest(".xyear > summary");
-  if (sm) { const d = sm.parentElement, y = +d.dataset.xy; if (d.open) { xhOpen.delete(y); xhShut.add(y); } else { xhOpen.add(y); xhShut.delete(y); } return; }
+  if (sm) { const d = sm.parentElement, k = d.dataset.xk; if (d.open) { xhOpen.delete(k); xhShut.add(k); } else { xhOpen.add(k); xhShut.delete(k); } return; }
   const b = e.target.closest && e.target.closest("[data-xhedit]"); if (!b) return;
-  const y = +b.dataset.xhedit; tabPicked = true; showTool("calc", false, true); showSub("exp"); expOpenAt(null, y);
+  const y = +b.dataset.xhedit; tabPicked = true; showTool("calc", false, true); showSub("exp"); expOpenAt(b.dataset.o || null, y);
 });
 /* Add expense from the Orchard Record: pick the orchard first, then the expense (saved the same way as on Sales/Profit > Expenses) */
 let dashExp = false, dashExpO = "", dashExpMsg = "";
@@ -4225,6 +4229,7 @@ function detailsHtml() {
             grp("dg_care", [row(tr("p_irr"), show("irr", "i_"), fld("irr")), row(tr("p_hail"), show("hail", "h_"), fld("hail")),
               row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : "", 'data-dact="rgnote"'), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "", 'data-xact="detnext"')]) + "</div>";
         })() +
+        '<section class="dgrp detxh"><h6>' + tr("xh_h") + "</h6>" + expYearsHtml([o], o.id) + "</section>" +
         '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + '</button><button class="btn-s add" type="button" data-dact="view" data-o="' + esc(o.id) + '">' + tr("o_view") +
         '</button><button class="btn-s" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + '</button><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></div>";
     }
