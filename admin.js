@@ -53,7 +53,6 @@ const T = {
 "pl_f_free": [
 "Quick profit calculator",
 "Season calendar and spray schedule",
-"Daily mandi rates",
 "3 photo disease checks a month",
 "5 questions a day to Saathi",
 "Daily apple news"
@@ -72,8 +71,6 @@ const T = {
 "Year-on-year profit comparison",
 "Unlimited photo disease checks",
 "Spray plan for your height, variety and rootstock",
-"Mandi price alerts",
-"Priority listing in Buy & Sell",
 "Family or munshi access",
 "Expert help on WhatsApp"
 ],
@@ -238,7 +235,6 @@ const T = {
 "pl_f_free": [
 "झटपट मुनाफ़ा कैलकुलेटर",
 "सीज़न कैलेंडर और स्प्रे शेड्यूल",
-"रोज़ के मंडी भाव",
 "महीने में 3 फ़ोटो से बीमारी जाँच",
 "साथी से रोज़ 5 सवाल",
 "रोज़ सेब समाचार"
@@ -257,8 +253,6 @@ const T = {
 "साल-दर-साल मुनाफ़े की तुलना",
 "असीमित फ़ोटो से बीमारी जाँच",
 "आपकी ऊँचाई, किस्म और रूटस्टॉक के हिसाब से स्प्रे प्लान",
-"मंडी भाव अलर्ट",
-"ख़रीद-बिक्री में सबसे ऊपर लिस्टिंग",
 "परिवार या मुंशी को एक्सेस",
 "WhatsApp पर विशेषज्ञ मदद"
 ],
