@@ -4289,7 +4289,7 @@ function detailsHtml() {
               row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : "", 'data-dact="rgnote"'), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "", 'data-xact="detnext"')]) + "</div>";
         })();
       r += otabsHtml(o);
-      if (otab === "det") r += groups +
+      if (otab === "det") r += detWxHtml(o) + groups +
         '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>" +
         '<div class="dgroups dcards">' + soilCardHtml(o) + locCardHtml(o) + "</div>" +
         '<div class="odel"><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></div>";
@@ -4659,7 +4659,6 @@ function locCardHtml(o) {
   let h = '<section class="dgrp dcard" id="locSec"><h6>' + tr("loc_h") + '</h6><dl class="detlist">' +
     "<div><dt>" + tr("det_loc") + "</dt><dd>" + (on ? (+P.lat).toFixed(4) + ", " + (+P.lon).toFixed(4) : '<span class="none">' + tr("loc_notset") + "</span>") + "</dd></div>" +
     (+P.alt ? "<div><dt>" + tr("p_alt") + "</dt><dd>" + fmtN(+P.alt) + " m</dd></div>" : "") + "</dl>";
-  if (on) h += '<div class="detwx" data-wx="mini-' + esc(o.id) + '">' + wxBlock([o], true, true) + "</div>";
   h += '<div class="dcbtns"><button class="btn-s" type="button" data-xact="locgps">' + tr("loc_gps") + '</button><button class="btn-s" type="button" data-xact="locfind">' + tr("loc_find") +
     '</button><button class="btn-s" type="button" data-xact="locmap">' + tr("loc_pick") + "</button>" + (on ? '<button class="link del" type="button" data-xact="locrm">' + tr("loc_rm") + "</button>" : "") + "</div>" +
     '<p class="fine">' + tr("loc_gps_p") + '</p><p class="autherr" id="loc_err" role="alert"></p><p class="okmsg" id="loc_msg" role="status"></p>';
