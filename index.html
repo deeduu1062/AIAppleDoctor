@@ -4284,9 +4284,7 @@ function detailsHtml() {
           const grp = (k, rows) => '<section class="dgrp"><h6>' + tr(k) + '</h6><dl class="detlist">' + rows.join("") + "</dl></section>";
           return '<div class="dgroups">' +
             grp("dg_place", [row(tr("p_village"), show("village"), fld("village")), row(tr("p_alt"), show("alt"), fld("alt")), row(tr("p_area"), show("area"), fld("area")), row(tr("det_loc"), loc)]) +
-            treesGrp() +
-            grp("dg_care", [row(tr("p_irr"), show("irr", "i_"), fld("irr")), row(tr("p_hail"), show("hail", "h_"), fld("hail")),
-              row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : "", 'data-dact="rgnote"'), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "", 'data-xact="detnext"')]) + "</div>";
+            treesGrp() + "</div>";
         })();
       r += otabsHtml(o);
       if (otab === "det") r += detWxHtml(o) + groups +
