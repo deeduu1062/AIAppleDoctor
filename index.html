@@ -1141,6 +1141,10 @@ body.guest .lpmanage{padding-top:28px}
 .acctplan.pend .plmore,.acctplan.good .plmore{color:var(--muted);text-decoration:none;font-weight:500}
 .odel2{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:nowrap}
 .odel2 .btn-s{padding:6px 12px;min-height:36px;font-size:.85rem;white-space:nowrap}
+
+/* open orchard: its name stays visible under the top bar while scrolling */
+.detrows > .yrow.open{overflow:clip}
+.detrows > .yrow.open > .yhead{position:sticky;top:var(--topH,0px);z-index:4;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 4px 8px -6px rgba(0,0,0,.18)}
 </style>
 
 <style>
@@ -4311,6 +4315,12 @@ function detailsHtml() {
   return h + "</section>";
 }
 
+/* keep --topH equal to the sticky top bar's height, so the open orchard's name sits just below it */
+(function () {
+  const tb = document.querySelector(".topbar"); if (!tb) return;
+  const setH = () => document.documentElement.style.setProperty("--topH", tb.offsetHeight + "px");
+  setH(); if (window.ResizeObserver) new ResizeObserver(setH).observe(tb); else window.addEventListener("resize", setH);
+})();
 /* labour wages count as yearly expenses (Labour) in their harvest year */
 const labourWork = (o, y) => ((o && o.labour) || []).filter(e => e.type === "work" && hYear(e.date) === +y).reduce((a, e) => a + (+e.days || 0) * (+e.rate || 0), 0);
 
