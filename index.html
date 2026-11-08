@@ -1259,6 +1259,13 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .wxwarn li.frost,.wxwarn li.hail{border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
 .wxok{margin:0;color:var(--good);font-size:.9rem}
 .setlocs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.detwx{margin:4px 0 12px}
+.detwx .wxmini .wxo{font-size:0}
+.detwx .wxmini .wxo .wxnow{font-size:.8rem;margin-left:0}
+.detwx .hint{margin:0 0 8px}
+.detwx .wxwarn.mini b{display:none}
+.dwx{font-weight:700;font-size:.9rem;color:var(--muted);white-space:nowrap}
+.dwx.warn{color:var(--apple)}
 .dnews{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:8px}
 .dnews a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);text-decoration:none}
 .dnews b{display:block;font-weight:600;line-height:1.35}
@@ -1302,7 +1309,7 @@ details.dsec > summary h4{display:inline}
 .dethead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .dethead h4{margin:0}
 .detrows > .yrow{border-left:4px solid var(--apple)}
-.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) 1.2rem;padding:10px 16px}
+.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) auto 1.2rem;padding:10px 16px}
 .dname{display:flex;align-items:center;gap:12px;min-width:0}
 .dthumb{flex:none;width:52px;height:52px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:repeating-linear-gradient(90deg,rgba(70,45,25,.05) 0 2px,transparent 2px 9px),var(--kraft);position:relative}
 .dthumb svg{display:block;width:100%;height:100%}
@@ -1341,7 +1348,7 @@ details.dsec > summary h4{display:inline}
 .vtrow .link{padding:2px 0;font-size:.88rem}
 .vtbox > .btn-s{justify-self:start}
 .vtsum{margin:0;font-weight:700}.vtsum:empty{display:none}
-@media (max-width:560px){.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.detrows .dname{grid-column:1}.detrows .yfigs.three{border-left:0}.detrows .yfigs.three{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr)}}
+@media (max-width:560px){.figrows.detrows > .yrow > .yhead{grid-template-columns:minmax(0,1fr) auto 1rem}.detrows .dname{grid-column:1}.detrows .yfigs.three{border-left:0}.detrows .yfigs.three{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr)}}
 .detpick{display:flex;gap:10px 14px;align-items:end;flex-wrap:wrap}
 .detpick .field{min-width:min(100%,260px)}
 .detpick select{min-height:44px;font-size:1.05rem;font-weight:600}
@@ -3654,13 +3661,6 @@ function dashOverview() {
   let h = "";
   try { h += dashNewsHtml(); } catch (e) {}
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
-  if (S.orchards.length) {
-    const wl = S.orchards.filter(hasLoc);
-    const miss = S.orchards.filter(o => !hasLoc(o));
-    h += '<section class="osec wxsec"><h4>' + tr("wx_h_dash") + '</h4><div data-wx="dash">' + (wl.length ? wxBlock(wl, false, true) : '<p class="hint">' + tr("wx_none") + "</p>") + "</div>" +
-      (miss.length ? '<div class="setlocs">' + miss.map(o => '<button class="btn-s add" type="button" data-xact="setloc" data-o="' + esc(o.id) + '">' + esc(tr("loc_setfor").replace("{o}", o.name || tr("orchard_fallback"))) + "</button>").join("") + "</div>" : "") +
-      "</section>";
-  }
   h += diaryHtml(null);
   h += detailsHtml();
   h += dashDxHtml();
@@ -4056,6 +4056,18 @@ function treeArt(seed) {
 }
 /* Dashboard: one row per orchard (like the year rows in Profit calculator); tap to open its full details */
 let dashSel = null, detOpen = new Set();
+/* weather sits inside each orchard's row on the Orchard Record overview */
+function detWxHtml(o) {
+  if (!hasLoc(o)) return '<div class="detwx"><p class="hint">' + tr("loc_notset") + '</p><button class="btn-s add" type="button" data-xact="setloc" data-o="' + esc(o.id) + '">' + tr("det_set") + "</button></div>";
+  return '<div class="detwx" data-wx="mini-' + esc(o.id) + '">' + wxBlock([o], true, true) + "</div>";
+}
+function detWxChip(o) {
+  if (!hasLoc(o)) return '<span class="dwx"></span>';
+  const c = wxGet(o), d = c && c.d; if (!d) return '<span class="dwx" data-wx="chip-' + esc(o.id) + '"></span>';
+  const w = wxWarnG(d), ic = w.length ? (w[0].c === "frost" ? "❄" : w[0].c === "hail" ? "⚠" : "☔") : "";
+  const t = d.cur ? Math.round(d.cur.temperature_2m) : Math.round(d.temperature_2m_max[0]);
+  return '<span class="dwx' + (w.length ? " warn" : "") + '" data-wx="chip-' + esc(o.id) + '" title="' + esc(w.length ? w.map(x => x.t).join(" · ") : wcWord(d.cur ? d.cur.weather_code : d.weather_code[0])) + '">' + (ic ? ic + " " : "") + t + "°</span>";
+}
 function detailsHtml() {
   let h = '<section class="osec" id="detSec"><h4>' + tr("det_h") + "</h4>";
   const addForm = '<form class="detcard editing addform" data-dform="add"><div class="field"><label for="dn_new">' + tr("f_oname") + '</label><input id="dn_new" type="text" maxlength="60"></div>' +
@@ -4074,7 +4086,7 @@ function detailsHtml() {
       if (k === "trees") return +v ? fmtN(+v) : ""; if (k === "planted") return +v ? v + " (" + tr("p_age").replace("{n}", Math.max(0, thisYear() - +v)) + ")" : ""; return pre ? (v ? tr(pre + v) : "") : esc(v || ""); };
     let r = '<div class="yrow' + (open ? " open" : "") + '" id="det-' + esc(o.id) + '"><button class="yhead" type="button" data-xact="dettoggle" data-o="' + esc(o.id) + '" aria-expanded="' + open + '">' +
       '<span class="dname"><span class="dthumb" aria-hidden="true">' + (o.photo ? '<img src="' + o.photo + '" alt="">' : treeArt(o.id + (o.name || ""))) + '</span><span class="dtitle"><b>' + esc(o.name || tr("orchard_fallback")) + "</b>" +
-      "</span></span>" +
+      "</span></span>" + detWxChip(o) +
       '<span class="ychev" aria-hidden="true"></span></button>';
     if (!open) return r + "</div>";
     r += '<div class="ybody">';
@@ -4089,7 +4101,7 @@ function detailsHtml() {
         '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-xact="detcancel" data-o="' + esc(o.id) + '">' + tr("d_cancel") + "</button></div></form>";
     } else {
       const nt = nextTodo(o), lsp = lastSpray(o);
-      r += '' +
+      r += detWxHtml(o) +
         (function () {
           const plus = (lab, act) => '<button class="detadd" type="button" ' + act + ' data-o="' + esc(o.id) + '" aria-label="' + esc(lab) + ' +" title="' + esc(lab) + '">+</button>';
           const row = (lab, v, f) => "<div><dt>" + lab + "</dt><dd>" + (v || (f ? plus(lab, f) : '<span class="none">–</span>')) + "</dd></div>";
@@ -4302,7 +4314,9 @@ function wxBlock(list, one, mini) {
 function refreshWx() {
   document.querySelectorAll("[data-wx]").forEach(el => {
     const id = el.dataset.wx;
-    if (id === "dash") { const list = S.orchards.filter(hasLoc); el.innerHTML = list.length ? wxBlock(list, false, true) : '<p class="hint">' + tr("wx_none") + "</p>"; }
+    if (id.indexOf("mini-") === 0) { const o = S.orchards.find(x => x.id === id.slice(5)); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true, true); }
+    else if (id.indexOf("chip-") === 0) { const o = S.orchards.find(x => x.id === id.slice(5)); if (o) el.outerHTML = detWxChip(o); }
+    else if (id === "dash") { const list = S.orchards.filter(hasLoc); el.innerHTML = list.length ? wxBlock(list, false, true) : '<p class="hint">' + tr("wx_none") + "</p>"; }
     else if (id === "guest") el.innerHTML = wxBlock([guestPlace()], false, true);
     else if (id === "guestnow") el.innerHTML = guestNowHtml();
     else { const o = S.orchards.find(x => x.id === id); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true); }
@@ -5650,7 +5664,7 @@ document.addEventListener("click", e => {
     tabPicked = true;
     if (user) { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, false); }
     else showTool("rec", false, false);
-    const t = user ? document.querySelector("#dash .wxsec") : $("recWx");
+    const t = user ? $("detSec") : $("recWx");
     if (t) {   /* scroll so the weather sits just below the sticky header and tabs */
       const tb = $("tabbar"), top = tb ? tb.getBoundingClientRect().bottom : 0, hh = Math.max(0, Math.min(top, 200));
       window.scrollTo({top: window.scrollY + t.getBoundingClientRect().top - hh - 10});
