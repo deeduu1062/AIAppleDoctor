@@ -3659,7 +3659,6 @@ function dashOverview() {
   let h = "";
   try { h += dashNewsHtml(); } catch (e) {}
   if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
-  h += diaryHtml(null);
   h += detailsHtml();
   h += dashDxHtml();
   h += farmSummaryHtml();
