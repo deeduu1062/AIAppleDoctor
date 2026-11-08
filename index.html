@@ -4236,8 +4236,7 @@ function detailsHtml() {
               row(tr("det_lastspray"), lsp ? fmtDay(lsp.date, true) + (lsp.stage ? " (" + tr(lsp.stage) + ")" : "") : "", 'data-dact="rgnote"'), row(tr("det_next"), nt ? esc(tkName(nt.kind)) + ", " + fmtDay(nt.due) + " " + dueChip(nt.due) : "", 'data-xact="detnext"')]) + "</div>";
         })() +
         '<section class="dgrp detxh"><h6>' + tr("xh_h") + "</h6>" + expYearsHtml([o], o.id) + "</section>" +
-        '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + '</button><button class="btn-s add" type="button" data-dact="view" data-o="' + esc(o.id) + '">' + tr("o_view") +
-        '</button><button class="btn-s" type="button" data-dact="addsale" data-o="' + esc(o.id) + '">' + tr("d_addsale") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + '</button><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></div>";
+        '<div class="oacts"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + '</button><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + '</button><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + "</button></div>";
     }
     return r + "</div></div>";
   }).join("") + "</div>";
