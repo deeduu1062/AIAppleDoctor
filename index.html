@@ -1145,6 +1145,8 @@ body.guest .lpmanage{padding-top:28px}
 /* open orchard: its name stays visible under the top bar while scrolling */
 .detrows > .yrow.open{overflow:clip}
 .detrows > .yrow.open > .yhead{position:sticky;top:var(--topH,0px);z-index:4;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 4px 8px -6px rgba(0,0,0,.18)}
+
+.detrows > .yrow.open .otabs{position:sticky;top:calc(var(--topH,0px) + var(--ohH,0px));z-index:3;background:var(--surface);padding:8px 0;margin-top:-8px;box-shadow:0 6px 6px -6px rgba(0,0,0,.15)}
 </style>
 
 <style>
@@ -4058,7 +4060,7 @@ function renderDash() {
   if (dashView && !S.orchards.some(o => o.id === dashView)) { dashView = null; profEdit = false; diaryEdit = null; }
   MAPS.forEach(m => { try { m.remove(); } catch (e) {} }); MAPS = [];
   el.innerHTML = dashOverview();
-  syncStage(); mountMaps();
+  syncStage(); mountMaps(); syncOrchHead();
 }
 function dashTop() { const t = (dashView && $("det-" + dashView)) || $("tp-orch"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"}); }
 function goSeason(oid, year) {
@@ -4315,6 +4317,13 @@ function detailsHtml() {
   return h + "</section>";
 }
 
+/* the open orchard's Overview / Work & accounts tabs stick just under its name */
+let ohObs = null;
+function syncOrchHead() {
+  const hd = document.querySelector(".detrows > .yrow.open > .yhead"); if (!hd) return;
+  const setH = () => document.documentElement.style.setProperty("--ohH", hd.offsetHeight + "px");
+  setH(); if (window.ResizeObserver) { if (ohObs) ohObs.disconnect(); ohObs = new ResizeObserver(setH); ohObs.observe(hd); }
+}
 /* keep --topH equal to the sticky top bar's height, so the open orchard's name sits just below it */
 (function () {
   const tb = document.querySelector(".topbar"); if (!tb) return;
