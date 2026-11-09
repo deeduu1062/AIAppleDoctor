@@ -3038,6 +3038,20 @@ const shortInr = n => {
 const mny = n => '<span class="nfull">' + inr(n) + '</span><span class="nshort">' + shortInr(n) + "</span>";
 const yfig = (label, valHtml, c, attr) => '<span class="yfig' + (c ? " " + c : "") + '"><span>' + label + "</span><b" + (attr || "") + ">" + valHtml + "</b></span>";
 const newId = () => Math.random().toString(36).slice(2, 9);
+/* one grower cannot have two orchards with the same name (capital letters and extra spaces are ignored) */
+const orchKey = n => String(n || "").trim().replace(/\s+/g, " ").toLowerCase();
+function orchNameTaken(name, exceptId) { const k = orchKey(name); return !!k && S.orchards.some(x => x && !x.ex && x.id !== exceptId && orchKey(x.name) === k); }
+function orchNameBad(input, exceptId) {
+  if (!input) return false;
+  const bad = orchNameTaken(input.value, exceptId);
+  input.setCustomValidity(bad ? tr("orch_dup") : "");
+  if (bad) { if (!input._dupClr) { input._dupClr = true; input.addEventListener("input", () => input.setCustomValidity("")); } input.reportValidity(); input.focus(); }
+  return bad;
+}
+function orchFreeName() { let n = S.orchards.filter(x => !x.ex).length + 1, nm; do { nm = tr("orchard_fallback") + " " + n++; } while (orchNameTaken(nm)); return nm; }
+Object.assign(T.en, {orch_dup:"You already have an orchard with this name. Please use a different name."});
+Object.assign(T.hi, {orch_dup:"इस नाम का बाग़ आपके पास पहले से है। कृपया दूसरा नाम रखें।"});
+Object.assign(T.hn, {orch_dup:"Is naam ka bagh aapke paas pehle se hai. Koi doosra naam rakhein."});
 const EX = [{boxes:100, rate:1800, exp:400}, {boxes:30, rate:900, exp:400}];
 
 /* ---- quick profit calculator: one line per grade or rate ---- */
@@ -5250,6 +5264,7 @@ $("dash").addEventListener("submit", e => {
   const kind = f.dataset.xform, o = S.orchards.find(x => x.id === (f.dataset.o || dashView)); if (!o) return;
   const val = id => ($(id) ? $(id).value.trim() : "");
   if (kind === "det") {
+    if (orchKey(val("det_name")) !== orchKey(o.name) && orchNameBad($("det_name"), o.id)) return;
     const nm = val("det_name"); if (nm) o.name = nm;
     const vt = []; document.querySelectorAll("#vt_rows .vtrow").forEach(r => { const v = r.querySelector(".vt-v").value.trim(), n = Math.round(numOf(r.querySelector(".vt-n").value)); if (v && n) { const f = vt.find(x => x.v.toLowerCase() === v.toLowerCase()); if (f) f.n += n; else vt.push({v, n}); } });
     o.varTrees = vt;
@@ -5365,13 +5380,15 @@ $("dash").addEventListener("submit", e => {
   e.preventDefault();
   const kind = f.dataset.dform, o = S.orchards.find(x => x.id === (kind === "diary" && !dashView && $("d_orch") ? $("d_orch").value : dashView));
   if (kind === "add") {
-    const nm = $("dn_new").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.filter(x => !x.ex).length + 1));
+    if (orchNameBad($("dn_new"))) return;
+    const nm = $("dn_new").value.trim() || orchFreeName();
     const no = {id: newId(), name: nm, trees: numOf($("dn_newtrees").value)};
     S.orchards.push(no); dashAdd = false; dashView = no.id; otab = "det"; detEdit = no.id; dashYear = null; profEdit = false;
     fixSel(); save(); renderAll(); vtRefresh(); dashTop(); const nv = $("det_village"); if (nv) nv.focus(); return;
   }
   if (!o) return;
   if (kind === "prof") {
+    if (orchKey($("p_name").value) !== orchKey(o.name) && orchNameBad($("p_name"), o.id)) return;
     const val = id => $(id).value.trim(), nm = val("p_name");
     if (nm) o.name = nm;
     o.trees = vtList(o).length ? vtList(o).reduce((a, x) => a + +x.n, 0) : numOf($("p_trees").value);
@@ -5739,6 +5756,7 @@ function onEdit(e) {
     se.costs[d.cost] = numOf(t.value);
   } else if (t.id === "oname") {
     const o = curOrchard(); if (!o) return;
+    if (orchKey(t.value) !== orchKey(o.name) && orchNameBad(t, o.id)) return;
     o.name = t.value;
     const opt = $("selOrchard").selectedOptions[0]; if (opt) opt.textContent = t.value || tr("orchard_fallback");
   } else if (t.id === "otrees") {
@@ -5772,7 +5790,8 @@ function spClick(e) {
     return;
   }
   if (act === "addorch") {
-    const name = $("newOrchard").value.trim() || (tr("orchard_fallback") + " " + (S.orchards.length + 1));
+    if (orchNameBad($("newOrchard"))) return;
+    const name = $("newOrchard").value.trim() || orchFreeName();
     const o = {id:newId(), name, trees:0};
     S.orchards.push(o);
     sel.o = o.id; sel.y = sel.y || thisYear; $("newOrchard").value = ""; addingO = false;
