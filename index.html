@@ -4148,7 +4148,7 @@ function salesCardHtml(y) {
   rows.sort((a, b) => (a.when && b.when ? (a.when < b.when ? -1 : a.when > b.when ? 1 : 0) : a.when ? -1 : b.when ? 1 : 0));
   const T = rows.reduce((a, r) => { a.b += r.c.b; a.g += r.c.gross; a.n += r.c.net; a.d += r.c.due; return a; }, {b: 0, g: 0, n: 0, d: 0});
   const oi = id => Math.max(0, S.orchards.findIndex(x => x.id === id)) % SL_COLORS.length;
-  let h = '<section class="rccard kxcard slcard"><div class="kxch"><h4>' + tr("sl_title").replace("{y}", y) + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") + "</h4></div>";
+  let h = '<section class="rccard kxcard slcard">';
   if (!rows.length) return h + '<p class="hint">' + tr("sl_none").replace("{y}", y) + "</p></section>";
   h += '<div class="sltot"><div><span>' + tr(cur ? "sl_sofar" : "sl_tot") + "</span><b>" + inr(T.g) + '</b></div><div><span>' + tr("r_boxes") + "</span><b>" + fmtN(T.b) + '</b></div><div><span>' + tr("sl_net") + "</span><b>" + inr(T.n) + "</b></div>" +
     (T.d ? '<div class="due"><span>' + tr("k_due") + "</span><b>" + inr(T.d) + "</b></div>" : "") + "</div>";
