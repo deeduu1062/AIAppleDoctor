@@ -1403,6 +1403,24 @@ details.dsec > summary h4{display:inline}
 .ledger.sumtab .none{color:var(--muted)}
 .ledger.ytab.sumtab tfoot th,.ledger.ytab.sumtab tfoot td{background:color-mix(in srgb,var(--brand-bg) 12%,var(--surface));border-top:2px solid var(--brand-bg);font-weight:700;color:var(--fg)}
 .ledger.sumtab tfoot .sbar i{background:var(--brand-bg)}
+.tsum{border:1px solid var(--line);border-top:4px solid var(--apple);border-radius:12px;background:var(--surface);padding:10px 14px 12px;margin:10px 0 4px;display:grid;gap:6px}
+.tsum h4{margin:0;font:700 1rem var(--display);color:var(--apple)}
+.tsum .tshead{margin:0;font:600 1.15rem var(--mono);font-variant-numeric:tabular-nums}
+.tsvars{display:grid;gap:2px}
+.tsv summary,.tsv.un{display:grid;grid-template-columns:minmax(6.5rem,9rem) minmax(0,1fr) auto 2.6rem;align-items:center;gap:8px;padding:5px 0;font-size:.92rem;cursor:pointer;list-style:none}
+.tsv summary::-webkit-details-marker{display:none}
+.tsv.un{cursor:default;color:var(--muted)}
+.tsv .tsn{overflow-wrap:anywhere}
+.tsv b{font:500 .95rem var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.tsv small{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.tsbar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.tsbar i{display:block;height:100%;background:var(--apple);border-radius:4px}
+.tsv.un .tsbar i{background:var(--muted)}
+.tsv[open] summary .tsn{font-weight:700}
+.tsof{list-style:none;margin:0 0 6px;padding:4px 10px;border-left:3px solid var(--line);display:grid;gap:2px;font-size:.88rem;color:var(--muted)}
+.tsof li{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
+.tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
+.tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
+.tsum .fine{margin:0}
 .dethead{display:flex;justify-content:flex-start;align-items:center;gap:14px;flex-wrap:wrap}
 .dethead .dexbtn{margin-left:auto}
 .dexform{margin:12px 0}
@@ -4262,7 +4280,7 @@ function detailsHtml() {
     (dashExp ? "" : '<button class="btn-s add dexbtn" type="button" data-dex="open">＋ ' + tr("ex_add") + "</button>") + "</div>";
   if (dashAdd) h += addForm;
   if (dashExp) h += dashExpHtml();
-  h += '<p class="hint">' + tr("det_tap") + "</p>";
+  h += treeSumHtml() + '<p class="hint">' + tr("det_tap") + "</p>";
   const fields = [["village", "p_village", "text"], ["alt", "p_alt", "number"], ["area", "p_area", "number"], ["trees", "f_trees", "number"], ["var", "p_var", "text"],
     ["root", "p_root", ROOTS, "r_"], ["planted", "p_planted", "number"], ["irr", "p_irr", IRR, "i_"], ["hail", "p_hail", HAIL, "h_"]];
   h += '<div class="ylist figrows detrows">' + S.orchards.map(o => {
@@ -4318,6 +4336,40 @@ function detailsHtml() {
   }).join("") + "</div>";
   return h + "</section>";
 }
+
+/* slim all-orchards card at the top of Orchard Record: total trees, trees by variety (tap to see which orchards), fruit-bearing vs young from planting year */
+const bearAge = root => (root === "m9" ? 3 : ["mm106", "m7", "mm111"].includes(root) ? 4 : 6);
+function treeSumHtml() {
+  const names = {}, byV = {}, ofV = {}; let total = 0, area = 0, bear = 0, young = 0, noyr = 0, unset = 0;
+  const addV = (o, name, n) => { const nm = (name || "").trim(), k = nm.toLowerCase(); if (!k) { unset += n; return; }
+    if (!names[k]) names[k] = nm; byV[k] = (byV[k] || 0) + n; (ofV[k] = ofV[k] || []).push([o, n]); };
+  S.orchards.forEach(o => {
+    const P = o.profile || {}, V = vtList(o), vs = V.reduce((a, x) => a + +x.n, 0), t = Math.max(+o.trees || 0, vs);
+    area += +P.area || 0; if (!t) return; total += t;
+    if (V.length) { V.forEach(x => addV(o, x.v, +x.n)); if (t > vs) unset += t - vs; }
+    else { const L = (P.var || "").split(/[,;/]| and /).map(x => x.trim()).filter(Boolean); if (L.length === 1) addV(o, L[0], t); else unset += t; }
+    if (!+P.planted) noyr += t; else if (thisYear() - +P.planted >= bearAge(P.root)) bear += t; else young += t;
+  });
+  if (!total) return "";
+  const keys = Object.keys(byV).sort((a, b) => byV[b] - byV[a]);
+  const pc = n => Math.round(n * 100 / total) + "%";
+  const bar = n => '<span class="tsbar"><i style="width:' + Math.max(3, Math.round(n * 100 / total)) + '%"></i></span>';
+  const vrow = k => '<details class="tsv"><summary><span class="tsn">' + esc(names[k]) + "</span>" + bar(byV[k]) + '<b>' + fmtN(byV[k]) + "</b><small>" + pc(byV[k]) + "</small></summary>" +
+    '<ul class="tsof">' + ofV[k].map(([o, n]) => "<li><span>" + esc(o.name || tr("orchard_fallback")) + "</span><span>" + fmtN(n) + "</span></li>").join("") + "</ul></details>";
+  const head = tr("ts_head").replace("{n}", fmtN(S.orchards.length)).replace("{o}", tr(S.orchards.length === 1 ? "ts_orch1" : "ts_orchN")).replace("{t}", fmtN(total)) +
+    (area ? " · " + tr("p_bigha").replace("{n}", fmtD(area)) : "");
+  const age = (bear || young) ? '<div class="tsage">' + (bear ? '<span class="tsa ok"><b>' + fmtN(bear) + "</b> " + tr("ts_bear") + "</span>" : "") + (young ? '<span class="tsa yg"><b>' + fmtN(young) + "</b> " + tr("ts_young") + "</span>" : "") +
+    (noyr ? '<span class="tsa"><b>' + fmtN(noyr) + "</b> " + tr("ts_noyr") + "</span>" : "") + "</div>" : '<p class="fine">' + tr("ts_addyr") + "</p>";
+  return '<section class="tsum" aria-label="' + esc(tr("ts_h")) + '"><h4>' + tr("ts_h") + '</h4><p class="tshead">' + head + "</p>" +
+    (keys.length ? '<div class="tsvars">' + keys.map(vrow).join("") + (unset ? '<div class="tsv un"><span class="tsn">' + tr("ts_unset") + "</span>" + bar(unset) + "<b>" + fmtN(unset) + "</b><small>" + pc(unset) + "</small></div>" : "") + "</div>"
+      : '<p class="fine">' + tr("ts_addvar") + "</p>") + age + "</section>";
+}
+Object.assign(T.en, { ts_h:"All my orchards", ts_head:"{n} {o} · {t} trees", ts_orch1:"orchard", ts_orchN:"orchards", ts_unset:"Variety not set", ts_bear:"giving fruit", ts_young:"young, not yet giving fruit", ts_noyr:"planting year not set",
+  ts_addyr:"Add the planting year in each orchard to see how many trees are giving fruit.", ts_addvar:"Add trees by variety in each orchard (Edit orchard) to see them here." });
+Object.assign(T.hi, { ts_h:"मेरे सभी बाग़", ts_head:"{n} {o} · {t} पेड़", ts_orch1:"बाग़", ts_orchN:"बाग़", ts_unset:"किस्म नहीं लिखी", ts_bear:"फल दे रहे", ts_young:"छोटे, अभी फल नहीं", ts_noyr:"लगाने का साल नहीं लिखा",
+  ts_addyr:"कितने पेड़ फल दे रहे हैं, यह देखने के लिए हर बाग़ में लगाने का साल डालें।", ts_addvar:"यहाँ देखने के लिए हर बाग़ में किस्म के हिसाब से पेड़ डालें (बाग़ बदलें)।" });
+Object.assign(T.hn, { ts_h:"Mere sabhi bagiche", ts_head:"{n} {o} · {t} ped", ts_orch1:"bagicha", ts_orchN:"bagiche", ts_unset:"Kism nahi likhi", ts_bear:"phal de rahe", ts_young:"chhote, abhi phal nahi", ts_noyr:"lagane ka saal nahi likha",
+  ts_addyr:"Kitne ped phal de rahe hain, ye dekhne ke liye har bagiche mein lagane ka saal daalein.", ts_addvar:"Yahan dekhne ke liye har bagiche mein kism ke hisaab se ped daalein (Bagicha badlein)." });
 
 /* the open orchard's Overview / Work & accounts tabs stick just under its name */
 let ohObs = null;
