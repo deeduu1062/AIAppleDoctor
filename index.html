@@ -1953,7 +1953,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <section class="section" id="tools">
   <div class="wrap">
     <div class="tpanel" id="tp-calc" role="tabpanel" aria-labelledby="tt-calc">
-      <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pill live" data-i18n="s_live"></span><p class="status" id="status" aria-live="polite" hidden></p></div>
+      <p class="status" id="status" aria-live="polite" hidden></p>
       <div class="tabs pctabs" role="tablist">
         <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="pt_year"></button>
         <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="pt_season"></button>
@@ -3625,7 +3625,12 @@ function renderEditor() {
   $("editor").hidden = addingO;
   /* + Add sale above the years: pick the orchard, then the lot form opens for the current harvest year */
   const st = $("saleTop");
-  if (st) st.innerHTML = entryOpen || addingO || !S.orchards.length ? "" : saleAsk ? '<div class="salepick"><p><b>' + tr("sp_which") + "</b></p>" +
+  const sy = saleYrFor ? saleYears() : null, syo = sy && S.orchards.find(x => x.id === saleYrFor);
+  if (st && syo && !entryOpen && !addingO) st.innerHTML = '<div class="salepick"><p><b>' + tr("sy_which").replace("{o}", esc(syo.name || tr("orchard_fallback"))) + "</b></p>" +
+    '<button class="btn-s" type="button" data-act="saleyr" data-o="' + esc(syo.id) + '" data-y="' + sy[0] + '">' + tr("sy_prev").replace("{y}", sy[0]) + "</button>" +
+    '<button class="btn-s" type="button" data-act="saleyr" data-o="' + esc(syo.id) + '" data-y="' + sy[1] + '">' + tr("sy_cur").replace("{y}", sy[1]) + "</button>" +
+    '<button class="link" type="button" data-act="salecancel">' + tr("ne_cancel") + "</button></div>";
+  else if (st) st.innerHTML = entryOpen || addingO || !S.orchards.length ? "" : saleAsk ? '<div class="salepick"><p><b>' + tr("sp_which") + "</b></p>" +
     S.orchards.map(oo => '<button class="btn-s" type="button" data-act="salepick" data-o="' + esc(oo.id) + '">' + esc(oo.name || tr("orchard_fallback")) + "</button>").join("") +
     '<button class="link" type="button" data-act="salecancel">' + tr("ne_cancel") + "</button></div>" : '<button class="btn-s add" type="button" data-act="saleask">＋ ' + tr("sp_addsale") + "</button>";
   updLineWarn();
@@ -4168,6 +4173,12 @@ $("dash").addEventListener("click", e => {
   else if (a === "rgexp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); }
 });
 Object.assign(T.en, { sl_byo:"Orchard-wise detail" });
+let saleYrFor = null;
+/* [last season, current season] from November to March, otherwise null */
+function saleYears() { const m = new Date().getMonth() + 1, cy = curHYear(); return (m >= 11 || m <= 3) ? [cy - 1, cy] : null; }
+Object.assign(T.en, { sy_which:"Which season is this {o} sale for?", sy_prev:"{y} season (last harvest)", sy_cur:"{y} season (current)" });
+Object.assign(T.hi, { sy_which:"{o} की यह बिक्री किस सीज़न की है?", sy_prev:"{y} सीज़न (पिछली फ़सल)", sy_cur:"{y} सीज़न (चालू)" });
+Object.assign(T.hn, { sy_which:"{o} ki ye bikri kis season ki hai?", sy_prev:"{y} season (pichhli fasal)", sy_cur:"{y} season (chalu)" });
 Object.assign(T.en, { sp_addsale:"Add sale", sp_which:"Which orchard is this sale for?" });
 Object.assign(T.hi, { sp_addsale:"बिक्री जोड़ें", sp_which:"यह बिक्री किस बाग़ की है?" });
 Object.assign(T.hn, { sp_addsale:"Bikri jodein", sp_which:"Ye bikri kis bagiche ki hai?" });
@@ -5193,7 +5204,10 @@ $("dash").addEventListener("click", e => {
   else if (a === "open") {
     const ys = S.seasons.filter(se => se.oid === oid).map(se => se.year);
     goSeason(oid, dashView === oid && ys.indexOf(dashYear) >= 0 ? dashYear : ys.length ? Math.max.apply(null, ys) : thisYear());
-  } else if (a === "addsale") { goSeason(oid, thisYear()); openEntry(); }
+  } else if (a === "addsale") {
+    if (saleYears()) { entryOpen = false; saleAsk = false; saleYrFor = oid; tabPicked = true; showTool("calc", false, true); showSub("orch"); renderAll(); const st = $("saleTop"); if (st && st.scrollIntoView) st.scrollIntoView({block: "start"}); }
+    else { goSeason(oid, curHYear()); openEntry(); }
+  }
   else if (a === "add") { dashAdd = true; dashExp = false; renderDash(); $("dn_new").focus(); }
   else if (a === "cancel") { dashAdd = false; renderDash(); }
   else if (a === "prof") { profEdit = true; renderDash(); const i = $("p_village"); if (i) i.focus(); }
@@ -5716,8 +5730,13 @@ $("rp-orch").addEventListener("click", e => {
   } else if (act === "saleask" || act === "salepick") {
     const oid = act === "salepick" ? b.dataset.o : S.orchards.length === 1 ? S.orchards[0].id : null;
     if (!oid) { saleAsk = true; renderAll(); const f = document.querySelector("[data-act=salepick]"); if (f) f.focus(); return; }
-    saleAsk = false; closeEditLine(); addingO = false; sel.o = oid; sel.y = Math.min(hYear(todayIso()), new Date().getFullYear()); fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
-  } else if (act === "salecancel") { saleAsk = false; renderAll(); return;
+    /* November to March: last season's apples may still be selling (cold store, late lots), so ask which season */
+    const sy = saleYears();
+    if (sy) { saleAsk = false; saleYrFor = oid; renderAll(); const f = document.querySelector("[data-act=saleyr]"); if (f) f.focus(); return; }
+    saleAsk = false; closeEditLine(); addingO = false; sel.o = oid; sel.y = curHYear(); fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
+  } else if (act === "saleyr") {
+    saleYrFor = null; saleAsk = false; closeEditLine(); addingO = false; sel.o = b.dataset.o; sel.y = +b.dataset.y; fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
+  } else if (act === "salecancel") { saleAsk = false; saleYrFor = null; renderAll(); return;
   } else if (act === "addlotfor") {
     closeEditLine(); addingO = false; sel.o = b.dataset.o; sel.y = +b.dataset.y; fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
   } else if (act === "lottoggle") {
