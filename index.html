@@ -1431,6 +1431,14 @@ details.dsec > summary h4{display:inline}
 .lacts .taphint{display:block;color:var(--muted);font-size:.78rem;line-height:1.3;margin-top:6px;max-width:9rem;white-space:normal}
 .editbox .link.del{color:var(--bad);margin-left:12px}
 .olots td.acts:empty{box-shadow:none;padding:0}
+.lacts.led{display:grid;gap:6px;margin-top:8px;min-width:8.5rem}
+.lbtn{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:center;gap:4px;min-height:34px;padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font:600 .82rem var(--body);color:var(--fg);cursor:pointer;white-space:nowrap;text-align:center}
+.lbtn:hover{background:var(--surface-2)}.lbtn:focus-visible{outline:3px solid var(--apple);outline-offset:1px}
+.lbtn.ladd{border-color:var(--brand);color:var(--brand);background:color-mix(in srgb,var(--brand) 8%,var(--surface))}
+.lbtn.ldel{border-color:color-mix(in srgb,var(--bad) 45%,var(--line));color:var(--bad)}
+.lmove{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+.lacts.led .taphint{margin-top:2px;max-width:none}
+.lacts.led .lotdone{margin-top:0;width:100%}
 .lacts .lotdone{min-height:34px;padding:4px 12px;font-size:.85rem;margin-top:6px}
 .olotsec{display:grid;gap:6px}
 .olot{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 10px}
@@ -3704,6 +3712,7 @@ function lineHtml(n) {
 }
 /* Season Profit: one table per orchard, every lot in it, Lot column on the left */
 let lotEditId = null;
+Object.assign(T.en, { lm_add:"Add type", lm_up:"Up", lm_down:"Down" }); Object.assign(T.hi, { lm_add:"टाइप जोड़ें", lm_up:"ऊपर", lm_down:"नीचे" }); Object.assign(T.hn, { lm_add:"Type jodein", lm_up:"Upar", lm_down:"Neeche" });
 Object.assign(T.en, { lot_edit:"Edit lot", lot_taphint:"Tap an entry to change or delete it.", ne_del_e:"Delete this entry" }); Object.assign(T.hi, { lot_edit:"लॉट बदलें", lot_taphint:"बदलने या हटाने के लिए एंट्री पर दबाएँ।", ne_del_e:"यह एंट्री हटाएँ" }); Object.assign(T.hn, { lot_edit:"Lot badlein", lot_taphint:"Badalne ya delete karne ke liye entry par dabayein.", ne_del_e:"Ye entry delete karein" });
 function orchLotsTable(se, only) {
   const cls = n => (n < 0 ? "neg" : "pos"), nl = se.lots.length;
@@ -3716,12 +3725,12 @@ function orchLotsTable(se, only) {
     /* one Edit lot button per lot; its other options appear only after tapping it */
     const lotEd = lotEditId === l.id || !!(editLine && l.lines.some(n => n.id === editLine.line));
     const lotActs = !lotEd ? '<span class="lacts"><button class="btn-s lotedit" type="button" data-act="lotedit" data-id="' + esc(l.id) + '">✎ ' + tr("lot_edit") + "</button></span>" :
-      '<span class="lacts"><button class="link" type="button" data-act="addline" data-id="' + esc(l.id) + '">' + tr("l_addtype") + "</button>" +
-      (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + esc(l.id) + '">' + tr("lot_up") + "</button>" : "") +
-      (i < nl - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + esc(l.id) + '">' + tr("lot_down") + "</button>" : "") +
-      '<button class="link del" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">' + tr("lot_remove") + "</button>" +
+      '<span class="lacts led"><button class="lbtn ladd" type="button" data-act="addline" data-id="' + esc(l.id) + '">＋ ' + tr("lm_add") + "</button>" +
+      (nl > 1 ? '<span class="lmove">' + (i > 0 ? '<button class="lbtn" type="button" data-act="lotup" data-id="' + esc(l.id) + '" aria-label="' + esc(tr("lot_up")) + '">↑ ' + tr("lm_up") + "</button>" : "") +
+        (i < nl - 1 ? '<button class="lbtn" type="button" data-act="lotdown" data-id="' + esc(l.id) + '" aria-label="' + esc(tr("lot_down")) + '">↓ ' + tr("lm_down") + "</button>" : "") + "</span>" : "") +
+      '<button class="lbtn ldel" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">🗑 ' + tr("lot_remove") + "</button>" +
       '<small class="taphint">' + tr("lot_taphint") + "</small>" +
-      '<button class="btn-s add lotdone" type="button" data-act="lotdone">' + tr("ne_done") + "</button></span>";
+      '<button class="btn-s add lotdone" type="button" data-act="lotdone">✓ ' + tr("ne_done") + "</button></span>";
     const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + lotActs + "</th>";
     h += '<tbody class="lotgrp">';
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
