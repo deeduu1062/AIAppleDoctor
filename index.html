@@ -1620,6 +1620,13 @@ table.ledger.ytab{min-width:0;width:100%}
 .spofoot .link{padding:2px 0;font-size:.9rem}
 .spofoot .btn-s{margin-left:auto;min-height:38px;padding:6px 12px;font-size:.9rem}
 .spo .lotrow{background:var(--bg)}
+.ybody.olist{gap:8px;padding-top:12px}
+.spo.orow,.spo.orow + .spo.orow{padding:0;border:1px solid var(--line);border-top:1px solid var(--line);background:var(--surface)}
+.spo.orow.open{border-color:var(--fg)}
+.figrows .orow > .yhead{grid-template-columns:7.5rem minmax(0,1fr) 1.2rem;padding:10px 14px}
+.oname{font:700 1.1rem var(--display);overflow-wrap:anywhere}
+.obody{display:grid;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+@media (max-width:900px){.figrows .orow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.figrows .orow .oname{grid-column:1;grid-row:1}.figrows .orow .ychev{grid-column:2;grid-row:1}.figrows .orow .yfigs.five{grid-column:1/-1;grid-row:2}}
 @media (max-width:560px){.spohead{grid-template-columns:minmax(0,1fr) auto}.spohead .ymeta{grid-column:1/-1;grid-row:2}}
 /* Yearly expenses */
 .exformbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;display:grid;gap:10px}
@@ -3294,7 +3301,7 @@ async function applyUser(u) {
   if (langChanged && typeof applyLang === "function") try { applyLang(); } catch (e) {}
   if (typeof setGuest === "function") setGuest(!u);
   if (!u) {
-    curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); spOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
+    curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
@@ -3372,7 +3379,12 @@ const lotNo = i => tr("lot_fallback") + " " + (i + 1);
 const lineBlank = n => !(+n.boxes || +n.rate || n.grade);
 const lotSeason = id => S.seasons.find(x => x.lots.some(l => l.id === id)) || null;
 const lineSeason = id => S.seasons.find(x => x.lots.some(l => l.lines.some(n => n.id === id))) || null;
-let spOpen = new Set();
+let spOpen = new Set(), spoOpen = new Set();
+const spoKey = (oid, y) => oid + "|" + y;
+/* gross, net (after lot costs), boxes, expense per box and net per box; a half box counts as half */
+function fig5(t) { const c = t.net < 0 ? "neg" : "pos"; return yfig(tr("by_gross"), mny(t.rev)) + yfig(tr("by_net"), mny(t.net), "ynet " + c) + yfig(tr("by_boxes"), fmtN(t.boxes)) +
+  yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0)) + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0)); }
+function seT(x) { const r = x ? seasonCalc(x) : {rev: 0, lotExp: 0, boxes: 0, eq: 0}; return {rev: r.rev, net: r.rev - r.lotExp, boxes: r.boxes, eq: r.eq, exp: r.lotExp}; }
 function closeEditLine() {
   const se = editLine ? lotSeason(editLine.lot) : null;
   if (editLine && se) {
@@ -3506,7 +3518,7 @@ $("entryForm").addEventListener("submit", e => {
   if (!se) { se = {id:newId(), oid:o.id, year:sel.y, costs:blankCosts(), lots:[]}; S.seasons.push(se); }
   const at = newPos && newPos <= se.lots.length ? newPos - 1 : se.lots.length;
   se.lots.splice(at, 0, {id:newId(), name:"", lines:rows});
-  spOpen.add(se.year);
+  spOpen.add(se.year); spoOpen.add(spoKey(se.oid, se.year));
   entryOpen = false; draft = [];
   save(); renderAll();
   set("entryMsg", tr("ne_ok").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y).replace("{l}", lotNo(at)));
@@ -3569,19 +3581,16 @@ function renderEditor() {
         yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0), "", ' data-spye="' + y + '"') + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0), "", ' data-spyp="' + y + '"') +
         '</span><span class="ychev" aria-hidden="true"></span></button>';
       if (open) {
-        h += '<div class="ybody">' + S.orchards.map(oo => {
-          const x = seFor(oo.id, y);
-          if (!x) return '<section class="spo" id="spo-' + esc(oo.id) + "-" + y + '"><div class="spohead"><h5>' + esc(oo.name || tr("orchard_fallback")) + '</h5><span class="ymeta">' + tr("sp_nolots") +
-            '</span><b class="ynet">' + inr(0) + '</b></div><div class="spofoot"><span></span><button class="link" type="button" data-act="goexp" data-o="' + esc(oo.id) + '" data-y="' + y + '">' + tr("sp_yc_btn") +
-            '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + esc(oo.id) + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></section>";
-          const r = seasonCalc(x), nl = x.lots.length, sn = r.rev - r.lotExp;
-          const lmax = Math.max.apply(null, x.lots.map(l => Math.abs(lotCalc(l).net)).concat([1]));
-          const om = tr(nl === 1 ? "sp_meta1" : "sp_meta").replace("{n}", nl).replace("{b}", fmtN(r.boxes)).replace("{p}", inr(r.eq ? sn / r.eq : 0));
-          return '<section class="spo" id="spo-' + esc(x.oid) + "-" + y + '"><div class="spohead"><h5>' + esc((oo && oo.name) || tr("orchard_fallback")) + '</h5><span class="ymeta">' + om +
-            '</span><b class="ynet ' + cls(sn) + '" data-spnet="' + esc(x.id) + '">' + inr(sn) + "</b></div>" +
-            (nl ? '<div class="lottab" data-olots="' + esc(x.id) + '">' + orchLotsTable(x) + "</div>" + editBoxFor(x) : '<p class="hint">' + tr("sp_nolots") + "</p>") +
-            '<div class="spofoot"><span>' + tr("sp_yc2").replace("{x}", inr(r.yearly)) + '</span><button class="link" type="button" data-act="goexp" data-o="' + esc(x.oid) + '" data-y="' + y + '">' + tr("sp_yc_btn") +
-            '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + esc(x.oid) + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></section>";
+        h += '<div class="ybody olist">' + S.orchards.map(oo => {
+          const x = seFor(oo.id, y), k = spoKey(oo.id, y), oopen = spoOpen.has(k) || !!(x && editLine && lotSeason(editLine.lot) === x);
+          let r2 = '<section class="spo yrow orow' + (oopen ? " open" : "") + '" id="spo-' + esc(oo.id) + "-" + y + '"><button class="yhead" type="button" data-act="spotoggle" data-o="' + esc(oo.id) + '" data-y="' + y + '" aria-expanded="' + oopen + '">' +
+            '<span class="oname">' + esc(oo.name || tr("orchard_fallback")) + '</span><span class="yfigs five"' + (x ? ' data-spo5="' + esc(x.id) + '"' : "") + ">" + fig5(seT(x)) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+          if (!oopen) return r2 + "</section>";
+          const yc = x ? seasonCalc(x).yearly : 0, oid = esc(oo.id);
+          r2 += '<div class="obody">' + (x && x.lots.length ? '<div class="lottab" data-olots="' + esc(x.id) + '">' + orchLotsTable(x) + "</div>" + editBoxFor(x) : '<p class="hint">' + tr("sp_nolots") + "</p>") +
+            '<div class="spofoot"><span>' + (x ? tr("sp_yc2").replace("{x}", inr(yc)) : "") + '</span><button class="link" type="button" data-act="goexp" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_yc_btn") +
+            '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></div>";
+          return r2 + "</section>";
         }).join("") + "</div>";
       }
       h += "</div>";
@@ -3721,6 +3730,7 @@ function refreshLotBits() {
       attr: (x, k) => 'data-act="s' + k + '" data-lot="' + esc(l.id) + '" data-id="' + esc(x[1].id) + '"'}) : '<p class="hint">' + tr("ne_none_lot") + "</p>";
   });
   document.querySelectorAll("[data-olots]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.olots); if (x) el.innerHTML = orchLotsTable(x); });
+  document.querySelectorAll("[data-spo5]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spo5); if (x) el.innerHTML = fig5(seT(x)); });
   document.querySelectorAll("[data-spnet]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spnet); if (!x) return; const c = seasonCalc(x), v = c.rev - c.lotExp; el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
   document.querySelectorAll("[data-spy]").forEach(el => {
     const y = +el.dataset.spy, t = {net: 0, rev: 0, boxes: 0, eq: 0, exp: 0};
@@ -4165,7 +4175,7 @@ function renderDash() {
 function dashTop() { const t = (dashView && $("det-" + dashView)) || $("tp-orch"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"}); }
 function goSeason(oid, year) {
   closeEditLine(); entryOpen = false; addingO = false; pendingDel = null; set("entryMsg", "");
-  sel.o = oid; sel.y = year; spOpen.add(year); fixSel(); renderAll();
+  sel.o = oid; sel.y = year; spOpen.add(year); spoOpen.add(spoKey(oid, year)); fixSel(); renderAll();
   tabPicked = true; showTool("calc", false, true); showSub("orch");
   const blk = $("spo-" + oid + "-" + year); if (blk && blk.scrollIntoView) blk.scrollIntoView({block: "start"});
 }
@@ -5605,6 +5615,10 @@ $("rp-orch").addEventListener("click", e => {
     const y = +b.dataset.y;
     if (spOpen.has(y)) { spOpen.delete(y); const es = editLine ? lotSeason(editLine.lot) : null; if (es && es.year === y) closeEditLine(); } else spOpen.add(y);
     renderAll(); const nb = document.querySelector('[data-act=sptoggle][data-y="' + y + '"]'); if (nb) nb.focus(); return;
+  } else if (act === "spotoggle") {
+    const k = spoKey(b.dataset.o, +b.dataset.y);
+    if (spoOpen.has(k)) { spoOpen.delete(k); const es = editLine ? lotSeason(editLine.lot) : null; if (es && es.oid === b.dataset.o && es.year === +b.dataset.y) closeEditLine(); } else spoOpen.add(k);
+    renderAll(); const nb = document.querySelector('[data-act=spotoggle][data-o="' + b.dataset.o + '"][data-y="' + b.dataset.y + '"]'); if (nb) nb.focus(); return;
   } else if (act === "addlotfor") {
     closeEditLine(); addingO = false; sel.o = b.dataset.o; sel.y = +b.dataset.y; fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
   } else if (act === "lottoggle") {
