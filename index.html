@@ -1426,6 +1426,10 @@ details.dsec > summary h4{display:inline}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
 .lacts .lotedit{min-height:34px;padding:4px 10px;font-size:.85rem;margin-top:6px}
+.olots tr.tapedit{cursor:pointer}.olots tr.tapedit:hover td,.olots tr.tapedit:focus-visible td{background:color-mix(in srgb,var(--apple) 8%,var(--surface))}
+.olots .tapgo{color:var(--apple);font-size:.95rem}
+.lacts .taphint{display:block;color:var(--muted);font-size:.78rem;line-height:1.3;margin-top:6px;max-width:9rem;white-space:normal}
+.editbox .link.del{color:var(--bad);margin-left:12px}
 .olots td.acts:empty{box-shadow:none;padding:0}
 .lacts .lotdone{min-height:34px;padding:4px 12px;font-size:.85rem;margin-top:6px}
 .olotsec{display:grid;gap:6px}
@@ -3696,7 +3700,7 @@ function lineHtml(n) {
 }
 /* Season Profit: one table per orchard, every lot in it, Lot column on the left */
 let lotEditId = null;
-Object.assign(T.en, { lot_edit:"Edit lot" }); Object.assign(T.hi, { lot_edit:"लॉट बदलें" }); Object.assign(T.hn, { lot_edit:"Lot badlein" });
+Object.assign(T.en, { lot_edit:"Edit lot", lot_taphint:"Tap an entry to change or delete it.", ne_del_e:"Delete this entry" }); Object.assign(T.hi, { lot_edit:"लॉट बदलें", lot_taphint:"बदलने या हटाने के लिए एंट्री पर दबाएँ।", ne_del_e:"यह एंट्री हटाएँ" }); Object.assign(T.hn, { lot_edit:"Lot badlein", lot_taphint:"Badalne ya delete karne ke liye entry par dabayein.", ne_del_e:"Ye entry delete karein" });
 function orchLotsTable(se) {
   const cls = n => (n < 0 ? "neg" : "pos"), nl = se.lots.length;
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
@@ -3711,16 +3715,16 @@ function orchLotsTable(se) {
       (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + esc(l.id) + '">' + tr("lot_up") + "</button>" : "") +
       (i < nl - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + esc(l.id) + '">' + tr("lot_down") + "</button>" : "") +
       '<button class="link del" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">' + tr("lot_remove") + "</button>" +
+      '<small class="taphint">' + tr("lot_taphint") + "</small>" +
       '<button class="btn-s add lotdone" type="button" data-act="lotdone">' + tr("ne_done") + "</button></span>";
     const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + lotActs + "</th>";
     h += '<tbody class="lotgrp">';
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
     shown.forEach((n, k) => {
       const c = lineCalc(n), ed = !!(editLine && editLine.line === n.id);
-      h += "<tr" + (ed ? ' class="editing"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) +
+      h += "<tr" + (ed ? ' class="editing"' : lotEd ? ' class="tapedit" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '" tabindex="0"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) +
         "</td><td>" + inr(c.exp) + '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + '</td><td class="acts">' +
-        (!lotEd ? "" : (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_edit") + "</button>") +
-        '<button class="link del" type="button" data-act="sdel" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_del") + "</button>") + "</td></tr>";
+        (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : lotEd ? '<span class="tapgo" aria-hidden="true">✎</span>' : "") + "</td></tr>";
     });
     h += '<tr class="lottot"><td colspan="2">' + tr("ne_tot") + "</td><td>" + fmtN(lc.b) + "</td><td>" + inr(lc.gross) + "</td><td>" + inr(lc.exp) + '</td><td class="' + cls(lc.net) + '">' + inr(lc.net) +
       "</td><td>" + inr(lc.nppb) + '</td><td class="acts"></td></tr></tbody>';
@@ -3739,7 +3743,7 @@ function editBoxFor(se) {
   const k = l.lines.filter(q => +q.boxes || +q.rate || q.id === n.id).indexOf(n) + 1;
   return '<div class="editbox"><p class="subhead">' + tr("ne_editing2").replace("{l}", lotNo(i)).replace("{n}", k) + "</p>" + lineHtml(n) +
     '<div class="field lname"><label for="l_' + l.id + '_name">' + tr("f_lname") + '</label><input id="l_' + l.id + '_name" data-lot="' + l.id + '" data-f="name" type="text" maxlength="60" value="' + esc(autoName(l.name) ? "" : l.name) + '"></div>' +
-    '<div class="dels"><button class="btn-s add" type="button" data-act="sdone">' + tr("ne_done") + "</button></div></div>";
+    '<div class="dels"><button class="btn-s add" type="button" data-act="sdone">' + tr("ne_done") + '</button><button class="link del" type="button" data-act="sdel" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_del_e") + "</button></div></div>";
 }
 let lotOpen = new Set();
 function lotHeadInner(l, i, max) {
