@@ -1425,6 +1425,21 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.brcard{border:1px solid var(--line);border-left:5px solid var(--apple);border-radius:12px;background:var(--surface);padding:10px 14px;margin:10px 0 4px;display:grid;gap:8px}
+.brcard.empty{border-left-style:dashed}
+.brtop{display:flex;align-items:center;gap:12px}
+.brlogo{flex:0 0 auto;width:52px;height:52px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font:700 1.3rem var(--display);color:var(--apple)}
+.brlogo img{width:100%;height:100%;object-fit:contain}
+.brtx{flex:1 1 auto;min-width:0}
+.brtx h4{margin:0;font:700 1.2rem var(--display);overflow-wrap:anywhere}
+.brtx h4 sup{font-size:.6em;margin-left:1px}
+.brtx p{margin:2px 0 0;font-size:.88rem;color:var(--muted)}
+.brorch{margin:0;font-size:.92rem}.brorch b{font-weight:600}
+.brcard .fine{margin:0}
+.brform{display:grid;gap:8px}
+.brform .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.brprev{width:44px;height:44px;border-radius:8px;border:1px solid var(--line);object-fit:contain;background:var(--surface-2)}
+.pcbrand{font:700 .9rem var(--display);color:var(--apple);margin-left:auto}
 .kytabs{flex-wrap:nowrap;overflow-x:auto;gap:6px;margin:0 0 4px;scrollbar-width:none}
 .kytabs .tab{flex:0 0 auto;min-width:4.2rem;padding:6px 12px;min-height:38px;font-size:.92rem}
 .ksum{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:4px 0}
@@ -1949,7 +1964,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <section class="section" id="tools">
   <div class="wrap">
     <div class="tpanel" id="tp-calc" role="tabpanel" aria-labelledby="tt-calc">
-      <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pill live" data-i18n="s_live"></span><p class="status" id="status" aria-live="polite" hidden></p></div>
+      <div class="thead"><h3 data-i18n="pc_h"></h3><span class="pcbrand" id="pcBrand" hidden></span><span class="pill live" data-i18n="s_live"></span><p class="status" id="status" aria-live="polite" hidden></p></div>
       <div class="tabs pctabs" role="tablist">
         <button class="tab" role="tab" id="rt-year" aria-selected="false" aria-controls="rp-year" type="button" data-i18n="pt_year"></button>
         <button class="tab" role="tab" id="rt-orch" aria-selected="false" aria-controls="rp-orch" type="button" data-i18n="pt_season"></button>
@@ -3104,6 +3119,7 @@ function seasonCalc(se) {
 function sanitize(o) {
   if (!o || o.v !== 2 || !Array.isArray(o.orchards) || !Array.isArray(o.seasons)) return null;
   o.orchards = o.orchards.filter(x => x && x.id);
+  if (o.brand && (typeof o.brand !== "object" || typeof o.brand.name !== "string")) delete o.brand;
   o.seasons = o.seasons.filter(s => s && s.id && o.orchards.some(x => x.id === s.oid) && isFinite(+s.year)).map(s => {
     s.year = Math.round(+s.year);
     s.costs = Object.assign(blankCosts(), s.costs || {});
@@ -3272,12 +3288,13 @@ function renderOrchGate() {
   $("orchPill").className = "pill" + (user ? " live" : "");
   set("orchPill", tr(user ? "s_signedin" : "s_signin"));
   renderAcct();
+  if (typeof renderBrandChips === "function") renderBrandChips();
 }
 function dropEmptySeasons() {
   const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
   if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded) save(); }
 }
-function renderAll() { dropEmptySeasons(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); }
+function renderAll() { dropEmptySeasons(); if (typeof renderBrandChips === "function") renderBrandChips(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -3321,7 +3338,7 @@ async function applyUser(u) {
   if (langChanged && typeof applyLang === "function") try { applyLang(); } catch (e) {}
   if (typeof setGuest === "function") setGuest(!u);
   if (!u) {
-    curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); exoOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
+    curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); exoOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null; brandEdit = false;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
@@ -4498,7 +4515,7 @@ function detailsHtml() {
     (dashExp ? "" : '<button class="btn-s add dexbtn" type="button" data-dex="open">＋ ' + tr("ex_add") + "</button>") + "</div>";
   if (dashAdd) h += addForm;
   if (dashExp && !(dashView && otab === "work")) h += dashExpHtml();
-  h += treeSumHtml() + '<p class="hint">' + tr("det_tap") + "</p>";
+  h += brandHtml() + treeSumHtml() + '<p class="hint">' + tr("det_tap") + "</p>";
   const fields = [["village", "p_village", "text"], ["alt", "p_alt", "number"], ["area", "p_area", "number"], ["trees", "f_trees", "number"], ["var", "p_var", "text"],
     ["root", "p_root", ROOTS, "r_"], ["planted", "p_planted", "number"], ["irr", "p_irr", IRR, "i_"], ["hail", "p_hail", HAIL, "h_"]];
   h += '<div class="ylist figrows detrows">' + S.orchards.map(o => {
@@ -4588,6 +4605,88 @@ Object.assign(T.hi, { ts_h:"मेरे सभी बाग़", ts_head:"{n} {
   ts_addyr:"कितने पेड़ फल दे रहे हैं, यह देखने के लिए हर बाग़ में लगाने का साल डालें।", ts_addvar:"यहाँ देखने के लिए हर बाग़ में किस्म के हिसाब से पेड़ डालें (बाग़ बदलें)।" });
 Object.assign(T.hn, { ts_h:"Mere sabhi bagiche", ts_head:"{n} {o} · {t} ped", ts_orch1:"bagicha", ts_orchN:"bagiche", ts_unset:"Kism nahi likhi", ts_bear:"phal de rahe", ts_young:"chhote, abhi phal nahi", ts_noyr:"lagane ka saal nahi likha",
   ts_addyr:"Kitne ped phal de rahe hain, ye dekhne ke liye har bagiche mein lagane ka saal daalein.", ts_addvar:"Yahan dekhne ke liye har bagiche mein kism ke hisaab se ped daalein (Bagicha badlein)." });
+
+/* one brand (trademark) for all of a grower's orchards: S.brand = {name, st: "" | "tm" | "r", no, logo} */
+let brandEdit = false, brandLogoTmp, brandDelAsk = false;
+const brandOf = () => (S && S.brand && (S.brand.name || "").trim() ? S.brand : null);
+const brandMark = b => (b && b.st === "r" ? "®" : b && b.st === "tm" ? "™" : "");
+function brandHtml() {
+  const b = brandOf();
+  if (brandEdit) {
+    const v = S.brand || {}, logo = brandLogoTmp !== undefined ? brandLogoTmp : (v.logo || "");
+    return '<section class="brcard" aria-label="' + esc(tr("br_h")) + '"><h4 style="margin:0">' + tr("br_h") + '</h4><form class="brform" data-bform="1">' +
+      '<div class="field"><label for="br_name">' + tr("br_name") + '</label><input id="br_name" type="text" maxlength="60" placeholder="' + esc(tr("br_name_ph")) + '" value="' + esc(v.name || "") + '"></div>' +
+      '<div class="field"><label for="br_st">' + tr("br_st") + '</label><select id="br_st">' + ["", "tm", "r"].map(k => '<option value="' + k + '"' + ((v.st || "") === k ? " selected" : "") + ">" + tr("br_st_" + (k || "no")) + "</option>").join("") + "</select></div>" +
+      '<div class="field"><label for="br_no">' + tr("br_no") + '</label><input id="br_no" type="text" inputmode="numeric" maxlength="20" value="' + esc(v.no || "") + '"></div>' +
+      '<div class="field"><label for="br_logo">' + tr("br_logo") + '</label><div class="row">' + (logo ? '<img class="brprev" src="' + logo + '" alt="">' : "") +
+      '<input id="br_logo" type="file" accept="image/*">' + (logo ? '<button class="link del" type="button" data-bact="nologo">' + tr("br_nologo") + "</button>" : "") + "</div></div>" +
+      '<p class="fine">' + tr("br_tip") + "</p>" +
+      '<div class="dels"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-bact="cancel">' + tr("d_cancel") + "</button>" +
+      (b ? '<button class="link del" type="button" data-bact="remove">' + tr(brandDelAsk ? "br_remove2" : "br_remove") + "</button>" : "") + "</div></form></section>";
+  }
+  if (!b) return '<section class="brcard empty" aria-label="' + esc(tr("br_h")) + '"><div class="brtop"><div class="brlogo" aria-hidden="true">™</div><div class="brtx"><h4>' + tr("br_h") + "</h4><p>" + tr("br_p") + "</p></div></div>" +
+    '<div><button class="btn-s add" type="button" data-bact="edit">＋ ' + tr("br_add") + "</button></div></section>";
+  const st = b.st === "r" ? tr("br_st_r") : b.st === "tm" ? tr("br_st_tm") : tr("br_st_no").replace(/\s*[™®]$/, "");
+  const names = S.orchards.filter(o => !o.ex).map(o => esc(o.name || tr("orchard_fallback")));
+  return '<section class="brcard" aria-label="' + esc(tr("br_h")) + '"><div class="brtop"><div class="brlogo" aria-hidden="true">' + (b.logo ? '<img src="' + b.logo + '" alt="">' : esc(b.name.trim().charAt(0).toUpperCase())) + "</div>" +
+    '<div class="brtx"><h4>' + esc(b.name.trim()) + (brandMark(b) ? "<sup>" + brandMark(b) + "</sup>" : "") + "</h4><p>" + st + (b.no ? " · " + tr("br_no_s").replace("{n}", esc(b.no)) : "") + "</p></div>" +
+    '<button class="btn-s" type="button" data-bact="edit">' + tr("br_edit") + "</button></div>" +
+    (names.length ? '<p class="brorch">' + tr("br_orchs") + " <b>" + names.join(" · ") + "</b></p>" : "") + "</section>";
+}
+function renderBrandChips() {
+  const el = $("pcBrand"); if (!el) return;
+  const b = user && loaded ? brandOf() : null;
+  el.hidden = !b; el.textContent = b ? b.name.trim() + brandMark(b) : "";
+}
+document.addEventListener("click", e => {
+  const btn = e.target.closest && e.target.closest("[data-bact]"); if (!btn) return;
+  const a = btn.dataset.bact;
+  const keep = brandEdit && $("br_name") ? { name: $("br_name").value, st: $("br_st").value, no: $("br_no").value } : null;
+  if (a !== "remove") brandDelAsk = false;
+  if (a === "edit") { brandEdit = true; brandLogoTmp = undefined; }
+  else if (a === "cancel") { brandEdit = false; brandLogoTmp = undefined; }
+  else if (a === "nologo") { brandLogoTmp = ""; }
+  else if (a === "remove") { if (!brandDelAsk) brandDelAsk = true; else { delete S.brand; brandDelAsk = false; brandEdit = false; brandLogoTmp = undefined; save(); } }
+  renderDash(); renderBrandChips();
+  if (keep && $("br_name")) { $("br_name").value = keep.name; $("br_st").value = keep.st; $("br_no").value = keep.no; }
+  const f = $("br_name"); if (f && a === "edit") f.focus();
+});
+document.addEventListener("change", e => {
+  if (!e.target || e.target.id !== "br_logo") return;
+  const file = e.target.files && e.target.files[0]; if (!file) return;
+  const keep = { name: ($("br_name") || {}).value, st: ($("br_st") || {}).value, no: ($("br_no") || {}).value };
+  const rd = new FileReader();
+  rd.onload = () => { const img = new Image(); img.onload = () => {
+    const m = 240, k = Math.min(1, m / Math.max(img.width, img.height)), c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    brandLogoTmp = c.toDataURL("image/png");
+    renderDash();
+    if ($("br_name")) { $("br_name").value = keep.name || ""; $("br_st").value = keep.st || ""; $("br_no").value = keep.no || ""; }
+  }; img.src = rd.result; };
+  rd.readAsDataURL(file);
+});
+document.addEventListener("submit", e => {
+  const f = e.target.closest && e.target.closest("[data-bform]"); if (!f) return;
+  e.preventDefault();
+  const name = ($("br_name").value || "").trim();
+  if (!name) { $("br_name").focus(); return; }
+  const old = S.brand || {};
+  S.brand = { name: name, st: $("br_st").value, no: ($("br_no").value || "").trim(), logo: brandLogoTmp !== undefined ? brandLogoTmp : (old.logo || "") };
+  brandEdit = false; brandLogoTmp = undefined; brandDelAsk = false; save(); renderDash(); renderBrandChips();
+});
+Object.assign(T.en, { br_h:"My orchard brand", br_p:"Give all your orchards one brand name (trademark), like “AAA Orchards”. It shows on your Orchard Record and Sales/Profit.", br_add:"Add brand", br_edit:"Edit",
+  br_name:"Brand name", br_name_ph:"e.g. AAA Orchards", br_st:"Trademark status", br_st_no:"Not filed yet", br_st_tm:"Trademark applied ™", br_st_r:"Registered trademark ®",
+  br_no:"Application / registration number (optional)", br_no_s:"No. {n}", br_logo:"Logo (optional)", br_nologo:"Remove logo", br_remove:"Remove brand", br_remove2:"Tap again to remove", br_orchs:"Orchards under this brand:",
+  br_tip:"You can use ™ once you have applied. Use ® only after the trademark is registered." });
+Object.assign(T.hi, { br_h:"मेरे बाग़ का ब्रांड", br_p:"अपने सभी बाग़ों को एक ब्रांड नाम (ट्रेडमार्क) दें, जैसे “AAA Orchards”। यह आपके बाग़ रिकॉर्ड और बिक्री/मुनाफ़ा में दिखेगा।", br_add:"ब्रांड जोड़ें", br_edit:"बदलें",
+  br_name:"ब्रांड का नाम", br_name_ph:"जैसे AAA Orchards", br_st:"ट्रेडमार्क की स्थिति", br_st_no:"अभी आवेदन नहीं किया", br_st_tm:"ट्रेडमार्क के लिए आवेदन किया ™", br_st_r:"रजिस्टर्ड ट्रेडमार्क ®",
+  br_no:"आवेदन / रजिस्ट्रेशन नंबर (ज़रूरी नहीं)", br_no_s:"नं. {n}", br_logo:"लोगो (ज़रूरी नहीं)", br_nologo:"लोगो हटाएँ", br_remove:"ब्रांड हटाएँ", br_remove2:"हटाने के लिए फिर दबाएँ", br_orchs:"इस ब्रांड के बाग़:",
+  br_tip:"आवेदन करने के बाद ™ लगा सकते हैं। ® सिर्फ़ ट्रेडमार्क रजिस्टर होने के बाद लगाएँ।" });
+Object.assign(T.hn, { br_h:"Mere bagiche ka brand", br_p:"Apne sabhi bagichon ko ek brand naam (trademark) dein, jaise “AAA Orchards”. Ye aapke Orchard Record aur Sales/Profit mein dikhega.", br_add:"Brand jodein", br_edit:"Badlein",
+  br_name:"Brand ka naam", br_name_ph:"jaise AAA Orchards", br_st:"Trademark ki sthiti", br_st_no:"Abhi apply nahi kiya", br_st_tm:"Trademark apply kiya ™", br_st_r:"Registered trademark ®",
+  br_no:"Application / registration number (zaroori nahi)", br_no_s:"No. {n}", br_logo:"Logo (zaroori nahi)", br_nologo:"Logo hatayein", br_remove:"Brand hatayein", br_remove2:"Hatane ke liye phir dabayein", br_orchs:"Is brand ke bagiche:",
+  br_tip:"Apply karne ke baad ™ laga sakte hain. ® sirf trademark register hone ke baad lagayein." });
 
 /* the open orchard's Overview / Work & accounts tabs stick just under its name */
 let ohObs = null;
