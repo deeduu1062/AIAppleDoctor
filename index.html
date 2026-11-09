@@ -4162,7 +4162,7 @@ function renderSpMore() {
   let h = "";
   if (o && !addingO && !entryOpen) {
     /* Bikri jodein is for entering sales: profit analysis lives in Munafa (all orchards) and the orchard's Hisaab tab */
-    try { h = dueHtml(o) + '<div class="splinks"><button class="btn-s" type="button" data-act="orchpage" data-o="' + esc(o.id) + '" data-y="' + sel.y + '">' +
+    try { h = '<div class="splinks"><button class="btn-s" type="button" data-act="orchpage" data-o="' + esc(o.id) + '" data-y="' + sel.y + '">' +
       esc(tr("sp_go_hisab").replace("{o}", o.name || tr("orchard_fallback"))) + '</button><button class="btn-s" type="button" data-act="gomunafa">' + tr("sp_go_munafa") + "</button></div>"; } catch (e) { h = ""; }
   }
   el.innerHTML = h;
