@@ -3,7 +3,7 @@
 -- admin_profiles()      one row per grower for the list
 -- admin_profile(uid)    one grower: profile, plan, usage counts, orchards and a timeline of what they did
 -- Only admins can call these. Sale amounts and profit figures are NOT included, only counts.
--- Safe to run again.
+-- Safe to run again. (Written without any star characters, so copying from a phone cannot damage it.)
 
 create or replace function public.admin_profiles() returns json
 language plpgsql stable security definer set search_path = public as $$
@@ -18,8 +18,8 @@ begin
       u.raw_user_meta_data ->> 'lang' as lang,
       coalesce((select p.plan from payments p where p.user_id = u.id and p.status = 'approved'
                  and (p.valid_until is null or p.valid_until >= today) order by p.valid_until desc nulls first limit 1), 'free') as plan,
-      (select count(*) from chat_messages c where c.user_id = u.id and c.role = 'user') as questions,
-      (select count(*) from diagnoses d where d.user_id = u.id) as checks,
+      (select count(1) from chat_messages c where c.user_id = u.id and c.role = 'user') as questions,
+      (select count(1) from diagnoses d where d.user_id = u.id) as checks,
       greatest(u.last_sign_in_at,
         (select max(c.created_at) from chat_messages c where c.user_id = u.id),
         (select max(d.created_at) from diagnoses d where d.user_id = u.id),
@@ -34,7 +34,7 @@ grant execute on function public.admin_profiles() to authenticated;
 create or replace function public.admin_profile(uid uuid) returns json
 language plpgsql stable security definer set search_path = public as $$
 declare
-  u      auth.users%rowtype;
+  u      record;
   led    jsonb;
   led_at timestamptz;
   orch   jsonb := '[]'::jsonb;
@@ -45,7 +45,9 @@ declare
   res    json;
 begin
   if not public.is_admin() then raise exception 'not allowed' using errcode = '42501'; end if;
-  select * into u from auth.users where id = uid;
+  select au.id, au.email, au.phone, au.created_at, au.last_sign_in_at, au.email_confirmed_at, au.phone_confirmed_at,
+         au.raw_user_meta_data, au.raw_app_meta_data
+    into u from auth.users au where au.id = uid;
   if not found then return null; end if;
 
   select l.data::jsonb, l.updated_at into led, led_at from ledgers l where l.user_id = uid;
@@ -71,21 +73,21 @@ begin
                from payments p where p.user_id = uid and p.status = 'approved'
                 and (p.valid_until is null or p.valid_until >= today) order by p.valid_until desc nulls first limit 1),
     'counts', json_build_object(
-      'q_total',  (select count(*) from chat_messages where user_id = uid and role = 'user'),
-      'q_30',     (select count(*) from chat_messages where user_id = uid and role = 'user' and created_at >= now() - interval '30 days'),
-      'q_today',  (select count(*) from chat_messages where user_id = uid and role = 'user' and created_at >= t0),
-      'dx_total', (select count(*) from diagnoses where user_id = uid),
-      'dx_month', (select count(*) from diagnoses where user_id = uid and created_at >= m0),
-      'fb_total', (select count(*) from feedback where user_id = uid),
-      'pay_total',(select count(*) from payments where user_id = uid),
-      'shares',   (select count(*) from ledger_shares where owner_id = uid)),
+      'q_total',  (select count(1) from chat_messages where user_id = uid and role = 'user'),
+      'q_30',     (select count(1) from chat_messages where user_id = uid and role = 'user' and created_at >= now() - interval '30 days'),
+      'q_today',  (select count(1) from chat_messages where user_id = uid and role = 'user' and created_at >= t0),
+      'dx_total', (select count(1) from diagnoses where user_id = uid),
+      'dx_month', (select count(1) from diagnoses where user_id = uid and created_at >= m0),
+      'fb_total', (select count(1) from feedback where user_id = uid),
+      'pay_total',(select count(1) from payments where user_id = uid),
+      'shares',   (select count(1) from ledger_shares where owner_id = uid)),
     'records', json_build_object(
       'saved_at', led_at,
       'orchards', (select coalesce(json_agg(json_build_object('name', o ->> 'name', 'trees', o ->> 'trees')), '[]'::json) from jsonb_array_elements(orch) o),
       'years',    (select count(distinct s ->> 'year') from jsonb_array_elements(seas) s),
       'lots',     (select coalesce(sum(case when jsonb_typeof(s -> 'lots') = 'array' then jsonb_array_length(s -> 'lots') else 0 end), 0) from jsonb_array_elements(seas) s)),
     'activity', (select coalesce(json_agg(json_build_object('at', a.at, 'kind', a.kind, 'detail', a.detail, 'extra', a.extra) order by a.at desc), '[]'::json) from (
-      select * from (
+      select x.at, x.kind, x.detail, x.extra from (
         select u.created_at as at, 'join' as kind, null::text as detail, null::text as extra
         union all select u.last_sign_in_at, 'login', null, null
         union all select led_at, 'save', null, null
