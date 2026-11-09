@@ -1683,7 +1683,10 @@ table.ledger.ytab{min-width:0;width:100%}
 @media (max-width:900px){.figrows .oprof > .yhead{grid-template-columns:minmax(0,1fr)}.figrows .oprof .yfigs{grid-column:1;grid-row:2;padding-left:0;border-left:0}}
 .figrows .orow > .yhead{grid-template-columns:7.5rem minmax(0,1fr) 1.2rem;padding:10px 14px}
 .oname{font:700 1.1rem var(--display);overflow-wrap:anywhere}
-.obody{display:grid;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+.obody{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+.obody > *{min-width:0}
+/* wide tables scroll sideways inside their card instead of stretching it */
+.ybody:not(.lotbox),.olist{grid-template-columns:minmax(0,1fr)}.ybody > *,.olist > *{min-width:0}
 @media (max-width:900px){.figrows .orow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.figrows .orow .oname{grid-column:1;grid-row:1}.figrows .orow .ychev{grid-column:2;grid-row:1}.figrows .orow:not(.oprof) .yfigs{grid-column:1/-1;grid-row:2;padding:10px 0 0;border-left:0;border-top:1px solid var(--line);grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:560px){.spohead{grid-template-columns:minmax(0,1fr) auto}.spohead .ymeta{grid-column:1/-1;grid-row:2}}
 /* Yearly expenses */
