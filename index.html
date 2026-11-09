@@ -1630,6 +1630,10 @@ table.ledger.ytab{min-width:0;width:100%}
 .spo.orow .oname{color:var(--brand)}
 .spo.orow .yfig b{font-size:1rem}.spo.orow .yfigs.five .yfig.ynet b{font-size:1rem}
 .spo.orow .obody{background:var(--surface)}
+.olist{display:grid;gap:8px}
+.figrows .oprof > .yhead{grid-template-columns:7.5rem minmax(0,1fr);cursor:default}
+.spo.oprof > .yhead:hover{background:transparent}
+@media (max-width:900px){.figrows .oprof > .yhead{grid-template-columns:minmax(0,1fr)}.figrows .oprof .yfigs{grid-column:1;grid-row:2;padding-left:0;border-left:0}}
 .figrows .orow > .yhead{grid-template-columns:7.5rem minmax(0,1fr) 1.2rem;padding:10px 14px}
 .oname{font:700 1.1rem var(--display);overflow-wrap:anywhere}
 .obody{display:grid;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
@@ -5408,14 +5412,10 @@ function renderYearDetail() {
       '</span><span class="ychev" aria-hidden="true"></span></button>';
     h += '<div class="ybody" id="yb' + y + '"' + (open ? "" : " hidden") + ">";
     if (open) {
-      const head = ["y_orch", "y_gp", "y_yc", "ls_net"];
-      h += '<div class="tablewrap"><table class="ledger sm ytab"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-        S.orchards.map(o => { const x = t.rows.find(q => q.o === o);
-          if (!x) return '<tr class="norec"><th scope="row">' + esc(o.name || tr("orchard_fallback")) + "</th><td>" + inr(0) + "</td><td>" + inr(0) + "</td><td>" + inr(0) + "</td></tr>";
-          return '<tr><th scope="row">' + esc(x.o.name || tr("orchard_fallback")) + "</th><td>" + inr(x.r.rev - x.r.lotExp) + "</td><td>" + inr(x.r.yearly) +
-          '</td><td class="' + cls(x.r.profit) + '">' + inr(x.r.profit) + "</td></tr>"; }).join("") +
-        "</tbody>" + (S.orchards.length > 1 ? '<tfoot><tr><th scope="row">' + tr("y_all") + "</th><td>" + inr(gp) + "</td><td>" + inr(t.yearly) + '</td><td class="' + cls(t.net) + '">' + inr(t.net) +
-          "</td></tr></tfoot>" : "") + "</table></div>";
+      /* orchards as green-tinted cards (same pattern as Season sales record), each with sales profit − yearly expenses = net income */
+      h += '<div class="olist">' + S.orchards.map(o => { const x = t.rows.find(q => q.o === o), r = x ? x.r : {rev: 0, lotExp: 0, yearly: 0, profit: 0};
+        return '<div class="spo orow oprof"><div class="yhead"><span class="oname">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs">' + fig("y_gp", mny(r.rev - r.lotExp)) +
+          '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(r.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(r.profit), "ynet " + cls(r.profit)) + "</span></div></div>"; }).join("") + "</div>";
       h += '<div class="dlacts"><button class="btn-s" type="button" data-act="dlcsv" data-y="' + y + '">' + tr("dl_csv") + '</button><button class="btn-s" type="button" data-act="dlpdf" data-y="' + y + '">' + tr("dl_pdf") + "</button></div>";
     }
     return h + "</div></div>";
