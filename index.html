@@ -1432,6 +1432,10 @@ details.dsec > summary h4{display:inline}
 .acplan{font:700 1rem var(--display);padding:4px 12px;border-radius:999px;background:var(--surface-2)}.acplan.paid{background:color-mix(in srgb,var(--good) 15%,var(--surface));color:var(--good)}
 .acreset{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px;justify-items:start}
 .accard .fine{margin:0}
+.acinc{margin:4px 0 0}
+.acfeat{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.acfeat li{position:relative;padding-left:24px;font-size:.93rem}
+.acfeat li::before{content:"✓";position:absolute;left:4px;color:var(--good);font-weight:700}
 .accard .sentmsg{margin:0;font-size:.92rem;font-weight:600;color:var(--good)}.accard .autherr{margin:0;font-size:.92rem}
 .dxseen{margin:4px 0;padding:6px 10px;border-radius:8px;background:color-mix(in srgb,var(--good) 12%,var(--surface));color:var(--good);font-size:.9rem;font-weight:600}
 .tsum{background:linear-gradient(180deg,color-mix(in srgb,var(--apple) 6%,var(--surface)),var(--surface) 70%)}
@@ -7300,7 +7304,7 @@ function renderGuestDash() {
 /* ---- top tabs ---- */
 
 /* ---------- My account tab: plan details, change or reset password, log out ---------- */
-let acMsg = {}, acBusy = false;
+let acMsg = {}, acBusy = false, acPwOpen = false;
 function renderAcctTab() {
   const el = $("acctTab"); if (!el || !user) return;
   const em = user.email || "", ph = user.phone ? fmtPhone(user.phone) : "";
@@ -7318,16 +7322,19 @@ function renderAcctTab() {
   else if (st.renew) btns.push('<button class="btn-s add" type="button" data-ac="pay" data-p="' + st.paid + '">' + esc(tr("pl_renew").replace("{p}", pn(st.paid))) + "</button>");
   if (st.paid === "basic") btns.push('<button class="btn-s' + (st.renew ? "" : " add") + '" type="button" data-ac="pay" data-p="premium">' + esc(tr("pl_go_pay").replace("{p}", pn("premium"))) + "</button>");
   btns.push('<button class="btn-s" type="button" data-ac="plans">' + esc(tr("ac_plans")) + "</button>");
+  const feats = tr("pl_f_" + (st.paid || "free"));
+  if (Array.isArray(feats) && feats.length) plan += '<p class="subhead acinc">' + esc(tr("ac_inc")) + '</p><ul class="acfeat">' + feats.map(f => "<li>" + esc(f) + "</li>").join("") + "</ul>";
   el.innerHTML =
     '<section class="accard"><h4>' + tr("ac_me") + '</h4><dl class="acdl">' +
       (em ? "<div><dt>" + tr("ac_email") + "</dt><dd>" + esc(em) + "</dd></div>" : "") + (ph ? "<div><dt>" + tr("ac_phone") + "</dt><dd>" + esc(ph) + "</dd></div>" : "") +
       (since ? "<div><dt>" + tr("ac_since") + "</dt><dd>" + esc(since) + "</dd></div>" : "") + "</dl></section>" +
     '<section class="accard"><h4>' + tr("ac_plan") + "</h4>" + plan + '<div class="dels">' + btns.join("") + "</div></section>" +
-    '<section class="accard"><h4>' + tr("ac_pw") + '</h4><p class="fine">' + tr("ac_pw_p") + '</p><form id="acPwForm" novalidate>' +
+    '<section class="accard"><h4>' + tr("ac_pw") + "</h4>" + (!acPwOpen ? msg("pw") + '<div><button class="btn-s" type="button" data-ac="pwopen">🔒 ' + tr("ac_pwchg") + "</button></div>" :
+      '<p class="fine">' + tr("ac_pw_p") + '</p><form id="acPwForm" novalidate>' +
       '<div class="field"><label for="acPw1">' + tr("pw_new") + '</label><input id="acPw1" type="password" autocomplete="new-password"></div>' +
       '<div class="field"><label for="acPw2">' + tr("ac_pw2") + '</label><input id="acPw2" type="password" autocomplete="new-password"></div>' +
-      msg("pw") + '<div class="dels"><button class="btn-s add" type="submit"' + (acBusy ? " disabled" : "") + ">" + tr("pw_save") + "</button></div></form>" +
-      (em ? '<div class="acreset"><p class="fine">' + tr("ac_reset_p").replace("{e}", esc(em)) + '</p><button class="btn-s" type="button" data-ac="reset"' + (acBusy ? " disabled" : "") + ">" + tr("ac_reset") + "</button>" + msg("reset") + "</div>" : "") +
+      msg("pw") + '<div class="dels"><button class="btn-s add" type="submit"' + (acBusy ? " disabled" : "") + ">" + tr("pw_save") + '</button><button class="btn-s" type="button" data-ac="pwclose">' + tr("pw_cancel") + "</button></div></form>" +
+      (em ? '<div class="acreset"><p class="fine">' + tr("ac_reset_p").replace("{e}", esc(em)) + '</p><button class="btn-s" type="button" data-ac="reset"' + (acBusy ? " disabled" : "") + ">" + tr("ac_reset") + "</button>" + msg("reset") + "</div>" : "")) +
     "</section>" +
     '<section class="accard"><button class="btn-s danger" type="button" data-ac="out">' + tr("ac_out") + "</button></section>";
 }
@@ -7336,6 +7343,8 @@ document.addEventListener("click", async e => {
   const a = b.dataset.ac;
   if (a === "up" || a === "plans") { const p = $("plans"); if (p && !p.hidden && p.scrollIntoView) p.scrollIntoView({block: "start"}); else if (typeof openPay === "function") openPay("basic"); return; }
   if (a === "pay") { if (typeof openPay === "function") openPay(b.dataset.p); return; }
+  if (a === "pwopen") { acPwOpen = true; acMsg = {}; renderAcctTab(); const f = $("acPw1"); if (f) f.focus(); return; }
+  if (a === "pwclose") { acPwOpen = false; acMsg = {}; renderAcctTab(); return; }
   if (a === "out") { try { await sb.auth.signOut(); } catch (x) {} return; }
   if (a === "reset") {
     if (!sb || !user || !user.email || acBusy) return;
@@ -7353,8 +7362,9 @@ document.addEventListener("submit", async e => {
   if (!sb || acBusy) return;
   acBusy = true; acMsg.pw = null; renderAcctTab();
   let err = null; try { const r = await sb.auth.updateUser({password: p1}); err = r.error; } catch (x) { err = x; }
-  acBusy = false; acMsg.pw = err ? {t: String((err && err.message) || err), err: true} : {t: tr("ac_pw_ok")}; renderAcctTab();
+  acBusy = false; acMsg.pw = err ? {t: String((err && err.message) || err), err: true} : {t: tr("ac_pw_ok")}; if (!err) acPwOpen = false; renderAcctTab();
 });
+Object.assign(T.en, { ac_pwchg:"Change password", ac_inc:"What your plan includes" }); Object.assign(T.hi, { ac_pwchg:"पासवर्ड बदलें", ac_inc:"आपके प्लान में क्या-क्या है" }); Object.assign(T.hn, { ac_pwchg:"Password badlein", ac_inc:"Aapke plan mein kya-kya hai" });
 Object.assign(T.en, { tt_acct:"My account", ac_me:"My details", ac_email:"Email", ac_phone:"Phone", ac_since:"Member since", ac_plan:"My plan", ac_till:"Valid till {d}", ac_left:"{n} days left",
   ac_rej:"Your last payment could not be confirmed. Please contact us.", ac_up:"Upgrade plan", ac_plans:"See all plans", ac_pw:"Password",
   ac_pw_p:"Change your password here. Use at least 8 characters.", ac_pw2:"Type the new password again", ac_pw_diff:"The two passwords do not match.", ac_pw_ok:"Password changed.",
