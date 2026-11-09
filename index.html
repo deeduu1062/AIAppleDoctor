@@ -3603,7 +3603,7 @@ function renderEditor() {
           const yc = x ? seasonCalc(x).yearly : 0, oid = esc(oo.id);
           r2 += '<div class="obody">' + (x && x.lots.length ? '<div class="lottab" data-olots="' + esc(x.id) + '">' + orchLotsTable(x) + "</div>" + editBoxFor(x) : '<p class="hint">' + tr("sp_nolots") + "</p>") +
             '<div class="spofoot"><span>' + (x ? tr("sp_yc2").replace("{x}", inr(yc)) : "") + '</span><button class="link" type="button" data-act="goexp" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_yc_btn") +
-            '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></div>";
+            '</button><button class="link" type="button" data-act="orchpage" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_go_this") + '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></div>";
           return r2 + "</section>";
         }).join("") + "</div>";
       }
@@ -4153,6 +4153,9 @@ $("dash").addEventListener("click", e => {
   else if (a === "rgexp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); }
 });
 Object.assign(T.en, { sl_byo:"Orchard-wise detail" });
+Object.assign(T.en, { sp_go_this:"See this orchard's profit →" });
+Object.assign(T.hi, { sp_go_this:"इस बाग़ का मुनाफ़ा देखें →" });
+Object.assign(T.hn, { sp_go_this:"Is bagiche ka munafa dekhein →" });
 Object.assign(T.en, { by_gross:"Gross sale", by_net:"Net sale", by_boxes:"Total boxes", by_epb:"Expense per box", by_npb:"Net per box" });
 Object.assign(T.hi, { by_gross:"कुल बिक्री", by_net:"शुद्ध बिक्री", by_boxes:"कुल पेटियाँ", by_epb:"प्रति पेटी ख़र्च", by_npb:"प्रति पेटी शुद्ध" });
 Object.assign(T.hn, { by_gross:"Gross bikri", by_net:"Net bikri", by_boxes:"Kul petiyan", by_epb:"Kharcha per peti", by_npb:"Net per peti" });
@@ -4163,7 +4166,8 @@ function renderSpMore() {
   const el = $("spMore"); if (!el) return;
   const o = curOrchard();
   let h = "";
-  if (o && !addingO && !entryOpen) {
+  /* bottom profit buttons removed: each orchard's dropdown has its own profit link, and Profit is a tab above */
+  if (false) {
     /* Bikri jodein is for entering sales: profit analysis lives in Munafa (all orchards) and the orchard's Hisaab tab */
     try { h = '<div class="splinks"><button class="btn-s" type="button" data-act="orchpage" data-o="' + esc(o.id) + '" data-y="' + sel.y + '">' +
       esc(tr("sp_go_hisab").replace("{o}", o.name || tr("orchard_fallback"))) + '</button><button class="btn-s" type="button" data-act="gomunafa">' + tr("sp_go_munafa") + "</button></div>"; } catch (e) { h = ""; }
@@ -5636,6 +5640,7 @@ $("rp-orch").addEventListener("click", e => {
     if (filled.length) nl.exp = +filled[filled.length - 1].exp || 0;
     l.lines.push(nl); editLine = {lot: l.id, line: nl.id};
     fixSel(); save(); renderAll(); const el = $("n_" + nl.id + "_grade"); if (el) el.focus(); return;
+  } else if (act === "orchpage") { dashView = b.dataset.o; otab = "hisab"; dashYear = +b.dataset.y; profEdit = false; diaryEdit = null; tabPicked = true; renderDash(); showTool("orch", false, true); const ms = $("oMoney"); if (ms && ms.scrollIntoView) ms.scrollIntoView({block: "start"}); return; return;
   } else if (act === "goexp") {
     showSub("exp"); expOpenAt(b.dataset.o || sel.o, +(b.dataset.y || sel.y)); return;
   } else if (act === "sptoggle") {
