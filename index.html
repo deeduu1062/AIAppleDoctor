@@ -4263,13 +4263,14 @@ document.addEventListener("click", e => {
 /* Add expense from the Orchard Record: pick the orchard first, then the expense (saved the same way as on Sales/Profit > Expenses) */
 let dashExp = false, dashExpO = "", dashExpMsg = "";
 function dashExpHtml() {
+  const inOrch = !!(dashView && otab === "work" && S.orchards.some(x => x.id === dashView));
   const kinds = EXP_KINDS.slice(), eo = dashExpEdit ? S.orchards.find(x => x.id === dashExpO) : null, E = eo ? (eo.diary || []).find(x => x.id === dashExpEdit) : null;
   if (dashExpEdit && !E) dashExpEdit = null;
   const V = E || {date: todayIso(), kind: "", cost: "", text: "", stage: ""};
   if (V.kind && kinds.indexOf(V.kind) < 0) kinds.push(V.kind);
   return '<form class="dform dexform" id="dexForm"><h5 class="wide">' + tr(E ? "kx_edit" : "ex_add") + "</h5>" +
-    '<div class="field wide"><label for="dx_orch">' + tr("lbl_orchard") + '</label><select id="dx_orch"><option value="">' + tr("dx_pick") + "</option>" +
-      S.orchards.map(o => '<option value="' + esc(o.id) + '"' + (o.id === dashExpO ? " selected" : "") + ">" + esc(o.name || tr("orchard_fallback")) + "</option>").join("") + "</select></div>" +
+    (inOrch ? '<input type="hidden" id="dx_orch" value="' + esc(dashView) + '">' : '<div class="field wide"><label for="dx_orch">' + tr("lbl_orchard") + '</label><select id="dx_orch"><option value="">' + tr("dx_pick") + "</option>" +
+      S.orchards.map(o => '<option value="' + esc(o.id) + '"' + (o.id === dashExpO ? " selected" : "") + ">" + esc(o.name || tr("orchard_fallback")) + "</option>").join("") + "</select></div>") +
     '<div class="field"><label for="dx_date">' + tr("dy_date") + '</label><input id="dx_date" type="date" value="' + esc(V.date) + '"></div>' +
     '<div class="field"><label for="dx_kind">' + tr("ex_cat") + '</label><select id="dx_kind"><option value="">' + tr("dy_pick") + "</option>" +
       kinds.map(k => '<option value="' + k + '"' + (k === V.kind ? " selected" : "") + ">" + tr("dk_" + k) + "</option>").join("") + "</select></div>" +
@@ -4282,7 +4283,7 @@ function dashExpHtml() {
 }
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-dex]"); if (!b) return;
-  if (b.dataset.dex === "open") { dashExp = true; dashAdd = false; dashExpMsg = ""; dashExpEdit = null; if (S.orchards.length === 1) dashExpO = S.orchards[0].id; if (b.dataset.o) dashExpO = b.dataset.o; else if (otab === "work") otab = "det"; renderDash(); const o = $("dx_orch"); if (o) o.focus(); }
+  if (b.dataset.dex === "open") { dashExp = true; dashAdd = false; dashExpMsg = ""; dashExpEdit = null; if (S.orchards.length === 1) dashExpO = S.orchards[0].id; if (b.dataset.o) dashExpO = b.dataset.o; else if (otab === "work") otab = "det"; renderDash(); const o = $("dx_orch"); if (o && o.type !== "hidden") o.focus(); else { const k = $("dx_kind"); if (k) k.focus(); } }
   else { dashExp = false; dashExpMsg = ""; dashExpEdit = null; renderDash(); }
 });
 document.addEventListener("change", e => {
