@@ -3719,6 +3719,7 @@ function lineHtml(n) {
 }
 /* Season Profit: one table per orchard, every lot in it, Lot column on the left */
 let lotEditId = null;
+Object.assign(T.en, { ex_sofar:"Expenses so far" }); Object.assign(T.hi, { ex_sofar:"अब तक ख़र्च" }); Object.assign(T.hn, { ex_sofar:"Ab tak kharcha" });
 Object.assign(T.en, { lm_add:"Add type", lm_up:"Up", lm_down:"Down" }); Object.assign(T.hi, { lm_add:"टाइप जोड़ें", lm_up:"ऊपर", lm_down:"नीचे" }); Object.assign(T.hn, { lm_add:"Type jodein", lm_up:"Upar", lm_down:"Neeche" });
 Object.assign(T.en, { lot_edit:"Edit lot", lot_taphint:"Tap an entry to change or delete it.", ne_del_e:"Delete this entry" }); Object.assign(T.hi, { lot_edit:"लॉट बदलें", lot_taphint:"बदलने या हटाने के लिए एंट्री पर दबाएँ।", ne_del_e:"यह एंट्री हटाएँ" }); Object.assign(T.hn, { lot_edit:"Lot badlein", lot_taphint:"Badalne ya delete karne ke liye entry par dabayein.", ne_del_e:"Ye entry delete karein" });
 function orchLotsTable(se, only) {
@@ -4545,7 +4546,7 @@ function otKharchHtml(o) {
   h += '<div class="ylist figrows kxlist">' + ys.map(y => {
     const r = expRowsFor(o, y), open = y === openY;
     return '<div class="yrow' + (open ? " open" : "") + '" id="kxy-' + y + '"><button class="yhead" type="button" data-kxt="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + '</span><span class="yfigs three">' +
-      yfig(tr("ex_total"), mny(r.total), "ynet exn") + yfig(tr("ex_entries"), fmtN(r.rows.length)) + yfig(tr("m_pt"), trees ? inr(r.total / trees) : "–") + '</span><span class="ychev" aria-hidden="true"></span></button>' +
+      yfig(tr(y >= curY ? "ex_sofar" : "ex_total"), mny(r.total), "ynet exn") + yfig(tr("ex_entries"), fmtN(r.rows.length)) + yfig(tr("m_pt"), trees ? inr(r.total / trees) : "–") + '</span><span class="ychev" aria-hidden="true"></span></button>' +
       (open ? '<div class="ybody">' + kxYearHtml(o, y, y === curY) + "</div>" : "") + "</div>";
   }).join("") + "</div>";
   return h + '<p class="xhmore"><button class="btn-s" type="button" data-xhedit="' + openY + '" data-o="' + esc(o.id) + '">' + tr("xh_all") + "</button></p></section>";
@@ -5454,7 +5455,7 @@ function renderExpList() {
     const d = data[y], open = exOpen.has(y);
     const ent = tr(d.ents === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(d.ents));
     const top = Object.keys(d.cat).sort((a, b) => d.cat[b] - d.cat[a])[0];
-    const who = !d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent);
+    const who = y >= curHYear() ? tr("ex_sofar") : !d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent);
     h += '<div class="yrow' + (open ? " open" : "") + '" id="exy-' + y + '"><button class="yhead" type="button" data-exact="ytoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
       '<span class="yy">' + y + '</span><span class="yfigs three exfigs">' + yfig(tr("ex_when"), tr("hy_range2").replace("{a}", y - 1).replace("{b}", y), "ytext ywhen") +
       yfig(tr("ex_top"), top ? tr("dk_" + top) + " " + inr(d.cat[top]) : "–", "ytext") +
@@ -5473,7 +5474,7 @@ function renderExpList() {
           (t.lump ? ", " + tr("ex_pluslump").replace("{x}", inr(t.lump)) : "");
         const ok = spoKey(o.id, y), oopen = exoOpen.has(ok) || !!(exEdit && t.ents.some(e => e.id === exEdit));
         h += '<section class="spo exo yrow orow' + (oopen ? " open" : "") + '" id="exo-' + esc(o.id) + "-" + y + '"><button class="yhead" type="button" data-exact="otoggle" data-o="' + esc(o.id) + '" data-y="' + y + '" aria-expanded="' + oopen + '">' +
-          '<span class="oname">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs three">' + yfig(tr("ex_total"), mny(t.total), "ynet exn", ' data-exot="1"') + yfig(tr("ex_entries"), fmtN(t.ents.length)) +
+          '<span class="oname">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs three">' + yfig(tr(y >= curHYear() ? "ex_sofar" : "ex_total"), mny(t.total), "ynet exn", ' data-exot="1"') + yfig(tr("ex_entries"), fmtN(t.ents.length)) +
           yfig(tr("m_pt"), trees ? inr(t.total / trees) : "–") + '</span><span class="ychev" aria-hidden="true"></span></button>';
         if (!oopen) { h += "</section>"; return; }
         h += '<div class="obody">' + (om ? '<p class="ymeta">' + om + "</p>" : "");
