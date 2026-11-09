@@ -163,6 +163,12 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .cobox{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .cobox h5{margin:0 0 6px}
 .cobox p{margin:4px 0}
+.ubar{display:grid;grid-template-columns:minmax(8rem,12rem) minmax(0,1fr) auto;gap:10px;align-items:center;margin:6px 0;font-size:.92rem}
+.ubar .tr{height:10px;border-radius:5px;background:var(--line);overflow:hidden}.ubar .tr i{display:block;height:100%;background:var(--good);border-radius:5px}
+.ubar .tr i.warn{background:#E09A1A}.ubar .tr i.bad{background:var(--bad)}
+.ubar b{font:600 .9rem var(--mono);white-space:nowrap}
+.cobox .models{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;color:var(--muted)}
+.cobox .live{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good);margin-left:6px;vertical-align:2px}
 td.wrapn{white-space:normal!important;min-width:14rem;max-width:24rem;font-size:.86rem!important;color:var(--muted);line-height:1.4}
 .admfind{max-width:340px;margin-top:18px}
 .fbadm{margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
@@ -1464,6 +1470,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <p class="fine" data-i18n="co_p"></p>
         <p class="autherr" id="coErr" role="alert"></p>
         <div class="ystats" id="coStats"></div>
+        <div id="coLive"></div>
         <div id="coAi"></div>
         <div id="coList"></div>
       </section>
@@ -1551,6 +1558,6 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </main>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=7"></script>
+<script src="/admin.js?v=8"></script>
 </body>
 </html>

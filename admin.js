@@ -1005,7 +1005,8 @@ document.addEventListener("change", async e => {
 /* ---------- Costs tab: running costs list (admin_costs table) + AI usage estimate for this month ---------- */
 /* worst-case AI cost per use, in rupees (Sonnet photo check: 3 photos + longest answer; Haiku question: full guides + longest answer), at about ₹85 to the dollar */
 const AI_PHOTO_INR = 1.9, AI_Q_INR = 0.35;
-let CO = null, coBusy = false, coEdit = null, coAi = null, coPay = null;
+let CO = null, coBusy = false, coEdit = null, coAi = null, coPay = null, coLive = null, coDb = null;
+const USD_INR = 85;   /* rough rupees per dollar for showing AI spend */
 const coMonthly = x => x.amount_inr == null ? 0 : x.per === "year" ? x.amount_inr / 12 : x.per === "once" ? 0 : x.amount_inr;
 async function loadCosts() {
   if (!isAdmin() || !sb || coBusy) return;
@@ -1020,23 +1021,62 @@ async function loadCosts() {
   try { coAi.photos = await ovCount("diagnoses", q => q.gte("created_at", ms)); } catch (x) {}
   try { coAi.qs = await ovCount("chat_messages", q => q.eq("role", "user").gte("created_at", ms)); } catch (x) {}
   try { const r = await sb.from("payments").select("plan,period,amount,status,valid_until,created_at,user_id,email").limit(10000); coPay = r.error ? null : (r.data || []); } catch (x) { coPay = null; }
+  coLive = null; coDb = null;
+  try {
+    const s = await sb.auth.getSession(), tok = s && s.data && s.data.session ? s.data.session.access_token : "";
+    const r = await fetch("/api/admin-usage", { headers: { Authorization: "Bearer " + tok } });
+    coLive = r.ok ? await r.json() : { error: "HTTP " + r.status };
+  } catch (x) { coLive = { error: String(x.message || x) }; }
+  try { const r = await sb.rpc("admin_usage"); coDb = r.error ? { error: r.error } : r.data; } catch (x) { coDb = { error: x }; }
   coBusy = false; $("coRefresh").disabled = false;
   renderCosts();
+}
+function renderLive() {
+  const el = $("coLive"); if (!el) return;
+  const A = coLive && coLive.ai, usd = n => "$" + (+n || 0).toFixed(2), inr = n => paRup(Math.round((+n || 0) * USD_INR));
+  let ai = '<div class="cobox"><h5>' + tr("li_ai_h") + (A && A.setup && !A.error ? '<span class="live">' + tr("li_live") + "</span>" : "") + "</h5>";
+  if (!coLive) ai += '<p class="fine">' + tr("li_loading") + "</p>";
+  else if (coLive.error) ai += '<p class="fine">' + esc(tr("li_ai_err").replace("{m}", coLive.error)) + "</p>";
+  else if (!A || !A.setup) ai += "<p>" + tr("li_ai_setup") + "</p>";
+  else if (A.error) ai += '<p class="autherr">' + esc(tr("li_ai_err").replace("{m}", A.error)) + "</p>";
+  else {
+    const mods = Object.keys(A.by_model || {}).filter(k => A.by_model[k] > 0).sort((a, b) => A.by_model[b] - A.by_model[a]);
+    ai += "<p><b>" + tr("li_month") + ": " + usd(A.month_usd) + " ≈ " + inr(A.month_usd) + "</b> · " + tr("li_today") + ": " + usd(A.today_usd) + " ≈ " + inr(A.today_usd) + "</p>" +
+      (mods.length ? '<div class="models">' + mods.map(k => "<span>" + esc(k.replace(/^claude-/, "")) + ": " + usd(A.by_model[k]) + "</span>").join("") + "</div>" : "") +
+      '<p class="fine">' + tr("li_ai_note").replace("{r}", USD_INR) + "</p>";
+  }
+  ai += "</div>";
+  const D = coDb;
+  let db = '<div class="cobox"><h5>' + tr("li_db_h") + (D && !D.error ? '<span class="live">' + tr("li_live") + "</span>" : "") + "</h5>";
+  if (!D) db += '<p class="fine">' + tr("li_loading") + "</p>";
+  else if (D.error) db += "<p>" + tr("li_db_setup") + "</p>";
+  else {
+    const mb = b => (b / 1048576 < 10 ? (b / 1048576).toFixed(1) : Math.round(b / 1048576)) + " MB";
+    const bar = (lab, used, max, txt) => { const p = Math.min(100, used / max * 100); return '<div class="ubar"><span>' + lab + '</span><span class="tr"><i class="' + (p >= 90 ? "bad" : p >= 70 ? "warn" : "") + '" style="width:' + Math.max(1, p).toFixed(1) + '%"></i></span><b>' + txt + "</b></div>"; };
+    db += bar(tr("li_db_size"), +D.db_bytes || 0, 500 * 1048576, mb(+D.db_bytes || 0) + " / 500 MB") +
+      bar(tr("li_users"), +D.users || 0, 50000, fmtN(+D.users || 0) + " / 50,000") +
+      bar(tr("li_files"), +D.storage_bytes || 0, 1024 * 1048576, mb(+D.storage_bytes || 0) + " / 1 GB") +
+      '<p class="fine">' + tr("li_db_note").replace("{n}", fmtN(+D.users_30d || 0)) + "</p>";
+  }
+  el.innerHTML = ai + db;
 }
 function renderCosts() {
   if (!$("coList")) return;
   const today = new Date().toISOString().slice(0, 10), ym = today.slice(0, 7);
   const fixed = (CO || []).reduce((s, x) => s + coMonthly(x), 0);
-  const ai = coAi ? (coAi.photos || 0) * AI_PHOTO_INR + (coAi.qs || 0) * AI_Q_INR : 0;
+  const aiEst = coAi ? (coAi.photos || 0) * AI_PHOTO_INR + (coAi.qs || 0) * AI_Q_INR : 0;
+  const L = coLive && coLive.ai && coLive.ai.setup && !coLive.ai.error && coLive.ai.month_usd != null ? coLive.ai : null;
+  const ai = L ? L.month_usd * USD_INR : aiEst;
   const P = coPay || [], ok = P.filter(x => x.status === "approved");
   const live = {}; ok.filter(x => !x.valid_until || x.valid_until >= today).forEach(x => { const k = x.user_id || x.email; if (!live[k] || String(x.valid_until) > String(live[k].valid_until)) live[k] = x; });
   const income = Object.keys(live).reduce((s, k) => s + perMonth(live[k]), 0);
   const cash = ok.filter(x => String(x.created_at).slice(0, 7) === ym).reduce((s, x) => s + (+x.amount || 0), 0);
   const net = income - fixed - ai;
   const st = (k, v, cls) => "<div" + (cls ? ' class="' + cls + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b></div>";
-  $("coStats").innerHTML = st("co_s_fixed", paRup(Math.round(fixed)), "main") + st("co_s_ai", "≤ " + paRup(Math.round(ai))) +
+  $("coStats").innerHTML = st("co_s_fixed", paRup(Math.round(fixed)), "main") + (L ? st("co_s_ai_real", paRup(Math.round(ai))) : st("co_s_ai", "≤ " + paRup(Math.round(ai)))) +
     st("co_s_income", paRup(Math.round(income)), "pos") + st("co_s_net", (net < 0 ? "−" : "") + paRup(Math.abs(Math.round(net))), net < 0 ? "neg" : "pos") + st("co_s_cash", paRup(cash));
   const avg = Object.keys(live).length ? income / Object.keys(live).length : 299 / 12;
+  renderLive();
   $("coAi").innerHTML = '<div class="cobox"><h5>' + tr("co_ai_h") + "</h5>" +
     "<p>" + tr("co_ai_photo").replace("{n}", coAi && coAi.photos != null ? fmtN(coAi.photos) : "–").replace("{x}", paRup(AI_PHOTO_INR)).replace("{t}", paRup(Math.round((coAi && coAi.photos || 0) * AI_PHOTO_INR))) + "</p>" +
     "<p>" + tr("co_ai_q").replace("{n}", coAi && coAi.qs != null ? fmtN(coAi.qs) : "–").replace("{x}", paRup(AI_Q_INR)).replace("{t}", paRup(Math.round((coAi && coAi.qs || 0) * AI_Q_INR))) + "</p>" +
@@ -1095,6 +1135,20 @@ if ($("coRefresh")) {
   $("coRefresh").addEventListener("click", loadCosts);
   $("coAdd").addEventListener("click", () => { coEdit = "new"; renderCosts(); const i = document.querySelector('[data-coform=""] input'); if (i) i.focus(); });
 }
+Object.assign(T.en, { co_s_ai_real: "AI this month (actual)", li_live: "LIVE", li_loading: "Loading…",
+  li_ai_h: "AI spend (Anthropic)", li_month: "This month", li_today: "Today",
+  li_ai_setup: "Not connected yet. Make an Admin key in console.anthropic.com → Settings → Admin keys, then add it in Vercel → Settings → Environment Variables as ANTHROPIC_ADMIN_KEY and redeploy. Until then the estimate below is used.",
+  li_ai_err: "Could not read AI spend: {m}", li_ai_note: "From Anthropic's cost report (daily figures, can lag a few hours). Rupees at about ₹{r} to the dollar.",
+  li_db_h: "Supabase usage (Free plan limits)", li_db_size: "Database size", li_users: "Growers signed up", li_files: "Photos and files",
+  li_db_setup: "Not set up yet. In Supabase → SQL Editor, run supabase/admin_usage.sql once, then press Refresh.",
+  li_db_note: "{n} growers signed in during the last 30 days. Bars turn orange at 70% and red at 90%: that is the time to move to Supabase Pro." });
+Object.assign(T.hi, { co_s_ai_real: "इस महीने AI (असली)", li_live: "LIVE", li_loading: "लोड हो रहा है…",
+  li_ai_h: "AI ख़र्च (Anthropic)", li_month: "इस महीने", li_today: "आज",
+  li_ai_setup: "अभी जुड़ा नहीं है। console.anthropic.com → Settings → Admin keys में Admin key बनाएँ, फिर Vercel → Settings → Environment Variables में ANTHROPIC_ADMIN_KEY नाम से जोड़ें और redeploy करें। तब तक नीचे का अनुमान दिखेगा।",
+  li_ai_err: "AI ख़र्च नहीं पढ़ सके: {m}", li_ai_note: "Anthropic की cost report से (रोज़ के आँकड़े, कुछ घंटे देर से)। रुपये लगभग ₹{r} प्रति डॉलर।",
+  li_db_h: "Supabase उपयोग (Free प्लान की सीमा)", li_db_size: "डेटाबेस का आकार", li_users: "जुड़े बाग़वान", li_files: "फ़ोटो और फ़ाइलें",
+  li_db_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_usage.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
+  li_db_note: "पिछले 30 दिनों में {n} बाग़वानों ने लॉग इन किया। 70% पर पट्टी नारंगी और 90% पर लाल होती है: तब Supabase Pro पर जाएँ।" });
 Object.assign(T.en, { adm_t_cost: "Costs", co_h: "Running costs", co_add: "+ Add cost",
   co_p: "Everything Seb Saathi costs to run, and how it compares with what subscriptions bring in. Edit any row when a plan or price changes.",
   co_err_setup: "The costs list is not set up yet. In Supabase → SQL Editor, run supabase/admin_costs.sql once, then press Refresh.",
