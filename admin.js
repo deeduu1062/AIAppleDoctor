@@ -764,7 +764,7 @@ function renderPayAdmin() {
   const rows = paShow === "pending" ? pend : all;
   const head = ["pa_c_status", "pa_c_when", "pa_c_from", "pa_c_plan", "pa_c_amt", "pa_c_utr", "pa_c_until", "pa_c_by"];
   $("paList").innerHTML = !rows.length ? '<p class="empty">' + tr("pa_none") + "</p>" :
-    '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col"' + (k === "pa_c_amt" ? ' class="n"' : "") + ">" + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
     rows.map(x => {
       const sel = '<td class="fbst"><select class="pa-' + esc(x.status) + '" data-pa="' + esc(x.id) + '" aria-label="' + tr("pa_c_status") + '">' +
         ["pending", "approved", "rejected"].map(s => '<option value="' + s + '"' + (x.status === s ? " selected" : "") + ">" + tr("pa_st_" + s) + "</option>").join("") + "</select></td>";
@@ -979,12 +979,12 @@ function renderSubs() {
   const head = ["sb_c_st", "pa_c_from", "pa_c_plan", "sb_c_start", "pa_c_until", "sb_c_left", "sb_c_paid", "sb_c_ext"];
   $("paList").innerHTML = '<div class="sbfilt">' + ["all", "active", "soon", "expired", "pending"].map(f => '<button class="btn-s" type="button" data-sbf="' + f + '" aria-pressed="' + (sbFilt === f) + '">' + tr("sb_f_" + f) + "</button>").join("") + "</div>" +
     (!rows.length ? '<p class="empty">' + tr("pa_none") + "</p>" :
-    '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col"' + (k === "sb_c_left" || k === "sb_c_paid" ? ' class="n"' : "") + ">" + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
     rows.map(r => {
       const c = r.cur;
       return "<tr><td>" + chip(r) + (r.pend ? '<br><span class="fine">' + tr("sb_pend_n").replace("{n}", r.pend) + "</span>" : "") + "</td><td>" + esc(r.email) + "</td>" +
         "<td>" + (c ? plName(c.plan) + '<br><span class="fine">' + tr(c.period === "year" ? "pay_year" : "pay_month") + "</span>" : "–") + "</td>" +
-        "<td>" + (r.first ? paDate(r.first) : "–") + "</td><td>" + (c && c.valid_until ? paDay(c.valid_until) : "–") + "</td>" +
+        "<td>" + (r.first ? paDay(String(r.first).slice(0, 10)) : "–") + "</td><td>" + (c && c.valid_until ? paDay(c.valid_until) : "–") + "</td>" +
         '<td class="n">' + (r.left == null ? "–" : r.left < 0 ? tr("sb_ago").replace("{n}", fmtN(-r.left)) : tr("sb_days").replace("{n}", fmtN(r.left))) + "</td>" +
         '<td class="n">' + paRup(r.paid) + (r.n > 1 ? '<br><span class="fine">' + tr("sb_npay").replace("{n}", r.n) + "</span>" : "") + "</td>" +
         "<td>" + (c ? '<input type="date" value="' + esc(c.valid_until || "") + '" data-sbext="' + esc(c.id) + '" aria-label="' + esc(tr("sb_c_ext")) + '">' : "–") + "</td></tr>";
@@ -1055,7 +1055,7 @@ function renderCosts() {
     (x.id ? '<button class="btn-s danger" type="button" data-coact="del" data-id="' + esc(x.id) + '">' + tr("co_del") + "</button>" : "") + "</div></form>";
   const soon = d => d && d >= today && (new Date(d) - new Date(today)) / 864e5 <= 30;
   $("coList").innerHTML = (coEdit === "new" ? form({}) : "") + '<div class="tablewrap"><table class="ledger"><thead><tr>' +
-    ["co_c_service", "co_c_plan", "co_c_amt", "co_c_month", "co_c_renew", "co_c_note", ""].map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
+    ["co_c_service", "co_c_plan", "co_c_amt", "co_c_month", "co_c_renew", "co_c_note", ""].map(k => '<th scope="col"' + (k === "co_c_amt" || k === "co_c_month" ? ' class="n"' : "") + ">" + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
     CO.map(x => coEdit === x.id ? '<tr><td colspan="7">' + form(x) + "</td></tr>" :
       "<tr><td><b>" + esc(x.service) + "</b>" + (x.what_for ? '<br><span class="fine">' + esc(x.what_for) + "</span>" : "") + "</td><td>" + esc(x.plan || "–") + "</td>" +
       '<td class="n">' + (x.amount_inr == null ? "–" : paRup(x.amount_inr) + '<br><span class="fine">' + tr("co_per_" + x.per) + "</span>") + "</td>" +

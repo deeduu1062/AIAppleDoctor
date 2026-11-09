@@ -163,7 +163,7 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .cobox{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .cobox h5{margin:0 0 6px}
 .cobox p{margin:4px 0}
-td.wrapn{white-space:normal;min-width:14rem;max-width:26rem;font-size:.88rem;color:var(--muted)}
+td.wrapn{white-space:normal!important;min-width:14rem;max-width:24rem;font-size:.86rem!important;color:var(--muted);line-height:1.4}
 .admfind{max-width:340px;margin-top:18px}
 .fbadm{margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
 .fbadm h4{font-family:var(--display);font-size:1.25rem;margin:0}
@@ -360,6 +360,17 @@ table.ledger{border-collapse:collapse;width:100%;min-width:420px;font-variant-nu
 .ledger tfoot th,.ledger tfoot td{border-top:2px solid var(--line);border-bottom:0;color:var(--fg)}
 .ledger tfoot th{font-weight:700}
 .ledger .pos{color:var(--good)}.ledger .neg{color:var(--bad)}.ledger .none{color:var(--muted)}
+/* tidier admin tables: tinted header, light stripes, hover; text left, numbers right */
+.ledger thead th{background:color-mix(in srgb,var(--apple) 8%,var(--surface));color:var(--fg);font-size:.82rem;letter-spacing:.01em;padding-top:10px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+.ledger tbody tr:nth-child(even) > *{background:color-mix(in srgb,var(--line) 20%,transparent)}
+.ledger tbody tr:hover > *{background:color-mix(in srgb,var(--good) 7%,var(--surface))}
+.ledger tbody tr:last-child > *{border-bottom:0}
+#paList .ledger th,#paList .ledger td,#coList .ledger th,#coList .ledger td{text-align:left;font-family:var(--body);vertical-align:top;font-size:.93rem;padding:10px 12px}
+#paList .ledger .n,#coList .ledger .n{text-align:right;font-family:var(--mono)}
+#paList .ledger td .fine,#coList .ledger td .fine{display:inline-block;margin-top:2px;font-size:.8rem;color:var(--muted)}
+#paList .ledger td b,#coList .ledger td b{font-weight:600}
+#coList .ledger td:last-child,#coList .ledger th:last-child{text-align:right;width:1%}
+#paList input[type=date]{font:500 .88rem var(--body);padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
 .ybars{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
 .ybars li{display:grid;grid-template-columns:3.4rem minmax(0,1fr) auto;gap:12px;align-items:center}
 .ybars .yl{font:500 .95rem var(--mono)}
@@ -1540,6 +1551,6 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </main>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=6"></script>
+<script src="/admin.js?v=7"></script>
 </body>
 </html>
