@@ -1425,6 +1425,17 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.olotsec{display:grid;gap:6px}
+.olot{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 12px}
+.olot summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px 0;cursor:pointer;list-style:none}
+.olot .olx{display:grid;gap:2px;min-width:0}
+.olot summary::-webkit-details-marker{display:none}
+.olot summary::after{content:"▾";color:var(--muted)}
+.olot[open] summary::after{content:"▴"}
+.olot .olf{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.olot .olf b.pos{color:var(--good)}.olot .olf b.neg{color:var(--bad)}
+.olot .tablewrap{margin:0 0 10px}
+.olot table.ledger.sm{width:100%;min-width:0}.olot .ledger.sm th,.olot .ledger.sm td{padding:6px 6px;white-space:normal}
 html.booting body > *:not(script){visibility:hidden}
 html.booting body::after{content:"";position:fixed;top:42%;left:50%;width:38px;height:38px;margin-left:-19px;border:4px solid var(--line);border-top-color:var(--apple);border-radius:50%;animation:bootspin .8s linear infinite}
 @keyframes bootspin{to{transform:rotate(360deg)}}
@@ -3896,6 +3907,21 @@ function profileHtml(o) {
   return (f.length ? '<dl class="pfacts">' + f.join("") + "</dl>" : "") + (f.length < 4 ? '<p class="hint">' + tr("o_noprof") + "</p>" : "");
 }
 
+Object.assign(T.en, { ol_pb:"{x} a box", ol_rate:"Rate" }); Object.assign(T.hi, { ol_pb:"{x} प्रति पेटी", ol_rate:"भाव" }); Object.assign(T.hn, { ol_pb:"{x} per peti", ol_rate:"Bhaav" });
+/* the orchard's lots for one harvest year (read-only; edit them in Season sales record) */
+function oLotsHtml(se) {
+  const lots = se.lots.filter(l => l.lines.some(n => +n.boxes));
+  if (!lots.length) return "";
+  const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
+  return '<section class="osec olotsec"><h4>' + tr("lots_h") + " (" + lots.length + ")</h4>" + lots.map(l => {
+    const i = se.lots.indexOf(l), c = lotCalc(l), lines = l.lines.filter(n => +n.boxes);
+    return '<details class="olot"><summary><span class="olx"><span class="oln"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : " · " + esc(l.name)) + "</span>" +
+      '<span class="olf">' + tr("k_ofb2").replace("{n}", fmtN(c.b)) + ' · <b class="' + (c.net < 0 ? "neg" : "pos") + '">' + inr(c.net) + "</b> · " + tr("ol_pb").replace("{x}", inr(c.nppb)) + "</span></span></summary>" +
+      '<div class="tablewrap"><table class="ledger sm"><thead><tr><th scope="col">' + tr("gt_grade") + '</th><th scope="col">' + tr("f_boxes") + '</th><th scope="col">' + tr("ol_rate") + '</th><th scope="col">' + tr("ls_net") + "</th></tr></thead><tbody>" +
+      lines.map(n => { const x = lineCalc(n); return "<tr><td>" + esc(gname(n.grade)) + "</td><td>" + fmtN(x.b) + "</td><td>" + inr(+n.rate || 0) + '</td><td class="' + (x.net < 0 ? "neg" : "pos") + '">' + inr(x.net) + "</td></tr>"; }).join("") +
+      "</tbody></table></div></details>";
+  }).join("") + "</section>";
+}
 function insightsHtml(o, Y) {
   const se = seFor(o.id, Y), trees = +o.trees;
   let h = "";
@@ -3908,7 +3934,7 @@ function insightsHtml(o, Y) {
     h += '<div class="ystats">' + tile("k_net", inr(r.profit), "main " + dcls(r.profit)) +
       tile("k_npt", trees ? inr(r.profit / trees) : "–", "", trees ? "" : noT) + tile("k_bpt", trees ? fmtD(r.boxes / trees) : "–", "", trees ? "" : noT) +
       tile("k_avg", inr(r.boxes ? r.rev / r.boxes : 0)) + tile("k_ash", pct(g.a.b, r.boxes), "", tr("k_ofb").replace("{n}", fmtN(g.a.b)).replace("{m}", fmtN(r.boxes))) +
-      tile("k_due", inr(r.due)) + "</div>" +
+      tile("k_due", inr(r.due)) + "</div>" + oLotsHtml(se) +
       '<p class="osales"><button class="link" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("o_fullsales") + "</button></p>";
   }
   // season timeline from the diary
