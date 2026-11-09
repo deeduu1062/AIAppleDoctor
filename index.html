@@ -1446,6 +1446,7 @@ details.dsec > summary h4{display:inline}
 .rcdiary li.k-dk_irrig{border-left-color:#3AA0B0}
 .rcdiary li.k-dk_tools,.rcdiary li.k-dk_repair{border-left-color:#7A7A7A}
 .rcdiary li.k-dk_hail,.rcdiary li.k-dk_snow,.rcdiary li.k-dk_rain,.rcdiary li.k-dk_drought{border-left-color:var(--bad)}
+.kxacts{display:flex;gap:14px;font-size:.85rem;margin-top:2px}
 .kxtot{display:flex;justify-content:space-between;gap:10px;margin:2px 0 0;padding-top:8px;border-top:1px solid var(--line);font-size:.92rem}
 .kxtot span{color:var(--muted)}.kxtot b{font:600 1rem var(--mono)}
 .dethead{display:flex;justify-content:flex-start;align-items:center;gap:14px;flex-wrap:wrap}
@@ -4259,24 +4260,27 @@ document.addEventListener("click", e => {
 /* Add expense from the Orchard Record: pick the orchard first, then the expense (saved the same way as on Sales/Profit > Expenses) */
 let dashExp = false, dashExpO = "", dashExpMsg = "";
 function dashExpHtml() {
-  const kinds = EXP_KINDS.slice();
-  return '<form class="dform dexform" id="dexForm"><h5 class="wide">' + tr("ex_add") + "</h5>" +
+  const kinds = EXP_KINDS.slice(), eo = dashExpEdit ? S.orchards.find(x => x.id === dashExpO) : null, E = eo ? (eo.diary || []).find(x => x.id === dashExpEdit) : null;
+  if (dashExpEdit && !E) dashExpEdit = null;
+  const V = E || {date: todayIso(), kind: "", cost: "", text: "", stage: ""};
+  if (V.kind && kinds.indexOf(V.kind) < 0) kinds.push(V.kind);
+  return '<form class="dform dexform" id="dexForm"><h5 class="wide">' + tr(E ? "kx_edit" : "ex_add") + "</h5>" +
     '<div class="field wide"><label for="dx_orch">' + tr("lbl_orchard") + '</label><select id="dx_orch"><option value="">' + tr("dx_pick") + "</option>" +
       S.orchards.map(o => '<option value="' + esc(o.id) + '"' + (o.id === dashExpO ? " selected" : "") + ">" + esc(o.name || tr("orchard_fallback")) + "</option>").join("") + "</select></div>" +
-    '<div class="field"><label for="dx_date">' + tr("dy_date") + '</label><input id="dx_date" type="date" value="' + esc(todayIso()) + '"></div>' +
+    '<div class="field"><label for="dx_date">' + tr("dy_date") + '</label><input id="dx_date" type="date" value="' + esc(V.date) + '"></div>' +
     '<div class="field"><label for="dx_kind">' + tr("ex_cat") + '</label><select id="dx_kind"><option value="">' + tr("dy_pick") + "</option>" +
-      kinds.map(k => '<option value="' + k + '">' + tr("dk_" + k) + "</option>").join("") + "</select></div>" +
-    '<div class="field"><label for="dx_cost">' + tr("ex_amt") + '</label><input id="dx_cost" type="number" inputmode="decimal" min="0" step="any"></div>' +
-    '<div class="field" id="dx_stagewrap" hidden><label for="dx_stage">' + tr("dy_stage") + '</label><select id="dx_stage"><option value="">–</option>' +
-      [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '">' + tr("st" + i) + "</option>").join("") + "</select></div>" +
-    '<div class="field wide"><label for="dx_text">' + tr("ex_det") + '</label><input id="dx_text" type="text" maxlength="200" placeholder="' + esc(tr("ex_det_ph")) + '"></div>' +
+      kinds.map(k => '<option value="' + k + '"' + (k === V.kind ? " selected" : "") + ">" + tr("dk_" + k) + "</option>").join("") + "</select></div>" +
+    '<div class="field"><label for="dx_cost">' + tr("ex_amt") + '</label><input id="dx_cost" type="number" inputmode="decimal" min="0" step="any" value="' + esc(+V.cost ? V.cost : "") + '"></div>' +
+    '<div class="field" id="dx_stagewrap"' + (V.kind === "spray" ? "" : " hidden") + '><label for="dx_stage">' + tr("dy_stage") + '</label><select id="dx_stage"><option value="">–</option>' +
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '"' + ("st" + i === V.stage ? " selected" : "") + ">" + tr("st" + i) + "</option>").join("") + "</select></div>" +
+    '<div class="field wide"><label for="dx_text">' + tr("ex_det") + '</label><input id="dx_text" type="text" maxlength="200" placeholder="' + esc(tr("ex_det_ph")) + '" value="' + esc(V.text || "") + '"></div>' +
     '<p class="autherr wide" id="dx_err" role="alert"></p><p class="okmsg wide" id="dx_ok" role="status">' + esc(dashExpMsg) + "</p>" +
-    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("ex_add") + '</button><button class="btn-s" type="button" data-dex="close">' + tr(dashExpMsg ? "dx_close" : "d_cancel") + "</button></div></form>";
+    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr(E ? "kx_save" : "ex_add") + '</button><button class="btn-s" type="button" data-dex="close">' + tr(dashExpMsg ? "dx_close" : "d_cancel") + "</button></div></form>";
 }
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-dex]"); if (!b) return;
-  if (b.dataset.dex === "open") { dashExp = true; dashAdd = false; dashExpMsg = ""; if (S.orchards.length === 1) dashExpO = S.orchards[0].id; if (b.dataset.o) dashExpO = b.dataset.o; else if (otab === "work") otab = "det"; renderDash(); const o = $("dx_orch"); if (o) o.focus(); }
-  else { dashExp = false; dashExpMsg = ""; renderDash(); }
+  if (b.dataset.dex === "open") { dashExp = true; dashAdd = false; dashExpMsg = ""; dashExpEdit = null; if (S.orchards.length === 1) dashExpO = S.orchards[0].id; if (b.dataset.o) dashExpO = b.dataset.o; else if (otab === "work") otab = "det"; renderDash(); const o = $("dx_orch"); if (o) o.focus(); }
+  else { dashExp = false; dashExpMsg = ""; dashExpEdit = null; renderDash(); }
 });
 document.addEventListener("change", e => {
   if (e.target && e.target.id === "dx_kind") { const w = $("dx_stagewrap"); if (w) w.hidden = e.target.value !== "spray"; }
@@ -4289,7 +4293,15 @@ document.addEventListener("submit", e => {
   if (!o) { set("dx_err", tr("dx_err")); $("dx_orch").focus(); return; }
   const date = $("dx_date").value, kind = $("dx_kind").value, cost = numOf($("dx_cost").value);
   if (!date || !kind || !cost) { set("dx_err", tr("ex_err")); return; }
-  const entry = {id: newId(), date: date, kind: kind, cost: cost, text: $("dx_text").value.trim(), stage: kind === "spray" ? $("dx_stage").value : ""};
+  const entry = {id: dashExpEdit || newId(), date: date, kind: kind, cost: cost, text: $("dx_text").value.trim(), stage: kind === "spray" ? $("dx_stage").value : ""};
+  if (dashExpEdit) {
+    let old = null;
+    S.orchards.forEach(x => { const f2 = (x.diary || []).find(d => d.id === entry.id); if (f2) { old = {d: f2, o: x}; x.diary = x.diary.filter(d => d.id !== entry.id); } });
+    o.diary = (o.diary || []).concat([Object.assign({}, old ? old.d : {}, entry)]);
+    if (old) pruneSeason(old.o.id, hYear(old.d.date));
+    ensureSeason(o.id, hYear(date)); dashExpEdit = null; dashExp = false; dashExpMsg = ""; dashExpO = o.id;
+    expChanged(); if (typeof renderExp === "function") renderExp(); return;
+  }
   o.diary = (o.diary || []).concat([entry]);
   const y = hYear(date); ensureSeason(o.id, y); exOpen.add(y);
   dashExpO = o.id; dashExpMsg = tr("dx_ok").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", y);
@@ -4305,10 +4317,20 @@ function otabsHtml(o) {
 function otExpHtml(o) {
   return '<section class="dgrp detxh"><h6>' + tr("xh_h") + "</h6>" + expYearsHtml([o], o.id) + "</section>" + labourHtml(o);
 }
-let kxYear = null;
+let kxYear = null, kxDel = null, dashExpEdit = null;
+document.addEventListener("click", e => {
+  const ed = e.target.closest && e.target.closest("[data-kxe]"), dl = e.target.closest && e.target.closest("[data-kxd]");
+  if (ed) { dashExpEdit = ed.dataset.kxe; dashExpO = ed.dataset.o; dashExp = true; dashExpMsg = ""; kxDel = null; renderDash(); const f = $("dexForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "center"}); const k = $("dx_cost"); if (k) k.focus(); return; }
+  if (dl) {
+    const id = dl.dataset.kxd, o = S.orchards.find(x => x.id === dl.dataset.o); if (!o) return;
+    if (kxDel !== id) { kxDel = id; renderDash(); const n = document.querySelector('[data-kxd="' + id + '"]'); if (n) n.focus(); return; }
+    const d = (o.diary || []).find(x => x.id === id); kxDel = null;
+    if (d) { o.diary = o.diary.filter(x => x.id !== id); pruneSeason(o.id, hYear(d.date)); if (dashExpEdit === id) { dashExpEdit = null; dashExp = false; } expChanged(); if (typeof renderExp === "function") renderExp(); }
+  }
+});
 function expRowsFor(o, y) {
   const t = expTotals(o, y), rows = [];
-  t.ents.forEach(d => rows.push({date: d.date, k: d.kind, kind: tr("dk_" + d.kind) + (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : ""), text: d.text, cost: +d.cost}));
+  t.ents.forEach(d => rows.push({id: d.id, date: d.date, k: d.kind, kind: tr("dk_" + d.kind) + (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : ""), text: d.text, cost: +d.cost}));
   const se = seFor(o.id, y);
   if (se) COST_KEYS.forEach(k => { const v = +se.costs[k] || 0; if (v) rows.push({date: "", kind: esc(tr("xh_lump").replace("{c}", tr("yc_" + k))), text: "", cost: v}); });
   if (t.lw) rows.push({date: "", kind: esc(tr("xh_lab")), text: "", cost: t.lw});
@@ -4320,7 +4342,9 @@ function kxYearHtml(o, y, cur) {
   let h = '<section class="rccard kxcard"><h4>' + tr("kx_title").replace("{y}", y) + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") + "</h4>";
   if (!r.rows.length) return h + '<p class="hint">' + tr("xh_cur0").replace("{y}", y) + "</p></section>";
   return h + '<ol class="rcdiary">' + r.rows.map(x => '<li class="k-dk_' + esc(x.k || "lump") + '"><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + "</span><span><b>" + x.kind + "</b>" +
-    "<br>" + (x.text ? esc(x.text) + " · " : "") + inr(x.cost) + "</span></li>").join("") + "</ol>" +
+    "<br>" + (x.text ? esc(x.text) + " · " : "") + inr(x.cost) +
+    (x.id ? '<span class="kxacts"><button class="link" type="button" data-kxe="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr("dy_edit") + '</button><button class="link del" type="button" data-kxd="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr(kxDel === x.id ? "dy_sure" : "dy_del") + "</button></span>" : "") +
+    "</span></li>").join("") + "</ol>" +
     '<p class="kxtot"><span>' + tr("rc_tot") + " · " + tr("xh_n").replace("{n}", r.rows.length) + "</span><b>" + inr(r.total) + "</b></p></section>";
 }
 function otKharchHtml(o) {
@@ -4338,9 +4362,9 @@ function otKharchHtml(o) {
   return h + '<p class="xhmore"><button class="btn-s" type="button" data-xhedit="' + (kxYear || curY) + '" data-o="' + esc(o.id) + '">' + tr("xh_all") + "</button></p></section>";
 }
 document.addEventListener("change", e => { if (e.target && e.target.id === "kx_year") { kxYear = +e.target.value || null; renderDash(); const s2 = $("kx_year"); if (s2) s2.focus(); } });
-Object.assign(T.en, { kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
-Object.assign(T.hi, { kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
-Object.assign(T.hn, { kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
+Object.assign(T.en, { kx_edit:"Edit expense", kx_save:"Save changes", kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
+Object.assign(T.hi, { kx_edit:"ख़र्च बदलें", kx_save:"बदलाव सहेजें", kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
+Object.assign(T.hn, { kx_edit:"Kharcha badlein", kx_save:"Badlav save karein", kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
 function otMoneyHtml(o) {
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
     .concat((o.diary || []).map(d => hYear(d.date)).filter(y => y > 1900)))).sort((a, b) => b - a);
