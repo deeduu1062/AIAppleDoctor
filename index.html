@@ -1425,6 +1425,9 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+html.booting body > *:not(script){visibility:hidden}
+html.booting body::after{content:"";position:fixed;top:42%;left:50%;width:38px;height:38px;margin-left:-19px;border:4px solid var(--line);border-top-color:var(--apple);border-radius:50%;animation:bootspin .8s linear infinite}
+@keyframes bootspin{to{transform:rotate(360deg)}}
 .hscur{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;min-width:0;padding-left:14px;border-left:1px solid var(--line);font-size:.92rem;color:var(--muted)}
 .hscur b{font:700 .8rem var(--display);color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface));border-radius:999px;padding:2px 10px;text-transform:uppercase;letter-spacing:.03em}
 @media (max-width:900px){.figrows .hscur{grid-column:1/3;grid-row:2;padding:8px 0 0;border-left:0;border-top:1px solid var(--line)}}
@@ -1899,6 +1902,8 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </style>
 </head>
 <body>
+<script>/* signed-in growers (or just back from the sign-in link): keep the page hidden until the account has loaded, so the signed-out home page and Plans do not flash first */
+try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(location.hash + location.search) || Object.keys(localStorage).some(k => /^sb-.+-auth-token$/.test(k))) { document.documentElement.classList.add("booting"); setTimeout(() => document.documentElement.classList.remove("booting"), 8000); } } catch (e) {}</script>
 <div class="topbar">
   <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo"></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
   <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><a class="link acctplan" href="#plans" id="acctPlan" hidden></a><a class="link" href="/admin.html" id="adminLink" data-i18n="tt_admin" hidden></a><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
@@ -3327,14 +3332,16 @@ async function applyUser(u) {
   if (!u) {
     curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); exoOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
-    sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
+    sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); bootDone(); return;
   }
   if (changed) await loadMine();
+  bootDone();
 }
-if (!sb) setGuest(true);
+function bootDone() { document.documentElement.classList.remove("booting"); }
+if (!sb) { setGuest(true); bootDone(); }
 if (sb) {
   sb.auth.onAuthStateChange((ev, session) => { if (ev === "PASSWORD_RECOVERY") { recovering = true; justSignedIn = true; } setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") renderOrchGate(); }, 0); });
-  sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); logVisit(s ? s.user : null); }).catch(() => logVisit(null));
+  sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); logVisit(s ? s.user : null); }).catch(() => { bootDone(); logVisit(null); });
 }
 
 function netMsg(err) {
