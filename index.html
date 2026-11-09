@@ -4124,7 +4124,7 @@ function regItems(o) {
   if (saleY) { const c = seasonCalc(seFor(o.id, saleY)); it.push({k: "sale", ok: true, txt: tr("rg_sale_ok").replace("{y}", saleY).replace("{b}", fmtN(c.boxes)).replace("{r}", inr(c.rev)), act: 'data-dact="open" data-o="' + esc(o.id) + '"'}); }
   else it.push({k: "sale", ok: false, txt: tr("rg_sale_no"), act: 'data-dact="addsale" data-o="' + esc(o.id) + '"'});
   if (expY) { const c = seasonCalc(seFor(o.id, expY)); it.push({k: "exp", ok: true, txt: tr("rg_exp_ok").replace("{y}", expY).replace("{r}", inr(c.lotExp + c.yearly)), act: 'data-dact="rgexp"'}); }
-  else it.push({k: "exp", ok: false, txt: tr("rg_exp_no"), act: 'data-dact="rgexp"'});
+  else it.push({k: "exp", ok: false, txt: tr("rg_exp_no"), act: 'data-dact="rgnote" data-o="' + esc(o.id) + '"'});
   if (spray) { const n = Math.max(0, dayDiff(spray.date, today)); it.push({k: "spray", ok: true, txt: tr("rg_spray_ok").replace("{d}", fmtDay(spray.date)).replace("{n}", n), act: 'data-dact="rgnote" data-o="' + esc(o.id) + '"'}); }
   else it.push({k: "spray", ok: false, txt: tr("rg_spray_no"), act: 'data-dact="rgnote" data-o="' + esc(o.id) + '"'});
   it.push({k: "diary", ok: thisSeason > 0, txt: thisSeason ? tr("rg_diary_ok").replace("{n}", thisSeason) : tr("rg_diary_no"), act: 'data-dact="rgnote" data-o="' + esc(o.id) + '"'});
@@ -6367,7 +6367,10 @@ $("dash").addEventListener("click", e => {
   if (g.startsWith("y:")) { glY = +g.slice(2); renderDash(); return; }
   if (g.startsWith("o:")) { if (g.length > 2) goSeason(g.slice(2), glY); return; }
   if (g === "sale") { const o = S.orchards.find(x => x.id === sel.o) || S.orchards[0]; if (o) goSeason(o.id, glY || curHYear()); return; }
-  if (g === "exp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); return; }
+  if (g === "exp") { /* add expenses in the orchard's Expenses tab (the Sales/Profit Expenses page no longer has an add form) */
+    const o = S.orchards.find(x => x.id === sel.o) || S.orchards[0]; if (!o) return;
+    dashView = o.id; otab = "work"; dashYear = null; profEdit = false; diaryEdit = null; kAdd = true; renderDash();
+    const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); return; }
   if (g === "dx") goDiag("sym");
 });
 function prJoin() { if (user) { tabPicked = true; showTool("orch", false, true); } else goLogin(true); }
