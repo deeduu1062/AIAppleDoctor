@@ -103,6 +103,74 @@ function istMonthStart() {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) - 330 * 60000).toISOString();
 }
 
+/* ---- the chosen orchard's record, so the AI can weigh the photo against variety, sprays, weather, soil and past problems ---- */
+const n0 = v => { const x = parseFloat(v); return isFinite(x) ? x : 0; };
+const clip = (t, k) => String(t || "").replace(/\s+/g, " ").trim().slice(0, k);
+const istToday = () => new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);
+const daysAgo = (d, today) => { const a = Date.parse(d + "T00:00:00Z"), b = Date.parse(today + "T00:00:00Z"); return isFinite(a) && isFinite(b) ? Math.round((b - a) / 864e5) : null; };
+const SOIL = { ph: "pH", ec: "EC", oc: "organic carbon %", n: "N", p: "P", k: "K", s: "S", zn: "Zn", fe: "Fe", cu: "Cu", mn: "Mn", b: "B" };
+async function weatherLines(P) {
+  if (!isFinite(parseFloat(P.lat)) || !isFinite(parseFloat(P.lon))) return "";
+  try {
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), 3500);
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + (+P.lat) + "&longitude=" + (+P.lon) +
+      "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,relative_humidity_2m_mean&past_days=10&forecast_days=4&timezone=Asia%2FKolkata", { signal: ac.signal });
+    clearTimeout(t);
+    if (!r.ok) return "";
+    const d = (await r.json()).daily; if (!d || !d.time) return "";
+    const today = istToday(), past = [], next = [];
+    d.time.forEach((day, i) => {
+      const line = day.slice(5) + " " + Math.round(n0(d.temperature_2m_min[i])) + "-" + Math.round(n0(d.temperature_2m_max[i])) + "C rain " + n0(d.precipitation_sum[i]).toFixed(1) + "mm" +
+        (d.relative_humidity_2m_mean ? " RH " + Math.round(n0(d.relative_humidity_2m_mean[i])) + "%" : "");
+      (day < today ? past : next).push(line);
+    });
+    return "Weather, last 10 days: " + past.join("; ") + "\nForecast: " + next.join("; ");
+  } catch (e) { return ""; }
+}
+async function orchardContext(token, userId, oid) {
+  if (!oid) return { text: "", name: "" };
+  let data = null, checks = [];
+  try {
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), 3500);
+    const [lr, dr] = await Promise.all([
+      fetch(SB_URL + "/rest/v1/ledgers?select=data&user_id=eq." + encodeURIComponent(userId), { headers: sbHeaders(token), signal: ac.signal }),
+      fetch(SB_URL + "/rest/v1/diagnoses?select=created_at,part,result,feedback&user_id=eq." + encodeURIComponent(userId) + "&orchard_id=eq." + encodeURIComponent(oid) + "&order=created_at.desc&limit=6", { headers: sbHeaders(token), signal: ac.signal })
+    ]);
+    clearTimeout(t);
+    if (lr.ok) { const rows = await lr.json(); data = rows && rows[0] ? rows[0].data : null; }
+    if (dr.ok) checks = await dr.json();
+  } catch (e) { /* go on without */ }
+  const o = data && Array.isArray(data.orchards) ? data.orchards.find(x => x && x.id === oid && !x.ex) : null;
+  if (!o) return { text: "", name: "" };
+  const P = o.profile || {}, today = istToday(), L = ["Today is " + today + " (India)."];
+  const vt = (o.varTrees || []).filter(x => x && x.v && n0(x.n) > 0).map(x => clip(x.v, 30) + " " + Math.round(n0(x.n)));
+  const facts = [];
+  if (P.village) facts.push("place " + clip(P.village, 50));
+  if (n0(P.alt)) facts.push(Math.round(n0(P.alt)) + " m altitude");
+  if (vt.length) facts.push("trees by variety: " + vt.join(", ")); else if (P.var) facts.push("varieties " + clip(P.var, 80));
+  if (n0(o.trees)) facts.push(Math.round(n0(o.trees)) + " trees");
+  if (P.root) facts.push("rootstock " + clip(P.root, 30));
+  if (n0(P.planted)) facts.push("planted " + n0(P.planted) + " (" + (+today.slice(0, 4) - n0(P.planted)) + " years old)");
+  if (P.irr) facts.push("irrigation " + clip(P.irr, 20));
+  if (P.hail) facts.push("hail net " + clip(P.hail, 20));
+  L.push("Orchard \"" + clip(o.name || "Orchard", 40) + "\": " + (facts.length ? facts.join(", ") : "no details added") + ".");
+  const diary = (o.diary || []).filter(d => d && d.date && d.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const recent = diary.filter(d => { const k = daysAgo(d.date, today); return k != null && k <= 75; }).slice(0, 12);
+  const lastSpray = diary.find(d => d.kind === "spray");
+  L.push(lastSpray ? "Last spray: " + lastSpray.date + " (" + daysAgo(lastSpray.date, today) + " days ago)" + (lastSpray.text ? ": " + clip(lastSpray.text, 90) : "") + "." : "No spray recorded in the diary.");
+  if (recent.length) L.push("Diary, last 75 days: " + recent.map(d => d.date + " " + d.kind + (d.stage ? " [" + clip(d.stage, 20) + "]" : "") + (d.text ? " - " + clip(d.text, 70) : "")).join("; "));
+  const soil = (o.soil || []).filter(x => x && x.date).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+  if (soil) L.push("Latest soil test " + soil.date + ": " + Object.keys(SOIL).filter(k => n0(soil[k])).map(k => SOIL[k] + " " + n0(soil[k])).join(", ") + (soil.note ? " (" + clip(soil.note, 80) + ")" : ""));
+  const wx = await weatherLines(P);
+  if (wx) L.push(wx); else L.push("No orchard location saved, so no local weather.");
+  const ck = (checks || []).map(c => {
+    const m = c.result && Array.isArray(c.result.matches) && c.result.matches[0];
+    return String(c.created_at || "").slice(0, 10) + (c.part ? " " + c.part : "") + ": " + (m ? m.id + " (" + m.confidence + ")" : "unclear photo") + (c.feedback ? ", grower marked it " + c.feedback : "");
+  });
+  if (ck.length) L.push("Earlier photo checks in this orchard: " + ck.join("; "));
+  return { text: L.join("\n").slice(0, 3500), name: clip(o.name, 40) };
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
   if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "not_setup" });
@@ -132,6 +200,7 @@ module.exports = async (req, res) => {
   const note = String(body.note || "").slice(0, 400);
   const seen = (Array.isArray(body.seen) ? body.seen : []).map(x => String(x || "").slice(0, 160).trim()).filter(Boolean).slice(0, 10);
   const lang = body.lang === "hi" || body.lang === "hn" ? body.lang : "en";
+  const orchardId = /^[A-Za-z0-9_-]{1,40}$/.test(String(body.orchard_id || "")) ? String(body.orchard_id) : "";
 
   // 3. Limit by plan (this grower's checks this month, India time); admin keeps a daily limit for testing
   const isAdmin = ADMIN_EMAILS.includes(String(user.email || "").toLowerCase());
@@ -145,11 +214,13 @@ module.exports = async (req, res) => {
     if (rows.length >= limit) return send(res, 429, { error: "limit", limit, per, plan });
   } catch (e) { return send(res, 502, { error: "db_down" }); }
 
-  // 4. Ask the AI
+  // 4. Ask the AI (with the chosen orchard's record as background)
+  const oc = await orchardContext(token, user.id, orchardId).catch(() => ({ text: "", name: "" }));
   const partWord = { leaf: "leaves", fruit: "fruit", bark: "branch, bark or trunk", tree: "whole tree or roots" }[part] || "not said";
   const userText = "Part of the tree in the photo: " + partWord + ".\n" +
     (seen.length ? "Signs the grower ticked in the symptom checker (seen up close, use them with the photo): " + seen.join("; ") + "\n" : "") +
     (note ? "Grower's note: " + note + "\n" : "") +
+    (oc.text ? "Orchard record (background from the grower's own records; the photo comes first, use this to weigh likely causes, e.g. recent rain and humidity, days since the last spray, variety, altitude, soil calcium or boron, and problems seen here before):\n" + oc.text + "\n" : "") +
     "LANGUAGE: " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (simple Hindi written in English/Roman letters, like \"Patton par kaale daag hain\")" : "English");
   let result;
   try {
@@ -181,11 +252,18 @@ module.exports = async (req, res) => {
     const ins = await fetch(SB_URL + "/rest/v1/diagnoses", {
       method: "POST",
       headers: sbHeaders(token, { Prefer: "return=representation" }),
-      body: JSON.stringify({ user_id: user.id, part, note, lang, photos: images.length, result })
+      body: JSON.stringify(Object.assign({ user_id: user.id, part, note, lang, photos: images.length, result }, orchardId ? { orchard_id: orchardId } : {}))
     });
     if (ins.ok) { const rows = await ins.json(); id = rows && rows[0] && rows[0].id; }
-    else console.error("save", ins.status, await ins.text());
+    else {
+      const t = await ins.text(); console.error("save", ins.status, t);
+      if (orchardId) {   /* orchard_id column not added yet (supabase/diagnoses_orchard.sql): save without it */
+        const again = await fetch(SB_URL + "/rest/v1/diagnoses", { method: "POST", headers: sbHeaders(token, { Prefer: "return=representation" }),
+          body: JSON.stringify({ user_id: user.id, part, note, lang, photos: images.length, result }) });
+        if (again.ok) { const rows = await again.json(); id = rows && rows[0] && rows[0].id; }
+      }
+    }
   } catch (e) { console.error("save-fail", e); }
 
-  return send(res, 200, { id, result });
+  return send(res, 200, { id, result, orchard: oc.name || "" });
 };

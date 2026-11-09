@@ -1425,6 +1425,8 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.dxth{position:relative;display:inline-block}.dxth.bad img{outline:3px solid #E09A1A;outline-offset:-3px}
+.dxth small{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.65);color:#fff;font-size:.72rem;padding:1px 6px;border-radius:6px}
 .accard{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin:10px 0;display:grid;gap:8px}
 .accard h4{margin:0;font:700 1.05rem var(--display);color:var(--apple)}
 .acdl{margin:0;display:grid;gap:6px}.acdl div{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:8px}.acdl dt{color:var(--muted)}.acdl dd{margin:0;overflow-wrap:anywhere;font-weight:600}
@@ -2173,6 +2175,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
             <div id="dxSymWrap"><div class="dxsyms" id="dxSyms"></div></div>
           </div>
           <select id="dxPart" hidden aria-hidden="true" tabindex="-1"></select>
+          <div class="field"><label for="dxOrch" data-i18n="dx_orch"></label><select id="dxOrch"></select><p class="fine" data-i18n="dx_orch_p" style="margin:4px 0 0"></p></div>
           <div class="field"><label for="dxFile" data-i18n="dx_file"></label><input id="dxFile" type="file" accept="image/*" multiple></div>
           <div class="dxthumbs" id="dxThumbs"></div>
           <div class="field"><label for="dxNote" data-i18n="dx_note"></label><textarea id="dxNote" rows="2" maxlength="400"></textarea></div>
@@ -3356,7 +3359,7 @@ function dropEmptySeasons() {
   const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
   if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded) save(); }
 }
-function renderAll() { dropEmptySeasons(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); }
+function renderAll() { dropEmptySeasons(); if (typeof renderDxOrch === "function") renderDxOrch(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -6123,9 +6126,38 @@ let dxFiles = [], dxBusy = false, dxLast = null;
 function renderDiagAuth() {
   $("dxGate").hidden = !!user;
   $("dxForm").hidden = !user;
+  renderDxOrch();
 }
+/* which orchard is this photo from? its record (variety, sprays, weather, soil, past problems) goes to the AI */
+let dxOrchSel = "";
+function renderDxOrch() {
+  const el = $("dxOrch"); if (!el) return;
+  const L = (user && loaded && S && S.orchards ? S.orchards : []).filter(o => !o.ex);
+  if (dxOrchSel && !L.some(o => o.id === dxOrchSel)) dxOrchSel = "";
+  if (!dxOrchSel && L.length === 1) dxOrchSel = L[0].id;
+  el.innerHTML = '<option value="">' + esc(tr("dx_orch_none")) + "</option>" + L.map(o => '<option value="' + esc(o.id) + '"' + (o.id === dxOrchSel ? " selected" : "") + ">" + esc(o.name || tr("orchard_fallback")) + "</option>").join("");
+  el.closest(".field").hidden = !L.length;
+}
+$("dxOrch").addEventListener("change", e => { dxOrchSel = e.target.value; });
 $("dxSign").addEventListener("click", () => goLogin(false));
 
+/* quick photo check on the phone, before using up a photo check: too dark, too bright, or blurry */
+function dxQuality(src) {
+  try {
+    const w = 256, h = Math.max(1, Math.round(src.height * w / src.width)), c = document.createElement("canvas");
+    c.width = w; c.height = h; const g = c.getContext("2d"); g.drawImage(src, 0, 0, w, h);
+    const d = g.getImageData(0, 0, w, h).data, Y = new Float32Array(w * h);
+    let sum = 0; for (let i = 0; i < w * h; i++) { const v = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]; Y[i] = v; sum += v; }
+    const mean = sum / (w * h);
+    let n = 0, m = 0, m2 = 0;
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+      const i = y * w + x, l = 4 * Y[i] - Y[i - 1] - Y[i + 1] - Y[i - w] - Y[i + w];
+      n++; m += l; m2 += l * l;
+    }
+    const lapVar = n ? m2 / n - (m / n) * (m / n) : 0;
+    return mean < 45 ? "dark" : mean > 228 ? "bright" : lapVar < 30 ? "blurry" : "";
+  } catch (e) { return ""; }
+}
 function dxShrink(file) {
   return new Promise((ok, bad) => {
     const url = URL.createObjectURL(file), img = new Image();
@@ -6135,7 +6167,7 @@ function dxShrink(file) {
       c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url);
-      ok(c.toDataURL("image/jpeg", 0.82));
+      ok({ url: c.toDataURL("image/jpeg", 0.82), q: dxQuality(c) });
     };
     img.onerror = () => { URL.revokeObjectURL(url); bad(new Error("img")); };
     img.src = url;
@@ -6144,14 +6176,18 @@ function dxShrink(file) {
 $("dxFile").addEventListener("change", async () => {
   const fs = Array.from($("dxFile").files || []);
   set("dxErr", fs.length > 3 ? tr("dx_max") : "");
-  dxFiles = [];
-  for (const f of fs.slice(0, 3)) { try { dxFiles.push(await dxShrink(f)); } catch (e) { set("dxErr", tr("dx_e_photos")); } }
-  $("dxThumbs").innerHTML = dxFiles.map(d => '<img alt="" src="' + d + '">').join("");
+  dxFiles = []; dxQ = []; dxQualOk = false; $("dxGo").textContent = tr("dx_go");
+  for (const f of fs.slice(0, 3)) { try { const r = await dxShrink(f); dxFiles.push(r.url); dxQ.push(r.q); } catch (e) { set("dxErr", tr("dx_e_photos")); } }
+  $("dxThumbs").innerHTML = dxFiles.map((d, i) => '<span class="dxth' + (dxQ[i] ? " bad" : "") + '"><img alt="" src="' + d + '">' + (dxQ[i] ? "<small>⚠ " + esc(tr("dx_q_" + dxQ[i] + "_s")) + "</small>" : "") + "</span>").join("");
+  const bad = dxQ.map((q, i) => q ? tr("dx_q_n").replace("{n}", i + 1) + " " + tr("dx_q_" + q) : "").filter(Boolean);
+  if (bad.length) set("dxErr", bad.join(" ") + " " + tr("dx_q_tip"));
 });
 
+let dxQ = [], dxQualOk = false;
 $("dxGo").addEventListener("click", async () => {
   if (dxBusy) return;
   if (!dxFiles.length) { set("dxErr", tr("dx_pick")); return; }
+  if (dxQ.some(Boolean) && !dxQualOk) { dxQualOk = true; $("dxGo").textContent = tr("dx_q_anyway"); return; }
   if (!sb) { set("dxErr", tr("dx_e_net")); return; }
   set("dxErr", "");
   let token = "";
@@ -6162,7 +6198,7 @@ $("dxGo").addEventListener("click", async () => {
     const r = await fetch("/api/diagnose", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-      body: JSON.stringify({ images: dxFiles, part: dxSel.part, note: $("dxNote").value.trim(), seen: dxSeen(dxSel.part), lang })
+      body: JSON.stringify({ images: dxFiles, part: dxSel.part, note: $("dxNote").value.trim(), seen: dxSeen(dxSel.part), orchard_id: dxOrchSel || undefined, lang })
     });
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "" }; renderDiagAi(j.id, j.result); loadDxHist(true); }
@@ -6171,8 +6207,17 @@ $("dxGo").addEventListener("click", async () => {
       set("dxErr", tr(k).replace("{n}", j.limit || ""));
     }
   } catch (e) { set("dxErr", tr("dx_e_net")); }
-  dxBusy = false; $("dxGo").disabled = false; set("dxStat", "");
+  dxBusy = false; $("dxGo").disabled = false; set("dxStat", ""); dxQualOk = false; $("dxGo").textContent = tr("dx_go");
 });
+Object.assign(T.en, { dx_orch: "Which orchard is this from?", dx_orch_p: "Optional. Saathi then also uses this orchard's record: variety, recent sprays, the last 10 days of weather, soil test and problems seen there before.", dx_orch_none: "Not for a specific orchard",
+  dx_q_n: "Photo {n}:", dx_q_dark: "is too dark.", dx_q_bright: "is too bright.", dx_q_blurry: "looks blurry.", dx_q_dark_s: "dark", dx_q_bright_s: "too bright", dx_q_blurry_s: "blurry",
+  dx_q_tip: "For a better answer, take it again in daylight, close and steady. Or tap the button again to check anyway.", dx_q_anyway: "Check anyway" });
+Object.assign(T.hi, { dx_orch: "यह फ़ोटो किस बाग़ की है?", dx_orch_p: "ज़रूरी नहीं। तब साथी इस बाग़ का रिकॉर्ड भी देखेगा: किस्म, हाल के स्प्रे, पिछले 10 दिन का मौसम, मिट्टी जाँच और पहले मिली समस्याएँ।", dx_orch_none: "किसी ख़ास बाग़ की नहीं",
+  dx_q_n: "फ़ोटो {n}:", dx_q_dark: "बहुत अँधेरी है।", dx_q_bright: "बहुत चमकीली है।", dx_q_blurry: "धुँधली लग रही है।", dx_q_dark_s: "अँधेरी", dx_q_bright_s: "चमकीली", dx_q_blurry_s: "धुँधली",
+  dx_q_tip: "बेहतर जवाब के लिए दिन की रोशनी में, पास से और हाथ स्थिर रखकर फिर से फ़ोटो लें। या फिर भी जाँचने के लिए बटन दोबारा दबाएँ।", dx_q_anyway: "फिर भी जाँचें" });
+Object.assign(T.hn, { dx_orch: "Ye photo kis bagiche ki hai?", dx_orch_p: "Zaroori nahi. Tab Saathi is bagiche ka record bhi dekhega: kism, haal ke spray, pichhle 10 din ka mausam, mitti jaanch aur pehle mili samasyayein.", dx_orch_none: "Kisi khaas bagiche ki nahi",
+  dx_q_n: "Photo {n}:", dx_q_dark: "bahut andheri hai.", dx_q_bright: "bahut chamkeeli hai.", dx_q_blurry: "dhundhli lag rahi hai.", dx_q_dark_s: "andheri", dx_q_bright_s: "chamkeeli", dx_q_blurry_s: "dhundhli",
+  dx_q_tip: "Behtar jawab ke liye din ki roshni mein, paas se aur haath sthir rakhkar phir se photo lein. Ya phir bhi jaanchne ke liye button dobara dabayein.", dx_q_anyway: "Phir bhi jaanchein" });
 
 function renderDiagAi(id, r) {
   const box = $("dxAi");
