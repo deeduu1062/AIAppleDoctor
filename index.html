@@ -1447,8 +1447,8 @@ details.dsec > summary h4{display:inline}
 .rcdiary li.k-dk_tools,.rcdiary li.k-dk_repair{border-left-color:#7A7A7A}
 .rcdiary li.k-dk_hail,.rcdiary li.k-dk_snow,.rcdiary li.k-dk_rain,.rcdiary li.k-dk_drought{border-left-color:var(--bad)}
 .kxacts{display:flex;gap:14px;font-size:.85rem;margin-top:2px}
-.kxtot{display:flex;justify-content:space-between;gap:10px;margin:2px 0 0;padding-top:8px;border-top:1px solid var(--line);font-size:.92rem}
-.kxtot span{color:var(--muted)}.kxtot b{font:600 1rem var(--mono)}
+.kxtot{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0;padding:8px 12px;border-radius:8px;background:var(--bg,#f6f4ee);font-size:.92rem}
+.kxtot span{color:var(--muted)}.kxtot b{font:700 1.15rem var(--mono)}
 .dethead{display:flex;justify-content:flex-start;align-items:center;gap:14px;flex-wrap:wrap}
 .dethead .dexbtn{margin-left:auto}
 .dexform{margin:12px 0}
@@ -4341,11 +4341,10 @@ function kxYearHtml(o, y, cur) {
   const r = expRowsFor(o, y);
   let h = '<section class="rccard kxcard"><h4>' + tr("kx_title").replace("{y}", y) + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") + "</h4>";
   if (!r.rows.length) return h + '<p class="hint">' + tr("xh_cur0").replace("{y}", y) + "</p></section>";
-  return h + '<ol class="rcdiary">' + r.rows.map(x => '<li class="k-dk_' + esc(x.k || "lump") + '"><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + "</span><span><b>" + x.kind + "</b>" +
+  return h + '<p class="kxtot"><span>' + tr("rc_tot") + " · " + tr("xh_n").replace("{n}", r.rows.length) + "</span><b>" + inr(r.total) + "</b></p>" + '<ol class="rcdiary">' + r.rows.map(x => '<li class="k-dk_' + esc(x.k || "lump") + '"><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + "</span><span><b>" + x.kind + "</b>" +
     "<br>" + (x.text ? esc(x.text) + " · " : "") + inr(x.cost) +
     (x.id ? '<span class="kxacts"><button class="link" type="button" data-kxe="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr("dy_edit") + '</button><button class="link del" type="button" data-kxd="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr(kxDel === x.id ? "dy_sure" : "dy_del") + "</button></span>" : "") +
-    "</span></li>").join("") + "</ol>" +
-    '<p class="kxtot"><span>' + tr("rc_tot") + " · " + tr("xh_n").replace("{n}", r.rows.length) + "</span><b>" + inr(r.total) + "</b></p></section>";
+    "</span></li>").join("") + "</ol></section>";
 }
 function otKharchHtml(o) {
   const curY = hYear(todayIso()), ys = expYearsAll().filter(y => y !== curY && expTotals(o, y).total > 0);
