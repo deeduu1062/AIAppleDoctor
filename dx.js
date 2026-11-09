@@ -147,7 +147,7 @@ function renderForm() {
   const c = $("dxCrop"); if (!c) return;
   const cur = ls.get("dx-crop") || "apple";
   c.innerHTML = CROPS.map(k => '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + esc(tr("cr_" + k)) + "</option>").join("");
-  const k = $("dxKeep"); if (k) k.checked = ls.get("dx-keep") === "1";
+  const k = $("dxKeep"); if (k) k.checked = ls.get("dx-keep") !== "0";   /* ticked by default; stays off only if the grower unticks it */
 }
 $("dxCrop").addEventListener("change", e => ls.set("dx-crop", e.target.value));
 $("dxKeep").addEventListener("change", e => ls.set("dx-keep", e.target.checked ? "1" : "0"));
