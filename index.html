@@ -1621,8 +1621,15 @@ table.ledger.ytab{min-width:0;width:100%}
 .spofoot .btn-s{margin-left:auto;min-height:38px;padding:6px 12px;font-size:.9rem}
 .spo .lotrow{background:var(--bg)}
 .ybody.olist{gap:8px;padding-top:12px}
-.spo.orow,.spo.orow + .spo.orow{padding:0;border:1px solid var(--line);border-top:1px solid var(--line);background:var(--surface)}
+.spo.orow,.spo.orow + .spo.orow{padding:0;border:1px solid var(--line);border-top:1px solid var(--line)}
 .spo.orow.open{border-color:var(--fg)}
+/* orchard rows look different from year rows: tinted card with a green bar, slightly smaller figures */
+.spo.orow,.spo.orow + .spo.orow{background:color-mix(in srgb,var(--brand) 12%,var(--surface));border-left:6px solid var(--brand)}
+.spo.orow.open{border-left-color:var(--brand)}
+.spo.orow > .yhead:hover{background:color-mix(in srgb,var(--brand) 18%,var(--surface))}
+.spo.orow .oname{color:var(--brand)}
+.spo.orow .yfig b{font-size:1rem}.spo.orow .yfigs.five .yfig.ynet b{font-size:1rem}
+.spo.orow .obody{background:var(--surface)}
 .figrows .orow > .yhead{grid-template-columns:7.5rem minmax(0,1fr) 1.2rem;padding:10px 14px}
 .oname{font:700 1.1rem var(--display);overflow-wrap:anywhere}
 .obody{display:grid;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
