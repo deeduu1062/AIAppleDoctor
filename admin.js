@@ -517,7 +517,7 @@ function renderAdmin() {
   const mine = (user && user.email || "").toLowerCase();
   const head = ["ad_email", "ad_joined", "ad_last", "ad_orch", "ad_years", "ad_lots", "ad_saved", "ad_status"];
   $("adTable").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-    rows.map(u => '<tr><th scope="row">' + esc(u.email || "–") + (String(u.email || "").toLowerCase() === mine ? ' <span class="tag me">' + tr("ad_me") + "</span>" : "") + "</th>" +
+    rows.map(u => '<tr><th scope="row">' + (u.email ? '<button class="pflink" type="button" data-pfmail="' + esc(u.email) + '">' + esc(u.email) + "</button>" : "–") + (String(u.email || "").toLowerCase() === mine ? ' <span class="tag me">' + tr("ad_me") + "</span>" : "") + "</th>" +
       "<td>" + adWhen(u.created_at) + "</td><td>" + adWhen(u.last_sign_in_at) + '</td><td class="n">' + fmtN(+u.orchards || 0) + '</td><td class="n">' + fmtN(+u.years || 0) +
       '</td><td class="n">' + fmtN(+u.lots || 0) + "</td><td>" + (u.saved_at ? adWhen(u.saved_at) : "–") + "</td>" +
       '<td><span class="tag' + (u.confirmed ? " ok" : "") + '">' + tr(u.confirmed ? "ad_ok" : "ad_no") + "</span></td></tr>").join("") +
@@ -1180,8 +1180,130 @@ Object.assign(T.hi, { adm_t_cost: "ख़र्च", co_h: "चलाने क�
   sb_days: "{n} दिन", sb_ago: "{n} दिन पहले ख़त्म", sb_npay: "{n} भुगतान", sb_pend_n: "{n} भुगतान बाकी",
   sb_note: "हर बाग़वान की एक पंक्ति, उनके स्वीकृत भुगतानों से। प्लान बढ़ाने या घटाने के लिए अंतिम तारीख़ बदलें।" });
 
+/* ---------- profiles: one grower's profile and activity (functions in supabase/admin_profiles.sql) ---------- */
+Object.assign(T.en, {
+  adm_t_prof: "Profiles", pf_h: "Grower profiles and activity", pf_p: "Tap a grower to see their profile and everything they have done on Seb Saathi.",
+  pf_find: "Find by email or mobile", pf_none: "No growers match.", pf_c_who: "Grower", pf_c_plan: "Plan", pf_c_seen: "Last active", pf_c_q: "Questions", pf_c_dx: "Photo checks",
+  pf_back: "← All growers", pf_prof_h: "Profile", pf_use_h: "Usage", pf_orch_h: "Orchards", pf_act_h: "Activity", pf_act_none: "No activity yet.", pf_orch_none: "No orchards added yet.",
+  pf_email: "Email", pf_phone: "Mobile", pf_joined: "Joined", pf_last: "Last sign-in", pf_lang: "Language", pf_how: "Signs in with", pf_ref: "Invited with code", pf_plan: "Plan", pf_saved: "Records last saved", pf_status: "Account",
+  pf_ok: "Confirmed", pf_no: "Not confirmed", pf_free: "Free", pf_basic: "Saathi", pf_premium: "Saathi Plus", pf_until: "until {d}", pf_month: "monthly", pf_year: "yearly",
+  pf_s_orch: "Orchards", pf_s_years: "Harvest years", pf_s_lots: "Sale lots", pf_s_q: "Saathi questions", pf_s_dx: "Photo checks", pf_s_fb: "Feedback sent", pf_s_pay: "Payments", pf_s_share: "Shared with",
+  pf_sub_q: "{a} today · {b} in 30 days", pf_sub_dx: "{a} this month", pf_trees: "{n} trees",
+  pf_c_when: "When", pf_c_what: "What", pf_c_detail: "Details",
+  pf_k_join: "Created account", pf_k_login: "Signed in", pf_k_save: "Saved orchard records", pf_k_q: "Asked Saathi", pf_k_dx: "Photo check", pf_k_pay: "Payment", pf_k_fb: "Feedback", pf_k_share: "Shared records",
+  pf_dx_none: "No clear match", pf_l_en: "English", pf_l_hi: "Hindi", pf_l_hn: "Hinglish", pf_p_email: "Email", pf_p_phone: "Mobile OTP",
+  pf_err_setup: "Profiles are not set up yet. Run supabase/admin_profiles.sql once in the Supabase SQL Editor.", pf_err: "Could not load: {m}", pf_gone: "This account no longer exists."
+});
+Object.assign(T.hi, {
+  adm_t_prof: "प्रोफ़ाइल", pf_h: "बाग़वान की प्रोफ़ाइल और गतिविधि", pf_p: "किसी बाग़वान पर टैप करें और उनकी प्रोफ़ाइल व सेब साथी पर किया गया हर काम देखें।",
+  pf_find: "ईमेल या मोबाइल से खोजें", pf_none: "कोई बाग़वान नहीं मिला।", pf_c_who: "बाग़वान", pf_c_plan: "प्लान", pf_c_seen: "आख़िरी बार सक्रिय", pf_c_q: "सवाल", pf_c_dx: "फ़ोटो जाँच",
+  pf_back: "← सभी बाग़वान", pf_prof_h: "प्रोफ़ाइल", pf_use_h: "इस्तेमाल", pf_orch_h: "बाग़", pf_act_h: "गतिविधि", pf_act_none: "अभी कोई गतिविधि नहीं।", pf_orch_none: "अभी कोई बाग़ नहीं जोड़ा।",
+  pf_email: "ईमेल", pf_phone: "मोबाइल", pf_joined: "जुड़े", pf_last: "आख़िरी लॉग इन", pf_lang: "भाषा", pf_how: "लॉग इन का तरीक़ा", pf_ref: "न्योते का कोड", pf_plan: "प्लान", pf_saved: "रिकॉर्ड आख़िरी बार सेव", pf_status: "खाता",
+  pf_ok: "पुष्टि हो चुकी", pf_no: "पुष्टि बाकी", pf_free: "मुफ़्त", pf_basic: "साथी", pf_premium: "साथी प्लस", pf_until: "{d} तक", pf_month: "मासिक", pf_year: "सालाना",
+  pf_s_orch: "बाग़", pf_s_years: "तुड़ान के साल", pf_s_lots: "बिक्री लॉट", pf_s_q: "साथी से सवाल", pf_s_dx: "फ़ोटो जाँच", pf_s_fb: "भेजे सुझाव", pf_s_pay: "भुगतान", pf_s_share: "साझा किया",
+  pf_sub_q: "आज {a} · 30 दिन में {b}", pf_sub_dx: "इस महीने {a}", pf_trees: "{n} पेड़",
+  pf_c_when: "समय", pf_c_what: "क्या", pf_c_detail: "ब्योरा",
+  pf_k_join: "खाता बनाया", pf_k_login: "लॉग इन किया", pf_k_save: "बाग़ का रिकॉर्ड सेव किया", pf_k_q: "साथी से पूछा", pf_k_dx: "फ़ोटो जाँच", pf_k_pay: "भुगतान", pf_k_fb: "सुझाव", pf_k_share: "रिकॉर्ड साझा किया",
+  pf_dx_none: "साफ़ मिलान नहीं", pf_l_en: "अंग्रेज़ी", pf_l_hi: "हिंदी", pf_l_hn: "हिंग्लिश", pf_p_email: "ईमेल", pf_p_phone: "मोबाइल OTP",
+  pf_err_setup: "प्रोफ़ाइल अभी सेट नहीं हुई। Supabase SQL Editor में supabase/admin_profiles.sql एक बार चलाएँ।", pf_err: "लोड नहीं हो सका: {m}", pf_gone: "यह खाता अब मौजूद नहीं है।"
+});
+let PF = null, pfBusy = false, pfSel = null, pfOne = null, pfWant = null;
+function pfWhen(iso) {
+  if (!iso) return "–";
+  const d = new Date(iso), loc = lang === "hi" ? "hi-IN" : "en-IN";
+  return d.toLocaleDateString(loc, {day: "numeric", month: "short", year: d.getFullYear() === new Date().getFullYear() ? undefined : "numeric"}) + ", " + d.toLocaleTimeString(loc, {hour: "2-digit", minute: "2-digit"});
+}
+function pfErrMsg(err) {
+  const m = String(err.message || err), code = String(err.code || "");
+  return code === "PGRST202" || /could not find the function|does not exist/i.test(m) ? tr("pf_err_setup")
+    : code === "42501" || /not allowed|permission denied/i.test(m) ? tr("ad_err_deny") : tr("pf_err").replace("{m}", m);
+}
+const pfName = u => u.email || (u.phone ? "+" + String(u.phone).replace(/^\+/, "") : "–");
+const pfPlan = p => tr(p === "premium" ? "pf_premium" : p === "basic" ? "pf_basic" : "pf_free");
+async function loadProf() {
+  if (!isAdmin() || !sb || pfBusy) return;
+  pfBusy = true; set("pfErr", ""); set("pfAt", tr("ad_loading")); $("pfRefresh").disabled = true;
+  let res = null, err = null;
+  try { res = await sb.rpc("admin_profiles"); err = res.error; } catch (x) { err = x; }
+  pfBusy = false; $("pfRefresh").disabled = false; set("pfAt", "");
+  if (err) { set("pfErr", pfErrMsg(err)); return; }
+  PF = res.data || [];
+  if (pfWant) { const w = pfWant; pfWant = null; const u = PF.find(x => String(x.email || "").toLowerCase() === w); if (u) { pfOpen(u.id); return; } }
+  if (pfSel) pfOpen(pfSel); else renderProf();
+}
+async function pfOpen(id) {
+  pfSel = id; pfOne = null; renderProf(); set("pfErr", ""); set("pfAt", tr("ad_loading"));
+  let res = null, err = null;
+  try { res = await sb.rpc("admin_profile", { uid: id }); err = res.error; } catch (x) { err = x; }
+  set("pfAt", "");
+  if (pfSel !== id) return;
+  if (err) { set("pfErr", pfErrMsg(err)); return; }
+  if (!res.data) { set("pfErr", tr("pf_gone")); pfSel = null; renderProf(); return; }
+  pfOne = res.data; renderProf();
+}
+function renderProf() {
+  if (!$("pfList")) return;
+  $("pfListWrap").hidden = !!pfSel; $("pfOne").hidden = !pfSel;
+  if (pfSel) { renderProfOne(); return; }
+  if (!PF) { $("pfList").innerHTML = ""; return; }
+  const q = $("pfFind").value.trim().toLowerCase();
+  const rows = PF.filter(u => !q || (String(u.email || "") + " " + String(u.phone || "")).toLowerCase().indexOf(q) >= 0);
+  if (!rows.length) { $("pfList").innerHTML = '<p class="empty">' + tr("pf_none") + "</p>"; return; }
+  const head = ["pf_c_who", "pf_c_plan", "pf_c_seen", "pf_c_q", "pf_c_dx"];
+  $("pfList").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map(u => '<tr><th scope="row"><button class="pflink" type="button" data-pf="' + esc(u.id) + '">' + esc(pfName(u)) + "</button></th>" +
+      '<td><span class="tag' + (u.plan && u.plan !== "free" ? " ok" : "") + '">' + pfPlan(u.plan) + "</span></td><td>" + adWhen(u.last_seen) + '</td><td class="n">' + fmtN(+u.questions || 0) +
+      '</td><td class="n">' + fmtN(+u.checks || 0) + "</td></tr>").join("") + "</tbody></table></div>";
+}
+function renderProfOne() {
+  const box = $("pfOne"), back = '<button class="btn-s" type="button" data-pfback="1">' + tr("pf_back") + "</button>";
+  if (!pfOne) { box.innerHTML = back; return; }
+  const p = pfOne.profile || {}, c = pfOne.counts || {}, r = pfOne.records || {}, pl = pfOne.plan, act = pfOne.activity || [], orch = r.orchards || [];
+  const langs = { en: "pf_l_en", hi: "pf_l_hi", hn: "pf_l_hn" };
+  const dDate = d => new Date(d + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {day: "numeric", month: "short", year: "numeric"});
+  const planTxt = pl ? pfPlan(pl.plan) + " · " + tr(pl.period === "year" ? "pf_year" : "pf_month") + (pl.valid_until ? " · " + tr("pf_until").replace("{d}", dDate(pl.valid_until)) : "") : tr("pf_free");
+  const row = (k, v) => v ? '<tr><th scope="row">' + tr(k) + "</th><td>" + v + "</td></tr>" : "";
+  const st = (k, v, sub, main) => "<div" + (main ? ' class="main"' : "") + "><span>" + tr(k) + "</span><b>" + fmtN(+v || 0) + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
+  const detail = a => {
+    if (a.kind === "dx") return esc(a.detail ? String(a.detail).replace(/[_-]+/g, " ") : tr("pf_dx_none")) + (a.extra ? " · " + esc(a.extra) : "");
+    if (a.kind === "pay") { const b = String(a.detail || "").split(" / "); return esc(pfPlan(b[0])) + " · " + tr(b[1] === "year" ? "pf_year" : "pf_month") + " · " + rupees(+b[2] || 0) + (a.extra ? " · " + esc(a.extra) : ""); }
+    if (a.kind === "fb") return (a.extra ? esc(tr("fa_k_" + a.extra) || a.extra) + ": " : "") + esc(a.detail || "");
+    return esc(a.detail || "");
+  };
+  box.innerHTML = back +
+    '<h5 class="pfwho">' + esc(pfName(p)) + ' <span class="tag' + (pl ? " ok" : "") + '">' + pfPlan(pl && pl.plan) + "</span></h5>" +
+    '<h5 class="ovsub">' + tr("pf_prof_h") + '</h5><div class="tablewrap"><table class="ledger"><tbody>' +
+      row("pf_email", esc(p.email || "")) + row("pf_phone", p.phone ? esc("+" + String(p.phone).replace(/^\+/, "")) : "") +
+      row("pf_status", '<span class="tag' + (p.confirmed ? " ok" : "") + '">' + tr(p.confirmed ? "pf_ok" : "pf_no") + "</span>") +
+      row("pf_plan", esc(planTxt)) + row("pf_joined", pfWhen(p.created_at)) + row("pf_last", p.last_sign_in_at ? pfWhen(p.last_sign_in_at) : tr("ad_never")) +
+      row("pf_lang", langs[p.lang] ? tr(langs[p.lang]) : "") + row("pf_how", p.provider ? esc(p.provider === "phone" ? tr("pf_p_phone") : p.provider === "email" ? tr("pf_p_email") : p.provider) : "") +
+      row("pf_ref", esc(p.ref || "")) + row("pf_saved", r.saved_at ? pfWhen(r.saved_at) : "") + "</tbody></table></div>" +
+    '<h5 class="ovsub">' + tr("pf_use_h") + '</h5><div class="ystats">' +
+      st("pf_s_q", c.q_total, tr("pf_sub_q").replace("{a}", fmtN(+c.q_today || 0)).replace("{b}", fmtN(+c.q_30 || 0)), true) +
+      st("pf_s_dx", c.dx_total, tr("pf_sub_dx").replace("{a}", fmtN(+c.dx_month || 0)), true) +
+      st("pf_s_orch", orch.length) + st("pf_s_years", r.years) + st("pf_s_lots", r.lots) + st("pf_s_pay", c.pay_total) + st("pf_s_fb", c.fb_total) + st("pf_s_share", c.shares) + "</div>" +
+    '<h5 class="ovsub">' + tr("pf_orch_h") + "</h5>" + (orch.length ? '<div class="tablewrap"><table class="ledger"><tbody>' +
+      orch.map(o => '<tr><th scope="row" style="color:var(--fg)">' + esc(o.name || "–") + "</th><td>" + (+o.trees > 0 ? tr("pf_trees").replace("{n}", fmtN(+o.trees)) : "–") + "</td></tr>").join("") + "</tbody></table></div>"
+      : '<p class="empty">' + tr("pf_orch_none") + "</p>") +
+    '<h5 class="ovsub">' + tr("pf_act_h") + "</h5>" + (act.length ? '<div class="tablewrap"><table class="ledger pfact"><thead><tr>' +
+      ["pf_c_what", "pf_c_detail"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+      act.map(a => "<tr><td><b>" + tr("pf_k_" + a.kind) + "</b>" + pfWhen(a.at) + "</td><td>" + detail(a) + "</td></tr>").join("") + "</tbody></table></div>"
+      : '<p class="empty">' + tr("pf_act_none") + "</p>");
+}
+$("pfRefresh").addEventListener("click", loadProf);
+$("pfFind").addEventListener("input", renderProf);
+$("pfList").addEventListener("click", e => { const b = e.target.closest("[data-pf]"); if (b) { pfOpen(b.dataset.pf); window.scrollTo(0, 0); } });
+$("pfOne").addEventListener("click", e => { if (e.target.closest("[data-pfback]")) { pfSel = null; pfOne = null; set("pfErr", ""); renderProf(); } });
+/* in the Growers tab, tapping an email opens that grower's profile */
+$("adTable").addEventListener("click", e => {
+  const b = e.target.closest("[data-pfmail]"); if (!b) return;
+  const m = b.dataset.pfmail.toLowerCase(), u = PF && PF.find(x => String(x.email || "").toLowerCase() === m);
+  if (u) { pfSel = u.id; showTab("prof"); pfOpen(u.id); } else { pfWant = m; pfSel = null; showTab("prof"); if (loaded.prof && !pfBusy) loadProf(); }
+  window.scrollTo(0, 0);
+});
+
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["ov", "pay", "cost", "users", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
+const TABS = ["ov", "pay", "cost", "users", "prof", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
 let tab = "ov";
 try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; } catch (e) {}
 const loaded = {};
@@ -1191,7 +1313,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "fb") loadFeedback();
+  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "fb") loadFeedback();
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
@@ -1200,7 +1322,7 @@ function applyLang() {
   set("langBtn", tr("lang_btn"));
   document.title = tr("adm_title");
   renderGate();
-  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview();
+  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => {
