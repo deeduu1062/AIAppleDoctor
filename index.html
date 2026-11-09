@@ -1425,6 +1425,14 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.accard{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin:10px 0;display:grid;gap:8px}
+.accard h4{margin:0;font:700 1.05rem var(--display);color:var(--apple)}
+.acdl{margin:0;display:grid;gap:6px}.acdl div{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:8px}.acdl dt{color:var(--muted)}.acdl dd{margin:0;overflow-wrap:anywhere;font-weight:600}
+.acrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.acplan{font:700 1rem var(--display);padding:4px 12px;border-radius:999px;background:var(--surface-2)}.acplan.paid{background:color-mix(in srgb,var(--good) 15%,var(--surface));color:var(--good)}
+.acreset{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px;justify-items:start}
+.accard .fine{margin:0}
+.accard .sentmsg{margin:0;font-size:.92rem;font-weight:600;color:var(--good)}.accard .autherr{margin:0;font-size:.92rem}
 .dxseen{margin:4px 0;padding:6px 10px;border-radius:8px;background:color-mix(in srgb,var(--good) 12%,var(--surface));color:var(--good);font-size:.9rem;font-weight:600}
 .tsum{background:linear-gradient(180deg,color-mix(in srgb,var(--apple) 6%,var(--surface)),var(--surface) 70%)}
 .tsstack{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin:2px 0 4px}
@@ -1969,7 +1977,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <a class="brand" href="#top"><i aria-hidden="true"></i>Seb Saathi</a>
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -2227,6 +2235,11 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
       <div class="thead"><h3 data-i18n="cal_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
       <p data-i18n="cal_p"></p>
       <ol class="months" id="months"></ol>
+    </div>
+
+    <div class="tpanel" id="tp-acct" role="tabpanel" aria-labelledby="tt-acct" hidden>
+      <div class="thead"><h3 data-i18n="tt_acct"></h3></div>
+      <div id="acctTab"></div>
     </div>
 
     <div class="tpanel" id="tp-orch" role="tabpanel" aria-labelledby="tt-orch" hidden>
@@ -3290,6 +3303,7 @@ window.addEventListener("online", () => { if (isDirty()) flush(); });
 window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
 
 function renderAcct() {
+  if ($("tt-acct")) { $("tt-acct").hidden = !user; if (!user && !$("tp-acct").hidden) showTool("calc"); else if (user && !$("tp-acct").hidden) renderAcctTab(); }
   $("acctBar").hidden = !user; $("orIntro").hidden = true; $("top").hidden = !!user;
   $("adminLink").hidden = !isAdmin();
   if (typeof renderContact === "function") renderContact();
@@ -7284,7 +7298,76 @@ function renderGuestDash() {
   el.innerHTML = "";   /* news and weather now sit at the top of Orchard Record */
 }
 /* ---- top tabs ---- */
-const TT = ["orch","rec","calc","diag","spray","news","cal"];  /* Library tab removed from the site; its articles still feed Saathi */
+
+/* ---------- My account tab: plan details, change or reset password, log out ---------- */
+let acMsg = {}, acBusy = false;
+function renderAcctTab() {
+  const el = $("acctTab"); if (!el || !user) return;
+  const em = user.email || "", ph = user.phone ? fmtPhone(user.phone) : "";
+  const since = user.created_at ? fmtDay(String(user.created_at).slice(0, 10), true) : "";
+  const pay = typeof myPay !== "undefined" ? myPay : null, st = typeof myPlanState === "function" ? myPlanState() : {paid: null};
+  const pn = k => (typeof plName === "function" ? plName(k) : k);
+  const msg = k => acMsg[k] ? '<p class="' + (acMsg[k].err ? "autherr" : "sentmsg") + '" role="status">' + esc(acMsg[k].t) + "</p>" : "";
+  let plan = '<div class="acrow"><span class="acplan' + (st.paid ? " paid" : "") + '">' + (st.paid ? "★ " : "") + esc(pn(st.paid || "free")) + "</span>";
+  if (st.paid) plan += '<span>' + esc(tr("ac_till").replace("{d}", fmtDay(pay.valid_until, true))) + (st.left != null ? " · " + esc(tr("ac_left").replace("{n}", Math.max(0, st.left))) : "") + "</span>";
+  plan += "</div>";
+  if (pay && pay.status === "pending") plan += '<p class="fine">' + esc(tr("pl_my_pend").replace("{p}", pn(pay.plan))) + "</p>";
+  if (pay && pay.status === "rejected") plan += '<p class="autherr">' + esc(tr("ac_rej")) + "</p>";
+  const btns = [];
+  if (!st.paid) btns.push('<button class="btn-s add" type="button" data-ac="up">' + esc(tr("ac_up")) + "</button>");
+  else if (st.renew) btns.push('<button class="btn-s add" type="button" data-ac="pay" data-p="' + st.paid + '">' + esc(tr("pl_renew").replace("{p}", pn(st.paid))) + "</button>");
+  if (st.paid === "basic") btns.push('<button class="btn-s' + (st.renew ? "" : " add") + '" type="button" data-ac="pay" data-p="premium">' + esc(tr("pl_go_pay").replace("{p}", pn("premium"))) + "</button>");
+  btns.push('<button class="btn-s" type="button" data-ac="plans">' + esc(tr("ac_plans")) + "</button>");
+  el.innerHTML =
+    '<section class="accard"><h4>' + tr("ac_me") + '</h4><dl class="acdl">' +
+      (em ? "<div><dt>" + tr("ac_email") + "</dt><dd>" + esc(em) + "</dd></div>" : "") + (ph ? "<div><dt>" + tr("ac_phone") + "</dt><dd>" + esc(ph) + "</dd></div>" : "") +
+      (since ? "<div><dt>" + tr("ac_since") + "</dt><dd>" + esc(since) + "</dd></div>" : "") + "</dl></section>" +
+    '<section class="accard"><h4>' + tr("ac_plan") + "</h4>" + plan + '<div class="dels">' + btns.join("") + "</div></section>" +
+    '<section class="accard"><h4>' + tr("ac_pw") + '</h4><p class="fine">' + tr("ac_pw_p") + '</p><form id="acPwForm" novalidate>' +
+      '<div class="field"><label for="acPw1">' + tr("pw_new") + '</label><input id="acPw1" type="password" autocomplete="new-password"></div>' +
+      '<div class="field"><label for="acPw2">' + tr("ac_pw2") + '</label><input id="acPw2" type="password" autocomplete="new-password"></div>' +
+      msg("pw") + '<div class="dels"><button class="btn-s add" type="submit"' + (acBusy ? " disabled" : "") + ">" + tr("pw_save") + "</button></div></form>" +
+      (em ? '<div class="acreset"><p class="fine">' + tr("ac_reset_p").replace("{e}", esc(em)) + '</p><button class="btn-s" type="button" data-ac="reset"' + (acBusy ? " disabled" : "") + ">" + tr("ac_reset") + "</button>" + msg("reset") + "</div>" : "") +
+    "</section>" +
+    '<section class="accard"><button class="btn-s danger" type="button" data-ac="out">' + tr("ac_out") + "</button></section>";
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-ac]"); if (!b) return;
+  const a = b.dataset.ac;
+  if (a === "up" || a === "plans") { const p = $("plans"); if (p && !p.hidden && p.scrollIntoView) p.scrollIntoView({block: "start"}); else if (typeof openPay === "function") openPay("basic"); return; }
+  if (a === "pay") { if (typeof openPay === "function") openPay(b.dataset.p); return; }
+  if (a === "out") { try { await sb.auth.signOut(); } catch (x) {} return; }
+  if (a === "reset") {
+    if (!sb || !user || !user.email || acBusy) return;
+    acBusy = true; acMsg.reset = null; renderAcctTab();
+    let err = null; try { const r = await sb.auth.resetPasswordForEmail(user.email, {redirectTo: location.origin + "/"}); err = r.error; } catch (x) { err = x; }
+    acBusy = false; acMsg.reset = err ? {t: netMsg(err), err: true} : {t: tr("ac_reset_ok").replace("{e}", user.email)}; renderAcctTab();
+  }
+});
+document.addEventListener("submit", async e => {
+  if (!e.target || e.target.id !== "acPwForm") return;
+  e.preventDefault();
+  const p1 = $("acPw1").value, p2 = $("acPw2").value;
+  if (p1.length < 8) { acMsg.pw = {t: tr("auth_err_pw"), err: true}; renderAcctTab(); return; }
+  if (p1 !== p2) { acMsg.pw = {t: tr("ac_pw_diff"), err: true}; renderAcctTab(); $("acPw1").value = p1; return; }
+  if (!sb || acBusy) return;
+  acBusy = true; acMsg.pw = null; renderAcctTab();
+  let err = null; try { const r = await sb.auth.updateUser({password: p1}); err = r.error; } catch (x) { err = x; }
+  acBusy = false; acMsg.pw = err ? {t: String((err && err.message) || err), err: true} : {t: tr("ac_pw_ok")}; renderAcctTab();
+});
+Object.assign(T.en, { tt_acct:"My account", ac_me:"My details", ac_email:"Email", ac_phone:"Phone", ac_since:"Member since", ac_plan:"My plan", ac_till:"Valid till {d}", ac_left:"{n} days left",
+  ac_rej:"Your last payment could not be confirmed. Please contact us.", ac_up:"Upgrade plan", ac_plans:"See all plans", ac_pw:"Password",
+  ac_pw_p:"Change your password here. Use at least 8 characters.", ac_pw2:"Type the new password again", ac_pw_diff:"The two passwords do not match.", ac_pw_ok:"Password changed.",
+  ac_reset_p:"Forgot your password? We can email a reset link to {e}.", ac_reset:"Email me a reset link", ac_reset_ok:"Reset link sent to {e}. Open it on this phone to set a new password.", ac_out:"Log out" });
+Object.assign(T.hi, { tt_acct:"मेरा खाता", ac_me:"मेरी जानकारी", ac_email:"ईमेल", ac_phone:"फ़ोन", ac_since:"कब से सदस्य", ac_plan:"मेरा प्लान", ac_till:"{d} तक मान्य", ac_left:"{n} दिन बाकी",
+  ac_rej:"आपका पिछला भुगतान पक्का नहीं हो सका। कृपया हमसे संपर्क करें।", ac_up:"प्लान अपग्रेड करें", ac_plans:"सभी प्लान देखें", ac_pw:"पासवर्ड",
+  ac_pw_p:"यहाँ अपना पासवर्ड बदलें। कम से कम 8 अक्षर रखें।", ac_pw2:"नया पासवर्ड फिर से लिखें", ac_pw_diff:"दोनों पासवर्ड एक जैसे नहीं हैं।", ac_pw_ok:"पासवर्ड बदल दिया गया।",
+  ac_reset_p:"पासवर्ड भूल गए? हम {e} पर रीसेट लिंक भेज सकते हैं।", ac_reset:"रीसेट लिंक ईमेल करें", ac_reset_ok:"{e} पर रीसेट लिंक भेज दिया। नया पासवर्ड बनाने के लिए इसे इसी फ़ोन पर खोलें।", ac_out:"लॉग आउट" });
+Object.assign(T.hn, { tt_acct:"Mera account", ac_me:"Meri jaankari", ac_email:"Email", ac_phone:"Phone", ac_since:"Kab se member", ac_plan:"Mera plan", ac_till:"{d} tak valid", ac_left:"{n} din baaki",
+  ac_rej:"Aapka pichhla payment pakka nahi ho saka. Kripya humse sampark karein.", ac_up:"Plan upgrade karein", ac_plans:"Sabhi plan dekhein", ac_pw:"Password",
+  ac_pw_p:"Yahan apna password badlein. Kam se kam 8 akshar rakhein.", ac_pw2:"Naya password phir se likhein", ac_pw_diff:"Dono password ek jaise nahi hain.", ac_pw_ok:"Password badal diya gaya.",
+  ac_reset_p:"Password bhool gaye? Hum {e} par reset link bhej sakte hain.", ac_reset:"Reset link email karein", ac_reset_ok:"{e} par reset link bhej diya. Naya password banane ke liye ise isi phone par kholein.", ac_out:"Log out" });
+const TT = ["orch","rec","calc","diag","spray","news","cal","acct"];  /* Library tab removed from the site; its articles still feed Saathi */
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -7299,6 +7382,7 @@ function showTool(w, focus, scroll) {
   if (scroll && $("tools").scrollIntoView) $("tools").scrollIntoView({block:"start"});
   if (w === "news") loadNews();
   if (w === "rec") renderRec();
+  if (w === "acct") renderAcctTab();
 }
 TT.forEach((n, i) => {
   const b = $("tt-" + n);

@@ -83,6 +83,7 @@ function renderMyPlan() {
   el.innerHTML = '<span class="plchip">' + plEsc(chip) + "</span>" + (more ? '<span class="plmore">' + plEsc(more) + "</span>" : "") +
     (st.renew ? '<span class="plrenew">' + plEsc(tr("pl_renew_s")) + "</span>" : "");
   el.hidden = false;
+  if (typeof renderAcctTab === "function") try { renderAcctTab(); } catch (e) {}
 }
 
 function loadQr() {
