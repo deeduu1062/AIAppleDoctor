@@ -1439,6 +1439,15 @@ details.dsec > summary h4{display:inline}
 .kxother{border-top:1px solid var(--line);margin-top:10px;padding-top:10px;display:grid;gap:6px}
 .kxother .field{max-width:16rem}
 #oExp .dexform{margin:4px 0}
+.kxcard{margin:6px 0}
+#oExp .kxcard h4{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:1.08rem;margin:0}
+.rcdiary li.k-dk_fert{border-left-color:#4E8B3A}
+.rcdiary li.k-dk_labour,.rcdiary li.k-dk_prune{border-left-color:#8A6D3B}
+.rcdiary li.k-dk_irrig{border-left-color:#3AA0B0}
+.rcdiary li.k-dk_tools,.rcdiary li.k-dk_repair{border-left-color:#7A7A7A}
+.rcdiary li.k-dk_hail,.rcdiary li.k-dk_snow,.rcdiary li.k-dk_rain,.rcdiary li.k-dk_drought{border-left-color:var(--bad)}
+.kxtot{display:flex;justify-content:space-between;gap:10px;margin:2px 0 0;padding-top:8px;border-top:1px solid var(--line);font-size:.92rem}
+.kxtot span{color:var(--muted)}.kxtot b{font:600 1rem var(--mono)}
 .dethead{display:flex;justify-content:flex-start;align-items:center;gap:14px;flex-wrap:wrap}
 .dethead .dexbtn{margin-left:auto}
 .dexform{margin:12px 0}
@@ -4299,7 +4308,7 @@ function otExpHtml(o) {
 let kxYear = null;
 function expRowsFor(o, y) {
   const t = expTotals(o, y), rows = [];
-  t.ents.forEach(d => rows.push({date: d.date, kind: tr("dk_" + d.kind) + (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : ""), text: d.text, cost: +d.cost}));
+  t.ents.forEach(d => rows.push({date: d.date, k: d.kind, kind: tr("dk_" + d.kind) + (d.kind === "spray" && d.stage ? " <small>(" + tr(d.stage) + ")</small>" : ""), text: d.text, cost: +d.cost}));
   const se = seFor(o.id, y);
   if (se) COST_KEYS.forEach(k => { const v = +se.costs[k] || 0; if (v) rows.push({date: "", kind: esc(tr("xh_lump").replace("{c}", tr("yc_" + k))), text: "", cost: v}); });
   if (t.lw) rows.push({date: "", kind: esc(tr("xh_lab")), text: "", cost: t.lw});
@@ -4308,16 +4317,16 @@ function expRowsFor(o, y) {
 }
 function kxYearHtml(o, y, cur) {
   const r = expRowsFor(o, y);
-  const head = '<p class="ksum"><b>' + tr("hy_label").replace("{y}", y) + "</b>" + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") +
-    (r.rows.length ? "<span>" + tr("xh_n").replace("{n}", r.rows.length) + " · " + inr(r.total) + "</span>" : "") + "</p>";
-  if (!r.rows.length) return head + '<p class="hint">' + tr("xh_cur0").replace("{y}", y) + "</p>";
-  return head + '<ul class="klist">' + r.rows.map(x => '<li><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + '</span><span class="dt"><b>' + x.kind + "</b>" +
-    (x.text ? "<span>" + esc(x.text) + "</span>" : "") + '</span><span class="dc">' + inr(x.cost) + "</span></li>").join("") + "</ul>";
+  let h = '<section class="rccard kxcard"><h4>' + tr("kx_title").replace("{y}", y) + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") + "</h4>";
+  if (!r.rows.length) return h + '<p class="hint">' + tr("xh_cur0").replace("{y}", y) + "</p></section>";
+  return h + '<ol class="rcdiary">' + r.rows.map(x => '<li class="k-dk_' + esc(x.k || "lump") + '"><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + "</span><span><b>" + x.kind + "</b>" +
+    "<br>" + (x.text ? esc(x.text) + " · " : "") + inr(x.cost) + "</span></li>").join("") + "</ol>" +
+    '<p class="kxtot"><span>' + tr("rc_tot") + " · " + tr("xh_n").replace("{n}", r.rows.length) + "</span><b>" + inr(r.total) + "</b></p></section>";
 }
 function otKharchHtml(o) {
   const curY = hYear(todayIso()), ys = expYearsAll().filter(y => y !== curY && expTotals(o, y).total > 0);
   if (ys.indexOf(kxYear) < 0) kxYear = null;
-  let h = '<section class="osec omoney" id="oExp"><div class="kxhead"><h4>' + tr("kx_recent") + "</h4>" +
+  let h = '<section class="osec omoney" id="oExp" aria-label="' + esc(tr("kx_recent")) + '"><div class="kxhead">' +
     (dashExp ? "" : '<button class="btn-s add" type="button" data-dex="open" data-o="' + esc(o.id) + '">＋ ' + tr("ex_add") + "</button>") + "</div>";
   if (dashExp) h += dashExpHtml();
   h += kxYearHtml(o, curY, true);
@@ -4329,9 +4338,9 @@ function otKharchHtml(o) {
   return h + '<p class="xhmore"><button class="btn-s" type="button" data-xhedit="' + (kxYear || curY) + '" data-o="' + esc(o.id) + '">' + tr("xh_all") + "</button></p></section>";
 }
 document.addEventListener("change", e => { if (e.target && e.target.id === "kx_year") { kxYear = +e.target.value || null; renderDash(); const s2 = $("kx_year"); if (s2) s2.focus(); } });
-Object.assign(T.en, { kx_recent:"Recent expenses", kx_other:"See another year" });
-Object.assign(T.hi, { kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें" });
-Object.assign(T.hn, { kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein" });
+Object.assign(T.en, { kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
+Object.assign(T.hi, { kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
+Object.assign(T.hn, { kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
 function otMoneyHtml(o) {
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
     .concat((o.diary || []).map(d => hYear(d.date)).filter(y => y > 1900)))).sort((a, b) => b - a);
