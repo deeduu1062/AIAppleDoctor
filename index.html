@@ -1451,6 +1451,13 @@ details.dsec > summary h4{display:inline}
 .rcdiary li.k-dk_hail,.rcdiary li.k-dk_snow,.rcdiary li.k-dk_rain,.rcdiary li.k-dk_drought{border-left-color:var(--bad)}
 .rcdiary li.kxnew{background:#FFF6D6;border-radius:6px;transition:background .6s}
 .rcdiary li{transition:background .6s}
+.slcard{margin:0 0 6px}
+.sltot{display:grid;grid-template-columns:repeat(auto-fit,minmax(6.5rem,1fr));gap:6px;background:var(--bg,#f6f4ee);border-radius:8px;padding:8px 12px}
+.sltot div{display:flex;flex-direction:column}.sltot span{color:var(--muted);font-size:.8rem}.sltot b{font:700 1.05rem var(--mono);font-variant-numeric:tabular-nums}
+.sltot .due b{color:var(--bad)}
+.sllist small{color:var(--muted)}
+.slyr{max-width:16rem;margin:6px 0 4px}
+.sbyo{margin-top:22px}
 .splinks{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
 .kxacts{display:flex;gap:14px;font-size:.85rem;margin-top:2px}
 .kxtot{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0;padding:8px 12px;border-radius:8px;background:var(--bg,#f6f4ee);font-size:.92rem}
@@ -1947,6 +1954,8 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     
 <div class="panel single" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
       <div>
+        <div id="salesTl"></div>
+        <h3 class="ysub sbyo" data-i18n="sl_byo"></h3>
         <p class="hynote" data-i18n="hy_note"></p>
         <p class="hint" data-i18n="sp_addhint"></p>
         <div class="pick">
@@ -3246,7 +3255,7 @@ function dropEmptySeasons() {
   const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
   if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded) save(); }
 }
-function renderAll() { dropEmptySeasons(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); }
+function renderAll() { dropEmptySeasons(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); renderSalesTl(); if (typeof renderExp === "function") renderExp(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -4116,6 +4125,49 @@ $("dash").addEventListener("click", e => {
   else if (a === "rgnote") { dashView = oid; otab = "work"; dashYear = null; profEdit = false; diaryEdit = null; kAdd = true; renderDash(); const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); }
   else if (a === "rgexp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); }
 });
+/* Sales record, top: every lot sold in a harvest year across all orchards, in the order sold (like the Expenses timeline); orchard-wise detail follows below */
+let slYear = null;
+const SL_COLORS = ["#2F6FA8", "#B5651D", "#4E8B3A", "#8E44AD", "#C0392B", "#16A085", "#7F8C8D"];
+function lotWhen(l) { const ds = l.lines.map(n => n.date).filter(Boolean).sort(); return ds.length ? ds[0] : ""; }
+function salesYears() { return Array.from(new Set(S.seasons.filter(se => se.lots.some(l => lotCalc(l).b > 0)).map(se => se.year))).sort((a, b) => b - a); }
+function salesCardHtml(y) {
+  const cur = y === hYear(todayIso()), rows = [];
+  S.seasons.filter(se => se.year === y).forEach(se => {
+    const o = S.orchards.find(x => x.id === se.oid); if (!o) return;
+    se.lots.forEach((l, i) => { const c = lotCalc(l); if (!c.b) return; rows.push({o, se, l, i, c, when: lotWhen(l)}); });
+  });
+  rows.sort((a, b) => (a.when && b.when ? (a.when < b.when ? -1 : a.when > b.when ? 1 : 0) : a.when ? -1 : b.when ? 1 : 0));
+  const T = rows.reduce((a, r) => { a.b += r.c.b; a.g += r.c.gross; a.n += r.c.net; a.d += r.c.due; return a; }, {b: 0, g: 0, n: 0, d: 0});
+  const oi = id => Math.max(0, S.orchards.findIndex(x => x.id === id)) % SL_COLORS.length;
+  let h = '<section class="rccard kxcard slcard"><div class="kxch"><h4>' + tr("sl_title").replace("{y}", y) + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") + "</h4></div>";
+  if (!rows.length) return h + '<p class="hint">' + tr("sl_none").replace("{y}", y) + "</p></section>";
+  h += '<div class="sltot"><div><span>' + tr(cur ? "sl_sofar" : "sl_tot") + "</span><b>" + inr(T.g) + '</b></div><div><span>' + tr("r_boxes") + "</span><b>" + fmtN(T.b) + '</b></div><div><span>' + tr("sl_net") + "</span><b>" + inr(T.n) + "</b></div>" +
+    (T.d ? '<div class="due"><span>' + tr("k_due") + "</span><b>" + inr(T.d) + "</b></div>" : "") + "</div>";
+  return h + '<ol class="rcdiary sllist">' + rows.map(r => {
+    const gl = r.l.lines.filter(n => +n.boxes > 0).map(n => esc(n.grade || "–") + " " + fmtN(+n.boxes) + " × " + inr(+n.rate)).join(", ");
+    return '<li style="border-left-color:' + SL_COLORS[oi(r.o.id)] + '"><span class="dd">' + (r.when ? fmtDay(r.when) : "–") + "</span><span><b>" + esc(r.l.name || lotNo(r.i)) + "</b> · " + esc(r.o.name || tr("orchard_fallback")) +
+      (r.c.due ? ' <em class="chip soon">' + tr("sl_unpaid") + "</em>" : "") + "<br><small>" + gl + "</small><br>" + tr("sl_line").replace("{b}", fmtN(r.c.b)).replace("{g}", inr(r.c.gross)).replace("{n}", inr(r.c.net)) +
+      '<span class="kxacts"><button class="link" type="button" data-slgo="' + esc(r.o.id) + '" data-y="' + y + '">' + tr("sl_open") + "</button></span></span></li>";
+  }).join("") + "</ol></section>";
+}
+function renderSalesTl() {
+  const el = $("salesTl"); if (!el) return;
+  const ys = salesYears();
+  if (!ys.length) { el.innerHTML = ""; return; }
+  if (ys.indexOf(slYear) < 0) slYear = ys[0];
+  el.innerHTML = salesCardHtml(slYear) + (ys.length > 1 ? '<div class="field slyr"><label for="sl_year">' + tr("kx_other") + '</label><select id="sl_year">' +
+    ys.map(y => '<option value="' + y + '"' + (y === slYear ? " selected" : "") + ">" + tr("hy_label").replace("{y}", y) + "</option>").join("") + "</select></div>" : "");
+}
+document.addEventListener("change", e => { if (e.target && e.target.id === "sl_year") { slYear = +e.target.value; renderSalesTl(); const n = $("sl_year"); if (n) n.focus(); } });
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-slgo]"); if (!b) return;
+  goSeason(b.dataset.slgo, +b.dataset.y); showSub("orch");
+  const t = document.querySelector(".sbyo"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"});
+});
+Object.assign(T.en, { sl_title:"Sales, harvest year {y}", sl_none:"No sales recorded in harvest year {y}.", sl_sofar:"Sales so far", sl_tot:"Total sales", sl_net:"Net after lot costs", sl_unpaid:"Not paid", sl_line:"{b} boxes · {g} sale · {n} net", sl_open:"Open lot", sl_byo:"Orchard-wise detail" });
+Object.assign(T.hi, { sl_title:"बिक्री, फ़सल वर्ष {y}", sl_none:"फ़सल वर्ष {y} में कोई बिक्री दर्ज नहीं।", sl_sofar:"अब तक की बिक्री", sl_tot:"कुल बिक्री", sl_net:"लॉट ख़र्च के बाद", sl_unpaid:"पैसा बाक़ी", sl_line:"{b} पेटियाँ · {g} बिक्री · {n} शुद्ध", sl_open:"लॉट खोलें", sl_byo:"बाग़ के हिसाब से ब्योरा" });
+Object.assign(T.hn, { sl_title:"Bikri, harvest saal {y}", sl_none:"Harvest saal {y} mein koi bikri record nahi.", sl_sofar:"Ab tak ki bikri", sl_tot:"Kul bikri", sl_net:"Lot kharche ke baad", sl_unpaid:"Paisa baaki", sl_line:"{b} petiyan · {g} bikri · {n} net", sl_open:"Lot kholein", sl_byo:"Bagiche ke hisaab se detail" });
+
 function renderSpMore() {
   const el = $("spMore"); if (!el) return;
   const o = curOrchard();
