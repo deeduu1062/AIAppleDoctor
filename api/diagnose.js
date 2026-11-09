@@ -115,6 +115,7 @@ module.exports = async (req, res) => {
   }
   const part = PARTS.includes(body.part) ? body.part : "";
   const note = String(body.note || "").slice(0, 400);
+  const seen = (Array.isArray(body.seen) ? body.seen : []).map(x => String(x || "").slice(0, 160).trim()).filter(Boolean).slice(0, 10);
   const lang = body.lang === "hi" || body.lang === "hn" ? body.lang : "en";
 
   // 3. Daily limit (counts this grower's checks today, India time)
@@ -130,6 +131,7 @@ module.exports = async (req, res) => {
   // 4. Ask the AI
   const partWord = { leaf: "leaves", fruit: "fruit", bark: "branch, bark or trunk", tree: "whole tree or roots" }[part] || "not said";
   const userText = "Part of the tree in the photo: " + partWord + ".\n" +
+    (seen.length ? "Signs the grower ticked in the symptom checker (seen up close, use them with the photo): " + seen.join("; ") + "\n" : "") +
     (note ? "Grower's note: " + note + "\n" : "") +
     "LANGUAGE: " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (simple Hindi written in English/Roman letters, like \"Patton par kaale daag hain\")" : "English");
   let result;

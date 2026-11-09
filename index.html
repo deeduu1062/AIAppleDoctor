@@ -1425,6 +1425,7 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.dxseen{margin:4px 0;padding:6px 10px;border-radius:8px;background:color-mix(in srgb,var(--good) 12%,var(--surface));color:var(--good);font-size:.9rem;font-weight:600}
 .tsum{background:linear-gradient(180deg,color-mix(in srgb,var(--apple) 6%,var(--surface)),var(--surface) 70%)}
 .tsstack{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin:2px 0 4px}
 .tsdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:0}
@@ -2170,6 +2171,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
           <div class="field"><label for="dxFile" data-i18n="dx_file"></label><input id="dxFile" type="file" accept="image/*" multiple></div>
           <div class="dxthumbs" id="dxThumbs"></div>
           <div class="field"><label for="dxNote" data-i18n="dx_note"></label><textarea id="dxNote" rows="2" maxlength="400"></textarea></div>
+          <p class="dxseen" id="dxSeen" hidden></p>
           <div class="linkrow"><button class="btn-s add" type="button" id="dxGo" data-i18n="dx_go"></button><span class="fine" id="dxStat" role="status"></span></div>
           <p class="autherr" id="dxErr" role="alert"></p>
         </div>
@@ -6060,6 +6062,7 @@ function renderDiag() {
   }
   renderDiagRes();
   renderDiagAuth();
+  renderDxSeen();
   if (dxLast) renderDiagAi(dxLast.id, dxLast.result);
 }
 
@@ -6074,6 +6077,17 @@ function renderDiagRes() {
   $("dxRes").innerHTML = '<div class="dxcards">' + ids.map((id, i) => dxCard(id, i === 0 && clear ? tr("dx_best") : tr("dx_also"), i === 0 && clear)).join("") + "</div>";
 }
 
+/* what the grower ticked in "Check by what you see" goes with the photos, so the AI knows what they saw up close */
+const dxSeen = p => ((dxSel.ticks[p] || []).map(i => DXS[p] && DXS[p][i] && DXS[p][i].en).filter(Boolean)).slice(0, 10);
+function renderDxSeen() {
+  const el = $("dxSeen"); if (!el) return;
+  const n = dxSeen($("dxPart").value).length;
+  el.hidden = !n; el.textContent = n ? "✓ " + tr(n === 1 ? "dx_seen1" : "dx_seen").replace("{n}", n) : "";
+}
+Object.assign(T.en, { dx_seen:"The {n} signs you ticked above will also be sent with the photos.", dx_seen1:"The 1 sign you ticked above will also be sent with the photos." });
+Object.assign(T.hi, { dx_seen:"ऊपर टिक किए गए {n} लक्षण भी फ़ोटो के साथ भेजे जाएँगे।", dx_seen1:"ऊपर टिक किया गया 1 लक्षण भी फ़ोटो के साथ भेजा जाएगा।" });
+Object.assign(T.hn, { dx_seen:"Upar tick kiye gaye {n} lakshan bhi photo ke saath bheje jayenge.", dx_seen1:"Upar tick kiya gaya 1 lakshan bhi photo ke saath bheja jayega." });
+$("dxPart").addEventListener("change", () => { const p = $("dxPart").value; if (p !== dxSel.part) { dxSel.part = p; renderDiag(); $("dxPart").value = p; } renderDxSeen(); });
 $("dxParts").addEventListener("click", e => {
   const b = e.target.closest("[data-dxpart]"); if (!b) return;
   dxSel.part = b.dataset.dxpart; renderDiag();
@@ -6082,7 +6096,7 @@ $("dxSyms").addEventListener("change", e => {
   const c = e.target.closest("[data-dxsym]"); if (!c) return;
   const list = (dxSel.ticks[dxSel.part] = dxSel.ticks[dxSel.part] || []), i = +c.dataset.dxsym;
   if (c.checked) { if (!list.includes(i)) list.push(i); } else dxSel.ticks[dxSel.part] = list.filter(x => x !== i);
-  renderDiagRes();
+  renderDiagRes(); renderDxSeen();
 });
 $("tp-diag").addEventListener("click", e => {
   if (e.target.closest("[data-dxspray]")) { showTool("spray", false, true); return; }
@@ -6134,7 +6148,7 @@ $("dxGo").addEventListener("click", async () => {
     const r = await fetch("/api/diagnose", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-      body: JSON.stringify({ images: dxFiles, part: $("dxPart").value, note: $("dxNote").value.trim(), lang })
+      body: JSON.stringify({ images: dxFiles, part: $("dxPart").value, note: $("dxNote").value.trim(), seen: dxSeen($("dxPart").value), lang })
     });
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "" }; renderDiagAi(j.id, j.result); loadDxHist(true); }
