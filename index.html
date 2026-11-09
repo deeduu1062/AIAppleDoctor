@@ -3600,15 +3600,15 @@ function renderEditor() {
     years.forEach(y => {
       const t = yr[y].t, ss = yr[y].ss, open = spOpen.has(y) || !!(editLine && ss.some(x => x === lotSeason(editLine.lot)));
       h += '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="sptoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
-        '<span class="yy">' + y + '</span><span class="yfigs five">' + yfig(tr("by_gross"), mny(t.rev), "", ' data-spyg="' + y + '"') +
+        '<span class="yy">' + y + "</span>" + (hsCur(t.boxes, y) ? hsBadge() : '<span class="yfigs five">' + yfig(tr("by_gross"), mny(t.rev), "", ' data-spyg="' + y + '"') +
         yfig(tr("by_net"), mny(t.net), "ynet " + cls(t.net), ' data-spy="' + y + '"') + yfig(tr("by_boxes"), fmtN(t.boxes), "", ' data-spyb="' + y + '"') +
-        yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0), "", ' data-spye="' + y + '"') + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0), "", ' data-spyp="' + y + '"') +
-        '</span><span class="ychev" aria-hidden="true"></span></button>';
+        yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0), "", ' data-spye="' + y + '"') + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0), "", ' data-spyp="' + y + '"') + "</span>") +
+        '<span class="ychev" aria-hidden="true"></span></button>';
       if (open) {
         h += '<div class="ybody olist">' + S.orchards.map(oo => {
           const x = seFor(oo.id, y), k = spoKey(oo.id, y), oopen = spoOpen.has(k) || !!(x && editLine && lotSeason(editLine.lot) === x);
           let r2 = '<section class="spo yrow orow' + (oopen ? " open" : "") + '" id="spo-' + esc(oo.id) + "-" + y + '"><button class="yhead" type="button" data-act="spotoggle" data-o="' + esc(oo.id) + '" data-y="' + y + '" aria-expanded="' + oopen + '">' +
-            '<span class="oname">' + esc(oo.name || tr("orchard_fallback")) + '</span><span class="yfigs five"' + (x ? ' data-spo5="' + esc(x.id) + '"' : "") + ">" + fig5(seT(x)) + '</span><span class="ychev" aria-hidden="true"></span></button>';
+            '<span class="oname">' + esc(oo.name || tr("orchard_fallback")) + "</span>" + (hsCur(seT(x).boxes, y) ? hsBadge() : '<span class="yfigs five"' + (x ? ' data-spo5="' + esc(x.id) + '"' : "") + ">" + fig5(seT(x)) + "</span>") + '<span class="ychev" aria-hidden="true"></span></button>';
           if (!oopen) return r2 + "</section>";
           const yc = x ? seasonCalc(x).yearly : 0, oid = esc(oo.id);
           r2 += '<div class="obody">' + (x && x.lots.length ? '<div class="lottab" data-olots="' + esc(x.id) + '">' + orchLotsTable(x) + "</div>" + editBoxFor(x) : '<p class="hint">' + tr("sp_nolots") + "</p>") +
@@ -4463,9 +4463,11 @@ Object.assign(T.hn, { sp_go_hisab:"{o} ka hisaab dekhein →", sp_go_munafa:"Sab
 Object.assign(T.en, { kx_sofar:"Total so far", kx_edit:"Edit expense", kx_save:"Save changes", kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
 Object.assign(T.hi, { kx_sofar:"अब तक का ख़र्च", kx_edit:"ख़र्च बदलें", kx_save:"बदलाव सहेजें", kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
 Object.assign(T.hn, { kx_sofar:"Ab tak ka kharcha", kx_edit:"Kharcha badlein", kx_save:"Badlav save karein", kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
-Object.assign(T.en, { hs_cur:"Current season", hs_cur_s:"Sales start in August", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Add each lot in Season sales record when you sell." });
-Object.assign(T.hi, { hs_cur:"चालू सीज़न", hs_cur_s:"बिक्री अगस्त से शुरू", hs_cur_p:"1 नवंबर {a} – 31 अक्टूबर {b}। बेचने पर हर लॉट सीज़न बिक्री रिकॉर्ड में जोड़ें।" });
-Object.assign(T.hn, { hs_cur:"Chalu season", hs_cur_s:"Bikri August se shuru", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Bechne par har lot Season bikri record mein jodein." });
+Object.assign(T.en, { hs_cur:"Current season", hs_cur_s:"Sales start in August", hs_exp:"expenses so far {x}", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Add each lot in Season sales record when you sell." });
+Object.assign(T.hi, { hs_cur:"चालू सीज़न", hs_cur_s:"बिक्री अगस्त से शुरू", hs_exp:"अब तक ख़र्च {x}", hs_cur_p:"1 नवंबर {a} – 31 अक्टूबर {b}। बेचने पर हर लॉट सीज़न बिक्री रिकॉर्ड में जोड़ें।" });
+Object.assign(T.hn, { hs_cur:"Chalu season", hs_cur_s:"Bikri August se shuru", hs_exp:"ab tak kharcha {x}", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Bechne par har lot Season bikri record mein jodein." });
+const hsCur = (boxes, y) => !boxes && y >= curHYear();
+const hsBadge = extra => '<span class="hscur"><b>' + tr("hs_cur") + "</b>" + tr("hs_cur_s") + (extra || "") + "</span>";
 function otMoneyHtml(o) {
   /* every harvest year as a dropdown with the same five figures as Season sales record; one open at a time */
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
@@ -5480,12 +5482,13 @@ function renderYearDetail() {
     const t = all[y], open = yOpen.has(y), n = t.rows.length;
     const gp = t.rev - t.lot, fig = (k, v, c) => yfig(tr(k), v, c);
     let h = '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="ytoggle" data-y="' + y + '" aria-expanded="' + open + '" aria-controls="yb' + y + '">' +
-      '<span class="yy">' + y + '</span><span class="yfigs">' + fig("y_gp", mny(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(t.net), "ynet " + cls(t.net)) +
-      '</span><span class="ychev" aria-hidden="true"></span></button>';
+      '<span class="yy">' + y + "</span>" + (hsCur(t.boxes, y) ? hsBadge() : '<span class="yfigs">' + fig("y_gp", mny(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(t.net), "ynet " + cls(t.net)) + "</span>") +
+      '<span class="ychev" aria-hidden="true"></span></button>';
     h += '<div class="ybody" id="yb' + y + '"' + (open ? "" : " hidden") + ">";
     if (open) {
       /* orchards as green-tinted cards (same pattern as Season sales record), each with sales profit − yearly expenses = net income */
       h += '<div class="olist">' + S.orchards.map(o => { const x = t.rows.find(q => q.o === o), r = x ? x.r : {rev: 0, lotExp: 0, yearly: 0, profit: 0};
+        if (hsCur(x ? x.r.boxes : 0, y)) return '<div class="spo orow oprof"><div class="yhead"><span class="oname">' + esc(o.name || tr("orchard_fallback")) + "</span>" + hsBadge() + "</div></div>";
         return '<div class="spo orow oprof"><div class="yhead"><span class="oname">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs">' + fig("y_gp", mny(r.rev - r.lotExp)) +
           '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(r.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(r.profit), "ynet " + cls(r.profit)) + "</span></div></div>"; }).join("") + "</div>";
       h += '<div class="dlacts"><button class="btn-s" type="button" data-act="dlcsv" data-y="' + y + '">' + tr("dl_csv") + '</button><button class="btn-s" type="button" data-act="dlpdf" data-y="' + y + '">' + tr("dl_pdf") + "</button></div>";
