@@ -1463,7 +1463,7 @@ details.dsec > summary h4{display:inline}
 .dyear[open]{border-left:4px solid var(--apple);background:color-mix(in srgb,var(--apple) 4%,var(--surface))}
 .yrow.open .ledger thead th,.dyear[open] .ledger thead th{background:color-mix(in srgb,var(--apple) 10%,var(--surface));color:var(--fg)}
 .yrow.open .ledger tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--line) 22%,transparent)}
-.olot table.ledger.sm{width:100%;min-width:0}.olot .ledger.sm th,.olot .ledger.sm td{padding:6px 4px;white-space:normal}.olot .ledger.sm td:last-child,.olot .ledger.sm th:last-child{padding-right:6px}
+
 html.booting body > *:not(script){visibility:hidden}
 html.booting body::after{content:"";position:fixed;top:42%;left:50%;width:38px;height:38px;margin-left:-19px;border:4px solid var(--line);border-top-color:var(--apple);border-radius:50%;animation:bootspin .8s linear infinite}
 @keyframes bootspin{to{transform:rotate(360deg)}}
@@ -3947,16 +3947,19 @@ function profileHtml(o) {
 Object.assign(T.en, { ol_pb:"{x} a box", ol_rate:"Rate" }); Object.assign(T.hi, { ol_pb:"{x} प्रति पेटी", ol_rate:"भाव" }); Object.assign(T.hn, { ol_pb:"{x} per peti", ol_rate:"Bhaav" });
 /* the orchard's lots for one harvest year (read-only; edit them in Season sales record) */
 function oLotsHtml(se) {
-  const lots = se.lots.filter(l => l.lines.some(n => +n.boxes));
+  const lots = se.lots.filter(l => l.lines.some(n => +n.boxes || +n.rate));
   if (!lots.length) return "";
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
   return '<section class="osec olotsec"><h4>' + tr("lots_h") + " (" + lots.length + ")</h4>" + lots.map(l => {
-    const i = se.lots.indexOf(l), c = lotCalc(l), lines = l.lines.filter(n => +n.boxes);
+    const i = se.lots.indexOf(l), c = lotCalc(l), lines = l.lines.filter(n => +n.boxes || +n.rate);
     return '<details class="olot"><summary><span class="olx"><span class="oln"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : " · " + esc(l.name)) + "</span>" +
       '<span class="olf">' + tr("k_ofb2").replace("{n}", fmtN(c.b)) + ' · <b class="' + (c.net < 0 ? "neg" : "pos") + '">' + inr(c.net) + "</b> · " + tr("ol_pb").replace("{x}", inr(c.nppb)) + "</span></span></summary>" +
       '<span class="olbar" aria-hidden="true">' + lines.map(n => '<i class="gc-' + gradeKey(n.grade) + '" style="flex:' + (+n.boxes) + '"></i>').join("") + "</span>" +
-      '<div class="tablewrap"><table class="ledger sm"><thead><tr><th scope="col">' + tr("gt_grade") + '</th><th scope="col">' + tr("f_boxes") + '</th><th scope="col">' + tr("ol_rate") + '</th><th scope="col">' + tr("ls_net") + "</th></tr></thead><tbody>" +
-      lines.map(n => { const x = lineCalc(n), k = gradeKey(n.grade); return '<tr class="olg-' + k + '"><td><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(x.b) + "</td><td>" + inr(+n.rate || 0) + '</td><td class="' + (x.net < 0 ? "neg" : "pos") + '">' + inr(x.net) + "</td></tr>"; }).join("") +
+      '<div class="tablewrap"><table class="ledger sm olots"><thead><tr>' + ["ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+      lines.map((n, j) => { const x = lineCalc(n), k = gradeKey(n.grade), cl = v => (v < 0 ? "neg" : "pos");
+        return '<tr><td class="eno">' + (j + 1) + '</td><td class="t olg-' + k + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(x.b) + "</td><td>" + inr(x.gross) + "</td><td>" + inr(x.exp) +
+          '</td><td class="' + cl(x.net) + '">' + inr(x.net) + "</td><td>" + inr(x.eq ? x.net / x.eq : 0) + "</td></tr>"; }).join("") +
+      '<tr class="lottot"><td colspan="2">' + tr("ne_tot") + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) + '</td><td class="' + (c.net < 0 ? "neg" : "pos") + '">' + inr(c.net) + "</td><td>" + inr(c.nppb) + "</td></tr>" +
       "</tbody></table></div>" +
       '<div class="olact"><button class="btn-s" type="button" data-olotedit="' + esc(l.id) + '" data-o="' + esc(se.oid) + '" data-y="' + se.year + '">✎ ' + tr("lot_edit") + "</button></div></details>";
   }).join("") + "</section>";
