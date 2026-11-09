@@ -4491,13 +4491,14 @@ function otMoneyHtml(o) {
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
     .concat((o.diary || []).map(d => hYear(d.date)).filter(y => y > 1900)))).sort((a, b) => b - a);
   if (!yrs.length) yrs.push(thisYear());
-  if (dashYear !== 0 && yrs.indexOf(dashYear) < 0) { const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year); dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0]; }
+  if (dashYear !== 0 && (yrs.indexOf(dashYear) < 0 || hsCur(seT(seFor(o.id, dashYear)).boxes, dashYear))) { const sy = S.seasons.filter(x => x.oid === o.id && seT(x).boxes).map(x => x.year); dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0]; }
   return '<div class="ylist figrows hslist">' + yrs.map(y => {
     const open = y === dashYear, t = seT(seFor(o.id, y)), cur = !t.boxes && y >= curHYear();
     /* the current harvest year has no sales until the season (August): say so instead of a row of zeros */
     const figs = cur ? '<span class="hscur"><b>' + tr("hs_cur") + "</b>" + tr("hs_cur_s") + "</span>" : '<span class="yfigs five">' + fig5(t) + "</span>";
     const body = cur ? '<p class="hscurp">' + tr("hs_cur_p").split("{a}").join(y - 1).split("{b}").join(y) + "</p>" : insightsHtml(o, y);
-    return '<div class="yrow' + (open ? " open" : "") + (cur ? " hscurrow" : "") + '" id="hsy-' + y + '"><button class="yhead" type="button" data-hst="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + "</span>" +
+    if (cur) return '<div class="yrow hscurrow" id="hsy-' + y + '"><div class="yhead"><span class="yy">' + y + "</span>" + figs + "</div></div>";
+    return '<div class="yrow' + (open ? " open" : "") + '" id="hsy-' + y + '"><button class="yhead" type="button" data-hst="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + "</span>" +
       figs + '<span class="ychev" aria-hidden="true"></span></button>' + (open ? '<div class="ybody">' + body + "</div>" : "") + "</div>";
   }).join("") + "</div>" +
     '<div class="oacts"><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + "</button></div>";
@@ -5502,6 +5503,7 @@ function renderYearDetail() {
   $("yearDetail").innerHTML = years.map(y => {
     const t = all[y], open = yOpen.has(y), n = t.rows.length;
     const gp = t.rev - t.lot, fig = (k, v, c) => yfig(tr(k), v, c);
+    if (hsCur(t.boxes, y)) return '<div class="yrow hscurrow"><div class="yhead"><span class="yy">' + y + "</span>" + hsBadge() + "</div></div>";
     let h = '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="ytoggle" data-y="' + y + '" aria-expanded="' + open + '" aria-controls="yb' + y + '">' +
       '<span class="yy">' + y + "</span>" + (hsCur(t.boxes, y) ? hsBadge() : '<span class="yfigs">' + fig("y_gp", mny(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(t.net), "ynet " + cls(t.net)) + "</span>") +
       '<span class="ychev" aria-hidden="true"></span></button>';
