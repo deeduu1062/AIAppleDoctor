@@ -1425,6 +1425,10 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.hscur{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;min-width:0;padding-left:14px;border-left:1px solid var(--line);font-size:.92rem;color:var(--muted)}
+.hscur b{font:700 .8rem var(--display);color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface));border-radius:999px;padding:2px 10px;text-transform:uppercase;letter-spacing:.03em}
+@media (max-width:900px){.figrows .hscur{grid-column:1/3;grid-row:2;padding:8px 0 0;border-left:0;border-top:1px solid var(--line)}}
+.hscurp{margin:4px 0;color:var(--muted);font-size:.92rem}
 .kytabs{flex-wrap:nowrap;overflow-x:auto;gap:6px;margin:0 0 4px;scrollbar-width:none}
 .kytabs .tab{flex:0 0 auto;min-width:4.2rem;padding:6px 12px;min-height:38px;font-size:.92rem}
 .ksum{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:4px 0}
@@ -4459,6 +4463,9 @@ Object.assign(T.hn, { sp_go_hisab:"{o} ka hisaab dekhein →", sp_go_munafa:"Sab
 Object.assign(T.en, { kx_sofar:"Total so far", kx_edit:"Edit expense", kx_save:"Save changes", kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
 Object.assign(T.hi, { kx_sofar:"अब तक का ख़र्च", kx_edit:"ख़र्च बदलें", kx_save:"बदलाव सहेजें", kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
 Object.assign(T.hn, { kx_sofar:"Ab tak ka kharcha", kx_edit:"Kharcha badlein", kx_save:"Badlav save karein", kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
+Object.assign(T.en, { hs_cur:"Current season", hs_cur_s:"Sales start in August", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Add each lot in Season sales record when you sell." });
+Object.assign(T.hi, { hs_cur:"चालू सीज़न", hs_cur_s:"बिक्री अगस्त से शुरू", hs_cur_p:"1 नवंबर {a} – 31 अक्टूबर {b}। बेचने पर हर लॉट सीज़न बिक्री रिकॉर्ड में जोड़ें।" });
+Object.assign(T.hn, { hs_cur:"Chalu season", hs_cur_s:"Bikri August se shuru", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Bechne par har lot Season bikri record mein jodein." });
 function otMoneyHtml(o) {
   /* every harvest year as a dropdown with the same five figures as Season sales record; one open at a time */
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
@@ -4466,9 +4473,12 @@ function otMoneyHtml(o) {
   if (!yrs.length) yrs.push(thisYear());
   if (dashYear !== 0 && yrs.indexOf(dashYear) < 0) { const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year); dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0]; }
   return '<div class="ylist figrows hslist">' + yrs.map(y => {
-    const open = y === dashYear;
-    return '<div class="yrow' + (open ? " open" : "") + '" id="hsy-' + y + '"><button class="yhead" type="button" data-hst="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + '</span><span class="yfigs five">' +
-      fig5(seT(seFor(o.id, y))) + '</span><span class="ychev" aria-hidden="true"></span></button>' + (open ? '<div class="ybody">' + insightsHtml(o, y) + "</div>" : "") + "</div>";
+    const open = y === dashYear, t = seT(seFor(o.id, y)), cur = !t.boxes && y >= curHYear();
+    /* the current harvest year has no sales until the season (August): say so instead of a row of zeros */
+    const figs = cur ? '<span class="hscur"><b>' + tr("hs_cur") + "</b>" + tr("hs_cur_s") + "</span>" : '<span class="yfigs five">' + fig5(t) + "</span>";
+    const body = cur ? '<p class="hscurp">' + tr("hs_cur_p").split("{a}").join(y - 1).split("{b}").join(y) + "</p>" : insightsHtml(o, y);
+    return '<div class="yrow' + (open ? " open" : "") + (cur ? " hscurrow" : "") + '" id="hsy-' + y + '"><button class="yhead" type="button" data-hst="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + "</span>" +
+      figs + '<span class="ychev" aria-hidden="true"></span></button>' + (open ? '<div class="ybody">' + body + "</div>" : "") + "</div>";
   }).join("") + "</div>" +
     '<div class="oacts"><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + "</button></div>";
 }
