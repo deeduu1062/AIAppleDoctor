@@ -1418,13 +1418,20 @@ details.dsec > summary h4{display:inline}
 .tsv b{font:500 .95rem var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 .tsv small{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .tsbar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.tsbar i{display:block;height:100%;background:var(--apple);border-radius:4px}
-.tsv.un .tsbar i{background:var(--muted)}
+.tsv.un .tsbar i{background:var(--g-none)}
 .tsv[open] summary .tsn{font-weight:700}
 .tsof{list-style:none;margin:0 0 6px;padding:4px 10px;border-left:3px solid var(--line);display:grid;gap:2px;font-size:.88rem;color:var(--muted)}
 .tsof li{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.tsum{background:linear-gradient(180deg,color-mix(in srgb,var(--apple) 6%,var(--surface)),var(--surface) 70%)}
+.tsstack{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin:2px 0 4px}
+.tsdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:0}
+.tsv.un .tsn::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:var(--g-none)}
+.tsa{padding:3px 10px;border-radius:999px;background:var(--surface-2)}
+.tsa.ok{background:color-mix(in srgb,var(--good) 14%,var(--surface))}
+.tsa.yg{background:color-mix(in srgb,var(--g-b) 18%,var(--surface))}.tsa.yg b{color:color-mix(in srgb,var(--g-b) 70%,var(--fg))}
 .lacts .lotedit{min-height:34px;padding:4px 10px;font-size:.85rem;margin-top:6px}
 .olots tr.tapedit{cursor:pointer}.olots tr.tapedit:hover td,.olots tr.tapedit:focus-visible td{background:color-mix(in srgb,var(--apple) 8%,var(--surface))}
 .olots .tapgo{color:var(--apple);font-size:.95rem}
@@ -4666,6 +4673,7 @@ function detailsHtml() {
 
 /* slim all-orchards card at the top of Orchard Record: total trees, trees by variety (tap to see which orchards), fruit-bearing vs young from planting year */
 const bearAge = root => (root === "m9" ? 3 : ["mm106", "m7", "mm111"].includes(root) ? 4 : 6);
+const TS_COLS = ["#B8321F", "#E09A1A", "#2F7A34", "#6A4FB3", "#1F7A8C", "#C2577A", "#8A6D1F", "#3B5BA9", "#7A8C1F", "#A0522D"];
 function treeSumHtml() {
   const names = {}, byV = {}, ofV = {}; let total = 0, area = 0, bear = 0, young = 0, noyr = 0, unset = 0;
   const addV = (o, name, n) => { const nm = (name || "").trim(), k = nm.toLowerCase(); if (!k) { unset += n; return; }
@@ -4680,14 +4688,16 @@ function treeSumHtml() {
   if (!total) return "";
   const keys = Object.keys(byV).sort((a, b) => byV[b] - byV[a]);
   const pc = n => Math.round(n * 100 / total) + "%";
-  const bar = n => '<span class="tsbar"><i style="width:' + Math.max(3, Math.round(n * 100 / total)) + '%"></i></span>';
-  const vrow = k => '<details class="tsv"><summary><span class="tsn">' + esc(names[k]) + "</span>" + bar(byV[k]) + '<b>' + fmtN(byV[k]) + "</b><small>" + pc(byV[k]) + "</small></summary>" +
+  const col = k => TS_COLS[keys.indexOf(k) % TS_COLS.length];
+  const bar = (n, c) => '<span class="tsbar"><i style="width:' + Math.max(3, Math.round(n * 100 / total)) + "%" + (c ? ";background:" + c : "") + '"></i></span>';
+  const vrow = k => '<details class="tsv"><summary><span class="tsn"><i class="tsdot" style="background:' + col(k) + '"></i>' + esc(names[k]) + "</span>" + bar(byV[k], col(k)) + '<b>' + fmtN(byV[k]) + "</b><small>" + pc(byV[k]) + "</small></summary>" +
     '<ul class="tsof">' + ofV[k].map(([o, n]) => "<li><span>" + esc(o.name || tr("orchard_fallback")) + "</span><span>" + fmtN(n) + "</span></li>").join("") + "</ul></details>";
   const head = tr("ts_head").replace("{n}", fmtN(S.orchards.length)).replace("{o}", tr(S.orchards.length === 1 ? "ts_orch1" : "ts_orchN")).replace("{t}", fmtN(total)) +
     (area ? " · " + tr("p_bigha").replace("{n}", fmtD(area)) : "");
   const age = (bear || young) ? '<div class="tsage">' + (bear ? '<span class="tsa ok"><b>' + fmtN(bear) + "</b> " + tr("ts_bear") + "</span>" : "") + (young ? '<span class="tsa yg"><b>' + fmtN(young) + "</b> " + tr("ts_young") + "</span>" : "") +
     (noyr ? '<span class="tsa"><b>' + fmtN(noyr) + "</b> " + tr("ts_noyr") + "</span>" : "") + "</div>" : '<p class="fine">' + tr("ts_addyr") + "</p>";
-  return '<section class="tsum" aria-label="' + esc(tr("ts_h")) + '"><h4>' + tr("ts_h") + '</h4><p class="tshead">' + head + "</p>" +
+  const stack = keys.length ? '<span class="tsstack" aria-hidden="true">' + keys.map(k => '<i style="flex:' + byV[k] + ";background:" + col(k) + '"></i>').join("") + (unset ? '<i style="flex:' + unset + ';background:var(--g-none)"></i>' : "") + "</span>" : "";
+  return '<section class="tsum" aria-label="' + esc(tr("ts_h")) + '"><h4>' + tr("ts_h") + '</h4><p class="tshead">' + head + "</p>" + stack +
     (keys.length ? '<div class="tsvars">' + keys.map(vrow).join("") + (unset ? '<div class="tsv un"><span class="tsn">' + tr("ts_unset") + "</span>" + bar(unset) + "<b>" + fmtN(unset) + "</b><small>" + pc(unset) + "</small></div>" : "") + "</div>"
       : '<p class="fine">' + tr("ts_addvar") + "</p>") + age + "</section>";
 }
