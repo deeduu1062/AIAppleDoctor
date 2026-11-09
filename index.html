@@ -5629,9 +5629,14 @@ $("rp-orch").addEventListener("click", e => {
       window.scrollTo({top: nb.getBoundingClientRect().top + window.scrollY - top - 8, behavior: "smooth"}); } }
     return;
   } else if (act === "spotoggle") {
-    const k = spoKey(b.dataset.o, +b.dataset.y);
-    if (spoOpen.has(k)) { spoOpen.delete(k); const es = editLine ? lotSeason(editLine.lot) : null; if (es && es.oid === b.dataset.o && es.year === +b.dataset.y) closeEditLine(); } else spoOpen.add(k);
-    renderAll(); const nb = document.querySelector('[data-act=spotoggle][data-o="' + b.dataset.o + '"][data-y="' + b.dataset.y + '"]'); if (nb) nb.focus(); return;
+    /* one orchard open at a time: opening an orchard closes the others and brings it to the top of the screen */
+    const k = spoKey(b.dataset.o, +b.dataset.y), opening = !spoOpen.has(k), es = editLine ? lotSeason(editLine.lot) : null;
+    if (es && (!opening || es.oid !== b.dataset.o || es.year !== +b.dataset.y)) closeEditLine();
+    spoOpen = new Set(opening ? [k] : []);
+    renderAll(); const nb = document.querySelector('[data-act=spotoggle][data-o="' + b.dataset.o + '"][data-y="' + b.dataset.y + '"]');
+    if (nb) { nb.focus({preventScroll: true}); if (opening) { const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topH")) || 0;
+      window.scrollTo({top: nb.getBoundingClientRect().top + window.scrollY - top - 8, behavior: "smooth"}); } }
+    return;
   } else if (act === "addlotfor") {
     closeEditLine(); addingO = false; sel.o = b.dataset.o; sel.y = +b.dataset.y; fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
   } else if (act === "lottoggle") {
