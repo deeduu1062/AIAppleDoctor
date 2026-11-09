@@ -42,6 +42,8 @@ declare
   today  date := (now() at time zone 'Asia/Kolkata')::date;
   t0     timestamptz := (date_trunc('day', now() at time zone 'Asia/Kolkata')) at time zone 'Asia/Kolkata';
   m0     timestamptz := (date_trunc('month', now() at time zone 'Asia/Kolkata')) at time zone 'Asia/Kolkata';
+  n_sh   bigint := 0;
+  sh     jsonb := '[]'::jsonb;
   res    json;
 begin
   if not public.is_admin() then raise exception 'not allowed' using errcode = '42501'; end if;
@@ -49,6 +51,12 @@ begin
          au.raw_user_meta_data, au.raw_app_meta_data
     into u from auth.users au where au.id = uid;
   if not found then return null; end if;
+
+  -- sharing is optional: only read it when its table exists
+  if to_regclass('public.ledger_shares') is not null then
+    execute 'select count(1), coalesce(jsonb_agg(jsonb_build_object(''at'', s.created_at, ''v'', s.viewer_email)), ''[]''::jsonb)
+               from public.ledger_shares s where s.owner_id = $1' into n_sh, sh using uid;
+  end if;
 
   select l.data::jsonb, l.updated_at into led, led_at from ledgers l where l.user_id = uid;
   if led is not null and jsonb_typeof(led -> 'orchards') = 'array' then
@@ -80,7 +88,7 @@ begin
       'dx_month', (select count(1) from diagnoses where user_id = uid and created_at >= m0),
       'fb_total', (select count(1) from feedback where user_id = uid),
       'pay_total',(select count(1) from payments where user_id = uid),
-      'shares',   (select count(1) from ledger_shares where owner_id = uid)),
+      'shares',   n_sh),
     'records', json_build_object(
       'saved_at', led_at,
       'orchards', (select coalesce(json_agg(json_build_object('name', o ->> 'name', 'trees', o ->> 'trees')), '[]'::json) from jsonb_array_elements(orch) o),
@@ -95,7 +103,7 @@ begin
         union all select d.created_at, 'dx', d.result -> 'matches' -> 0 ->> 'id', d.feedback from diagnoses d where d.user_id = uid
         union all select p.created_at, 'pay', p.plan || ' / ' || p.period || ' / ' || p.amount, p.status from payments p where p.user_id = uid
         union all select f.created_at, 'fb', left(f.message, 200), f.kind from feedback f where f.user_id = uid
-        union all select s.created_at, 'share', s.viewer_email, null from ledger_shares s where s.owner_id = uid
+        union all select (e ->> 'at')::timestamptz, 'share', e ->> 'v', null from jsonb_array_elements(sh) e
       ) x where x.at is not null order by x.at desc limit 80) a)
   ) into res;
   return res;

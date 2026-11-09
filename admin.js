@@ -1215,7 +1215,7 @@ function pfWhen(iso) {
 }
 function pfErrMsg(err) {
   const m = String(err.message || err), code = String(err.code || "");
-  return code === "PGRST202" || /could not find the function|does not exist/i.test(m) ? tr("pf_err_setup")
+  return code === "PGRST202" || /could not find the function/i.test(m) ? tr("pf_err_setup")
     : code === "42501" || /not allowed|permission denied/i.test(m) ? tr("ad_err_deny") : tr("pf_err").replace("{m}", m);
 }
 const pfName = u => u.email || (u.phone ? "+" + String(u.phone).replace(/^\+/, "") : "–");
