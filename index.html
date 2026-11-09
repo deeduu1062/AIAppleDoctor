@@ -1451,6 +1451,7 @@ details.dsec > summary h4{display:inline}
 .rcdiary li.k-dk_hail,.rcdiary li.k-dk_snow,.rcdiary li.k-dk_rain,.rcdiary li.k-dk_drought{border-left-color:var(--bad)}
 .rcdiary li.kxnew{background:#FFF6D6;border-radius:6px;transition:background .6s}
 .rcdiary li{transition:background .6s}
+.splinks{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
 .kxacts{display:flex;gap:14px;font-size:.85rem;margin-top:2px}
 .kxtot{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0;padding:8px 12px;border-radius:8px;background:var(--bg,#f6f4ee);font-size:.92rem}
 .kxtot span{color:var(--muted)}.kxtot b{font:700 1.15rem var(--mono)}
@@ -4120,11 +4121,16 @@ function renderSpMore() {
   const o = curOrchard();
   let h = "";
   if (o && !addingO && !entryOpen) {
-    try { h = '<h3 class="ysub">' + esc(tr("sp_more_h").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", sel.y)) + "</h3>" + salesMoreHtml(o, sel.y) + dueHtml(o) + yearsHtml(o); } catch (e) { h = ""; }
+    /* Bikri jodein is for entering sales: profit analysis lives in Munafa (all orchards) and the orchard's Hisaab tab */
+    try { h = dueHtml(o) + '<div class="splinks"><button class="btn-s" type="button" data-act="orchpage" data-o="' + esc(o.id) + '" data-y="' + sel.y + '">' +
+      esc(tr("sp_go_hisab").replace("{o}", o.name || tr("orchard_fallback"))) + '</button><button class="btn-s" type="button" data-act="gomunafa">' + tr("sp_go_munafa") + "</button></div>"; } catch (e) { h = ""; }
   }
   el.innerHTML = h;
 }
 $("spMore").addEventListener("click", e => {
+  const op = e.target.closest("[data-act=orchpage]");
+  if (op) { dashView = op.dataset.o; otab = "hisab"; dashYear = +op.dataset.y; profEdit = false; diaryEdit = null; detEdit = null; tabPicked = true; renderDash(); showTool("orch", false, true); const ms = $("oMoney"); if (ms && ms.scrollIntoView) ms.scrollIntoView({block: "start"}); return; }
+  if (e.target.closest("[data-act=gomunafa]")) { showSub("year"); const t = $("rt-year"); if (t) { t.focus({preventScroll: true}); t.scrollIntoView({block: "start"}); } return; }
   const b = e.target.closest("[data-dact=year]"); if (!b) return;
   closeEditLine(); sel.y = +b.dataset.y; fixSel(); renderAll(); showSub("orch");
   const y = $("selYear"); if (y && y.scrollIntoView) y.scrollIntoView({block: "start"});
@@ -4376,6 +4382,9 @@ function otKharchHtml(o) {
   return h + '<p class="xhmore"><button class="btn-s" type="button" data-xhedit="' + (kxYear || curY) + '" data-o="' + esc(o.id) + '">' + tr("xh_all") + "</button></p></section>";
 }
 document.addEventListener("change", e => { if (e.target && e.target.id === "kx_year") { kxYear = +e.target.value || null; renderDash(); const s2 = $("kx_year"); if (s2) s2.focus(); } });
+Object.assign(T.en, { sp_go_hisab:"See {o}'s profit →", sp_go_munafa:"Profit for all orchards →" });
+Object.assign(T.hi, { sp_go_hisab:"{o} का हिसाब देखें →", sp_go_munafa:"सभी बाग़ों का मुनाफ़ा →" });
+Object.assign(T.hn, { sp_go_hisab:"{o} ka hisaab dekhein →", sp_go_munafa:"Sabhi bagichon ka munafa →" });
 Object.assign(T.en, { kx_sofar:"Total so far", kx_edit:"Edit expense", kx_save:"Save changes", kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
 Object.assign(T.hi, { kx_sofar:"अब तक का ख़र्च", kx_edit:"ख़र्च बदलें", kx_save:"बदलाव सहेजें", kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
 Object.assign(T.hn, { kx_sofar:"Ab tak ka kharcha", kx_edit:"Kharcha badlein", kx_save:"Badlav save karein", kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
