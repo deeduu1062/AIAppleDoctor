@@ -5620,8 +5620,14 @@ $("rp-orch").addEventListener("click", e => {
     showSub("exp"); expOpenAt(b.dataset.o || sel.o, +(b.dataset.y || sel.y)); return;
   } else if (act === "sptoggle") {
     const y = +b.dataset.y;
-    if (spOpen.has(y)) { spOpen.delete(y); const es = editLine ? lotSeason(editLine.lot) : null; if (es && es.year === y) closeEditLine(); } else spOpen.add(y);
-    renderAll(); const nb = document.querySelector('[data-act=sptoggle][data-y="' + y + '"]'); if (nb) nb.focus(); return;
+    /* one year open at a time: opening a year closes the others and brings it to the top of the screen */
+    const es = editLine ? lotSeason(editLine.lot) : null, opening = !spOpen.has(y);
+    if (es && (!opening || es.year !== y)) closeEditLine();
+    spOpen = new Set(opening ? [y] : []);
+    renderAll(); const nb = document.querySelector('[data-act=sptoggle][data-y="' + y + '"]');
+    if (nb) { nb.focus({preventScroll: true}); if (opening) { const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topH")) || 0;
+      window.scrollTo({top: nb.getBoundingClientRect().top + window.scrollY - top - 8, behavior: "smooth"}); } }
+    return;
   } else if (act === "spotoggle") {
     const k = spoKey(b.dataset.o, +b.dataset.y);
     if (spoOpen.has(k)) { spoOpen.delete(k); const es = editLine ? lotSeason(editLine.lot) : null; if (es && es.oid === b.dataset.o && es.year === +b.dataset.y) closeEditLine(); } else spoOpen.add(k);
