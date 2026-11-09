@@ -1456,6 +1456,12 @@ details.dsec > summary h4{display:inline}
 .sltot div{display:flex;flex-direction:column}.sltot span{color:var(--muted);font-size:.8rem}.sltot b{font:700 1.05rem var(--mono);font-variant-numeric:tabular-nums}
 .sltot .due b{color:var(--bad)}
 .sllist small{color:var(--muted)}
+.chip.slunpaid{background:color-mix(in srgb,#C4851C 18%,transparent);color:var(--fg)}
+.slorch{display:grid;gap:6px;padding-top:6px}
+.slorch + .slorch{border-top:1px solid var(--line);padding-top:10px}
+.slorch h5{margin:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;font:700 1rem var(--display)}
+.slorch h5 small{font:400 .85rem var(--body);color:var(--muted);font-variant-numeric:tabular-nums}
+.sldot{width:10px;height:10px;border-radius:50%;display:inline-block;align-self:center}
 .slyr{max-width:16rem;margin:6px 0 4px}
 .sbyo{margin-top:22px}
 .splinks{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
@@ -4143,12 +4149,20 @@ function salesCardHtml(y) {
   if (!rows.length) return h + '<p class="hint">' + tr("sl_none").replace("{y}", y) + "</p></section>";
   h += '<div class="sltot"><div><span>' + tr(cur ? "sl_sofar" : "sl_tot") + "</span><b>" + inr(T.g) + '</b></div><div><span>' + tr("r_boxes") + "</span><b>" + fmtN(T.b) + '</b></div><div><span>' + tr("sl_net") + "</span><b>" + inr(T.n) + "</b></div>" +
     (T.d ? '<div class="due"><span>' + tr("k_due") + "</span><b>" + inr(T.d) + "</b></div>" : "") + "</div>";
-  return h + '<ol class="rcdiary sllist">' + rows.map(r => {
+  /* group by orchard: orchard heading with its subtotal, then its lots in the order sold */
+  const lotLi = r => {
     const gl = r.l.lines.filter(n => +n.boxes > 0).map(n => esc(n.grade || "–") + " " + fmtN(+n.boxes) + " × " + inr(+n.rate)).join(", ");
-    return '<li style="border-left-color:' + SL_COLORS[oi(r.o.id)] + '"><span class="dd">' + (r.when ? fmtDay(r.when) : "–") + "</span><span><b>" + esc(r.l.name || lotNo(r.i)) + "</b> · " + esc(r.o.name || tr("orchard_fallback")) +
-      (r.c.due ? ' <em class="chip soon">' + tr("sl_unpaid") + "</em>" : "") + "<br><small>" + gl + "</small><br>" + tr("sl_line").replace("{b}", fmtN(r.c.b)).replace("{g}", inr(r.c.gross)).replace("{n}", inr(r.c.net)) +
+    return '<li style="border-left-color:' + SL_COLORS[oi(r.o.id)] + '"><span class="dd">' + (r.when ? fmtDay(r.when) : "–") + "</span><span><b>" + esc(r.l.name || lotNo(r.i)) + "</b>" +
+      (r.c.due ? ' <em class="chip slunpaid">' + tr("sl_unpaid") + "</em>" : "") + "<br><small>" + gl + "</small><br>" + tr("sl_line").replace("{b}", fmtN(r.c.b)).replace("{g}", inr(r.c.gross)).replace("{n}", inr(r.c.net)) +
       '<span class="kxacts"><button class="link" type="button" data-slgo="' + esc(r.o.id) + '" data-y="' + y + '">' + tr("sl_open") + "</button></span></span></li>";
-  }).join("") + "</ol></section>";
+  };
+  const orchs = S.orchards.filter(o => rows.some(r => r.o.id === o.id));
+  return h + orchs.map(o => {
+    const R = rows.filter(r => r.o.id === o.id), t = R.reduce((a, r) => { a.b += r.c.b; a.g += r.c.gross; return a; }, {b: 0, g: 0});
+    return '<div class="slorch"><h5><span class="sldot" style="background:' + SL_COLORS[oi(o.id)] + '"></span>' + esc(o.name || tr("orchard_fallback")) +
+      '<small>' + tr("sl_osum").replace("{n}", R.length).replace("{b}", fmtN(t.b)).replace("{g}", inr(t.g)) + "</small></h5>" +
+      '<ol class="rcdiary sllist">' + R.map(lotLi).join("") + "</ol></div>";
+  }).join("") + "</section>";
 }
 function renderSalesTl() {
   const el = $("salesTl"); if (!el) return;
@@ -4164,9 +4178,9 @@ document.addEventListener("click", e => {
   goSeason(b.dataset.slgo, +b.dataset.y); showSub("orch");
   const t = document.querySelector(".sbyo"); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"});
 });
-Object.assign(T.en, { sl_title:"Sales, harvest year {y}", sl_none:"No sales recorded in harvest year {y}.", sl_sofar:"Sales so far", sl_tot:"Total sales", sl_net:"Net after lot costs", sl_unpaid:"Not paid", sl_line:"{b} boxes · {g} sale · {n} net", sl_open:"Open lot", sl_byo:"Orchard-wise detail" });
-Object.assign(T.hi, { sl_title:"बिक्री, फ़सल वर्ष {y}", sl_none:"फ़सल वर्ष {y} में कोई बिक्री दर्ज नहीं।", sl_sofar:"अब तक की बिक्री", sl_tot:"कुल बिक्री", sl_net:"लॉट ख़र्च के बाद", sl_unpaid:"पैसा बाक़ी", sl_line:"{b} पेटियाँ · {g} बिक्री · {n} शुद्ध", sl_open:"लॉट खोलें", sl_byo:"बाग़ के हिसाब से ब्योरा" });
-Object.assign(T.hn, { sl_title:"Bikri, harvest saal {y}", sl_none:"Harvest saal {y} mein koi bikri record nahi.", sl_sofar:"Ab tak ki bikri", sl_tot:"Kul bikri", sl_net:"Lot kharche ke baad", sl_unpaid:"Paisa baaki", sl_line:"{b} petiyan · {g} bikri · {n} net", sl_open:"Lot kholein", sl_byo:"Bagiche ke hisaab se detail" });
+Object.assign(T.en, { sl_title:"Sales, harvest year {y}", sl_none:"No sales recorded in harvest year {y}.", sl_sofar:"Sales so far", sl_tot:"Total sales", sl_net:"Net after lot costs", sl_unpaid:"Not paid", sl_line:"{b} boxes · {g} sale · {n} net", sl_open:"Open lot", sl_osum:"{n} lots · {b} boxes · {g}", sl_byo:"Orchard-wise detail" });
+Object.assign(T.hi, { sl_title:"बिक्री, फ़सल वर्ष {y}", sl_none:"फ़सल वर्ष {y} में कोई बिक्री दर्ज नहीं।", sl_sofar:"अब तक की बिक्री", sl_tot:"कुल बिक्री", sl_net:"लॉट ख़र्च के बाद", sl_unpaid:"पैसा बाक़ी", sl_line:"{b} पेटियाँ · {g} बिक्री · {n} शुद्ध", sl_open:"लॉट खोलें", sl_osum:"{n} लॉट · {b} पेटियाँ · {g}", sl_byo:"बाग़ के हिसाब से ब्योरा" });
+Object.assign(T.hn, { sl_title:"Bikri, harvest saal {y}", sl_none:"Harvest saal {y} mein koi bikri record nahi.", sl_sofar:"Ab tak ki bikri", sl_tot:"Kul bikri", sl_net:"Lot kharche ke baad", sl_unpaid:"Paisa baaki", sl_line:"{b} petiyan · {g} bikri · {n} net", sl_open:"Lot kholein", sl_osum:"{n} lot · {b} petiyan · {g}", sl_byo:"Bagiche ke hisaab se detail" });
 
 function renderSpMore() {
   const el = $("spMore"); if (!el) return;
