@@ -1442,6 +1442,7 @@ details.dsec > summary h4{display:inline}
 .olot .olf{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .olot .olf b.pos{color:var(--good)}.olot .olf b.neg{color:var(--bad)}
 .olot .tablewrap{margin:0 0 10px}
+.olact{display:flex;justify-content:flex-end;margin:0 0 10px}.olact .btn-s{min-height:36px;padding:4px 12px;font-size:.88rem}
 .olot[open]{border-left:4px solid var(--apple);background:color-mix(in srgb,var(--apple) 5%,var(--surface));box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .olot[open] summary .oln b{color:var(--apple)}
 .olbar{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin:0 0 8px}
@@ -3956,9 +3957,16 @@ function oLotsHtml(se) {
       '<span class="olbar" aria-hidden="true">' + lines.map(n => '<i class="gc-' + gradeKey(n.grade) + '" style="flex:' + (+n.boxes) + '"></i>').join("") + "</span>" +
       '<div class="tablewrap"><table class="ledger sm"><thead><tr><th scope="col">' + tr("gt_grade") + '</th><th scope="col">' + tr("f_boxes") + '</th><th scope="col">' + tr("ol_rate") + '</th><th scope="col">' + tr("ls_net") + "</th></tr></thead><tbody>" +
       lines.map(n => { const x = lineCalc(n), k = gradeKey(n.grade); return '<tr class="olg-' + k + '"><td><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(x.b) + "</td><td>" + inr(+n.rate || 0) + '</td><td class="' + (x.net < 0 ? "neg" : "pos") + '">' + inr(x.net) + "</td></tr>"; }).join("") +
-      "</tbody></table></div></details>";
+      "</tbody></table></div>" +
+      '<div class="olact"><button class="btn-s" type="button" data-olotedit="' + esc(l.id) + '" data-o="' + esc(se.oid) + '" data-y="' + se.year + '">✎ ' + tr("lot_edit") + "</button></div></details>";
   }).join("") + "</section>";
 }
+/* Edit lot from the orchard's Hisaab: open Season sales record at that lot with its edit options shown */
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-olotedit]"); if (!b) return;
+  closeEditLine(); lotEditId = b.dataset.olotedit; goSeason(b.dataset.o, +b.dataset.y);
+  setTimeout(() => { const nb = document.querySelector('[data-act=addline][data-id="' + b.dataset.olotedit + '"]'); if (nb) { nb.scrollIntoView({block: "center"}); nb.focus({preventScroll: true}); } }, 60);
+});
 function insightsHtml(o, Y) {
   const se = seFor(o.id, Y), trees = +o.trees;
   let h = "";
