@@ -4463,9 +4463,9 @@ Object.assign(T.hn, { sp_go_hisab:"{o} ka hisaab dekhein →", sp_go_munafa:"Sab
 Object.assign(T.en, { kx_sofar:"Total so far", kx_edit:"Edit expense", kx_save:"Save changes", kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
 Object.assign(T.hi, { kx_sofar:"अब तक का ख़र्च", kx_edit:"ख़र्च बदलें", kx_save:"बदलाव सहेजें", kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
 Object.assign(T.hn, { kx_sofar:"Ab tak ka kharcha", kx_edit:"Kharcha badlein", kx_save:"Badlav save karein", kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
-Object.assign(T.en, { hs_cur:"Current season", hs_cur_s:"Sales start in August", hs_exp:"expenses so far {x}", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Add each lot in Season sales record when you sell." });
-Object.assign(T.hi, { hs_cur:"चालू सीज़न", hs_cur_s:"बिक्री अगस्त से शुरू", hs_exp:"अब तक ख़र्च {x}", hs_cur_p:"1 नवंबर {a} – 31 अक्टूबर {b}। बेचने पर हर लॉट सीज़न बिक्री रिकॉर्ड में जोड़ें।" });
-Object.assign(T.hn, { hs_cur:"Chalu season", hs_cur_s:"Bikri August se shuru", hs_exp:"ab tak kharcha {x}", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Bechne par har lot Season bikri record mein jodein." });
+Object.assign(T.en, { hs_cur:"Current season", hs_cur_s:"Profit will be worked out at the end of the season", hs_exp:"expenses so far {x}", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Add each lot in Season sales record when you sell." });
+Object.assign(T.hi, { hs_cur:"चालू सीज़न", hs_cur_s:"मुनाफ़ा सीज़न के अंत में निकलेगा", hs_exp:"अब तक ख़र्च {x}", hs_cur_p:"1 नवंबर {a} – 31 अक्टूबर {b}। बेचने पर हर लॉट सीज़न बिक्री रिकॉर्ड में जोड़ें।" });
+Object.assign(T.hn, { hs_cur:"Chalu season", hs_cur_s:"Munafa season ke ant mein nikalega", hs_exp:"ab tak kharcha {x}", hs_cur_p:"1 Nov {a} – 31 Oct {b}. Bechne par har lot Season bikri record mein jodein." });
 const hsCur = (boxes, y) => !boxes && y >= curHYear();
 const hsBadge = extra => '<span class="hscur"><b>' + tr("hs_cur") + "</b>" + tr("hs_cur_s") + (extra || "") + "</span>";
 function otMoneyHtml(o) {
