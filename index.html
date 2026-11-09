@@ -1650,6 +1650,8 @@ table.ledger.ytab{min-width:0;width:100%}
 .ybar .fill.ex{background:var(--seg-pack)}
 .ynet.exn{color:var(--fg)}
 .exformbox:empty{display:none}
+.addtop{margin:4px 0 12px}.addtop:empty{display:none}
+.salepick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.salepick p{flex-basis:100%;margin:0}
 .kxlist .ybody > .kxcard{margin:8px 0 0}
 .kxlist .yfig.exn b{color:var(--fg)}
 .exo .tablewrap{margin-top:0}
@@ -1975,6 +1977,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     
 <div class="panel single" id="rp-orch" role="tabpanel" aria-labelledby="rt-orch" hidden>
       <div>
+        <div class="addtop" id="saleTop"></div>
         <h3 class="ysub sbyo" data-i18n="sl_byo"></h3>
         <div class="pick" hidden>
           <div class="field"><label for="selOrchard" data-i18n="lbl_orchard"></label><select id="selOrchard"></select></div>
@@ -2029,6 +2032,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <div class="subpanel" id="rp-exp" role="tabpanel" aria-labelledby="rt-exp" hidden>
         <p class="hynote" data-i18n="hy_note"></p>
         <p class="hint" data-i18n="ex_p"></p>
+        <div class="addtop" id="exTop"></div>
         <div class="exformbox" id="exForm"></div>
         <div class="exlistbox" id="exList"></div>
       </div>
@@ -3395,7 +3399,7 @@ const lotNo = i => tr("lot_fallback") + " " + (i + 1);
 const lineBlank = n => !(+n.boxes || +n.rate || n.grade);
 const lotSeason = id => S.seasons.find(x => x.lots.some(l => l.id === id)) || null;
 const lineSeason = id => S.seasons.find(x => x.lots.some(l => l.lines.some(n => n.id === id))) || null;
-let spOpen = new Set(), spoOpen = new Set();
+let spOpen = new Set(), spoOpen = new Set(), saleAsk = false;
 const spoKey = (oid, y) => oid + "|" + y;
 /* gross, net (after lot costs), boxes, expense per box and net per box; a half box counts as half */
 function fig5(t) { const c = t.net < 0 ? "neg" : "pos"; return yfig(tr("by_gross"), mny(t.rev)) + yfig(tr("by_net"), mny(t.net), "ynet " + c) + yfig(tr("by_boxes"), fmtN(t.boxes)) +
@@ -3615,6 +3619,11 @@ function renderEditor() {
   }
   $("editor").innerHTML = h;
   $("editor").hidden = addingO;
+  /* + Add sale above the years: pick the orchard, then the lot form opens for the current harvest year */
+  const st = $("saleTop");
+  if (st) st.innerHTML = entryOpen || addingO || !S.orchards.length ? "" : saleAsk ? '<div class="salepick"><p><b>' + tr("sp_which") + "</b></p>" +
+    S.orchards.map(oo => '<button class="btn-s" type="button" data-act="salepick" data-o="' + esc(oo.id) + '">' + esc(oo.name || tr("orchard_fallback")) + "</button>").join("") +
+    '<button class="link" type="button" data-act="salecancel">' + tr("ne_cancel") + "</button></div>" : '<button class="btn-s add" type="button" data-act="saleask">＋ ' + tr("sp_addsale") + "</button>";
   updLineWarn();
 }
 function lineHtml(n) {
@@ -4155,6 +4164,9 @@ $("dash").addEventListener("click", e => {
   else if (a === "rgexp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); }
 });
 Object.assign(T.en, { sl_byo:"Orchard-wise detail" });
+Object.assign(T.en, { sp_addsale:"Add sale", sp_which:"Which orchard is this sale for?" });
+Object.assign(T.hi, { sp_addsale:"बिक्री जोड़ें", sp_which:"यह बिक्री किस बाग़ की है?" });
+Object.assign(T.hn, { sp_addsale:"Bikri jodein", sp_which:"Ye bikri kis bagiche ki hai?" });
 Object.assign(T.en, { sp_go_this:"See this orchard's profit →" });
 Object.assign(T.hi, { sp_go_this:"इस बाग़ का मुनाफ़ा देखें →" });
 Object.assign(T.hn, { sp_go_this:"Is bagiche ka munafa dekhein →" });
@@ -5276,7 +5288,7 @@ function expYearsAll() {
   S.seasons.forEach(x => { if (COST_KEYS.some(k => +x.costs[k] > 0)) ys.add(x.year); });
   return Array.from(ys).sort((a, b) => b - a);
 }
-let exOpen = new Set(), exoOpen = new Set();
+let exOpen = new Set(), exoOpen = new Set(), exAdding = false;
 /* scroll a just-opened row to the top, just below the sticky bar */
 function toTop(el) { if (!el) return; const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topH")) || 0;
   window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - top - 8, behavior: "smooth"}); }
@@ -5287,8 +5299,9 @@ function renderExpForm() {
   let ed = null, edO = null;
   if (exEdit) S.orchards.forEach(o => (o.diary || []).forEach(d => { if (d.id === exEdit) { ed = d; edO = o; } }));
   if (exEdit && !ed) exEdit = null;
-  /* no Add expense form at the top: the form only shows while editing an expense from the list below */
-  if (!ed) { el.innerHTML = ""; return; }
+  /* the form shows only after + Add expense is tapped, or while editing an expense from the list below */
+  const top = $("exTop"); if (top) top.innerHTML = ed || exAdding ? "" : '<button class="btn-s add" type="button" data-exact="add">＋ ' + tr("ex_add") + "</button>";
+  if (!ed && !exAdding) { el.innerHTML = ""; return; }
   const v = ed || {date: todayIso(), kind: "", text: "", cost: "", stage: ""}, oid = edO ? edO.id : exO;
   const kinds = EXP_KINDS.slice(); if (v.kind && kinds.indexOf(v.kind) < 0) kinds.push(v.kind);
   el.innerHTML = '<h4>' + tr(ed ? "ex_upd" : "ex_add") + '</h4><form class="dform" id="exFormF">' +
@@ -5301,7 +5314,7 @@ function renderExpForm() {
       [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '"' + ("st" + i === v.stage ? " selected" : "") + ">" + tr("st" + i) + "</option>").join("") + "</select></div>" +
     '<div class="field wide"><label for="ex_text">' + tr("ex_det") + '</label><input id="ex_text" type="text" maxlength="200" placeholder="' + esc(tr("ex_det_ph")) + '" value="' + esc(v.text) + '"></div>' +
     '<p class="autherr wide" id="ex_err" role="alert"></p>' +
-    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr(ed ? "ex_upd" : "ex_add") + "</button>" + (ed ? '<button class="btn-s" type="button" data-exact="cancel">' + tr("d_cancel") + "</button>" : "") +
+    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr(ed ? "ex_upd" : "ex_add") + "</button>" + (ed || exAdding ? '<button class="btn-s" type="button" data-exact="cancel">' + tr("d_cancel") + "</button>" : "") +
     '<span class="fine" id="ex_ok" role="status"></span></div></form>';
   const k = $("ex_kind"), w = $("ex_stagewrap"); if (k && w) w.hidden = k.value !== "spray";
 }
@@ -5376,7 +5389,7 @@ function expOpenAt(oid, y) {
   exOpen = new Set([y]); exoOpen = new Set(oid ? [spoKey(oid, y)] : []); if (oid) exO = oid; exEdit = null; renderExp();
   const t = $("exo-" + oid + "-" + y) || $("exy-" + y); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"});
 }
-$("rt-exp").addEventListener("click", () => { exEdit = null; renderExp(); showSub("exp"); });
+$("rt-exp").addEventListener("click", () => { exEdit = null; exAdding = false; renderExp(); showSub("exp"); });
 $("rp-exp").addEventListener("change", e => {
   const t = e.target;
   if (t.id === "ex_kind") { const w = $("ex_stagewrap"); if (w) w.hidden = t.value !== "spray"; }
@@ -5404,7 +5417,8 @@ $("rp-exp").addEventListener("click", e => {
     if (!opening) exEdit = null;
     renderExpList(); const nb = document.querySelector('#exList [data-exact=otoggle][data-o="' + b.dataset.o + '"][data-y="' + b.dataset.y + '"]'); if (nb) { nb.focus({preventScroll: true}); if (opening) toTop(nb); } return;
   }
-  if (a === "cancel") { exEdit = null; renderExp(); return; }
+  if (a === "cancel") { exEdit = null; exAdding = false; renderExp(); return; }
+  if (a === "add") { exEdit = null; exAdding = true; renderExp(); const f = $("exForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); const k = $("ex_orch"); if (k) k.focus(); return; }
   if (a === "edit") { exEdit = b.dataset.id; renderExp(); const f = $("exForm"); if (f) f.scrollIntoView({block: "start"}); const c = $("ex_cost"); if (c) c.focus(); return; }
   if (a === "del") {
     if (!b.dataset.armed) {
@@ -5433,7 +5447,7 @@ $("rp-exp").addEventListener("submit", e => {
   const y = hYear(date);
   ensureSeason(o.id, y);
   if (old) pruneSeason(oldO.id, hYear(old.date));
-  exEdit = null; exO = o.id; exOpen = new Set([y]); exoOpen = new Set([spoKey(o.id, y)]);
+  exEdit = null; exAdding = false; exO = o.id; exOpen = new Set([y]); exoOpen = new Set([spoKey(o.id, y)]);
   expChanged(); renderExp();
   set("ex_ok", tr("ex_saved").replace("{y}", y));
   const k = $("ex_kind"); if (k) k.focus();
@@ -5686,6 +5700,11 @@ $("rp-orch").addEventListener("click", e => {
     if (nb) { nb.focus({preventScroll: true}); if (opening) { const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topH")) || 0;
       window.scrollTo({top: nb.getBoundingClientRect().top + window.scrollY - top - 8, behavior: "smooth"}); } }
     return;
+  } else if (act === "saleask" || act === "salepick") {
+    const oid = act === "salepick" ? b.dataset.o : S.orchards.length === 1 ? S.orchards[0].id : null;
+    if (!oid) { saleAsk = true; renderAll(); const f = document.querySelector("[data-act=salepick]"); if (f) f.focus(); return; }
+    saleAsk = false; closeEditLine(); addingO = false; sel.o = oid; sel.y = Math.min(hYear(todayIso()), new Date().getFullYear()); fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
+  } else if (act === "salecancel") { saleAsk = false; renderAll(); return;
   } else if (act === "addlotfor") {
     closeEditLine(); addingO = false; sel.o = b.dataset.o; sel.y = +b.dataset.y; fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
   } else if (act === "lottoggle") {
