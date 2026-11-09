@@ -1447,6 +1447,14 @@ details.dsec > summary h4{display:inline}
 .olg-gift .olgr{color:var(--g-gift)}.olg-gift .olgr::before{background:var(--g-gift)}
 .olg-none .olgr{color:var(--muted)}
 .olot tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--line) 25%,transparent)}
+/* one pattern for everything that opens: red edge + light tint on the open item, tinted table headers */
+.yrow.open:not(.spo){border-color:color-mix(in srgb,var(--apple) 40%,var(--line));border-left:4px solid var(--apple);background:color-mix(in srgb,var(--apple) 4%,var(--surface))}
+.yrow.open:not(.spo) > .yhead .yy{color:var(--apple)}
+.detrows > .yrow.open > .ybody{background:color-mix(in srgb,var(--apple) 3%,var(--surface))}
+.spo.orow.open{background:color-mix(in srgb,var(--brand) 16%,var(--surface));box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.dyear[open]{border-left:4px solid var(--apple);background:color-mix(in srgb,var(--apple) 4%,var(--surface))}
+.yrow.open .ledger thead th,.dyear[open] .ledger thead th{background:color-mix(in srgb,var(--apple) 10%,var(--surface));color:var(--fg)}
+.yrow.open .ledger tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--line) 22%,transparent)}
 .olot table.ledger.sm{width:100%;min-width:0}.olot .ledger.sm th,.olot .ledger.sm td{padding:6px 4px;white-space:normal}.olot .ledger.sm td:last-child,.olot .ledger.sm th:last-child{padding-right:6px}
 html.booting body > *:not(script){visibility:hidden}
 html.booting body::after{content:"";position:fixed;top:42%;left:50%;width:38px;height:38px;margin-left:-19px;border:4px solid var(--line);border-top-color:var(--apple);border-radius:50%;animation:bootspin .8s linear infinite}
@@ -3496,7 +3504,7 @@ function lotTable(rows, acts) {
   rows.forEach(x => {
     const c = lineCalc(x[1]);
     const ed = !!(acts && acts.isEd(x));
-    h += '<tr' + (ed ? ' class="editing"' : "") + '><th scope="row">' + x[0] + '</th><td class="t">' + esc(gname(x[1].grade)) + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) +
+    h += '<tr' + (ed ? ' class="editing"' : "") + '><th scope="row">' + x[0] + '</th><td class="t olg-' + gradeKey(x[1].grade) + '"><span class="olgr">' + esc(gname(x[1].grade)) + "</span></td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) +
       '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + "</td>" +
       (acts ? '<td class="acts">' + (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" ' + acts.attr(x, "edit") + ">" + tr("ne_edit") + "</button>") +
         '<button class="link del" type="button" ' + acts.attr(x, "del") + ">" + tr("ne_del") + "</button></td>" : "") + "</tr>";
@@ -3700,7 +3708,7 @@ function orchLotsTable(se) {
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
     shown.forEach((n, k) => {
       const c = lineCalc(n), ed = !!(editLine && editLine.line === n.id);
-      h += "<tr" + (ed ? ' class="editing"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t">' + esc(gname(n.grade)) + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) +
+      h += "<tr" + (ed ? ' class="editing"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) +
         "</td><td>" + inr(c.exp) + '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + '</td><td class="acts">' +
         (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_edit") + "</button>") +
         '<button class="link del" type="button" data-act="sdel" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_del") + "</button></td></tr>";
