@@ -1292,6 +1292,9 @@ body.guest .rows-bottom{display:block}
 .nfull{display:none}
 .yfigs.three{grid-template-columns:9rem 15rem minmax(10rem,max-content);column-gap:28px}
 .yfigs.exfigs{grid-template-columns:12rem 15rem minmax(10rem,max-content)}
+.yfigs.five{grid-template-columns:repeat(5,minmax(7.5rem,max-content));column-gap:22px}
+.yfigs.five .yfig.ynet b,.figrows .yfigs.five .yfig.ynet b{font-size:1.15rem;align-self:end}
+@media (max-width:900px){.figrows .yfigs.five{grid-column:1/3;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px;padding:10px 0 0;border-left:0;border-top:1px solid var(--line)}}
 .yfig.ytext b{font:600 1rem var(--body);white-space:normal}
 .yfig.ynet{font:inherit;white-space:normal}
 .yfig.exn b{color:var(--fg)}
@@ -3554,15 +3557,17 @@ function renderEditor() {
     const cls = n => (n < 0 ? "neg" : "pos");
     const yr = {}; years.forEach(y => {
       const ss = S.orchards.map(oo => seFor(oo.id, y)).filter(Boolean);
-      const t = {net: 0, boxes: 0, eq: 0, rev: 0}; ss.forEach(x => { const r = seasonCalc(x); t.net += r.rev - r.lotExp; t.boxes += r.boxes; t.eq += r.eq; t.rev += r.rev; });
+      const t = {net: 0, boxes: 0, eq: 0, rev: 0, exp: 0}; ss.forEach(x => { const r = seasonCalc(x); t.net += r.rev - r.lotExp; t.boxes += r.boxes; t.eq += r.eq; t.rev += r.rev; t.exp += r.lotExp; });
       yr[y] = {ss, t};
     });
     h += '<p class="hint">' + tr("sp_tap") + " " + tr("half_note") + '</p><div class="ylist splist figrows">';
     years.forEach(y => {
       const t = yr[y].t, ss = yr[y].ss, open = spOpen.has(y) || !!(editLine && ss.some(x => x === lotSeason(editLine.lot)));
       h += '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="sptoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
-        '<span class="yy">' + y + '</span><span class="yfigs three">' + yfig(tr("ls_boxes"), fmtN(t.boxes), "", ' data-spyb="' + y + '"') + yfig(tr("dl_sales"), mny(t.rev), "", ' data-spyg="' + y + '"') +
-        yfig(tr("ls_net"), mny(t.net), "ynet " + cls(t.net), ' data-spy="' + y + '"') + '</span><span class="ychev" aria-hidden="true"></span></button>';
+        '<span class="yy">' + y + '</span><span class="yfigs five">' + yfig(tr("by_gross"), mny(t.rev), "", ' data-spyg="' + y + '"') +
+        yfig(tr("by_net"), mny(t.net), "ynet " + cls(t.net), ' data-spy="' + y + '"') + yfig(tr("by_boxes"), fmtN(t.boxes), "", ' data-spyb="' + y + '"') +
+        yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0), "", ' data-spye="' + y + '"') + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0), "", ' data-spyp="' + y + '"') +
+        '</span><span class="ychev" aria-hidden="true"></span></button>';
       if (open) {
         h += '<div class="ybody">' + S.orchards.map(oo => {
           const x = seFor(oo.id, y);
@@ -3718,8 +3723,10 @@ function refreshLotBits() {
   document.querySelectorAll("[data-olots]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.olots); if (x) el.innerHTML = orchLotsTable(x); });
   document.querySelectorAll("[data-spnet]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spnet); if (!x) return; const c = seasonCalc(x), v = c.rev - c.lotExp; el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
   document.querySelectorAll("[data-spy]").forEach(el => {
-    const y = +el.dataset.spy, t = {net: 0, rev: 0, boxes: 0};
-    S.seasons.filter(q => q.year === y).forEach(q => { const c = seasonCalc(q); t.net += c.rev - c.lotExp; t.rev += c.rev; t.boxes += c.boxes; });
+    const y = +el.dataset.spy, t = {net: 0, rev: 0, boxes: 0, eq: 0, exp: 0};
+    S.seasons.filter(q => q.year === y).forEach(q => { const c = seasonCalc(q); t.net += c.rev - c.lotExp; t.rev += c.rev; t.boxes += c.boxes; t.eq += c.eq; t.exp += c.lotExp; });
+    const pe = document.querySelector('[data-spye="' + y + '"]'); if (pe) pe.innerHTML = mny(t.eq ? t.exp / t.eq : 0);
+    const pn = document.querySelector('[data-spyp="' + y + '"]'); if (pn) pn.innerHTML = mny(t.eq ? t.net / t.eq : 0);
     el.innerHTML = mny(t.net); el.parentNode.className = "yfig ynet " + (t.net < 0 ? "neg" : "pos");
     const g = document.querySelector('[data-spyg="' + y + '"]'); if (g) g.innerHTML = mny(t.rev);
     const b = document.querySelector('[data-spyb="' + y + '"]'); if (b) b.textContent = fmtN(t.boxes);
@@ -4122,6 +4129,9 @@ $("dash").addEventListener("click", e => {
   else if (a === "rgexp") { tabPicked = true; showTool("calc", false, true); showSub("exp"); }
 });
 Object.assign(T.en, { sl_byo:"Orchard-wise detail" });
+Object.assign(T.en, { by_gross:"Gross sale", by_net:"Net sale", by_boxes:"Total boxes", by_epb:"Expense per box", by_npb:"Net per box" });
+Object.assign(T.hi, { by_gross:"कुल बिक्री", by_net:"शुद्ध बिक्री", by_boxes:"कुल पेटियाँ", by_epb:"प्रति पेटी ख़र्च", by_npb:"प्रति पेटी शुद्ध" });
+Object.assign(T.hn, { by_gross:"Gross bikri", by_net:"Net bikri", by_boxes:"Kul petiyan", by_epb:"Kharcha per peti", by_npb:"Net per peti" });
 Object.assign(T.hi, { sl_byo:"बाग़ के हिसाब से ब्योरा" });
 Object.assign(T.hn, { sl_byo:"Bagiche ke hisaab se detail" });
 
