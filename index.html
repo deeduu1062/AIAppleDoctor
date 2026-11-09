@@ -1650,6 +1650,8 @@ table.ledger.ytab{min-width:0;width:100%}
 .ybar .fill.ex{background:var(--seg-pack)}
 .ynet.exn{color:var(--fg)}
 .exformbox:empty{display:none}
+.kxlist .ybody > .kxcard{margin:8px 0 0}
+.kxlist .yfig.exn b{color:var(--fg)}
 .exo .tablewrap{margin-top:0}
 .extab thead th:nth-child(2){text-align:left}
 .exo .exlump{margin:0;padding-top:4px}
@@ -4378,7 +4380,7 @@ function otExpHtml(o) {
 }
 let kxYear = null, kxDel = null, dashExpEdit = null, kxEditY = null, kxNew = null;
 function kxShow(o, entry) {
-  const y = hYear(entry.date); kxYear = y === hYear(todayIso()) ? kxYear : y; kxNew = entry.id; renderDash();
+  const y = hYear(entry.date); kxYear = y; kxNew = entry.id; renderDash();
   const li = document.querySelector('#oExp li[data-kid="' + entry.id + '"]') || $("oExp");
   if (li && li.scrollIntoView) li.scrollIntoView({block: "center", behavior: "smooth"});
   setTimeout(() => { kxNew = null; const n = document.querySelector("#oExp li.kxnew"); if (n) n.classList.remove("kxnew"); }, 2500);
@@ -4415,20 +4417,30 @@ function kxYearHtml(o, y, cur) {
     "</span></li>").join("") + "</ol></section>";
 }
 function otKharchHtml(o) {
-  const curY = hYear(todayIso()), ys = expYearsAll().filter(y => y !== curY && expTotals(o, y).total > 0);
-  if (ys.indexOf(kxYear) < 0) kxYear = null;
+  /* every harvest year as a dropdown (same pattern as Sales/Profit Expenses): one open at a time, current year open to start */
+  const curY = hYear(todayIso()), ys = [curY].concat(expYearsAll().filter(y => y !== curY && expTotals(o, y).total > 0)).sort((a, b) => b - a);
+  const openY = kxYear === null ? curY : kxYear, trees = +o.trees;
   let h = '<section class="osec omoney" id="oExp" aria-label="' + esc(tr("kx_recent")) + '"><div class="kxhead">' +
     (dashExp ? "" : '<button class="btn-s add" type="button" data-dex="open" data-o="' + esc(o.id) + '">＋ ' + tr("ex_add") + "</button>") + "</div>";
   if (dashExp) h += dashExpHtml();
-  h += kxYearHtml(o, curY, true);
-  if (ys.length) {
-    h += '<div class="kxother"><div class="field"><label for="kx_year">' + tr("kx_other") + '</label><select id="kx_year"><option value="">' + tr("dy_pick") + "</option>" +
-      ys.map(y => '<option value="' + y + '"' + (y === kxYear ? " selected" : "") + ">" + tr("hy_label").replace("{y}", y) + "</option>").join("") + "</select></div>" +
-      (kxYear ? kxYearHtml(o, kxYear, false) : "") + "</div>";
-  }
-  return h + '<p class="xhmore"><button class="btn-s" type="button" data-xhedit="' + (kxYear || curY) + '" data-o="' + esc(o.id) + '">' + tr("xh_all") + "</button></p></section>";
+  h += '<div class="ylist figrows kxlist">' + ys.map(y => {
+    const r = expRowsFor(o, y), open = y === openY;
+    return '<div class="yrow' + (open ? " open" : "") + '" id="kxy-' + y + '"><button class="yhead" type="button" data-kxt="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + '</span><span class="yfigs three">' +
+      yfig(tr("ex_total"), mny(r.total), "ynet exn") + yfig(tr("ex_entries"), fmtN(r.rows.length)) + yfig(tr("m_pt"), trees ? inr(r.total / trees) : "–") + '</span><span class="ychev" aria-hidden="true"></span></button>' +
+      (open ? '<div class="ybody">' + kxYearHtml(o, y, y === curY) + "</div>" : "") + "</div>";
+  }).join("") + "</div>";
+  return h + '<p class="xhmore"><button class="btn-s" type="button" data-xhedit="' + openY + '" data-o="' + esc(o.id) + '">' + tr("xh_all") + "</button></p></section>";
 }
-document.addEventListener("change", e => { if (e.target && e.target.id === "kx_year") { kxYear = +e.target.value || null; renderDash(); const s2 = $("kx_year"); if (s2) s2.focus(); } });
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-kxt]"); if (!b) return;
+  const y = +b.dataset.kxt, curY = hYear(todayIso()), openY = kxYear === null ? curY : kxYear, opening = y !== openY;
+  kxYear = opening ? y : 0; kxEditY = null; kxDel = null; renderDash();
+  const nb = document.querySelector('[data-kxt="' + y + '"]'); if (!nb) return; nb.focus({preventScroll: true}); if (!opening) return;
+  /* inside an opened orchard the orchard name and its tabs stay stuck at the top, so stop just below them */
+  const cs = getComputedStyle(document.documentElement), tb = document.querySelector(".detrows > .yrow.open .otabs");
+  const off = (parseFloat(cs.getPropertyValue("--topH")) || 0) + (parseFloat(cs.getPropertyValue("--ohH")) || 0) + (tb ? tb.offsetHeight : 0) + 8;
+  window.scrollTo({top: nb.getBoundingClientRect().top + window.scrollY - off, behavior: "smooth"});
+});
 Object.assign(T.en, { sp_go_hisab:"See {o}'s profit →", sp_go_munafa:"Profit for all orchards →" });
 Object.assign(T.hi, { sp_go_hisab:"{o} का हिसाब देखें →", sp_go_munafa:"सभी बाग़ों का मुनाफ़ा →" });
 Object.assign(T.hn, { sp_go_hisab:"{o} ka hisaab dekhein →", sp_go_munafa:"Sabhi bagichon ka munafa →" });
