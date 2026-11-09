@@ -3660,7 +3660,7 @@ function renderEditor() {
             '<span class="oname">' + esc(oo.name || tr("orchard_fallback")) + "</span>" + (hsCur(seT(x).boxes, y) ? hsBadge() : '<span class="yfigs five"' + (x ? ' data-spo5="' + esc(x.id) + '"' : "") + ">" + fig5(seT(x)) + "</span>") + '<span class="ychev" aria-hidden="true"></span></button>';
           if (!oopen) return r2 + "</section>";
           const yc = x ? seasonCalc(x).yearly : 0, oid = esc(oo.id);
-          r2 += '<div class="obody">' + (x && x.lots.length ? '<div class="lottab" data-olots="' + esc(x.id) + '">' + orchLotsTable(x) + "</div>" + editBoxFor(x) : '<p class="hint">' + tr("sp_nolots") + "</p>") +
+          r2 += '<div class="obody">' + (x && x.lots.length ? '<div class="lottab" data-olots="' + esc(x.id) + '">' + orchLotsTable(x) + "</div>" + (editCtx === "hisab" ? "" : editBoxFor(x)) : '<p class="hint">' + tr("sp_nolots") + "</p>") +
             '<div class="spofoot"><span>' + (x ? tr("sp_yc2").replace("{x}", inr(yc)) : "") + '</span><button class="link" type="button" data-act="goexp" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_yc_btn") +
             '</button><button class="link" type="button" data-act="orchpage" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_go_this") + '</button><button class="btn-s" type="button" data-act="addlotfor" data-o="' + oid + '" data-y="' + y + '">' + tr("sp_addlot") + "</button></div></div>";
           return r2 + "</section>";
@@ -3705,12 +3705,13 @@ function lineHtml(n) {
 /* Season Profit: one table per orchard, every lot in it, Lot column on the left */
 let lotEditId = null;
 Object.assign(T.en, { lot_edit:"Edit lot", lot_taphint:"Tap an entry to change or delete it.", ne_del_e:"Delete this entry" }); Object.assign(T.hi, { lot_edit:"लॉट बदलें", lot_taphint:"बदलने या हटाने के लिए एंट्री पर दबाएँ।", ne_del_e:"यह एंट्री हटाएँ" }); Object.assign(T.hn, { lot_edit:"Lot badlein", lot_taphint:"Badalne ya delete karne ke liye entry par dabayein.", ne_del_e:"Ye entry delete karein" });
-function orchLotsTable(se) {
+function orchLotsTable(se, only) {
   const cls = n => (n < 0 ? "neg" : "pos"), nl = se.lots.length;
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
   const head = ["dl_lot", "ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"];
   let h = '<div class="tablewrap"><table class="ledger sm lottable olots"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th scope="col" class="acts"></th></tr></thead>';
   se.lots.forEach((l, i) => {
+    if (only && l.id !== only) return;
     const shown = l.lines.filter(n => +n.boxes || +n.rate || (editLine && editLine.line === n.id)), lc = lotCalc(l);
     /* one Edit lot button per lot; its other options appear only after tapping it */
     const lotEd = lotEditId === l.id || !!(editLine && l.lines.some(n => n.id === editLine.line));
@@ -3733,7 +3734,7 @@ function orchLotsTable(se) {
     h += '<tr class="lottot"><td colspan="2">' + tr("ne_tot") + "</td><td>" + fmtN(lc.b) + "</td><td>" + inr(lc.gross) + "</td><td>" + inr(lc.exp) + '</td><td class="' + cls(lc.net) + '">' + inr(lc.net) +
       "</td><td>" + inr(lc.nppb) + '</td><td class="acts"></td></tr></tbody>';
   });
-  if (nl > 1) {
+  if (nl > 1 && !only) {
     const r = seasonCalc(se), net = r.rev - r.lotExp;
     h += '<tfoot><tr><th scope="row" colspan="3">' + tr("sp_otot") + "</th><td>" + fmtN(r.boxes) + "</td><td>" + inr(r.rev) + "</td><td>" + inr(r.lotExp) + '</td><td class="' + cls(net) + '">' + inr(net) +
       "</td><td>" + inr(r.eq ? net / r.eq : 0) + '</td><td class="acts"></td></tr></tfoot>';
@@ -3952,24 +3953,18 @@ function oLotsHtml(se) {
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
   return '<section class="osec olotsec"><h4>' + tr("lots_h") + " (" + lots.length + ")</h4>" + lots.map(l => {
     const i = se.lots.indexOf(l), c = lotCalc(l), lines = l.lines.filter(n => +n.boxes || +n.rate);
-    return '<details class="olot"><summary><span class="olx"><span class="oln"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : " · " + esc(l.name)) + "</span>" +
+    const keepOpen = olOpen.has(l.id) || lotEditId === l.id || !!(editLine && editLine.lot === l.id);
+    return '<details class="olot" data-olid="' + esc(l.id) + '"' + (keepOpen ? " open" : "") + '><summary><span class="olx"><span class="oln"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : " · " + esc(l.name)) + "</span>" +
       '<span class="olf">' + tr("k_ofb2").replace("{n}", fmtN(c.b)) + ' · <b class="' + (c.net < 0 ? "neg" : "pos") + '">' + inr(c.net) + "</b> · " + tr("ol_pb").replace("{x}", inr(c.nppb)) + "</span></span></summary>" +
       '<span class="olbar" aria-hidden="true">' + lines.map(n => '<i class="gc-' + gradeKey(n.grade) + '" style="flex:' + (+n.boxes) + '"></i>').join("") + "</span>" +
-      '<div class="tablewrap"><table class="ledger sm olots"><thead><tr>' + ["ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"].map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-      lines.map((n, j) => { const x = lineCalc(n), k = gradeKey(n.grade), cl = v => (v < 0 ? "neg" : "pos");
-        return '<tr><td class="eno">' + (j + 1) + '</td><td class="t olg-' + k + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(x.b) + "</td><td>" + inr(x.gross) + "</td><td>" + inr(x.exp) +
-          '</td><td class="' + cl(x.net) + '">' + inr(x.net) + "</td><td>" + inr(x.eq ? x.net / x.eq : 0) + "</td></tr>"; }).join("") +
-      '<tr class="lottot"><td colspan="2">' + tr("ne_tot") + "</td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) + '</td><td class="' + (c.net < 0 ? "neg" : "pos") + '">' + inr(c.net) + "</td><td>" + inr(c.nppb) + "</td></tr>" +
-      "</tbody></table></div>" +
-      '<div class="olact"><button class="btn-s" type="button" data-olotedit="' + esc(l.id) + '" data-o="' + esc(se.oid) + '" data-y="' + se.year + '">✎ ' + tr("lot_edit") + "</button></div></details>";
+      '<div class="lottab" data-hlot="' + esc(l.id) + '" data-se="' + esc(se.id) + '">' + orchLotsTable(se, l.id) + "</div>" +
+      (editCtx === "hisab" && editLine && editLine.lot === l.id ? editBoxFor(se) : "") + "</details>";
   }).join("") + "</section>";
 }
-/* Edit lot from the orchard's Hisaab: open Season sales record at that lot with its edit options shown */
-document.addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest("[data-olotedit]"); if (!b) return;
-  closeEditLine(); lotEditId = b.dataset.olotedit; goSeason(b.dataset.o, +b.dataset.y);
-  setTimeout(() => { const nb = document.querySelector('[data-act=addline][data-id="' + b.dataset.olotedit + '"]'); if (nb) { nb.scrollIntoView({block: "center"}); nb.focus({preventScroll: true}); } }, 60);
-});
+/* lots opened in the orchard's Hisaab stay open when the page redraws */
+let olOpen = new Set(), editCtx = "sp";
+document.addEventListener("toggle", e => { const d = e.target; if (!d || !d.matches || !d.matches(".olot")) return; if (d.open) olOpen.add(d.dataset.olid); else olOpen.delete(d.dataset.olid); }, true);
+function refreshHisabLots() { document.querySelectorAll("[data-hlot]").forEach(el => { const se = S.seasons.find(q => q.id === el.dataset.se); if (se) el.innerHTML = orchLotsTable(se, el.dataset.hlot); }); }
 function insightsHtml(o, Y) {
   const se = seFor(o.id, Y), trees = +o.trees;
   let h = "";
@@ -5713,9 +5708,12 @@ function onEdit(e) {
     const o = curOrchard(); if (!o) return;
     o.trees = numOf(t.value);
   } else return;
-  save(); renderResults(); renderSummary(); renderHero(); renderDash();
+  save(); renderResults(); renderSummary(); renderHero();
+  if (editCtx === "hisab" && t.closest && t.closest(".olotsec")) refreshHisabLots(); else renderDash();
 }
 $("rp-orch").addEventListener("input", onEdit);
+$("dash").addEventListener("input", e => { if (e.target.closest && e.target.closest(".olotsec .editbox")) onEdit(e); });
+$("dash").addEventListener("change", e => { if (e.target.type === "checkbox" && e.target.closest && e.target.closest(".olotsec .editbox")) onEdit(e); });
 $("rp-orch").addEventListener("change", e => { if (e.target.type === "checkbox") onEdit(e); });
 $("selOrchard").addEventListener("change", e => {
   pendingDel = null;
@@ -5725,8 +5723,9 @@ $("selOrchard").addEventListener("change", e => {
 $("selYear").addEventListener("change", e => {
   closeEditLine(); pendingDel = null; set("entryMsg", ""); sel.y = parseInt(e.target.value, 10); renderAll();
 });
-$("rp-orch").addEventListener("click", e => {
+function spClick(e) {
   const b = e.target.closest("[data-act]"); if (!b) return;
+  if (e.currentTarget === $("dash")) { if (!b.closest(".olotsec")) return; editCtx = "hisab"; } else editCtx = "sp";
   const act = b.dataset.act;
   const thisYear = new Date().getFullYear();
   if ((act === "rmlot" || act === "rmline" || act === "nedel" || act === "sdel") && !b.dataset.armed) {
@@ -5865,7 +5864,9 @@ $("rp-orch").addEventListener("click", e => {
     S.seasons = S.seasons.filter(s => !ids.includes(s.oid));
   } else return;
   fixSel(); save(); renderAll();
-});
+}
+$("rp-orch").addEventListener("click", spClick);
+$("dash").addEventListener("click", spClick);
 
 /* ---------- disease diagnosis ---------- */
 Object.assign(T.en, {
