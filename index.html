@@ -4448,14 +4448,26 @@ Object.assign(T.en, { kx_sofar:"Total so far", kx_edit:"Edit expense", kx_save:"
 Object.assign(T.hi, { kx_sofar:"अब तक का ख़र्च", kx_edit:"ख़र्च बदलें", kx_save:"बदलाव सहेजें", kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
 Object.assign(T.hn, { kx_sofar:"Ab tak ka kharcha", kx_edit:"Kharcha badlein", kx_save:"Badlav save karein", kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
 function otMoneyHtml(o) {
+  /* every harvest year as a dropdown with the same five figures as Season sales record; one open at a time */
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
     .concat((o.diary || []).map(d => hYear(d.date)).filter(y => y > 1900)))).sort((a, b) => b - a);
   if (!yrs.length) yrs.push(thisYear());
-  if (yrs.indexOf(dashYear) < 0) { const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year); dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0]; }
-  return '<div class="oyear field"><label for="o_season">' + tr("o_season") + '</label><select id="o_season">' + yrs.map(y => '<option value="' + y + '"' + (y === dashYear ? " selected" : "") + ">" + y + "</option>").join("") + "</select></div>" +
-    insightsHtml(o, dashYear) +
+  if (dashYear !== 0 && yrs.indexOf(dashYear) < 0) { const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year); dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0]; }
+  return '<div class="ylist figrows hslist">' + yrs.map(y => {
+    const open = y === dashYear;
+    return '<div class="yrow' + (open ? " open" : "") + '" id="hsy-' + y + '"><button class="yhead" type="button" data-hst="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + '</span><span class="yfigs five">' +
+      fig5(seT(seFor(o.id, y))) + '</span><span class="ychev" aria-hidden="true"></span></button>' + (open ? '<div class="ybody">' + insightsHtml(o, y) + "</div>" : "") + "</div>";
+  }).join("") + "</div>" +
     '<div class="oacts"><button class="btn-s" type="button" data-dact="open" data-o="' + esc(o.id) + '">' + tr("pt_season") + "</button></div>";
 }
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-hst]"); if (!b) return;
+  const y = +b.dataset.hst, opening = y !== dashYear; dashYear = opening ? y : 0; renderDash();
+  const nb = document.querySelector('[data-hst="' + y + '"]'); if (!nb) return; nb.focus({preventScroll: true}); if (!opening) return;
+  const cs = getComputedStyle(document.documentElement), tb = document.querySelector(".detrows > .yrow.open .otabs");
+  const off = (parseFloat(cs.getPropertyValue("--topH")) || 0) + (parseFloat(cs.getPropertyValue("--ohH")) || 0) + (tb ? tb.offsetHeight : 0) + 8;
+  window.scrollTo({top: nb.getBoundingClientRect().top + window.scrollY - off, behavior: "smooth"});
+});
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-otab]"); if (!b) return;
   otab = b.dataset.otab; kAdd = false; kYear = null; kxYear = null; kxEditY = null; dashExp = false; xEdit = null; locMode = null; locResults = null; detEdit = null; profEdit = false; diaryEdit = null;
