@@ -1449,6 +1449,8 @@ details.dsec > summary h4{display:inline}
 .rcdiary li.k-dk_irrig{border-left-color:#3AA0B0}
 .rcdiary li.k-dk_tools,.rcdiary li.k-dk_repair{border-left-color:#7A7A7A}
 .rcdiary li.k-dk_hail,.rcdiary li.k-dk_snow,.rcdiary li.k-dk_rain,.rcdiary li.k-dk_drought{border-left-color:var(--bad)}
+.rcdiary li.kxnew{background:#FFF6D6;border-radius:6px;transition:background .6s}
+.rcdiary li{transition:background .6s}
 .kxacts{display:flex;gap:14px;font-size:.85rem;margin-top:2px}
 .kxtot{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0;padding:8px 12px;border-radius:8px;background:var(--bg,#f6f4ee);font-size:.92rem}
 .kxtot span{color:var(--muted)}.kxtot b{font:700 1.15rem var(--mono)}
@@ -4304,13 +4306,13 @@ document.addEventListener("submit", e => {
     o.diary = (o.diary || []).concat([Object.assign({}, old ? old.d : {}, entry)]);
     if (old) pruneSeason(old.o.id, hYear(old.d.date));
     ensureSeason(o.id, hYear(date)); dashExpEdit = null; dashExp = false; dashExpMsg = ""; dashExpO = o.id;
-    expChanged(); if (typeof renderExp === "function") renderExp(); return;
+    expChanged(); if (typeof renderExp === "function") renderExp(); kxShow(o, entry); return;
   }
   o.diary = (o.diary || []).concat([entry]);
   const y = hYear(date); ensureSeason(o.id, y); exOpen.add(y);
-  dashExpO = o.id; dashExpMsg = tr("dx_ok").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", y);
-  expChanged(); if (typeof renderExp === "function") renderExp();
-  const k = $("dx_kind"); if (k) k.focus();
+  /* after saving, close the form and show this orchard's expense history with the new entry highlighted */
+  dashExpO = o.id; dashExpMsg = ""; dashExp = false; dashView = o.id; otab = "work"; detEdit = null; kxEditY = null;
+  expChanged(); if (typeof renderExp === "function") renderExp(); kxShow(o, entry);
 });
 /* an opened orchard has three tabs: Overview, Expenses (this harvest year's expenses, other years from a dropdown), Accounts (sales and profit) */
 let otab = "det";
@@ -4321,7 +4323,13 @@ function otabsHtml(o) {
 function otExpHtml(o) {
   return '<section class="dgrp detxh"><h6>' + tr("xh_h") + "</h6>" + expYearsHtml([o], o.id) + "</section>" + labourHtml(o);
 }
-let kxYear = null, kxDel = null, dashExpEdit = null, kxEditY = null;
+let kxYear = null, kxDel = null, dashExpEdit = null, kxEditY = null, kxNew = null;
+function kxShow(o, entry) {
+  const y = hYear(entry.date); kxYear = y === hYear(todayIso()) ? kxYear : y; kxNew = entry.id; renderDash();
+  const li = document.querySelector('#oExp li[data-kid="' + entry.id + '"]') || $("oExp");
+  if (li && li.scrollIntoView) li.scrollIntoView({block: "center", behavior: "smooth"});
+  setTimeout(() => { kxNew = null; const n = document.querySelector("#oExp li.kxnew"); if (n) n.classList.remove("kxnew"); }, 2500);
+}
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-kxy]"); if (!b) return; const y = +b.dataset.kxy; kxEditY = kxEditY === y ? null : y; kxDel = null; if (!kxEditY) { dashExpEdit = null; dashExp = false; } renderDash(); const n = document.querySelector('[data-kxy="' + y + '"]'); if (n) n.focus({preventScroll: true}); });
 document.addEventListener("click", e => {
   const ed = e.target.closest && e.target.closest("[data-kxe]"), dl = e.target.closest && e.target.closest("[data-kxd]");
@@ -4348,7 +4356,7 @@ function kxYearHtml(o, y, cur) {
   let h = '<section class="rccard kxcard' + (editing ? " editing" : "") + '"><div class="kxch"><h4>' + tr("kx_title").replace("{y}", y) + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") + "</h4>" +
     (canEdit ? '<button class="btn-s" type="button" data-kxy="' + y + '">' + tr(editing ? "ne_done" : "dy_edit") + "</button>" : "") + "</div>";
   if (!r.rows.length) return h + '<p class="hint">' + tr("xh_cur0").replace("{y}", y) + "</p></section>";
-  return h + '<p class="kxtot"><span>' + tr("rc_tot") + " · " + tr("xh_n").replace("{n}", r.rows.length) + "</span><b>" + inr(r.total) + "</b></p>" + '<ol class="rcdiary">' + r.rows.map(x => '<li class="k-dk_' + esc(x.k || "lump") + '"><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + "</span><span><b>" + x.kind + "</b>" +
+  return h + '<p class="kxtot"><span>' + tr("rc_tot") + " · " + tr("xh_n").replace("{n}", r.rows.length) + "</span><b>" + inr(r.total) + "</b></p>" + '<ol class="rcdiary">' + r.rows.map(x => '<li class="k-dk_' + esc(x.k || "lump") + (x.id && x.id === kxNew ? " kxnew" : "") + '"' + (x.id ? ' data-kid="' + esc(x.id) + '"' : "") + '><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + "</span><span><b>" + x.kind + "</b>" +
     "<br>" + (x.text ? esc(x.text) + " · " : "") + inr(x.cost) +
     (x.id && editing ? '<span class="kxacts"><button class="link" type="button" data-kxe="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr("dy_edit") + '</button><button class="link del" type="button" data-kxd="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr(kxDel === x.id ? "dy_sure" : "dy_del") + "</button></span>" : "") +
     "</span></li>").join("") + "</ol></section>";
