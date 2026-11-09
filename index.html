@@ -3332,7 +3332,7 @@ async function applyUser(u) {
   if (!u) {
     curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); exoOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
-    sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); bootDone(); return;
+    sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
   if (changed) await loadMine();
   bootDone();
@@ -3340,8 +3340,8 @@ async function applyUser(u) {
 function bootDone() { document.documentElement.classList.remove("booting"); }
 if (!sb) { setGuest(true); bootDone(); }
 if (sb) {
-  sb.auth.onAuthStateChange((ev, session) => { if (ev === "PASSWORD_RECOVERY") { recovering = true; justSignedIn = true; } setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") renderOrchGate(); }, 0); });
-  sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); logVisit(s ? s.user : null); }).catch(() => { bootDone(); logVisit(null); });
+  sb.auth.onAuthStateChange((ev, session) => { if (ev === "PASSWORD_RECOVERY") { recovering = true; justSignedIn = true; } if (ev === "SIGNED_OUT") bootDone(); setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") renderOrchGate(); }, 0); });
+  sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); if (!s) bootDone(); logVisit(s ? s.user : null); }).catch(() => { bootDone(); logVisit(null); });
 }
 
 function netMsg(err) {
