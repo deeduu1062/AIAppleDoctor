@@ -1425,6 +1425,9 @@ details.dsec > summary h4{display:inline}
 .tsage{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;padding-top:4px;border-top:1px solid var(--line)}
 .tsa b{font:600 1rem var(--mono)}.tsa.ok b{color:var(--good)}
 .tsum .fine{margin:0}
+.lacts .lotedit{min-height:34px;padding:4px 10px;font-size:.85rem;margin-top:6px}
+.olots td.acts:empty{box-shadow:none;padding:0}
+.lacts .lotdone{min-height:34px;padding:4px 12px;font-size:.85rem;margin-top:6px}
 .olotsec{display:grid;gap:6px}
 .olot{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 10px}
 .olot summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px 0;cursor:pointer;list-style:none}
@@ -3692,6 +3695,8 @@ function lineHtml(n) {
     "</div>";
 }
 /* Season Profit: one table per orchard, every lot in it, Lot column on the left */
+let lotEditId = null;
+Object.assign(T.en, { lot_edit:"Edit lot" }); Object.assign(T.hi, { lot_edit:"लॉट बदलें" }); Object.assign(T.hn, { lot_edit:"Lot badlein" });
 function orchLotsTable(se) {
   const cls = n => (n < 0 ? "neg" : "pos"), nl = se.lots.length;
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
@@ -3699,10 +3704,14 @@ function orchLotsTable(se) {
   let h = '<div class="tablewrap"><table class="ledger sm lottable olots"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th scope="col" class="acts"></th></tr></thead>';
   se.lots.forEach((l, i) => {
     const shown = l.lines.filter(n => +n.boxes || +n.rate || (editLine && editLine.line === n.id)), lc = lotCalc(l);
-    const lotActs = '<span class="lacts"><button class="link" type="button" data-act="addline" data-id="' + esc(l.id) + '">' + tr("l_addtype") + "</button>" +
+    /* one Edit lot button per lot; its other options appear only after tapping it */
+    const lotEd = lotEditId === l.id || !!(editLine && l.lines.some(n => n.id === editLine.line));
+    const lotActs = !lotEd ? '<span class="lacts"><button class="btn-s lotedit" type="button" data-act="lotedit" data-id="' + esc(l.id) + '">✎ ' + tr("lot_edit") + "</button></span>" :
+      '<span class="lacts"><button class="link" type="button" data-act="addline" data-id="' + esc(l.id) + '">' + tr("l_addtype") + "</button>" +
       (i > 0 ? '<button class="link" type="button" data-act="lotup" data-id="' + esc(l.id) + '">' + tr("lot_up") + "</button>" : "") +
       (i < nl - 1 ? '<button class="link" type="button" data-act="lotdown" data-id="' + esc(l.id) + '">' + tr("lot_down") + "</button>" : "") +
-      '<button class="link del" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">' + tr("lot_remove") + "</button></span>";
+      '<button class="link del" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">' + tr("lot_remove") + "</button>" +
+      '<button class="btn-s add lotdone" type="button" data-act="lotdone">' + tr("ne_done") + "</button></span>";
     const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + lotActs + "</th>";
     h += '<tbody class="lotgrp">';
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
@@ -3710,8 +3719,8 @@ function orchLotsTable(se) {
       const c = lineCalc(n), ed = !!(editLine && editLine.line === n.id);
       h += "<tr" + (ed ? ' class="editing"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) +
         "</td><td>" + inr(c.exp) + '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + '</td><td class="acts">' +
-        (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_edit") + "</button>") +
-        '<button class="link del" type="button" data-act="sdel" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_del") + "</button></td></tr>";
+        (!lotEd ? "" : (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_edit") + "</button>") +
+        '<button class="link del" type="button" data-act="sdel" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '">' + tr("ne_del") + "</button>") + "</td></tr>";
     });
     h += '<tr class="lottot"><td colspan="2">' + tr("ne_tot") + "</td><td>" + fmtN(lc.b) + "</td><td>" + inr(lc.gross) + "</td><td>" + inr(lc.exp) + '</td><td class="' + cls(lc.net) + '">' + inr(lc.net) +
       "</td><td>" + inr(lc.nppb) + '</td><td class="acts"></td></tr></tbody>';
@@ -5795,6 +5804,8 @@ $("rp-orch").addEventListener("click", e => {
   } else if (act === "salecancel") { saleAsk = false; saleYrFor = null; renderAll(); return;
   } else if (act === "addlotfor") {
     closeEditLine(); addingO = false; sel.o = b.dataset.o; sel.y = +b.dataset.y; fixSel(); openEntry(); { const f = $("entryForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); } return;
+  } else if (act === "lotedit") { closeEditLine(); lotEditId = b.dataset.id; renderAll(); const nb = document.querySelector('[data-act=addline][data-id="' + b.dataset.id + '"]'); if (nb) nb.focus({preventScroll: true}); return;
+  } else if (act === "lotdone") { closeEditLine(); lotEditId = null; renderAll(); return;
   } else if (act === "lottoggle") {
     const id = b.dataset.id;
     if (lotOpen.has(id) || (editLine && editLine.lot === id)) { lotOpen.delete(id); if (editLine && editLine.lot === id) closeEditLine(); } else lotOpen.add(id);
