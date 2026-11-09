@@ -1628,7 +1628,9 @@ table.ledger.ytab{min-width:0;width:100%}
 .spo.orow.open{border-left-color:var(--brand)}
 .spo.orow > .yhead:hover{background:color-mix(in srgb,var(--brand) 18%,var(--surface))}
 .spo.orow .oname{color:var(--brand)}
-.spo.orow .yfig b{font-size:1rem}.spo.orow .yfigs.five .yfig.ynet b{font-size:1rem}
+.spo.orow .yfig b{font-size:1rem}.spo.orow .yfigs .yfig.ynet b{font-size:1rem}
+.exo.orow .yfig.exn b{color:var(--fg)}
+.exo .ybody,.exlist .ybody{gap:8px}
 .spo.orow .obody{background:var(--surface)}
 .olist{display:grid;gap:8px}
 .figrows .oprof > .yhead{grid-template-columns:7.5rem minmax(0,1fr);cursor:default}
@@ -1637,7 +1639,7 @@ table.ledger.ytab{min-width:0;width:100%}
 .figrows .orow > .yhead{grid-template-columns:7.5rem minmax(0,1fr) 1.2rem;padding:10px 14px}
 .oname{font:700 1.1rem var(--display);overflow-wrap:anywhere}
 .obody{display:grid;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
-@media (max-width:900px){.figrows .orow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.figrows .orow .oname{grid-column:1;grid-row:1}.figrows .orow .ychev{grid-column:2;grid-row:1}.figrows .orow .yfigs.five{grid-column:1/-1;grid-row:2}}
+@media (max-width:900px){.figrows .orow > .yhead{grid-template-columns:minmax(0,1fr) 1rem}.figrows .orow .oname{grid-column:1;grid-row:1}.figrows .orow .ychev{grid-column:2;grid-row:1}.figrows .orow:not(.oprof) .yfigs{grid-column:1/-1;grid-row:2;padding:10px 0 0;border-left:0;border-top:1px solid var(--line);grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:560px){.spohead{grid-template-columns:minmax(0,1fr) auto}.spohead .ymeta{grid-column:1/-1;grid-row:2}}
 /* Yearly expenses */
 .exformbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;display:grid;gap:10px}
@@ -3312,7 +3314,7 @@ async function applyUser(u) {
   if (langChanged && typeof applyLang === "function") try { applyLang(); } catch (e) {}
   if (typeof setGuest === "function") setGuest(!u);
   if (!u) {
-    curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
+    curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); exoOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
@@ -5245,7 +5247,10 @@ function expYearsAll() {
   S.seasons.forEach(x => { if (COST_KEYS.some(k => +x.costs[k] > 0)) ys.add(x.year); });
   return Array.from(ys).sort((a, b) => b - a);
 }
-let exOpen = new Set();
+let exOpen = new Set(), exoOpen = new Set();
+/* scroll a just-opened row to the top, just below the sticky bar */
+function toTop(el) { if (!el) return; const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topH")) || 0;
+  window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - top - 8, behavior: "smooth"}); }
 function renderExpForm() {
   const el = $("exForm"); if (!el) return;
   fixExp();
@@ -5300,7 +5305,12 @@ function renderExpList() {
         const o = r.o, t = r.t, trees = +o.trees, se = seFor(o.id, y), hasL = se && COST_KEYS.some(k => +se.costs[k] > 0);
         const om = !t.total ? "" : tr(t.ents.length === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(t.ents.length)) + (trees && t.total ? ", " + tr("ex_ptree").replace("{x}", inr(t.total / trees)) : "") +
           (t.lump ? ", " + tr("ex_pluslump").replace("{x}", inr(t.lump)) : "");
-        h += '<section class="spo exo" id="exo-' + esc(o.id) + "-" + y + '"><div class="spohead"><h5>' + esc(o.name || tr("orchard_fallback")) + '</h5><span class="ymeta">' + om + '</span><b class="ynet exn">' + inr(t.total) + "</b></div>";
+        const ok = spoKey(o.id, y), oopen = exoOpen.has(ok) || !!(exEdit && t.ents.some(e => e.id === exEdit));
+        h += '<section class="spo exo yrow orow' + (oopen ? " open" : "") + '" id="exo-' + esc(o.id) + "-" + y + '"><button class="yhead" type="button" data-exact="otoggle" data-o="' + esc(o.id) + '" data-y="' + y + '" aria-expanded="' + oopen + '">' +
+          '<span class="oname">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs three">' + yfig(tr("ex_total"), mny(t.total), "ynet exn", ' data-exot="1"') + yfig(tr("ex_entries"), fmtN(t.ents.length)) +
+          yfig(tr("m_pt"), trees ? inr(t.total / trees) : "–") + '</span><span class="ychev" aria-hidden="true"></span></button>';
+        if (!oopen) { h += "</section>"; return; }
+        h += '<div class="obody">' + (om ? '<p class="ymeta">' + om + "</p>" : "");
         if (t.ents.length) {
           h += '<div class="tablewrap"><table class="ledger sm extab"><thead><tr>' + ["dy_date", "ex_cat", "ex_amt0", ""].map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
             t.ents.map(e => '<tr' + (e.id === exEdit ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(e.date) + '</th><td class="t">' + tr("dk_" + e.kind) + (e.kind === "spray" && e.stage ? " <small>(" + tr(e.stage) + ")</small>" : "") +
@@ -5310,7 +5320,7 @@ function renderExpList() {
         if (t.lw) h += '<p class="hint">' + tr("lb_inexp").replace("{x}", inr(t.lw)) + "</p>";
         h += '<details class="manage exlump"' + (hasL ? " open" : "") + "><summary>" + tr("ex_lump") + '</summary><p class="hint">' + tr("ex_lump_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
           '<div class="field"><label for="exl_' + esc(o.id) + "_" + y + "_" + k + '">' + tr("yc_" + k) + ' (₹)</label><input id="exl_' + esc(o.id) + "_" + y + "_" + k + '" data-exlump="' + k + '" data-o="' + esc(o.id) + '" data-y="' + y +
-          '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>').join("") + "</div></details></section>";
+          '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>').join("") + "</div></details></div></section>";
       });
       h += "</div>";
     }
@@ -5326,13 +5336,13 @@ function refreshExpTotals() {
   document.querySelectorAll("#exList .exo").forEach(s2 => {
     const m = s2.id.match(/^exo-(.+)-(\d{4})$/); if (!m) return;
     const o = S.orchards.find(x => x.id === m[1]); if (!o) return;
-    const n = s2.querySelector(".spohead .ynet"); if (n) n.textContent = inr(expTotals(o, +m[2]).total);
+    const n = s2.querySelector("[data-exot]"); if (n) n.innerHTML = mny(expTotals(o, +m[2]).total);
   });
 }
 function renderExp() { renderExpForm(); renderExpList(); }
 function expChanged() { save(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderHero(); }
 function expOpenAt(oid, y) {
-  exOpen.add(y); if (oid) exO = oid; exEdit = null; renderExp();
+  exOpen = new Set([y]); exoOpen = new Set(oid ? [spoKey(oid, y)] : []); if (oid) exO = oid; exEdit = null; renderExp();
   const t = $("exo-" + oid + "-" + y) || $("exy-" + y); if (t && t.scrollIntoView) t.scrollIntoView({block: "start"});
 }
 $("rt-exp").addEventListener("click", () => { exEdit = null; renderExp(); showSub("exp"); });
@@ -5353,8 +5363,15 @@ $("rp-exp").addEventListener("click", e => {
   const b = e.target.closest("[data-exact]"); if (!b) return;
   const a = b.dataset.exact;
   if (a === "ytoggle") {
-    const y = +b.dataset.y; if (exOpen.has(y)) exOpen.delete(y); else exOpen.add(y);
-    renderExpList(); const nb = document.querySelector('#exList [data-exact=ytoggle][data-y="' + y + '"]'); if (nb) nb.focus(); return;
+    /* one year open at a time: opening a year closes the others and brings it to the top */
+    const y = +b.dataset.y, opening = !exOpen.has(y); exOpen = new Set(opening ? [y] : []);
+    renderExpList(); const nb = document.querySelector('#exList [data-exact=ytoggle][data-y="' + y + '"]'); if (nb) { nb.focus({preventScroll: true}); if (opening) toTop(nb); } return;
+  }
+  if (a === "otoggle") {
+    /* one orchard open at a time, same as Season sales record */
+    const k = spoKey(b.dataset.o, +b.dataset.y), opening = !exoOpen.has(k); exoOpen = new Set(opening ? [k] : []);
+    if (!opening) exEdit = null;
+    renderExpList(); const nb = document.querySelector('#exList [data-exact=otoggle][data-o="' + b.dataset.o + '"][data-y="' + b.dataset.y + '"]'); if (nb) { nb.focus({preventScroll: true}); if (opening) toTop(nb); } return;
   }
   if (a === "cancel") { exEdit = null; renderExp(); return; }
   if (a === "edit") { exEdit = b.dataset.id; renderExp(); const f = $("exForm"); if (f) f.scrollIntoView({block: "start"}); const c = $("ex_cost"); if (c) c.focus(); return; }
@@ -5385,7 +5402,7 @@ $("rp-exp").addEventListener("submit", e => {
   const y = hYear(date);
   ensureSeason(o.id, y);
   if (old) pruneSeason(oldO.id, hYear(old.date));
-  exEdit = null; exO = o.id; exOpen.add(y);
+  exEdit = null; exO = o.id; exOpen = new Set([y]); exoOpen = new Set([spoKey(o.id, y)]);
   expChanged(); renderExp();
   set("ex_ok", tr("ex_saved").replace("{y}", y));
   const k = $("ex_kind"); if (k) k.focus();
