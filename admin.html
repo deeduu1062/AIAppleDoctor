@@ -1467,6 +1467,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
       <button class="tab" role="tab" type="button" id="at-cost" aria-controls="ap-cost" data-i18n="adm_t_cost"></button>
       <button class="tab" role="tab" type="button" id="at-users" aria-controls="ap-users" data-i18n="adm_t_users"></button>
       <button class="tab" role="tab" type="button" id="at-prof" aria-controls="ap-prof" data-i18n="adm_t_prof"></button>
+      <button class="tab" role="tab" type="button" id="at-dx" aria-controls="ap-dx" data-i18n="adm_t_dx"></button>
       <button class="tab" role="tab" type="button" id="at-fb" aria-controls="ap-fb" data-i18n="adm_t_fb"></button>
     </div>
     <div class="adm" id="ap-ov" role="tabpanel" aria-labelledby="at-ov">
@@ -1534,6 +1535,16 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <div id="pfOne" hidden></div>
       </section>
     </div>
+    <div class="adm" id="ap-dx" role="tabpanel" aria-labelledby="at-dx" hidden>
+      <section class="fbadm solo" aria-labelledby="dqH">
+        <div class="admbar"><h4 id="dqH" data-i18n="dq_h" style="margin:0"></h4><button class="btn-s" type="button" id="dqRefresh" data-i18n="ad_refresh"></button><span class="fine" id="dqAt" role="status" style="margin:0"></span></div>
+        <p class="fine" data-i18n="dq_p"></p>
+        <p class="autherr" id="dqErr" role="alert"></p>
+        <div id="dqStats"></div>
+        <div class="admbar"><div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-dq="open" aria-selected="true"></button><button class="tab" role="tab" type="button" data-dq="done" aria-selected="false"></button><button class="tab" role="tab" type="button" data-dq="all" aria-selected="false"></button></div></div>
+        <div id="dqList"></div>
+      </section>
+    </div>
     <div class="adm" id="ap-fb" role="tabpanel" aria-labelledby="at-fb" hidden>
 <section class="fbadm solo" aria-labelledby="fbAdmH">
         <h4 id="fbAdmH" data-i18n="fa_h"></h4>
@@ -1587,6 +1598,6 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </main>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=10"></script>
+<script src="/admin.js?v=11"></script>
 </body>
 </html>

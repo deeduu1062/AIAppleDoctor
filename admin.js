@@ -1302,8 +1302,114 @@ $("adTable").addEventListener("click", e => {
   window.scrollTo(0, 0);
 });
 
+/* ---------- photo checks: expert review ---------- */
+Object.assign(T.en, {
+  adm_t_dx: "Photo checks", dq_h: "Photo checks for expert review",
+  dq_p: "Checks where the grower asked an expert, the AI was unsure, the problem can kill trees, or the grower marked it wrong. Your answer shows to the grower and becomes a label for training Seb Saathi's own model later.",
+  dq_open: "Waiting", dq_done: "Answered", dq_all: "All",
+  dq_s_total: "Photo checks", dq_s_month: "this month", dq_s_kept: "Photos kept", dq_s_right: "Growers say right", dq_s_agree: "Expert agrees with AI", dq_s_open: "Waiting for review", dq_s_lab: "Labelled photos for training",
+  dq_none: "Nothing here.", dq_asked: "Grower asked an expert", dq_flag: "AI flagged", dq_fb: "Grower marked it: {f}", dq_nophoto: "Photos not kept",
+  dq_ai: "AI said", dq_note: "Grower's note", dq_area: "Area", dq_ans: "Correct answer", dq_ans_name: "Name (for 'Something else' or other fruits)", dq_msg: "Note to the grower (shown in their app)",
+  dq_save: "Save answer", dq_saved: "Saved.", dq_err_setup: "Not set up yet. Run supabase/diagnosis_plus.sql once in Supabase → SQL Editor, then tap Refresh.",
+  dq_by: "Answered {d}", fb_right: "right", fb_wrong: "wrong", fb_unsure: "not sure",
+  c_high: "quite sure", c_medium: "fairly sure", c_low: "not sure",
+  cr_apple: "Apple", cr_cherry: "Cherry", cr_pear: "Pear", cr_plum: "Plum", cr_walnut: "Walnut"
+});
+Object.assign(T.hi, {
+  adm_t_dx: "फ़ोटो जाँच", dq_h: "विशेषज्ञ की जाँच के लिए फ़ोटो",
+  dq_p: "वे जाँच जिनमें बागवान ने विशेषज्ञ से पूछा, AI को पक्का नहीं था, समस्या पेड़ मार सकती है, या बागवान ने ग़लत बताया। आपका जवाब बागवान को दिखता है और बाद में सेब साथी का अपना मॉडल सिखाने के लिए लेबल बनता है।",
+  dq_open: "इंतज़ार में", dq_done: "जवाब दिया", dq_all: "सभी",
+  dq_s_total: "फ़ोटो जाँच", dq_s_month: "इस महीने", dq_s_kept: "रखी गई फ़ोटो", dq_s_right: "बागवान ने सही कहा", dq_s_agree: "विशेषज्ञ AI से सहमत", dq_s_open: "जाँच का इंतज़ार", dq_s_lab: "सिखाने के लिए लेबल वाली फ़ोटो",
+  dq_none: "यहाँ कुछ नहीं।", dq_asked: "बागवान ने विशेषज्ञ से पूछा", dq_flag: "AI ने चिह्नित किया", dq_fb: "बागवान ने बताया: {f}", dq_nophoto: "फ़ोटो नहीं रखी गईं",
+  dq_ai: "AI ने कहा", dq_note: "बागवान का नोट", dq_area: "इलाक़ा", dq_ans: "सही जवाब", dq_ans_name: "नाम ('कुछ और' या दूसरे फलों के लिए)", dq_msg: "बागवान के लिए नोट (उनके ऐप में दिखेगा)",
+  dq_save: "जवाब सेव करें", dq_saved: "सेव हो गया।", dq_err_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/diagnosis_plus.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
+  dq_by: "जवाब {d}", fb_right: "सही", fb_wrong: "ग़लत", fb_unsure: "पता नहीं",
+  c_high: "काफ़ी भरोसा", c_medium: "कुछ भरोसा", c_low: "पक्का नहीं",
+  cr_apple: "सेब", cr_cherry: "चेरी", cr_pear: "नाशपाती", cr_plum: "प्लम", cr_walnut: "अखरोट"
+});
+const DQ_IDS = { scab: "Apple scab", mars: "Premature leaf fall (Marssonina)", alt: "Alternaria leaf spot", pm: "Powdery mildew", sooty: "Sooty blotch / flyspeck", pit: "Bitter pit",
+  canker: "Canker", collar: "Collar rot", wrr: "White root rot", woolly: "Woolly apple aphid", mite: "Red spider mite", sjs: "San Jose scale", borer: "Stem or root borer",
+  other: "Something else", healthy: "Healthy", unclear: "Photo not clear enough" };
+let DQ = null, dqWhich = "open", dqBusy = false, dqStats = null, dqUrls = {}, dqMsg = {};
+async function loadDq() {
+  if (!isAdmin() || !sb || dqBusy) return;
+  dqBusy = true; set("dqErr", ""); set("dqAt", tr("ad_loading")); $("dqRefresh").disabled = true;
+  let err = null;
+  try {
+    const [q, st] = await Promise.all([sb.rpc("admin_dx_queue", { which: dqWhich, max_rows: 100 }), sb.rpc("admin_dx_stats")]);
+    err = q.error || st.error; DQ = q.error ? [] : (q.data || []); dqStats = st.error ? null : st.data;
+  } catch (x) { err = x; DQ = []; }
+  dqBusy = false; $("dqRefresh").disabled = false; set("dqAt", "");
+  if (err) { const m = String(err.message || err); set("dqErr", /could not find the function|PGRST202/i.test(m + (err.code || "")) ? tr("dq_err_setup") : tr("ad_err").replace("{m}", m)); }
+  renderDq();
+  /* private photo links, valid for an hour */
+  const paths = []; (DQ || []).forEach(r => (r.photo_paths || []).forEach(p => { if (!dqUrls[p]) paths.push(p); }));
+  if (paths.length) {
+    try {
+      const r = await sb.storage.from("dx-photos").createSignedUrls(paths, 3600);
+      (r.data || []).forEach(x => { if (x.signedUrl) dqUrls[x.path] = x.signedUrl; });
+    } catch (e) {}
+    renderDq();
+  }
+}
+const pct = (a, b) => (b ? Math.round(a * 100 / b) + "%" : "–");
+function renderDq() {
+  if (!$("dqList")) return;
+  document.querySelectorAll("[data-dq]").forEach(b => { b.textContent = tr("dq_" + b.dataset.dq); b.setAttribute("aria-selected", b.dataset.dq === dqWhich ? "true" : "false"); });
+  const s = dqStats;
+  $("dqStats").innerHTML = s ? '<div class="ystats">' +
+    [["dq_s_total", fmtN(+s.total || 0), fmtN(+s.month || 0) + " " + tr("dq_s_month")], ["dq_s_open", fmtN(+s.open || 0)], ["dq_s_kept", fmtN(+s.kept || 0)],
+     ["dq_s_lab", fmtN(+s.labelled || 0), "/ 10,000"], ["dq_s_right", pct(+s.right || 0, +s.marked || 0), fmtN(+s.marked || 0)], ["dq_s_agree", pct(+s.agree || 0, +s.reviewed || 0), fmtN(+s.reviewed || 0)]]
+      .map(([k, v, sub], i) => "<div" + (i < 2 ? ' class="main"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b>" + (sub ? '<span class="sub">' + esc(sub) + "</span>" : "") + "</div>").join("") + "</div>" : "";
+  if (!DQ) { $("dqList").innerHTML = ""; return; }
+  if (!DQ.length) { $("dqList").innerHTML = '<p class="empty">' + tr("dq_none") + "</p>"; return; }
+  $("dqList").innerHTML = '<div class="dqlist">' + DQ.map(r => {
+    const res = r.result || {}, ms = res.matches || [], crop = r.crop || "apple";
+    const who = r.email || (r.phone ? "+" + String(r.phone).replace(/^\+/, "") : "–");
+    const flags = [r.ask_expert ? '<span class="tag">' + tr("dq_asked") + "</span>" : "", r.needs_review ? '<span class="tag">' + tr("dq_flag") + "</span>" : "",
+      r.feedback ? '<span class="tag">' + esc(tr("dq_fb").replace("{f}", tr("fb_" + r.feedback))) + "</span>" : ""].join("");
+    const pics = (r.photo_paths || []).length ? '<div class="dqpics">' + r.photo_paths.map(p => dqUrls[p] ? '<a href="' + esc(dqUrls[p]) + '" target="_blank" rel="noopener"><img src="' + esc(dqUrls[p]) + '" alt=""></a>' : '<span class="dqph"></span>').join("") + "</div>"
+      : '<p class="fine">' + tr("dq_nophoto") + "</p>";
+    const ai = ms.map(m => esc(m.name || DQ_IDS[m.id] || m.id) + " (" + esc(tr("c_" + m.confidence) || m.confidence) + ")").join(", ") || "–";
+    const sel = r.expert_id || (ms[0] && ms[0].id) || "";
+    const msg = dqMsg[r.id] || "";
+    return '<article class="dqcard"><div class="dqtop"><b>' + esc(adWhen(r.created_at)) + "</b> · " + esc(who) + " · " + esc(tr("cr_" + crop)) + (r.part ? " · " + esc(r.part) : "") + "</div>" +
+      '<div class="dqflags">' + flags + "</div>" + pics +
+      "<p><b>" + tr("dq_ai") + ":</b> " + ai + (res.severity ? " · " + esc(res.severity) : "") + "</p>" + (res.summary ? '<p class="fine">' + esc(res.summary) + "</p>" : "") +
+      (r.note ? "<p><b>" + tr("dq_note") + ":</b> " + esc(r.note) + "</p>" : "") + (r.area ? "<p><b>" + tr("dq_area") + ":</b> " + esc(r.area) + "</p>" : "") +
+      (r.reviewed_at ? '<p class="fine">' + esc(tr("dq_by").replace("{d}", adWhen(r.reviewed_at))) + "</p>" : "") +
+      '<form class="dqform" data-dqform="' + esc(r.id) + '"><div class="grid3"><div class="field"><label for="dqId' + r.id + '">' + tr("dq_ans") + '</label><select id="dqId' + r.id + '">' +
+        Object.keys(DQ_IDS).map(k => '<option value="' + k + '"' + (k === sel ? " selected" : "") + ">" + esc(DQ_IDS[k]) + "</option>").join("") + "</select></div>" +
+        '<div class="field"><label for="dqNm' + r.id + '">' + tr("dq_ans_name") + '</label><input id="dqNm' + r.id + '" type="text" maxlength="80" value="' + esc(r.expert_name || "") + '"></div></div>' +
+        '<div class="field"><label for="dqTx' + r.id + '">' + tr("dq_msg") + '</label><textarea id="dqTx' + r.id + '" rows="2" maxlength="1000">' + esc(r.expert_note || "") + "</textarea></div>" +
+        '<div class="dels"><button class="btn-s add" type="submit">' + tr("dq_save") + '</button><span class="fine">' + esc(msg) + "</span></div></form></article>";
+  }).join("") + "</div>";
+}
+$("dqRefresh").addEventListener("click", loadDq);
+document.querySelectorAll("[data-dq]").forEach(b => b.addEventListener("click", () => { dqWhich = b.dataset.dq; DQ = null; renderDq(); loadDq(); }));
+$("dqList").addEventListener("submit", async e => {
+  const f = e.target.closest("[data-dqform]"); if (!f) return;
+  e.preventDefault();
+  const id = f.dataset.dqform, btn = f.querySelector("button[type=submit]"); btn.disabled = true;
+  let err = null;
+  try { const r = await sb.rpc("admin_dx_review", { did: id, label: $("dqId" + id).value, label_name: $("dqNm" + id).value.trim(), note: $("dqTx" + id).value.trim() }); err = r.error; } catch (x) { err = x; }
+  btn.disabled = false;
+  dqMsg[id] = err ? String(err.message || err) : tr("dq_saved");
+  if (!err) { const row = DQ.find(x => x.id === id); if (row) { row.reviewed_at = new Date().toISOString(); row.expert_id = $("dqId" + id).value; row.expert_name = $("dqNm" + id).value.trim(); row.expert_note = $("dqTx" + id).value.trim(); } }
+  const keep = { id: $("dqId" + id).value, nm: $("dqNm" + id).value, tx: $("dqTx" + id).value };
+  renderDq();
+  if ($("dqId" + id)) { $("dqId" + id).value = keep.id; $("dqNm" + id).value = keep.nm; $("dqTx" + id).value = keep.tx; }
+});
+(function () {
+  const st = document.createElement("style");
+  st.textContent = ".dqlist{display:grid;gap:14px}.dqcard{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:8px;background:var(--surface)}.dqcard p{margin:0}" +
+    ".dqflags{display:flex;gap:6px;flex-wrap:wrap}.dqflags .tag{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:.82rem}.dqflags:empty{display:none}.dqpics{display:flex;gap:8px;flex-wrap:wrap}.dqpics img,.dqph{width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block;background:var(--surface-2)}" +
+    ".dqform{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:10px}.dqform textarea{width:100%}";
+  document.head.appendChild(st);
+})();
+
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["ov", "pay", "cost", "users", "prof", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
+const TABS = ["ov", "pay", "cost", "users", "prof", "dx", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
 let tab = "ov";
 try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; } catch (e) {}
 const loaded = {};
@@ -1313,7 +1419,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "fb") loadFeedback();
+  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "dx") loadDq(); else if (t === "fb") loadFeedback();
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
@@ -1322,7 +1428,7 @@ function applyLang() {
   set("langBtn", tr("lang_btn"));
   document.title = tr("adm_title");
   renderGate();
-  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf();
+  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => {

@@ -2175,15 +2175,33 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
             <div id="dxSymWrap"><div class="dxsyms" id="dxSyms"></div></div>
           </div>
           <select id="dxPart" hidden aria-hidden="true" tabindex="-1"></select>
+          <div class="field"><label for="dxCrop" data-i18n="dx_crop"></label><select id="dxCrop"></select></div>
           <div class="field"><label for="dxOrch" data-i18n="dx_orch"></label><select id="dxOrch"></select><p class="fine" data-i18n="dx_orch_p" style="margin:4px 0 0"></p></div>
           <div class="field"><label for="dxFile" data-i18n="dx_file"></label><input id="dxFile" type="file" accept="image/*" multiple></div>
           <div class="dxthumbs" id="dxThumbs"></div>
-          <div class="field"><label for="dxNote" data-i18n="dx_note"></label><textarea id="dxNote" rows="2" maxlength="400"></textarea></div>
+          <div class="field"><label for="dxNote" data-i18n="dx_note"></label><div class="microw"><textarea id="dxNote" rows="2" maxlength="400"></textarea><button class="micbtn" type="button" data-mic="dxNote" hidden></button></div><p class="fine micst" id="dxNoteMic" role="status"></p></div>
+          <label class="chk dxkeep"><input type="checkbox" id="dxKeep"><span><b data-i18n="dx_keep"></b><br><small class="fine" data-i18n="dx_keep_p"></small></span></label>
           <p class="dxseen" id="dxSeen" hidden></p>
           <div class="linkrow"><button class="btn-s add" type="button" id="dxGo" data-i18n="dx_go"></button><span class="fine" id="dxStat" role="status"></span></div>
           <p class="autherr" id="dxErr" role="alert"></p>
         </div>
         <div id="dxAi" aria-live="polite"></div>
+      </section>
+
+      <section class="dxsec" id="dxMine" aria-labelledby="dxMineH" hidden>
+        <div class="thead"><h4 id="dxMineH" data-i18n="dxm_h"></h4></div>
+        <div id="dxMineList"></div>
+      </section>
+      <section class="dxsec" id="dxHealth" aria-labelledby="dxHealthH">
+        <div class="thead"><h4 id="dxHealthH" data-i18n="dxr_h"></h4><span class="pill" data-i18n="dxr_pill"></span></div>
+        <p class="sub2" data-i18n="dxr_p"></p>
+        <div id="dxRisk"></div>
+      </section>
+      <section class="dxsec" id="dxArea" aria-labelledby="dxAreaH">
+        <div class="thead"><h4 id="dxAreaH" data-i18n="dxa_h"></h4><span class="pill" data-i18n="dxa_pill"></span></div>
+        <p class="sub2" data-i18n="dxa_p"></p>
+        <div id="dxAreaList"></div>
+        <div class="dxmap" id="dxAreaMap" hidden></div>
       </section>
 
       <div><h4 data-i18n="d_tips_h"></h4><ul class="tlist"><li data-i18n="d_t1"></li><li data-i18n="d_t2"></li><li data-i18n="d_t3"></li><li data-i18n="d_t4"></li></ul></div>
@@ -2411,6 +2429,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <form class="chatform" id="chatForm" novalidate>
       <label for="chatIn" class="sr-only" id="chatInL" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></label>
       <textarea id="chatIn" rows="1" maxlength="1500"></textarea>
+      <button class="micbtn" type="button" data-mic="chatIn" hidden></button>
       <button type="submit" id="chatSend" aria-label="Send"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path d="M4 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </form>
     <p class="chatnote" id="chatNote"></p>
@@ -4692,7 +4711,7 @@ function detailsHtml() {
             treesGrp() + "</div>";
         })();
       r += otabsHtml(o);
-      if (otab === "det") r += detWxHtml(o) + groups +
+      if (otab === "det") r += detWxHtml(o) + groups + (typeof dxHealthCardHtml === "function" ? dxHealthCardHtml(o) : "") +
         '<div class="dgroups dcards">' + soilCardHtml(o) + (locMode ? locCardHtml(o) : "") + "</div>" +
         '<div class="odel odel2"><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + '</button><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>";
       else if (otab === "work") r += otKharchHtml(o);
@@ -6217,10 +6236,10 @@ $("dxGo").addEventListener("click", async () => {
     const r = await fetch("/api/diagnose", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-      body: JSON.stringify({ images: dxFiles, part: dxSel.part, note: $("dxNote").value.trim(), seen: dxSeen(dxSel.part), orchard_id: dxOrchSel || undefined, lang })
+      body: JSON.stringify(Object.assign({ images: dxFiles, part: dxSel.part, note: $("dxNote").value.trim(), seen: dxSeen(dxSel.part), orchard_id: dxOrchSel || undefined, lang }, typeof dxExtra === "function" ? dxExtra() : {}))
     });
     const j = await r.json().catch(() => ({}));
-    if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "" }; renderDiagAi(j.id, j.result); loadDxHist(true); }
+    if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "", kept: j.kept || 0, crop: (typeof dxExtra === "function" ? dxExtra().crop : "apple"), orch: dxOrchSel || "" }; renderDiagAi(j.id, j.result); loadDxHist(true); if (typeof dxAfter === "function") dxAfter(j); }
     else {
       const k = { signin: "dx_e_signin", limit: j.per === "month" ? "dx_e_limit_m" : "dx_e_limit", not_setup: "dx_e_setup", photos: "dx_e_photos" }[j.error] || "dx_e_net";
       set("dxErr", tr(k).replace("{n}", j.limit || ""));
@@ -7477,6 +7496,7 @@ if (window.ADFeedback) ADFeedback.init({
 });
 applyLang();
 </script>
+<script src="/dx.js?v=1"></script>
 
 </body>
 </html>
