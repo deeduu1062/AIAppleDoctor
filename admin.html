@@ -151,6 +151,19 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 #adBody .ystats{margin-top:0}
 .admbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .admbar .fine{margin:0}
+.sbchip{display:inline-block;font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.sb-active{background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good)}
+.sb-soon{background:color-mix(in srgb,#E09A1A 22%,transparent);color:#8a5a00}
+.sb-expired{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.sb-pending{background:var(--surface-2);color:var(--muted)}
+.sbfilt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.sbfilt button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.coform{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.coform .wide{grid-column:1/-1}
+.cobox{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.cobox h5{margin:0 0 6px}
+.cobox p{margin:4px 0}
+td.wrapn{white-space:normal;min-width:14rem;max-width:26rem;font-size:.88rem;color:var(--muted)}
 .admfind{max-width:340px;margin-top:18px}
 .fbadm{margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
 .fbadm h4{font-family:var(--display);font-size:1.25rem;margin:0}
@@ -1418,6 +1431,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     <div class="admtabs" role="tablist">
       <button class="tab" role="tab" type="button" id="at-ov" aria-controls="ap-ov" data-i18n="adm_t_ov"></button>
       <button class="tab" role="tab" type="button" id="at-pay" aria-controls="ap-pay" data-i18n="adm_t_pay"></button>
+      <button class="tab" role="tab" type="button" id="at-cost" aria-controls="ap-cost" data-i18n="adm_t_cost"></button>
       <button class="tab" role="tab" type="button" id="at-users" aria-controls="ap-users" data-i18n="adm_t_users"></button>
       <button class="tab" role="tab" type="button" id="at-fb" aria-controls="ap-fb" data-i18n="adm_t_fb"></button>
     </div>
@@ -1433,13 +1447,23 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
         <div id="ovRv"></div>
       </section>
     </div>
+    <div class="adm" id="ap-cost" role="tabpanel" aria-labelledby="at-cost" hidden>
+      <section class="fbadm solo" aria-labelledby="coH">
+        <div class="admbar"><h4 id="coH" data-i18n="co_h" style="margin:0"></h4><button class="btn-s" type="button" id="coRefresh" data-i18n="ad_refresh"></button><button class="btn-s add" type="button" id="coAdd" data-i18n="co_add"></button></div>
+        <p class="fine" data-i18n="co_p"></p>
+        <p class="autherr" id="coErr" role="alert"></p>
+        <div class="ystats" id="coStats"></div>
+        <div id="coAi"></div>
+        <div id="coList"></div>
+      </section>
+    </div>
     <div class="adm" id="ap-pay" role="tabpanel" aria-labelledby="at-pay" hidden>
 <section class="fbadm solo" aria-labelledby="paAdmH">
         <h4 id="paAdmH" data-i18n="pa_h"></h4>
         <p class="fine" data-i18n="pa_p"></p>
         <div class="ystats" id="paStats"></div>
         <div class="admbar">
-          <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" id="paPend" aria-selected="true"></button><button class="tab" role="tab" type="button" id="paAll" aria-selected="false"></button></div>
+          <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" id="paPend" aria-selected="true"></button><button class="tab" role="tab" type="button" id="paSubs" aria-selected="false"></button><button class="tab" role="tab" type="button" id="paAll" aria-selected="false"></button></div>
           <button class="btn-s" type="button" id="paRefresh" data-i18n="ad_refresh"></button>
           <button class="btn-s" type="button" id="paCsv" data-i18n="pa_csv"></button>
         </div>
@@ -1516,6 +1540,6 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 </main>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=5"></script>
+<script src="/admin.js?v=6"></script>
 </body>
 </html>

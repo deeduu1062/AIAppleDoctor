@@ -745,6 +745,8 @@ async function loadPayAdmin() {
 
 function renderPayAdmin() {
   if (!document.getElementById("paList")) return;
+  if ($("paSubs")) { set("paSubs", tr("sb_tab").replace("{n}", fmtN(PA ? subsRows().length : 0))); $("paSubs").setAttribute("aria-selected", paShow === "subs" ? "true" : "false"); }
+  if (paShow === "subs") { $("paPend").setAttribute("aria-selected", "false"); $("paAll").setAttribute("aria-selected", "false"); set("paPend", tr("pa_pend").replace("{n}", fmtN((PA || []).filter(x => x.status === "pending").length))); set("paAll", tr("pa_all").replace("{n}", fmtN((PA || []).length))); if (PA) renderSubs(); return; }
   const all = PA || [], pend = all.filter(x => x.status === "pending"), ok = all.filter(x => x.status === "approved");
   const now = new Date(), ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
   const today = now.toISOString().slice(0, 10);
@@ -798,6 +800,7 @@ function paCsv() {
 if (document.getElementById("paList")) {
   $("paPend").addEventListener("click", () => { paShow = "pending"; renderPayAdmin(); });
   $("paAll").addEventListener("click", () => { paShow = "all"; renderPayAdmin(); });
+  if ($("paSubs")) $("paSubs").addEventListener("click", () => { paShow = "subs"; renderPayAdmin(); });
   $("paRefresh").addEventListener("click", loadPayAdmin);
   $("paCsv").addEventListener("click", paCsv);
   $("paList").addEventListener("change", async e => {
@@ -949,8 +952,182 @@ $("ovRv").addEventListener("click", async e => {
   renderReview();
 });
 
+
+/* ---------- Subscriptions (Payments tab): one row per grower, from approved payments ---------- */
+let sbFilt = "all";
+function subsRows() {
+  const today = new Date().toISOString().slice(0, 10), byU = {};
+  (PA || []).forEach(x => { const k = x.user_id || x.email || x.id; (byU[k] = byU[k] || []).push(x); });
+  return Object.keys(byU).map(k => {
+    const L = byU[k], ok = L.filter(x => x.status === "approved").sort((a, b) => String(b.valid_until || "").localeCompare(String(a.valid_until || "")));
+    const pend = L.filter(x => x.status === "pending"), cur = ok[0] || null;
+    const left = cur && cur.valid_until ? Math.ceil((new Date(cur.valid_until + "T00:00:00") - new Date(today + "T00:00:00")) / 864e5) : null;
+    const st = !cur ? (pend.length ? "pending" : "none") : left == null || left >= 0 ? (left != null && left <= 30 ? "soon" : "active") : "expired";
+    const first = ok.length ? ok.map(x => x.reviewed_at || x.created_at).sort()[0] : null;
+    return { key: k, email: (cur || L[0]).email || "–", cur, left, st, first, paid: ok.reduce((s, x) => s + (+x.amount || 0), 0), n: ok.length, pend: pend.length };
+  }).filter(r => r.st !== "none").sort((a, b) => ({ soon: 0, pending: 1, active: 2, expired: 3 }[a.st] - { soon: 0, pending: 1, active: 2, expired: 3 }[b.st]) || (a.left || 0) - (b.left || 0));
+}
+const perMonth = x => x ? (+x.amount || 0) / (x.period === "year" ? 12 : 1) : 0;
+function renderSubs() {
+  const R = subsRows(), live = R.filter(r => r.st === "active" || r.st === "soon");
+  const st = (k, v, cls) => "<div" + (cls ? ' class="' + cls + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b></div>";
+  $("paStats").innerHTML = st("sb_s_basic", fmtN(live.filter(r => r.cur.plan === "basic").length), "main") + st("sb_s_prem", fmtN(live.filter(r => r.cur.plan === "premium").length)) +
+    st("sb_s_soon", fmtN(R.filter(r => r.st === "soon").length), R.some(r => r.st === "soon") ? "neg" : "") + st("sb_s_exp", fmtN(R.filter(r => r.st === "expired").length)) +
+    st("sb_s_mrr", paRup(Math.round(live.reduce((s, r) => s + perMonth(r.cur), 0))), "pos");
+  const rows = sbFilt === "all" ? R : R.filter(r => r.st === sbFilt || (sbFilt === "active" && r.st === "soon"));
+  const chip = r => '<span class="sbchip sb-' + r.st + '">' + tr("sb_st_" + r.st) + "</span>";
+  const head = ["sb_c_st", "pa_c_from", "pa_c_plan", "sb_c_start", "pa_c_until", "sb_c_left", "sb_c_paid", "sb_c_ext"];
+  $("paList").innerHTML = '<div class="sbfilt">' + ["all", "active", "soon", "expired", "pending"].map(f => '<button class="btn-s" type="button" data-sbf="' + f + '" aria-pressed="' + (sbFilt === f) + '">' + tr("sb_f_" + f) + "</button>").join("") + "</div>" +
+    (!rows.length ? '<p class="empty">' + tr("pa_none") + "</p>" :
+    '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map(r => {
+      const c = r.cur;
+      return "<tr><td>" + chip(r) + (r.pend ? '<br><span class="fine">' + tr("sb_pend_n").replace("{n}", r.pend) + "</span>" : "") + "</td><td>" + esc(r.email) + "</td>" +
+        "<td>" + (c ? plName(c.plan) + '<br><span class="fine">' + tr(c.period === "year" ? "pay_year" : "pay_month") + "</span>" : "–") + "</td>" +
+        "<td>" + (r.first ? paDate(r.first) : "–") + "</td><td>" + (c && c.valid_until ? paDay(c.valid_until) : "–") + "</td>" +
+        '<td class="n">' + (r.left == null ? "–" : r.left < 0 ? tr("sb_ago").replace("{n}", fmtN(-r.left)) : tr("sb_days").replace("{n}", fmtN(r.left))) + "</td>" +
+        '<td class="n">' + paRup(r.paid) + (r.n > 1 ? '<br><span class="fine">' + tr("sb_npay").replace("{n}", r.n) + "</span>" : "") + "</td>" +
+        "<td>" + (c ? '<input type="date" value="' + esc(c.valid_until || "") + '" data-sbext="' + esc(c.id) + '" aria-label="' + esc(tr("sb_c_ext")) + '">' : "–") + "</td></tr>";
+    }).join("") + "</tbody></table></div>");
+  $("paLog").innerHTML = '<p class="fine">' + tr("sb_note") + "</p>";
+}
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-sbf]"); if (!b) return; sbFilt = b.dataset.sbf; renderSubs(); });
+document.addEventListener("change", async e => {
+  const i = e.target; if (!i || !i.dataset || !i.dataset.sbext || !sb) return;
+  const v = i.value; if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return;
+  i.disabled = true; set("paErr", "");
+  const r = await sb.from("payments").update({ valid_until: v }).eq("id", i.dataset.sbext).select().single();
+  if (r.error) { i.disabled = false; set("paErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
+  const x = (PA || []).find(q => q.id === i.dataset.sbext); if (x) x.valid_until = v;
+  renderSubs();
+});
+
+/* ---------- Costs tab: running costs list (admin_costs table) + AI usage estimate for this month ---------- */
+/* worst-case AI cost per use, in rupees (Sonnet photo check: 3 photos + longest answer; Haiku question: full guides + longest answer), at about ₹85 to the dollar */
+const AI_PHOTO_INR = 1.9, AI_Q_INR = 0.35;
+let CO = null, coBusy = false, coEdit = null, coAi = null, coPay = null;
+const coMonthly = x => x.amount_inr == null ? 0 : x.per === "year" ? x.amount_inr / 12 : x.per === "once" ? 0 : x.amount_inr;
+async function loadCosts() {
+  if (!isAdmin() || !sb || coBusy) return;
+  coBusy = true; set("coErr", ""); $("coRefresh").disabled = true;
+  const ms = (() => { const d = new Date(Date.now() + 330 * 60000); return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) - 330 * 60000).toISOString(); })();
+  try {
+    const r = await sb.from("admin_costs").select("*").order("sort", { ascending: true }).order("service", { ascending: true });
+    if (r.error) throw r.error;
+    CO = r.data || [];
+  } catch (x) { CO = null; const m = String(x.message || x); set("coErr", String(x.code || "") === "42P01" || /does not exist|could not find the table|schema cache/i.test(m) ? tr("co_err_setup") : tr("pa_err").replace("{m}", m)); }
+  coAi = { photos: null, qs: null };
+  try { coAi.photos = await ovCount("diagnoses", q => q.gte("created_at", ms)); } catch (x) {}
+  try { coAi.qs = await ovCount("chat_messages", q => q.eq("role", "user").gte("created_at", ms)); } catch (x) {}
+  try { const r = await sb.from("payments").select("plan,period,amount,status,valid_until,created_at,user_id,email").limit(10000); coPay = r.error ? null : (r.data || []); } catch (x) { coPay = null; }
+  coBusy = false; $("coRefresh").disabled = false;
+  renderCosts();
+}
+function renderCosts() {
+  if (!$("coList")) return;
+  const today = new Date().toISOString().slice(0, 10), ym = today.slice(0, 7);
+  const fixed = (CO || []).reduce((s, x) => s + coMonthly(x), 0);
+  const ai = coAi ? (coAi.photos || 0) * AI_PHOTO_INR + (coAi.qs || 0) * AI_Q_INR : 0;
+  const P = coPay || [], ok = P.filter(x => x.status === "approved");
+  const live = {}; ok.filter(x => !x.valid_until || x.valid_until >= today).forEach(x => { const k = x.user_id || x.email; if (!live[k] || String(x.valid_until) > String(live[k].valid_until)) live[k] = x; });
+  const income = Object.keys(live).reduce((s, k) => s + perMonth(live[k]), 0);
+  const cash = ok.filter(x => String(x.created_at).slice(0, 7) === ym).reduce((s, x) => s + (+x.amount || 0), 0);
+  const net = income - fixed - ai;
+  const st = (k, v, cls) => "<div" + (cls ? ' class="' + cls + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b></div>";
+  $("coStats").innerHTML = st("co_s_fixed", paRup(Math.round(fixed)), "main") + st("co_s_ai", "≤ " + paRup(Math.round(ai))) +
+    st("co_s_income", paRup(Math.round(income)), "pos") + st("co_s_net", (net < 0 ? "−" : "") + paRup(Math.abs(Math.round(net))), net < 0 ? "neg" : "pos") + st("co_s_cash", paRup(cash));
+  const avg = Object.keys(live).length ? income / Object.keys(live).length : 299 / 12;
+  $("coAi").innerHTML = '<div class="cobox"><h5>' + tr("co_ai_h") + "</h5>" +
+    "<p>" + tr("co_ai_photo").replace("{n}", coAi && coAi.photos != null ? fmtN(coAi.photos) : "–").replace("{x}", paRup(AI_PHOTO_INR)).replace("{t}", paRup(Math.round((coAi && coAi.photos || 0) * AI_PHOTO_INR))) + "</p>" +
+    "<p>" + tr("co_ai_q").replace("{n}", coAi && coAi.qs != null ? fmtN(coAi.qs) : "–").replace("{x}", paRup(AI_Q_INR)).replace("{t}", paRup(Math.round((coAi && coAi.qs || 0) * AI_Q_INR))) + "</p>" +
+    '<p class="fine">' + tr("co_ai_note") + "</p>" +
+    "<p><b>" + tr("co_be").replace("{n}", fmtN(Math.ceil((fixed + ai) / (avg || 1)))) + "</b></p></div>";
+  if (!CO) { $("coList").innerHTML = ""; return; }
+  const form = x => '<form class="coform" data-coform="' + esc(x.id || "") + '">' +
+    '<div class="field"><label>' + tr("co_c_service") + '</label><input name="service" maxlength="80" required value="' + esc(x.service || "") + '"></div>' +
+    '<div class="field"><label>' + tr("co_c_for") + '</label><input name="what_for" maxlength="120" value="' + esc(x.what_for || "") + '"></div>' +
+    '<div class="field"><label>' + tr("co_c_plan") + '</label><input name="plan" maxlength="80" value="' + esc(x.plan || "") + '"></div>' +
+    '<div class="field"><label>' + tr("co_c_amt") + '</label><input name="amount_inr" type="number" min="0" step="1" inputmode="numeric" value="' + esc(x.amount_inr == null ? "" : x.amount_inr) + '"></div>' +
+    '<div class="field"><label>' + tr("co_c_per") + '</label><select name="per">' + ["month", "year", "once"].map(p => '<option value="' + p + '"' + ((x.per || "month") === p ? " selected" : "") + ">" + tr("co_per_" + p) + "</option>").join("") + "</select></div>" +
+    '<div class="field"><label>' + tr("co_c_renew") + '</label><input name="renews_on" type="date" value="' + esc(x.renews_on || "") + '"></div>' +
+    '<div class="field wide"><label>' + tr("co_c_note") + '</label><textarea name="note" rows="2" maxlength="500">' + esc(x.note || "") + "</textarea></div>" +
+    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("co_save") + '</button><button class="btn-s" type="button" data-coact="cancel">' + tr("co_cancel") + "</button>" +
+    (x.id ? '<button class="btn-s danger" type="button" data-coact="del" data-id="' + esc(x.id) + '">' + tr("co_del") + "</button>" : "") + "</div></form>";
+  const soon = d => d && d >= today && (new Date(d) - new Date(today)) / 864e5 <= 30;
+  $("coList").innerHTML = (coEdit === "new" ? form({}) : "") + '<div class="tablewrap"><table class="ledger"><thead><tr>' +
+    ["co_c_service", "co_c_plan", "co_c_amt", "co_c_month", "co_c_renew", "co_c_note", ""].map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
+    CO.map(x => coEdit === x.id ? '<tr><td colspan="7">' + form(x) + "</td></tr>" :
+      "<tr><td><b>" + esc(x.service) + "</b>" + (x.what_for ? '<br><span class="fine">' + esc(x.what_for) + "</span>" : "") + "</td><td>" + esc(x.plan || "–") + "</td>" +
+      '<td class="n">' + (x.amount_inr == null ? "–" : paRup(x.amount_inr) + '<br><span class="fine">' + tr("co_per_" + x.per) + "</span>") + "</td>" +
+      '<td class="n">' + paRup(Math.round(coMonthly(x))) + "</td>" +
+      "<td>" + (x.renews_on ? paDay(x.renews_on) + (soon(x.renews_on) ? ' <span class="sbchip sb-soon">' + tr("co_soon") + "</span>" : "") : "–") + "</td>" +
+      '<td class="wrapn">' + esc(x.note || "") + "</td>" +
+      '<td><button class="btn-s" type="button" data-coact="edit" data-id="' + esc(x.id) + '">' + tr("co_edit") + "</button></td></tr>").join("") +
+    "</tbody></table></div>";
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-coact]"); if (!b) return;
+  const a = b.dataset.coact;
+  if (a === "edit") { coEdit = b.dataset.id; renderCosts(); return; }
+  if (a === "cancel") { coEdit = null; renderCosts(); return; }
+  if (a === "del") {
+    if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = tr("co_del_sure"); return; }
+    const r = await sb.from("admin_costs").delete().eq("id", b.dataset.id);
+    if (r.error) { set("coErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
+    CO = CO.filter(x => x.id !== b.dataset.id); coEdit = null; renderCosts();
+  }
+});
+document.addEventListener("submit", async e => {
+  const f = e.target.closest && e.target.closest("[data-coform]"); if (!f) return;
+  e.preventDefault();
+  const g = n => f.elements[n].value.trim();
+  const row = { service: g("service"), what_for: g("what_for") || null, plan: g("plan") || null, amount_inr: g("amount_inr") === "" ? null : Math.round(+g("amount_inr")),
+    per: g("per"), renews_on: g("renews_on") || null, note: g("note") || null, updated_at: new Date().toISOString() };
+  if (!row.service) return;
+  const id = f.dataset.coform;
+  const r = id ? await sb.from("admin_costs").update(row).eq("id", id).select().single()
+    : await sb.from("admin_costs").insert(Object.assign({ sort: (CO || []).length + 1 }, row)).select().single();
+  if (r.error) { set("coErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
+  if (id) CO = CO.map(x => x.id === id ? r.data : x); else CO.push(r.data);
+  coEdit = null; set("coErr", ""); renderCosts();
+});
+if ($("coRefresh")) {
+  $("coRefresh").addEventListener("click", loadCosts);
+  $("coAdd").addEventListener("click", () => { coEdit = "new"; renderCosts(); const i = document.querySelector('[data-coform=""] input'); if (i) i.focus(); });
+}
+Object.assign(T.en, { adm_t_cost: "Costs", co_h: "Running costs", co_add: "+ Add cost",
+  co_p: "Everything Seb Saathi costs to run, and how it compares with what subscriptions bring in. Edit any row when a plan or price changes.",
+  co_err_setup: "The costs list is not set up yet. In Supabase → SQL Editor, run supabase/admin_costs.sql once, then press Refresh.",
+  co_s_fixed: "Fixed costs a month", co_s_ai: "AI this month (most)", co_s_income: "Subscription income a month", co_s_net: "Left over a month", co_s_cash: "Payments received this month",
+  co_ai_h: "AI usage this month", co_ai_photo: "{n} photo checks × up to {x} = up to {t}", co_ai_q: "{n} Saathi questions × up to {x} = up to {t}",
+  co_ai_note: "These are upper estimates (longest answers, most photos). The exact AI bill is on console.anthropic.com → Usage.",
+  co_be: "You need about {n} paying growers to cover this month's costs.",
+  co_c_service: "Service", co_c_for: "What it is for", co_c_plan: "Plan", co_c_amt: "Price (₹)", co_c_per: "Paid", co_c_month: "Per month", co_c_renew: "Renews on", co_c_note: "Notes",
+  co_per_month: "a month", co_per_year: "a year", co_per_once: "one time", co_soon: "soon", co_edit: "Edit", co_save: "Save", co_cancel: "Cancel", co_del: "Delete", co_del_sure: "Tap again to delete",
+  sb_tab: "Subscriptions ({n})", sb_s_basic: "Active Saathi", sb_s_prem: "Active Saathi Plus", sb_s_soon: "Ending in 30 days", sb_s_exp: "Expired", sb_s_mrr: "Income a month",
+  sb_f_all: "All", sb_f_active: "Active", sb_f_soon: "Ending soon", sb_f_expired: "Expired", sb_f_pending: "Waiting for check",
+  sb_st_active: "Active", sb_st_soon: "Ending soon", sb_st_expired: "Expired", sb_st_pending: "Waiting",
+  sb_c_st: "Status", sb_c_start: "Since", sb_c_left: "Days left", sb_c_paid: "Paid in total", sb_c_ext: "Change end date",
+  sb_days: "{n} days", sb_ago: "ended {n} days ago", sb_npay: "{n} payments", sb_pend_n: "{n} payment waiting",
+  sb_note: "One row per grower, from their approved payments. Change the end date to extend or shorten a plan; it updates their latest approved payment." });
+Object.assign(T.hi, { adm_t_cost: "ख़र्च", co_h: "चलाने का ख़र्च", co_add: "+ ख़र्च जोड़ें",
+  co_p: "सेब साथी चलाने का पूरा ख़र्च, और सब्सक्रिप्शन से आने वाली आमदनी से तुलना। कोई प्लान या दाम बदले तो पंक्ति बदलें।",
+  co_err_setup: "ख़र्च की सूची अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_costs.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
+  co_s_fixed: "महीने का तय ख़र्च", co_s_ai: "इस महीने AI (ज़्यादा से ज़्यादा)", co_s_income: "महीने की सब्सक्रिप्शन आमदनी", co_s_net: "महीने में बचत", co_s_cash: "इस महीने मिले भुगतान",
+  co_ai_h: "इस महीने AI का उपयोग", co_ai_photo: "{n} फ़ोटो जाँच × ज़्यादा से ज़्यादा {x} = {t} तक", co_ai_q: "{n} साथी सवाल × ज़्यादा से ज़्यादा {x} = {t} तक",
+  co_ai_note: "ये ऊपरी अनुमान हैं। असली AI बिल console.anthropic.com → Usage पर है।",
+  co_be: "इस महीने का ख़र्च निकालने के लिए लगभग {n} भुगतान करने वाले बाग़वान चाहिए।",
+  co_c_service: "सेवा", co_c_for: "किस लिए", co_c_plan: "प्लान", co_c_amt: "दाम (₹)", co_c_per: "भुगतान", co_c_month: "प्रति माह", co_c_renew: "नवीनीकरण", co_c_note: "नोट",
+  co_per_month: "हर महीने", co_per_year: "हर साल", co_per_once: "एक बार", co_soon: "जल्द", co_edit: "बदलें", co_save: "सहेजें", co_cancel: "रद्द करें", co_del: "हटाएँ", co_del_sure: "हटाने के लिए फिर दबाएँ",
+  sb_tab: "सब्सक्रिप्शन ({n})", sb_s_basic: "चालू साथी", sb_s_prem: "चालू साथी प्लस", sb_s_soon: "30 दिन में ख़त्म", sb_s_exp: "ख़त्म", sb_s_mrr: "महीने की आमदनी",
+  sb_f_all: "सभी", sb_f_active: "चालू", sb_f_soon: "जल्द ख़त्म", sb_f_expired: "ख़त्म", sb_f_pending: "जाँच बाकी",
+  sb_st_active: "चालू", sb_st_soon: "जल्द ख़त्म", sb_st_expired: "ख़त्म", sb_st_pending: "बाकी",
+  sb_c_st: "स्थिति", sb_c_start: "कब से", sb_c_left: "बचे दिन", sb_c_paid: "कुल भुगतान", sb_c_ext: "अंतिम तारीख़ बदलें",
+  sb_days: "{n} दिन", sb_ago: "{n} दिन पहले ख़त्म", sb_npay: "{n} भुगतान", sb_pend_n: "{n} भुगतान बाकी",
+  sb_note: "हर बाग़वान की एक पंक्ति, उनके स्वीकृत भुगतानों से। प्लान बढ़ाने या घटाने के लिए अंतिम तारीख़ बदलें।" });
+
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["ov", "pay", "users", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
+const TABS = ["ov", "pay", "cost", "users", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
 let tab = "ov";
 try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; } catch (e) {}
 const loaded = {};
@@ -960,7 +1137,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "ov") loadOverview(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "fb") loadFeedback();
+  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "fb") loadFeedback();
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
