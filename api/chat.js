@@ -4,14 +4,14 @@
 //
 // Uses the same ANTHROPIC_API_KEY as the photo check. Optional Vercel environment variables:
 //   CHAT_MODEL        (default below)
-//   CHAT_DAILY_LIMIT  (questions per grower per day, default 25)
+//   Questions per day (India time) by plan: free 5, Saathi 20, Saathi Plus 30 (see PLAN_LIMIT).
 // Needs the "chat_messages" table from supabase/chat.sql.
 // Answers are grounded in the PUBLISHED Library articles (table "articles").
 
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
-const LIMIT = Math.max(1, parseInt(process.env.CHAT_DAILY_LIMIT || "25", 10) || 25);
+const PLAN_LIMIT = { free: 5, basic: 20, premium: 30 };   /* questions a day; keep in step with the plans page */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 200;
 
@@ -179,6 +179,21 @@ function istDayStart() {
   return new Date(Math.floor((Date.now() + off) / day) * day - off).toISOString();
 }
 
+/* the grower's plan: latest approved payment that is still valid (India date) */
+async function planOf(token, userId) {
+  try {
+    const today = new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);
+    const r = await fetch(SB_URL + "/rest/v1/payments?select=plan&user_id=eq." + encodeURIComponent(userId) + "&status=eq.approved&valid_until=gte." + today + "&order=valid_until.desc&limit=5", { headers: sbHeaders(token) });
+    if (!r.ok) return "free";
+    const rows = await r.json();
+    return (rows || []).some(x => x.plan === "premium") ? "premium" : (rows || []).some(x => x.plan === "basic") ? "basic" : "free";
+  } catch (e) { return "free"; }
+}
+function istMonthStart() {
+  const d = new Date(Date.now() + 330 * 60000);
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) - 330 * 60000).toISOString();
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
   if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "not_setup" });
@@ -213,13 +228,14 @@ module.exports = async (req, res) => {
 
   // 3. Daily limit (this grower's questions today, India time)
   const isAdmin = ADMIN_EMAILS.includes(String(user.email || "").toLowerCase());
-  const limit = isAdmin ? ADMIN_LIMIT : LIMIT;
+  const plan = isAdmin ? "admin" : await planOf(token, user.id);
+  const limit = isAdmin ? ADMIN_LIMIT : PLAN_LIMIT[plan];
   let used = 0;
   try {
-    const c = await fetch(SB_URL + "/rest/v1/chat_messages?select=id&role=eq.user&created_at=gte." + encodeURIComponent(istDayStart()), { headers: sbHeaders(token) });
+    const c = await fetch(SB_URL + "/rest/v1/chat_messages?select=id&role=eq.user&user_id=eq." + encodeURIComponent(user.id) + "&created_at=gte." + encodeURIComponent(istDayStart()), { headers: sbHeaders(token) });
     if (!c.ok) return send(res, 503, { error: "not_setup" });
     used = (await c.json()).length;
-    if (used >= limit) return send(res, 429, { error: "limit", limit });
+    if (used >= limit) return send(res, 429, { error: "limit", limit, plan });
   } catch (e) { return send(res, 502, { error: "db_down" }); }
 
   // 4. Ask the AI, with the Library and this grower's own records as background
