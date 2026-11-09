@@ -2168,11 +2168,9 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
         <p class="sub2" data-i18n="dx_ph_p"></p>
         <div id="dxGate" class="dxgate" hidden><p data-i18n="dx_gate"></p><button class="btn-s add" type="button" id="dxSign" data-i18n="hdr_signin"></button></div>
         <div id="dxForm" class="dxform" hidden>
-          <p class="subhead" data-i18n="dx_q1"></p>
-          <div class="dxparts" id="dxParts" role="group"></div>
-          <div id="dxSymWrap" hidden>
-            <p class="subhead" data-i18n="dx_q2b"></p>
-            <div class="dxsyms" id="dxSyms"></div>
+          <div hidden aria-hidden="true"><!-- part buttons and sign ticks taken out: only the photo upload is shown -->
+            <div class="dxparts" id="dxParts"></div>
+            <div id="dxSymWrap"><div class="dxsyms" id="dxSyms"></div></div>
           </div>
           <select id="dxPart" hidden aria-hidden="true" tabindex="-1"></select>
           <div class="field"><label for="dxFile" data-i18n="dx_file"></label><input id="dxFile" type="file" accept="image/*" multiple></div>
