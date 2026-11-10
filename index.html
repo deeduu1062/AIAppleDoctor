@@ -2177,7 +2177,8 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
           <select id="dxPart" hidden aria-hidden="true" tabindex="-1"></select>
           <select id="dxCrop" hidden aria-hidden="true" tabindex="-1"></select><!-- "Which fruit tree?" taken out: diagnosis is apple only -->
           <div class="field"><label for="dxOrch" data-i18n="dx_orch"></label><select id="dxOrch"></select><p class="fine" data-i18n="dx_orch_p" style="margin:4px 0 0"></p></div>
-          <div class="field"><label for="dxFile" data-i18n="dx_file"></label><input id="dxFile" type="file" accept="image/*" multiple></div>
+          <div class="field"><label for="dxStage" data-i18n="dx_stage"></label><select id="dxStage"></select><p class="fine" data-i18n="dx_stage_p" style="margin:4px 0 0"></p></div>
+          <div class="field"><label for="dxFile" data-i18n="dx_file"></label><p class="fine" data-i18n="dx_shots" style="margin:0 0 6px"></p><input id="dxFile" type="file" accept="image/*" multiple></div>
           <div class="dxthumbs" id="dxThumbs"></div>
           <div class="field"><label for="dxNote" data-i18n="dx_note"></label><div class="microw"><textarea id="dxNote" rows="2" maxlength="400"></textarea><button class="micbtn" type="button" data-mic="dxNote" hidden></button></div><p class="fine micst" id="dxNoteMic" role="status"></p></div>
           <label class="chk dxkeep"><input type="checkbox" id="dxKeep"><span><b data-i18n="dx_keep"></b><br><small class="fine" data-i18n="dx_keep_p"></small></span></label>
@@ -7496,7 +7497,7 @@ if (window.ADFeedback) ADFeedback.init({
 });
 applyLang();
 </script>
-<script src="/dx.js?v=3"></script>
+<script src="/dx.js?v=4"></script>
 
 </body>
 </html>

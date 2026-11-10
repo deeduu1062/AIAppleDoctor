@@ -1311,6 +1311,8 @@ Object.assign(T.en, {
   dq_none: "Nothing here.", dq_asked: "Grower asked an expert", dq_flag: "AI flagged", dq_fb: "Grower marked it: {f}", dq_nophoto: "Photos not kept",
   dq_ai: "AI said", dq_note: "Grower's note", dq_area: "Area", dq_ans: "Correct answer", dq_ans_name: "Name (for 'Something else' or other fruits)", dq_msg: "Note to the grower (shown in their app)",
   dq_save: "Save answer", dq_saved: "Saved.", dq_err_setup: "Not set up yet. Run supabase/diagnosis_plus.sql once in Supabase → SQL Editor, then tap Refresh.",
+  dq_stage: "Stage", dq_spray: "last spray {n} days before", dq_wx: "last 7 days: {r} mm rain, {d} wet days, humidity {h}%",
+  dq_out: "Grower's follow-up", dq_o_better: "better", dq_o_same: "same", dq_o_worse: "worse",
   dq_by: "Answered {d}", fb_right: "right", fb_wrong: "wrong", fb_unsure: "not sure",
   c_high: "quite sure", c_medium: "fairly sure", c_low: "not sure",
   cr_apple: "Apple", cr_cherry: "Cherry", cr_pear: "Pear", cr_plum: "Plum", cr_walnut: "Walnut"
@@ -1342,6 +1344,13 @@ async function loadDq() {
   dqBusy = false; $("dqRefresh").disabled = false; set("dqAt", "");
   if (err) { const m = String(err.message || err); set("dqErr", /could not find the function|PGRST202/i.test(m + (err.code || "")) ? tr("dq_err_setup") : tr("ad_err").replace("{m}", m)); }
   renderDq();
+  /* v3 extras: tree stage, grower's follow-up, weather snapshot, model answers (needs supabase/diagnosis_v3.sql) */
+  const ids = (DQ || []).map(r => r.id);
+  if (ids.length) {
+    try { const r = await sb.from("diagnoses").select("id,stage,outcome,outcome_note,context,model_votes").in("id", ids);
+      if (!r.error) (r.data || []).forEach(x => { const row = DQ.find(y => y.id === x.id); if (row) Object.assign(row, x); }); } catch (e) {}
+    renderDq();
+  }
   /* private photo links, valid for an hour */
   const paths = []; (DQ || []).forEach(r => (r.photo_paths || []).forEach(p => { if (!dqUrls[p]) paths.push(p); }));
   if (paths.length) {
@@ -1353,6 +1362,20 @@ async function loadDq() {
   }
 }
 const pct = (a, b) => (b ? Math.round(a * 100 / b) + "%" : "–");
+const DQ_ST = { st1: "Dormant", st2: "Green tip", st3: "Pink bud", st4: "Full bloom", st5: "Petal fall", st6: "Fruit set", st7: "Fruit growth", st8: "Pre-harvest", st9: "After harvest" };
+function dqExtra(r) {
+  const c = r.context || {}, bits = [];
+  if (r.stage) bits.push(tr("dq_stage") + ": " + (DQ_ST[r.stage] || r.stage));
+  if (c.alt) bits.push(c.alt + " m");
+  if (c.variety) bits.push(c.variety);
+  if (c.spray_days != null) bits.push(tr("dq_spray").replace("{n}", c.spray_days));
+  if (c.rain7 != null) bits.push(tr("dq_wx").replace("{r}", c.rain7).replace("{d}", c.wet_days7 || 0).replace("{h}", c.rh7 == null ? "–" : c.rh7));
+  const own = r.model_votes && r.model_votes.own;
+  let h = bits.length ? '<p class="fine">' + esc(bits.join(" · ")) + "</p>" : "";
+  if (own && own.predictions) h += '<p class="fine"><b>' + esc(own.model) + ":</b> " + esc(own.predictions.map(p => (DQ_IDS[p.id] || p.id) + " " + Math.round(p.score * 100) + "%").join(", ")) + "</p>";
+  if (r.outcome) h += "<p><b>" + tr("dq_out") + ":</b> " + esc(tr("dq_o_" + r.outcome)) + (r.outcome_note ? " — " + esc(r.outcome_note) : "") + "</p>";
+  return h;
+}
 function renderDq() {
   if (!$("dqList")) return;
   document.querySelectorAll("[data-dq]").forEach(b => { b.textContent = tr("dq_" + b.dataset.dq); b.setAttribute("aria-selected", b.dataset.dq === dqWhich ? "true" : "false"); });
@@ -1376,6 +1399,7 @@ function renderDq() {
     return '<article class="dqcard"><div class="dqtop"><b>' + esc(adWhen(r.created_at)) + "</b> · " + esc(who) + " · " + esc(tr("cr_" + crop)) + (r.part ? " · " + esc(r.part) : "") + "</div>" +
       '<div class="dqflags">' + flags + "</div>" + pics +
       "<p><b>" + tr("dq_ai") + ":</b> " + ai + (res.severity ? " · " + esc(res.severity) : "") + "</p>" + (res.summary ? '<p class="fine">' + esc(res.summary) + "</p>" : "") +
+      dqExtra(r) +
       (r.note ? "<p><b>" + tr("dq_note") + ":</b> " + esc(r.note) + "</p>" : "") + (r.area ? "<p><b>" + tr("dq_area") + ":</b> " + esc(r.area) + "</p>" : "") +
       (r.reviewed_at ? '<p class="fine">' + esc(tr("dq_by").replace("{d}", adWhen(r.reviewed_at))) + "</p>" : "") +
       '<form class="dqform" data-dqform="' + esc(r.id) + '"><div class="grid3"><div class="field"><label for="dqId' + r.id + '">' + tr("dq_ans") + '</label><select id="dqId' + r.id + '">' +
@@ -1445,7 +1469,10 @@ async function exportTraining() {
     /* every answered check that kept photos (admins can read all checks) */
     const rows = [];
     for (let from = 0; ; from += 1000) {
-      const r = await sb.from("diagnoses").select("id,created_at,crop,part,area,severity,result,expert_id,expert_name,photo_paths")
+      const cols = "id,created_at,crop,part,area,severity,result,expert_id,expert_name,photo_paths";
+      let r = await sb.from("diagnoses").select(cols + ",stage,outcome,context")
+        .not("reviewed_at", "is", null).not("photo_paths", "is", null).neq("expert_id", "unclear").order("created_at").range(from, from + 999);
+      if (r.error) r = await sb.from("diagnoses").select(cols)   /* before supabase/diagnosis_v3.sql */
         .not("reviewed_at", "is", null).not("photo_paths", "is", null).neq("expert_id", "unclear").order("created_at").range(from, from + 999);
       if (r.error) throw r.error;
       rows.push(...(r.data || [])); if (!r.data || r.data.length < 1000) break;
@@ -1461,7 +1488,7 @@ async function exportTraining() {
     if (!items.length) { set("dqxSt", tr("dqx_none")); return; }
     const LIMIT = 150 * 1024 * 1024, stamp = new Date().toISOString().slice(0, 10), folders = new Set();
     let batch = [], size = 0, part = 0, failed = 0, done = 0;
-    const csvHead = "file,label,label_name,crop,part,severity,area,date,ai_guess,ai_confidence\n";
+    const csvHead = "file,label,label_name,crop,part,severity,area,date,ai_guess,ai_confidence,stage,outcome,altitude_m,variety,days_since_spray,rain_7d_mm,wet_days_7d,humidity_7d\n";
     let csv = csvHead;
     const flush = () => {
       if (!batch.length) return; part++;
@@ -1478,7 +1505,7 @@ async function exportTraining() {
       done = i + 1;
       if (!data) { failed++; continue; }
       batch.push({ name: it.file, data }); size += data.length; folders.add(it.folder);
-      csv += [it.file, it.x.expert_id, it.x.expert_name, it.x.crop || "apple", it.x.part, it.x.severity, it.x.area, String(it.x.created_at || "").slice(0, 10), it.ai && it.ai.id, it.ai && it.ai.confidence].map(csvq).join(",") + "\n";
+      csv += [it.file, it.x.expert_id, it.x.expert_name, it.x.crop || "apple", it.x.part, it.x.severity, it.x.area, String(it.x.created_at || "").slice(0, 10), it.ai && it.ai.id, it.ai && it.ai.confidence, it.x.stage, it.x.outcome].concat((c => [c.alt, c.variety, c.spray_days, c.rain7, c.wet_days7, c.rh7])(it.x.context || {})).map(csvq).join(",") + "\n";
       if (size >= LIMIT) flush();
     }
     flush();

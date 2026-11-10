@@ -142,16 +142,56 @@ function topOf(row) {
   return m ? Object.assign({}, m) : null;
 }
 
-/* ---------- form: fruit, keep photos ---------- */
+Object.assign(T.en, {
+  dx_stage: "Tree stage now", dx_stage_none: "Not sure", dx_stage_p: "Helps Saathi: the same spot means different things at bloom and at harvest.",
+  dx_shots: "Best answer with 3 photos: 1 close-up of the problem, 1 of the whole branch, 1 of the whole tree.",
+  dx_act_h: "What next", dx_act_p: "Look at the same trees again in {n} days to see if it is spreading or getting better.",
+  dx_remind: "Remind me on {d}", dx_reminded: "✓ Reminder set for {d}.", dx_reminded_o: "✓ Reminder set for {d}, and added to {o}'s tasks.", dx_ics: "Add to phone calendar",
+  dx_recheck_t: "Check again: {l}",
+  fu_h: "How is it now?", fu_p: "Your answer teaches Saathi what really works in your area.", fu_due: "{n} earlier check(s): tell us how the trees are now.",
+  fu_better: "Better", fu_same: "Same", fu_worse: "Worse", fu_note: "What did you do? (optional)", fu_saved: "Thank you. Saved.",
+  fu_was: "You said: {o}", fu_err: "Could not save. Try again later.",
+  nr_line: "Reported nearby (15 km, last 14 days): {l}", nr_warn: "{d} found near you and the weather suits it: keep spray cover on before the next rain."
+});
+Object.assign(T.hi, {
+  dx_stage: "पेड़ की अभी की अवस्था", dx_stage_none: "पता नहीं", dx_stage_p: "इससे साथी को मदद मिलती है: एक ही धब्बे का मतलब फूल के समय और तुड़ाई के समय अलग होता है।",
+  dx_shots: "सबसे अच्छे जवाब के लिए 3 फ़ोटो: 1 समस्या की पास से, 1 पूरी टहनी की, 1 पूरे पेड़ की।",
+  dx_act_h: "आगे क्या करें", dx_act_p: "{n} दिन बाद उन्हीं पेड़ों को फिर देखें कि बीमारी फैल रही है या ठीक हो रही है।",
+  dx_remind: "{d} को याद दिलाएँ", dx_reminded: "✓ {d} के लिए याद दिलाना सेट हो गया।", dx_reminded_o: "✓ {d} के लिए याद दिलाना सेट हो गया, और {o} के कामों में जुड़ गया।", dx_ics: "फ़ोन के कैलेंडर में जोड़ें",
+  dx_recheck_t: "फिर से जाँचें: {l}",
+  fu_h: "अब कैसा है?", fu_p: "आपका जवाब साथी को सिखाता है कि आपके इलाक़े में असल में क्या काम करता है।", fu_due: "{n} पुरानी जाँच: बताइए पेड़ अब कैसे हैं।",
+  fu_better: "बेहतर", fu_same: "वैसा ही", fu_worse: "और ख़राब", fu_note: "आपने क्या किया? (ज़रूरी नहीं)", fu_saved: "धन्यवाद। सेव हो गया।",
+  fu_was: "आपने बताया: {o}", fu_err: "सेव नहीं हो सका। बाद में फिर कोशिश करें।",
+  nr_line: "आस-पास मिली (15 km, पिछले 14 दिन): {l}", nr_warn: "{d} आपके पास मिला है और मौसम भी उसके अनुकूल है: अगली बारिश से पहले स्प्रे कवर ज़रूर रखें।"
+});
+Object.assign(T.hn, {
+  dx_stage: "Ped ki abhi ki avastha", dx_stage_none: "Pata nahi", dx_stage_p: "Isse Saathi ko madad milti hai: ek hi daag ka matlab phool ke samay aur tudai ke samay alag hota hai.",
+  dx_shots: "Sabse achhe jawab ke liye 3 photo: 1 samasya ki paas se, 1 poori tehni ki, 1 poore ped ki.",
+  dx_act_h: "Aage kya karein", dx_act_p: "{n} din baad unhi pedon ko phir dekhein ki bimari phail rahi hai ya theek ho rahi hai.",
+  dx_remind: "{d} ko yaad dilayein", dx_reminded: "✓ {d} ke liye yaad dilana set ho gaya.", dx_reminded_o: "✓ {d} ke liye yaad dilana set ho gaya, aur {o} ke kaamon mein jud gaya.", dx_ics: "Phone ke calendar mein jodein",
+  dx_recheck_t: "Phir se jaanchein: {l}",
+  fu_h: "Ab kaisa hai?", fu_p: "Aapka jawab Saathi ko sikhata hai ki aapke ilaake mein asal mein kya kaam karta hai.", fu_due: "{n} purani jaanch: bataiye ped ab kaise hain.",
+  fu_better: "Behtar", fu_same: "Waisa hi", fu_worse: "Aur kharab", fu_note: "Aapne kya kiya? (zaroori nahi)", fu_saved: "Dhanyavaad. Save ho gaya.",
+  fu_was: "Aapne bataya: {o}", fu_err: "Save nahi ho saka. Baad mein phir koshish karein.",
+  nr_line: "Aas-paas mili (15 km, pichhle 14 din): {l}", nr_warn: "{d} aapke paas mila hai aur mausam bhi uske anukool hai: agli baarish se pehle spray cover zaroor rakhein."
+});
+
+/* ---------- form: stage, keep photos ---------- */
+const STAGES = ["st1", "st2", "st3", "st4", "st5", "st6", "st7", "st8", "st9"];
+/* a first guess from the month (hills: bud break in March, harvest July to October) */
+function stageGuess() { const m = +new Date(Date.now() + 330 * 60000).toISOString().slice(5, 7); return { 12: "st1", 1: "st1", 2: "st1", 3: "st2", 4: "st4", 5: "st6", 6: "st7", 7: "st7", 8: "st8", 9: "st8", 10: "st9", 11: "st9" }[m]; }
 function renderForm() {
   const c = $("dxCrop"); if (!c) return;
   c.innerHTML = '<option value="apple" selected>' + esc(tr("cr_apple")) + "</option>";   /* fruit picker taken out: always apple */
+  const st = $("dxStage");
+  if (st) { const cur = st.value || stageGuess(); st.innerHTML = '<option value="">' + esc(tr("dx_stage_none")) + "</option>" +
+    STAGES.map(k => '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + esc(tr(k)) + "</option>").join(""); }
   const k = $("dxKeep"); if (k) k.checked = ls.get("dx-keep") !== "0";   /* ticked by default; stays off only if the grower unticks it */
 }
 $("dxKeep").addEventListener("change", e => ls.set("dx-keep", e.target.checked ? "1" : "0"));
-window.dxExtra = () => ({ crop: "apple", consent: !!$("dxKeep").checked });
+window.dxExtra = () => ({ crop: "apple", consent: !!$("dxKeep").checked, stage: $("dxStage") ? $("dxStage").value : "" });
 window.dxAfter = j => {
-  if (dxLast) { dxLast.review = !!j.review; dxLast.kept = j.kept || 0; renderDiagAi(dxLast.id, dxLast.result); }
+  if (dxLast) { dxLast.review = !!j.review; dxLast.kept = j.kept || 0; dxLast.recheck = j.recheck_on || ""; dxLast.reminded = ""; renderDiagAi(dxLast.id, dxLast.result); }
   loadAll(true);
 };
 
@@ -178,6 +218,14 @@ renderDiagAi = function (id, r) {
   });
   if (r.next_steps && r.next_steps.length) h += '<article class="dxcard"><h5>' + tr("dx_steps") + "</h5><ul>" + r.next_steps.map(s => "<li>" + esc(s) + "</li>").join("") + "</ul>" +
     (r.see_expert ? '<p class="urgent">' + tr("dx_expert") + "</p>" : "") + "</article>";
+  const top = (r.matches || [])[0];
+  if (r.photo_ok !== false && top && top.id !== "healthy") {
+    const n = r.recheck_days || 7, due = (dxLast && dxLast.recheck) || addDays(todayIso(), n);
+    h += '<article class="dxcard dxact"><h5>' + tr("dx_act_h") + "</h5><p>" + esc(tr("dx_act_p").replace("{n}", n)) + "</p>" +
+      (dxLast && dxLast.reminded ? '<p class="dxok">' + esc(dxLast.reminded) + '</p><div class="dels"><button class="btn-s sm" type="button" data-dxact="ics">' + tr("dx_ics") + "</button></div>"
+        : '<div class="dels">' + (id ? '<button class="btn-s add" type="button" data-dxact="remind">' + esc(tr("dx_remind").replace("{d}", fmtD(due))) + "</button>" : "") +
+          '<button class="btn-s" type="button" data-dxspray>' + tr("dx_spray") + "</button></div>") + "</article>";
+  }
   if (id) {
     const row = all && all.find(x => x.id === id);
     const asked = (row && row.ask_expert) || (dxLast && dxLast.asked);
@@ -280,6 +328,7 @@ function mineRow(x) {
     h += '<p class="mexp"><b>' + tr("dxm_exp") + ":</b> " + esc(dzName(x.expert_id, x.expert_name)) + (x.expert_note ? " — " + esc(x.expert_note) : "") + "</p>";
     void ai;
   } else if (x.ask_expert) h += '<p class="fine mwait">⏳ ' + tr("dxm_wait") + "</p>";
+  h += followHtml(x);
   if (mineMsg.id === x.id && mineMsg.t) h += '<p class="fine">' + esc(mineMsg.t) + "</p>";
   return h + "</li>";
 }
@@ -290,9 +339,80 @@ function renderMine(justAsked) {
   if (!user) return;
   if (!all) { $("dxMineList").innerHTML = '<p class="hint">' + tr("dxa_load") + "</p>"; return; }
   if (!all.length) { $("dxMineList").innerHTML = '<p class="hint">' + tr("dxm_none") + "</p>"; return; }
-  const L = mineMore ? all.slice(0, 60) : all.slice(0, 5);
-  $("dxMineList").innerHTML = '<ul class="dxmine">' + L.map(mineRow).join("") + "</ul>" +
+  const due = all.filter(followDue), rest = all.filter(x => !followDue(x));
+  const S2 = due.concat(rest), L = mineMore ? S2.slice(0, 60) : S2.slice(0, Math.max(5, due.length));
+  $("dxMineList").innerHTML = (due.length ? '<p class="fudue">🔔 ' + esc(tr("fu_due").replace("{n}", due.length)) + "</p>" : "") + '<ul class="dxmine">' + L.map(mineRow).join("") + "</ul>" +
     (!mineMore && all.length > 5 ? '<button class="link" type="button" data-dxact="more">' + tr("dxm_more") + " (" + (Math.min(all.length, 60) - 5) + ")</button>" : "");
+}
+
+/* ---------- follow-up: how are the trees now? (teaches Saathi what works) ---------- */
+const fuMsg = {};
+function followDue(x) {
+  if (!x || x.outcome || !("recheck_on" in x)) return false;   /* needs supabase/diagnosis_v3.sql */
+  const t = topOf(x); if (!t || t.id === "healthy" || (x.result && x.result.photo_ok === false)) return false;
+  const age = (Date.now() - Date.parse(x.created_at)) / 864e5;
+  return age <= 60 && (x.recheck_on ? x.recheck_on <= todayIso() : age >= 7);
+}
+function followHtml(x) {
+  if (x.outcome) return '<p class="fine dxok">' + esc(tr("fu_was").replace("{o}", tr("fu_" + x.outcome))) + (x.outcome_note ? " — " + esc(x.outcome_note) : "") + "</p>";
+  if (fuMsg[x.id]) return '<p class="fine">' + esc(fuMsg[x.id]) + "</p>";
+  if (!followDue(x)) return x.recheck_on && x.recheck_on > todayIso() ? '<p class="fine">⏰ ' + esc(fmtD(x.recheck_on)) + "</p>" : "";
+  return '<div class="fubox"><b>' + tr("fu_h") + '</b><span class="fine">' + tr("fu_p") + "</span>" +
+    '<input type="text" maxlength="400" id="fuN' + esc(x.id) + '" placeholder="' + esc(tr("fu_note")) + '" aria-label="' + esc(tr("fu_note")) + '">' +
+    '<div class="dels">' + ["better", "same", "worse"].map(k => '<button class="btn-s sm fu-' + k + '" type="button" data-dxact="fu" data-k="' + k + '" data-id="' + esc(x.id) + '">' + tr("fu_" + k) + "</button>").join("") + "</div></div>";
+}
+async function saveFollow(id, k) {
+  const row = (all || []).find(x => x.id === id); if (!row || !sb) return;
+  const inp = $("fuN" + id), note = inp ? inp.value.trim().slice(0, 400) : "";
+  const at = new Date().toISOString();
+  let ok = false;
+  try { const r = await sb.from("diagnoses").update({ outcome: k, outcome_note: note || null, outcome_at: at }).eq("id", id); ok = !r.error; } catch (e) { ok = false; }
+  if (ok) { row.outcome = k; row.outcome_note = note; row.outcome_at = at; } else fuMsg[id] = tr("fu_err");
+  renderMine();
+}
+
+/* ---------- reminder: check the same trees again (saved on the check, added to the orchard's tasks) ---------- */
+async function remind() {
+  if (!dxLast || !dxLast.id) return;
+  const r = dxLast.result || {}, n = r.recheck_days || 7, due = dxLast.recheck || addDays(todayIso(), n);
+  const t = (r.matches || [])[0], label = t ? dzName(t.id, t.name) : "";
+  try { if (sb) await sb.from("diagnoses").update({ recheck_on: due }).eq("id", dxLast.id); } catch (e) {}
+  const row = (all || []).find(x => x.id === dxLast.id); if (row) row.recheck_on = due;
+  const o = dxLast.orch && S && S.orchards ? S.orchards.find(x => x.id === dxLast.orch) : null;
+  if (o) {
+    const task = { id: newId(), due, kind: "xother", stage: "", text: tr("dx_recheck_t").replace("{l}", label), done: false };
+    o.todos = (o.todos || []).concat([task]); dxLast.task = task; save();
+  }
+  dxLast.recheck = due;
+  dxLast.reminded = o ? tr("dx_reminded_o").replace("{d}", fmtD(due)).replace("{o}", o.name || tr("orchard_fallback")) : tr("dx_reminded").replace("{d}", fmtD(due));
+  renderDiagAi(dxLast.id, dxLast.result); renderMine();
+}
+function remindIcs() {
+  if (!dxLast) return;
+  const o = dxLast.orch && S && S.orchards ? S.orchards.find(x => x.id === dxLast.orch) : null;
+  const t = ((dxLast.result || {}).matches || [])[0];
+  const x = dxLast.task || { id: "dx" + String(dxLast.id).slice(0, 8), due: dxLast.recheck, kind: "xother", text: tr("dx_recheck_t").replace("{l}", t ? dzName(t.id, t.name) : "") };
+  downloadIcs(o || { name: "Seb Saathi" }, x);
+}
+
+/* ---------- early warning: problems found near each orchard, joined with its weather risk ---------- */
+function nearOf(o) {
+  if (!area || !hasLoc(o)) return null;
+  const since = Date.now() - 14 * 864e5, by = {};
+  area.forEach(r => {
+    if ((r.crop || "apple") !== "apple" || Date.parse(r.last_at) < since) return;
+    if (kmBetween(+o.profile.lat, +o.profile.lon, +r.lat, +r.lon) > 15) return;
+    by[r.disease] = (by[r.disease] || 0) + (+r.n || 0);
+  });
+  const L = Object.keys(by).map(id => ({ id, n: by[id] })).sort((a, b) => b.n - a.n);
+  return L.length ? L : null;
+}
+function nearHtml(o, rk) {
+  const L = nearOf(o); if (!L) return "";
+  let h = '<p class="fine nrline">📍 ' + esc(tr("nr_line").replace("{l}", L.slice(0, 3).map(d => dzName(d.id, "") + " ×" + d.n).join(", "))) + "</p>";
+  const hit = rk && rk.items ? rk.items.find(x => (x.lv === "high" || x.lv === "medium") && L.some(d => d.id === x.dz)) : null;
+  if (hit) h += '<p class="urgent">⚠️ ' + esc(tr("nr_warn").replace("{d}", tr("dxr_" + hit.dz))) + "</p>";
+  return h;
 }
 
 /* ---------- 5. disease risk from the weather ---------- */
@@ -399,7 +519,7 @@ function cardInner(o) {
   if (!all) loadAll(false);
   const hs = healthOf(o);
   let h = "<h6>" + tr("hs_h") + '</h6><div class="hsrow">' + scoreBadge(hs) + "</div>" +
-    '<ul class="hswhy">' + hs.why.map(w => "<li>" + esc(w) + "</li>").join("") + "</ul>" + riskHtml(hs.rk, true);
+    '<ul class="hswhy">' + hs.why.map(w => "<li>" + esc(w) + "</li>").join("") + "</ul>" + riskHtml(hs.rk, true) + nearHtml(o, hs.rk);
   const rec = (all || []).filter(x => x.orchard_id === o.id).slice(0, 3);
   if (rec.length) h += '<p class="subhead">' + tr("hs_recent") + '</p><ul class="dxmine sm">' + rec.map(x => {
     const t = topOf(x); return "<li><div class=\"mr1\"><span class=\"dd\">" + esc(fmtD(x.created_at)) + '</span><span class="dt">' + esc(t ? dzName((x.crop || "apple") === "apple" ? t.id : "", t.name) : tr("dx_photo_bad")) +
@@ -425,10 +545,11 @@ function renderRisk() {
   const L = user && loaded && S && S.orchards ? S.orchards.filter(o => !o.ex) : [];
   if (!L.length) { box.innerHTML = '<p class="hint">' + tr(user ? "dxr_none" : "dx_gate") + "</p>"; return; }
   if (user && !all) loadAll(false);
+  if (user && !area) loadArea(false);
   box.innerHTML = '<div class="rkgrid">' + L.map(o => {
     const hs = healthOf(o);
     return '<article class="dxcard rkcard"><h5>' + esc(o.name || tr("orchard_fallback")) + '</h5><div class="hsrow">' + scoreBadge(hs) + "</div>" +
-      '<ul class="hswhy">' + hs.why.map(w => "<li>" + esc(w) + "</li>").join("") + "</ul>" + riskHtml(hs.rk, false) + "</article>";
+      '<ul class="hswhy">' + hs.why.map(w => "<li>" + esc(w) + "</li>").join("") + "</ul>" + riskHtml(hs.rk, false) + nearHtml(o, hs.rk) + "</article>";
   }).join("") + '</div><p class="fine">' + tr("hs_note") + "</p>";
 }
 function afterRisk() { renderRisk(); refreshCards(); }
@@ -440,7 +561,7 @@ async function loadArea(force) {
   if (!force && area && areaFor === user.id) return;
   areaBusy = true;
   try { const r = await sb.rpc("dx_area_reports", { days: 30 }); areaErr = !!r.error; area = r.error ? [] : (r.data || []); } catch (e) { areaErr = true; area = []; }
-  areaFor = user.id; areaBusy = false; renderArea();
+  areaFor = user.id; areaBusy = false; renderArea(); afterRisk();
 }
 const kmBetween = (a, b, c, d) => { const R = 6371, p = Math.PI / 180, x = Math.sin((c - a) * p / 2) ** 2 + Math.cos(a * p) * Math.cos(c * p) * Math.sin((d - b) * p / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
 function areaCells() {
@@ -532,6 +653,9 @@ document.addEventListener("click", e => {
   if (a === "listen") speakResult();
   else if (a === "ask") askExpert(b.dataset.id);
   else if (a === "more") { mineMore = true; renderMine(); }
+  else if (a === "remind") remind();
+  else if (a === "ics") remindIcs();
+  else if (a === "fu") saveFollow(b.dataset.id, b.dataset.k);
   else if (a === "map") { mapOn = !mapOn; if (!mapOn) { $("dxAreaMap").hidden = true; if (areaMap) { try { areaMap.remove(); } catch (x) {} areaMap = null; } } renderArea(); }
   else if (a === "check") { dxOrchSel = b.dataset.o || ""; renderDxOrch(); goDiag("photo"); }
   else if (a === "mine") { goDiag("photo"); setTimeout(() => { const s = $("dxMine"); if (s && s.scrollIntoView) s.scrollIntoView({ block: "start" }); }, 60); }
@@ -568,6 +692,8 @@ css.textContent = `
 .micst{margin:4px 0 0;min-height:0}.micst:empty{display:none}
 .dxkeep{align-items:flex-start;line-height:1.35}.dxkeep input{margin-top:2px}.dxkeep small{display:block;margin-top:2px}
 .dxok{color:var(--good)}
+.fubox{display:grid;gap:6px;border:1px dashed var(--line);border-radius:10px;padding:10px;margin-top:4px}.fubox input{width:100%}
+.fudue{margin:0 0 8px;font-weight:600}.nrline{margin:6px 0 0}.dxact .dels{display:flex;gap:8px;flex-wrap:wrap}
 .chip.sev-mild{color:var(--good)}.chip.sev-moderate{color:#9A6400;background:color-mix(in srgb,#E0A21A 20%,transparent)}.chip.sev-severe{color:#fff;background:var(--bad)}
 .dxmine{list-style:none;margin:0;padding:0;display:grid;gap:0}
 .dxmine li{padding:10px 0;border-bottom:1px solid var(--line);display:grid;gap:4px}.dxmine li:last-child{border-bottom:0}

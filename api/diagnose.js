@@ -5,6 +5,10 @@
 // Needs in Vercel → Settings → Environment Variables:
 //   ANTHROPIC_API_KEY   (required)
 //   ANTHROPIC_MODEL     (optional, default below)
+//   OWN_MODEL_URL       (optional, later) Seb Saathi's own trained model. When set, it is asked first and its answer is
+//   OWN_MODEL_KEY       (optional)        given to the big AI as a second opinion; both answers are saved in model_votes.
+//                       Contract: POST {images:[{type,data(base64)}], part, stage} → {model:"name", predictions:[{id:"scab", score:0.91}, ...]}
+//                       ids from the IDS list below. Nothing else changes when the model is swapped or retrained.
 //   Photo checks per calendar month (India time) by plan: free 3, Saathi 15, Saathi Plus 50 (see PLAN_LIMIT).
 // Needs the "diagnoses" table from supabase/diagnoses.sql.
 
@@ -19,6 +23,7 @@ const IDS = ["scab", "mars", "alt", "pm", "sooty", "pit", "canker", "collar", "w
 const PARTS = ["leaf", "fruit", "bark", "tree"];
 const CROPS = ["apple", "cherry", "pear", "plum", "walnut"];
 const SEV = ["mild", "moderate", "severe"];
+const STAGES = { st1: "dormant", st2: "green tip", st3: "pink bud", st4: "full bloom", st5: "petal fall", st6: "fruit set", st7: "fruit growth", st8: "pre-harvest", st9: "after harvest / leaf fall" };
 const BUCKET = "dx-photos";
 
 const SYSTEM = `You are "Seb Saathi", helping apple growers in Himachal Pradesh and Kashmir (mostly Royal Delicious and other Delicious types, also spur types and Gala on clonal rootstocks, grown at roughly 1,500 to 2,700 m).
@@ -49,10 +54,12 @@ Rules:
 - NEVER name chemicals, products, brands or doses, and never invent a spray. For anything to spray, say to follow the official Himachal Pradesh apple spray schedule for the tree's current stage and the product label.
 - Next steps must be practical things a grower can do: sanitation, pruning, drainage, checking more trees, taking a better photo, contacting the horticulture officer or KVK.
 - Set see_expert to true for root/collar problems, fast spreading problems, or when you are unsure.
+- "recheck_days": in how many days the grower should look at the same trees again to see if it is spreading or getting better (3 to 21; sooner for fast or severe problems).
+- If a "Second opinion from Seb Saathi's own model" is given, weigh it with what you see. It is trained on local photos but can be wrong; the photo decides.
 - Write "why", "summary", "photo_issue" and "next_steps" in LANGUAGE, short and simple, for a farmer. Hindi means simple Devanagari Hindi; common English farm words (spray, scab, KVK) are fine.
 
 Reply with ONLY this JSON, no other text:
-{"photo_ok":true,"photo_issue":"","matches":[{"id":"scab","name":"...","confidence":"medium","why":"..."}],"severity":"mild","summary":"...","next_steps":["..."],"see_expert":false}`;
+{"photo_ok":true,"photo_issue":"","matches":[{"id":"scab","name":"...","confidence":"medium","why":"..."}],"severity":"mild","summary":"...","next_steps":["..."],"see_expert":false,"recheck_days":7}`;
 
 /* other hill fruits: no fixed list, the AI names the problem and uses id "other" (or "healthy") */
 const CROP_NOTE = {
@@ -100,7 +107,8 @@ function clean(r) {
     summary: str(r.summary, 600),
     next_steps: (Array.isArray(r.next_steps) ? r.next_steps : []).slice(0, 6).map(s => str(s, 300)),
     see_expert: !!r.see_expert,
-    severity: SEV.includes(r.severity) ? r.severity : ""
+    severity: SEV.includes(r.severity) ? r.severity : "",
+    recheck_days: Math.max(3, Math.min(21, Math.round(+r.recheck_days) || 7))
   };
 }
 
@@ -125,7 +133,7 @@ const clip = (t, k) => String(t || "").replace(/\s+/g, " ").trim().slice(0, k);
 const istToday = () => new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);
 const daysAgo = (d, today) => { const a = Date.parse(d + "T00:00:00Z"), b = Date.parse(today + "T00:00:00Z"); return isFinite(a) && isFinite(b) ? Math.round((b - a) / 864e5) : null; };
 const SOIL = { ph: "pH", ec: "EC", oc: "organic carbon %", n: "N", p: "P", k: "K", s: "S", zn: "Zn", fe: "Fe", cu: "Cu", mn: "Mn", b: "B" };
-async function weatherLines(P) {
+async function weatherLines(P, sum) {
   if (!isFinite(parseFloat(P.lat)) || !isFinite(parseFloat(P.lon))) return "";
   try {
     const ac = new AbortController(), t = setTimeout(() => ac.abort(), 3500);
@@ -140,11 +148,20 @@ async function weatherLines(P) {
         (d.relative_humidity_2m_mean ? " RH " + Math.round(n0(d.relative_humidity_2m_mean[i])) + "%" : "");
       (day < today ? past : next).push(line);
     });
+    if (sum) {   /* last 7 days before today, for the training record */
+      const ix = d.time.map((day, i) => i).filter(i => d.time[i] < today).slice(-7);
+      const avg = a => ix.length ? Math.round(ix.reduce((t, i) => t + n0(a[i]), 0) / ix.length * 10) / 10 : null;
+      sum.rain7 = Math.round(ix.reduce((t, i) => t + n0(d.precipitation_sum[i]), 0) * 10) / 10;
+      sum.wet_days7 = ix.filter(i => n0(d.precipitation_sum[i]) >= 1).length;
+      sum.rh7 = d.relative_humidity_2m_mean ? avg(d.relative_humidity_2m_mean) : null;
+      sum.tmax7 = avg(d.temperature_2m_max); sum.tmin7 = avg(d.temperature_2m_min);
+      sum.rain_next3 = Math.round(d.time.map((day, i) => i).filter(i => d.time[i] >= today).slice(0, 3).reduce((t, i) => t + n0(d.precipitation_sum[i]), 0) * 10) / 10;
+    }
     return "Weather, last 10 days: " + past.join("; ") + "\nForecast: " + next.join("; ");
   } catch (e) { return ""; }
 }
 async function orchardContext(token, userId, oid) {
-  if (!oid) return { text: "", name: "" };
+  if (!oid) return { text: "", name: "", ctx: null };
   let data = null, checks = [];
   try {
     const ac = new AbortController(), t = setTimeout(() => ac.abort(), 3500);
@@ -157,7 +174,7 @@ async function orchardContext(token, userId, oid) {
     if (dr.ok) checks = await dr.json();
   } catch (e) { /* go on without */ }
   const o = data && Array.isArray(data.orchards) ? data.orchards.find(x => x && x.id === oid && !x.ex) : null;
-  if (!o) return { text: "", name: "" };
+  if (!o) return { text: "", name: "", ctx: null };
   const Pl = o.profile || {}, la = parseFloat(Pl.lat), lo = parseFloat(Pl.lon);
   const where = { area: clip(Pl.village, 60), lat2: isFinite(la) ? Math.round(la * 100) / 100 : null, lon2: isFinite(lo) ? Math.round(lo * 100) / 100 : null };
   const P = o.profile || {}, today = istToday(), L = ["Today is " + today + " (India)."];
@@ -179,14 +196,17 @@ async function orchardContext(token, userId, oid) {
   if (recent.length) L.push("Diary, last 75 days: " + recent.map(d => d.date + " " + d.kind + (d.stage ? " [" + clip(d.stage, 20) + "]" : "") + (d.text ? " - " + clip(d.text, 70) : "")).join("; "));
   const soil = (o.soil || []).filter(x => x && x.date).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
   if (soil) L.push("Latest soil test " + soil.date + ": " + Object.keys(SOIL).filter(k => n0(soil[k])).map(k => SOIL[k] + " " + n0(soil[k])).join(", ") + (soil.note ? " (" + clip(soil.note, 80) + ")" : ""));
-  const wx = await weatherLines(P);
+  const ctx = { alt: n0(P.alt) || null, variety: vt.length ? vt.join(", ") : clip(P.var, 80) || null, root: clip(P.root, 30) || null,
+    age: n0(P.planted) ? +today.slice(0, 4) - n0(P.planted) : null, trees: n0(o.trees) || null, irrigation: clip(P.irr, 20) || null, hail_net: clip(P.hail, 20) || null,
+    spray_days: lastSpray ? daysAgo(lastSpray.date, today) : null, soil: soil ? Object.keys(SOIL).reduce((a, k) => { if (n0(soil[k])) a[k] = n0(soil[k]); return a; }, {}) : null };
+  const wx = await weatherLines(P, ctx);
   if (wx) L.push(wx); else L.push("No orchard location saved, so no local weather.");
   const ck = (checks || []).map(c => {
     const m = c.result && Array.isArray(c.result.matches) && c.result.matches[0];
     return String(c.created_at || "").slice(0, 10) + (c.part ? " " + c.part : "") + ": " + (m ? m.id + " (" + m.confidence + ")" : "unclear photo") + (c.feedback ? ", grower marked it " + c.feedback : "");
   });
   if (ck.length) L.push("Earlier photo checks in this orchard: " + ck.join("; "));
-  return { text: L.join("\n").slice(0, 3500), name: clip(o.name, 40), where };
+  return { text: L.join("\n").slice(0, 3500), name: clip(o.name, 40), where, ctx };
 }
 
 /* keep the photos in the private store, in the grower's own folder (only when they said yes) */
@@ -204,6 +224,22 @@ async function keepPhotos(token, userId, diagId, images) {
     } catch (e) { console.error("keep-fail", e); }
   }));
   return paths.filter(Boolean);
+}
+/* Seb Saathi's own model (when OWN_MODEL_URL is set): a quick first answer, never blocks the check */
+async function ownModel(images, part, stage) {
+  const url = process.env.OWN_MODEL_URL; if (!url) return null;
+  try {
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), 6000);
+    const r = await fetch(url, { method: "POST", signal: ac.signal,
+      headers: Object.assign({ "Content-Type": "application/json" }, process.env.OWN_MODEL_KEY ? { Authorization: "Bearer " + process.env.OWN_MODEL_KEY } : {}),
+      body: JSON.stringify({ images: images.map(im => ({ type: im.type, data: im.data })), part, stage }) });
+    clearTimeout(t);
+    if (!r.ok) return null;
+    const j = await r.json();
+    const preds = (Array.isArray(j.predictions) ? j.predictions : []).filter(p => p && IDS.includes(p.id) && isFinite(+p.score))
+      .map(p => ({ id: p.id, score: Math.round(Math.max(0, Math.min(1, +p.score)) * 1000) / 1000 })).sort((a, b) => b.score - a.score).slice(0, 3);
+    return preds.length ? { model: String(j.model || "own").slice(0, 40), predictions: preds } : null;
+  } catch (e) { return null; }
 }
 function readImages(list) {
   if (!Array.isArray(list) || list.length < 1 || list.length > 3) return null;
@@ -268,6 +304,7 @@ module.exports = async (req, res) => {
   const note = String(body.note || "").slice(0, 400);
   const seen = (Array.isArray(body.seen) ? body.seen : []).map(x => String(x || "").slice(0, 160).trim()).filter(Boolean).slice(0, 10);
   const lang = body.lang === "hi" || body.lang === "hn" ? body.lang : "en";
+  const stage = STAGES[body.stage] ? body.stage : "";
   const orchardId = /^[A-Za-z0-9_-]{1,40}$/.test(String(body.orchard_id || "")) ? String(body.orchard_id) : "";
 
   // 3. Limit by plan (this grower's checks this month, India time); admin keeps a daily limit for testing
@@ -283,9 +320,11 @@ module.exports = async (req, res) => {
   } catch (e) { return send(res, 502, { error: "db_down" }); }
 
   // 4. Ask the AI (with the chosen orchard's record as background)
-  const oc = await orchardContext(token, user.id, orchardId).catch(() => ({ text: "", name: "" }));
+  const [oc, own] = await Promise.all([orchardContext(token, user.id, orchardId).catch(() => ({ text: "", name: "", ctx: null })), ownModel(images, part, stage)]);
   const partWord = { leaf: "leaves", fruit: "fruit", bark: "branch, bark or trunk", tree: "whole tree or roots" }[part] || "not said";
   const userText = cropRule(crop) + "Part of the tree in the photo: " + partWord + ".\n" +
+    (stage ? "Tree stage now (grower says): " + STAGES[stage] + ".\n" : "") +
+    (own ? "Second opinion from Seb Saathi's own model (trained on local photos): " + own.predictions.map(p => p.id + " " + Math.round(p.score * 100) + "%").join(", ") + "\n" : "") +
     (seen.length ? "Signs the grower ticked in the symptom checker (seen up close, use them with the photo): " + seen.join("; ") + "\n" : "") +
     (note ? "Grower's note: " + note + "\n" : "") +
     (oc.text ? "Orchard record (background from the grower's own records; the photo comes first, use this to weigh likely causes, e.g. recent rain and humidity, days since the last spray, variety, altitude, soil calcium or boron, and problems seen here before):\n" + oc.text + "\n" : "") +
@@ -328,9 +367,14 @@ module.exports = async (req, res) => {
   const ins = body => fetch(SB_URL + "/rest/v1/diagnoses", { method: "POST", headers: sbHeaders(token, { Prefer: "return=minimal" }), body: JSON.stringify(body) })
     .then(async r => { if (!r.ok) console.error("save", r.status, (await r.text()).slice(0, 300)); return r.ok; }).catch(e => { console.error("save-fail", e); return false; });
   /* newest columns first; if supabase/diagnosis_plus.sql has not been run yet, fall back to the older columns */
-  saved = await ins(full);
+  const today = istToday(), recheck = new Date(Date.parse(today + "T00:00:00Z") + result.recheck_days * 864e5).toISOString().slice(0, 10);
+  const v3 = { stage: stage || null, context: oc.ctx || null, recheck_on: null,
+    model_votes: { ai: { model: MODEL, top: result.matches.map(m => ({ id: m.id, confidence: m.confidence })) }, own: own || null } };
+  /* newest (supabase/diagnosis_v3.sql) first */
+  saved = await ins(Object.assign({}, full, v3));
+  if (!saved) saved = await ins(full);
   if (!saved && orchardId) saved = await ins(Object.assign({}, base, { orchard_id: orchardId }));
   if (!saved) saved = await ins(base);
 
-  return send(res, 200, { id: saved ? id : null, result, orchard: oc.name || "", kept: paths.length, review: full.needs_review });
+  return send(res, 200, { id: saved ? id : null, result, orchard: oc.name || "", kept: paths.length, review: full.needs_review, recheck_on: recheck });
 };
