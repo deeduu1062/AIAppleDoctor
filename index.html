@@ -112,6 +112,7 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .field input[type="text"]{font-family:var(--body);font-weight:500}
 .field select{font-family:var(--body)}
 .actions{margin-top:6px}
+.saathi{font-weight:700;color:var(--brand)}
 .link{font:600 .95rem var(--body);background:none;border:0;color:var(--brand);text-decoration:underline;cursor:pointer;padding:8px 0}
 .btn-s{font:600 .95rem var(--body);padding:9px 16px;min-height:42px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .btn-s.add{background:var(--brand-bg);color:var(--on-brand);border-color:var(--brand-bg)}
@@ -2306,7 +2307,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 <section class="section lpdemo" aria-labelledby="lpdH">
   <div class="wrap">
     <h2 id="lpdH" data-i18n="lpd_h"></h2>
-    <p class="lede" data-i18n="lpd_p"></p>
+    <p class="lede" data-i18n="lpd_p" data-saathi></p>
     <div class="lpdcard">
       <figure class="lpdpic">
         <img src="/img/example-scab-fruit.jpg" width="369" height="395" alt="" data-i18n-alt="lpd_alt" id="lpdImg" loading="lazy">
@@ -3061,6 +3062,12 @@ function renderSocial() {
 function applyLang() {
   document.documentElement.lang = lang === "hn" ? "hi-Latn" : lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-saathi]").forEach(el => {
+    const t = el.textContent, m = t.match(/Saathi|साथी/);
+    if (!m) return;
+    const b = document.createElement("strong"); b.className = "saathi"; b.textContent = m[0];
+    el.textContent = t.slice(0, m.index); el.append(b, t.slice(m.index + m[0].length));
+  });
   document.querySelectorAll("[data-i18n-alt]").forEach(el => { el.alt = tr(el.getAttribute("data-i18n-alt")); });
   $("langBtn").value = lang;
   setOrchTabs();
