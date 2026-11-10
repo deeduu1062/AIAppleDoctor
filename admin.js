@@ -61,7 +61,7 @@ const T = {
 "Everything in Free",
 "Apple register for 2 orchards, 2 years",
 "15 photo disease checks a month",
-"Unlimited Saathi chat",
+"20 questions a day to Saathi",
 "Spray reminders on WhatsApp",
 "Download your season report"
 ],
@@ -69,10 +69,10 @@ const T = {
 "Everything in Saathi",
 "Apple register for 5 orchards, 5 years",
 "Year-on-year profit comparison",
-"Unlimited photo disease checks",
+"50 photo disease checks a month",
+"30 questions a day to Saathi",
 "Spray plan for your height, variety and rootstock",
-"Family or munshi access",
-"Expert help on WhatsApp"
+"Family or munshi access"
 ],
 "pl_go_free": "Start free",
 "pl_go_free_in": "You're on Free",
@@ -243,7 +243,7 @@ const T = {
 "मुफ़्त प्लान की सब सुविधाएँ",
 "2 बाग़ों का सेब रजिस्टर, 2 साल का",
 "महीने में 15 फ़ोटो से बीमारी जाँच",
-"साथी से असीमित बातचीत",
+"साथी से रोज़ 20 सवाल",
 "WhatsApp पर स्प्रे रिमाइंडर",
 "सीज़न रिपोर्ट डाउनलोड"
 ],
@@ -251,10 +251,10 @@ const T = {
 "साथी प्लान की सब सुविधाएँ",
 "5 बाग़ों का सेब रजिस्टर, 5 साल का",
 "साल-दर-साल मुनाफ़े की तुलना",
-"असीमित फ़ोटो से बीमारी जाँच",
+"महीने में 50 फ़ोटो से बीमारी जाँच",
+"साथी से रोज़ 30 सवाल",
 "आपकी ऊँचाई, किस्म और रूटस्टॉक के हिसाब से स्प्रे प्लान",
-"परिवार या मुंशी को एक्सेस",
-"WhatsApp पर विशेषज्ञ मदद"
+"परिवार या मुंशी को एक्सेस"
 ],
 "pl_go_free": "मुफ़्त शुरू करें",
 "pl_go_free_in": "आप मुफ़्त प्लान पर हैं",
