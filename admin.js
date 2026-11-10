@@ -1408,6 +1408,86 @@ $("dqList").addEventListener("submit", async e => {
   document.head.appendChild(st);
 })();
 
+/* ---------- export training photos: confirmed checks, one folder per disease, as .zip ---------- */
+Object.assign(T.en, {
+  dqx_btn: "Export training photos", dqx_p: "Downloads every photo you have answered, sorted into one folder per disease, with labels.csv. Ready for Vertex AI, Roboflow or your own training. Large sets come in several parts.",
+  dqx_find: "Finding answered photos…", dqx_get: "Downloading photo {n} of {t}…", dqx_none: "No answered photos with kept photos yet.",
+  dqx_done: "Done: {n} photos in {f} folders, {z} file(s).", dqx_fail: "{n} photos could not be downloaded and were skipped."
+});
+Object.assign(T.hi, {
+  dqx_btn: "ट्रेनिंग फ़ोटो डाउनलोड करें", dqx_p: "जिन फ़ोटो का आपने जवाब दिया है, वे सब हर बीमारी के अलग फ़ोल्डर में, labels.csv के साथ डाउनलोड होंगी। ज़्यादा फ़ोटो कई हिस्सों में आएँगी।",
+  dqx_find: "जवाब दी गई फ़ोटो ढूँढ रहे हैं…", dqx_get: "फ़ोटो {n} / {t} डाउनलोड हो रही है…", dqx_none: "अभी रखी गई फ़ोटो वाली कोई जवाब दी गई जाँच नहीं।",
+  dqx_done: "हो गया: {n} फ़ोटो, {f} फ़ोल्डर, {z} फ़ाइल।", dqx_fail: "{n} फ़ोटो डाउनलोड नहीं हो सकीं, छोड़ दी गईं।"
+});
+/* a small .zip writer (stored, no compression: photos are already compressed) */
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(files) {
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  const u16 = v => [v & 255, (v >>> 8) & 255], u32 = v => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
+  files.forEach(f => {
+    const name = enc.encode(f.name), crc = crc32(f.data), sz = f.data.length;
+    const head = [0x50, 0x4b, 3, 4, ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(sz), ...u32(sz), ...u16(name.length), ...u16(0)];
+    parts.push(new Uint8Array(head), name, f.data);
+    cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(sz), ...u32(sz), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), name);
+    off += head.length + name.length + sz;
+  });
+  const cs = cen.reduce((a, b) => a + b.length, 0);
+  const end = new Uint8Array([0x50, 0x4b, 5, 6, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(cs), ...u32(off), 0, 0]);
+  return new Blob(parts.concat(cen, [end]), { type: "application/zip" });
+}
+const slug = s => String(s || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40) || "other";
+const csvq = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+async function exportTraining() {
+  const btn = $("dqExport"); if (!isAdmin() || !sb || btn.disabled) return;
+  btn.disabled = true; set("dqxSt", tr("dqx_find"));
+  try {
+    /* every answered check that kept photos (admins can read all checks) */
+    const rows = [];
+    for (let from = 0; ; from += 1000) {
+      const r = await sb.from("diagnoses").select("id,created_at,crop,part,area,severity,result,expert_id,expert_name,photo_paths")
+        .not("reviewed_at", "is", null).not("photo_paths", "is", null).neq("expert_id", "unclear").order("created_at").range(from, from + 999);
+      if (r.error) throw r.error;
+      rows.push(...(r.data || [])); if (!r.data || r.data.length < 1000) break;
+    }
+    const items = [];
+    rows.forEach(x => {
+      const crop = x.crop || "apple";
+      const lab = x.expert_id === "other" && x.expert_name ? "other_" + slug(x.expert_name) : slug(x.expert_id);
+      const folder = (crop === "apple" ? "" : crop + "_") + lab;
+      const ai = x.result && x.result.matches && x.result.matches[0];
+      (x.photo_paths || []).forEach((p, i) => items.push({ p, folder, x, ai, file: folder + "/" + x.id.slice(0, 8) + "_" + (i + 1) + "." + (p.split(".").pop() || "jpg") }));
+    });
+    if (!items.length) { set("dqxSt", tr("dqx_none")); return; }
+    const LIMIT = 150 * 1024 * 1024, stamp = new Date().toISOString().slice(0, 10), folders = new Set();
+    let batch = [], size = 0, part = 0, failed = 0, done = 0;
+    const csvHead = "file,label,label_name,crop,part,severity,area,date,ai_guess,ai_confidence\n";
+    let csv = csvHead;
+    const flush = () => {
+      if (!batch.length) return; part++;
+      batch.push({ name: "labels.csv", data: new TextEncoder().encode(csv) });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(makeZip(batch));
+      a.download = "sebsaathi-training-" + stamp + (part > 1 || done < items.length ? "-part" + part : "") + ".zip";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      batch = []; size = 0; csv = csvHead;
+    };
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i]; set("dqxSt", tr("dqx_get").replace("{n}", i + 1).replace("{t}", items.length));
+      let data = null;
+      try { const r = await sb.storage.from("dx-photos").download(it.p); if (!r.error && r.data) data = new Uint8Array(await r.data.arrayBuffer()); } catch (e) {}
+      done = i + 1;
+      if (!data) { failed++; continue; }
+      batch.push({ name: it.file, data }); size += data.length; folders.add(it.folder);
+      csv += [it.file, it.x.expert_id, it.x.expert_name, it.x.crop || "apple", it.x.part, it.x.severity, it.x.area, String(it.x.created_at || "").slice(0, 10), it.ai && it.ai.id, it.ai && it.ai.confidence].map(csvq).join(",") + "\n";
+      if (size >= LIMIT) flush();
+    }
+    flush();
+    set("dqxSt", tr("dqx_done").replace("{n}", items.length - failed).replace("{f}", folders.size).replace("{z}", part) + (failed ? " " + tr("dqx_fail").replace("{n}", failed) : ""));
+  } catch (e) { set("dqxSt", tr("ad_err").replace("{m}", String(e.message || e))); }
+  finally { btn.disabled = false; }
+}
+$("dqExport").addEventListener("click", exportTraining);
+
 /* ---------- page: tabs, language, sign-in gate ---------- */
 const TABS = ["ov", "pay", "cost", "users", "prof", "dx", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
 let tab = "ov";
