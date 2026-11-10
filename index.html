@@ -2180,7 +2180,6 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
             <div id="dxSymWrap"><div class="dxsyms" id="dxSyms"></div></div>
           </div>
           <select id="dxPart" hidden aria-hidden="true" tabindex="-1"></select>
-          <select id="dxCrop" hidden aria-hidden="true" tabindex="-1"></select><!-- "Which fruit tree?" taken out: diagnosis is apple only -->
           <div class="field"><label for="dxOrch" data-i18n="dx_orch"></label><select id="dxOrch"></select><p class="fine" data-i18n="dx_orch_p" style="margin:4px 0 0"></p></div>
           <div class="field"><label for="dxStage" data-i18n="dx_stage"></label><select id="dxStage"></select><p class="fine" data-i18n="dx_stage_p" style="margin:4px 0 0"></p></div>
           <div class="field"><label for="dxFile" data-i18n="dx_file"></label><p class="fine" data-i18n="dx_shots" style="margin:0 0 6px"></p><input id="dxFile" type="file" accept="image/*" multiple></div>
@@ -6271,7 +6270,7 @@ $("dxGo").addEventListener("click", async () => {
     const r = await fetch("/api/diagnose", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-      body: JSON.stringify(Object.assign({ images: dxFiles, part: dxSel.part, note: $("dxNote").value.trim(), seen: dxSeen(dxSel.part), orchard_id: dxOrchSel || undefined, lang }, typeof dxExtra === "function" ? dxExtra() : {}))
+      body: JSON.stringify(Object.assign({ images: dxFiles, part: dxSel.part, note: $("dxNote").value.trim(), orchard_id: dxOrchSel || undefined, lang }, typeof dxExtra === "function" ? dxExtra() : {}))
     });
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "", kept: j.kept || 0, crop: (typeof dxExtra === "function" ? dxExtra().crop : "apple"), orch: dxOrchSel || "" }; renderDiagAi(j.id, j.result); loadDxHist(true); if (typeof dxAfter === "function") dxAfter(j); }

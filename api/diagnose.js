@@ -21,12 +21,11 @@ const ADMIN_LIMIT = 50;
 
 const IDS = ["scab", "mars", "alt", "pm", "sooty", "pit", "canker", "collar", "wrr", "woolly", "mite", "sjs", "borer", "other", "healthy"];
 const PARTS = ["leaf", "fruit", "bark", "tree"];
-const CROPS = ["apple", "cherry", "pear", "plum", "walnut"];
 const SEV = ["mild", "moderate", "severe"];
 const STAGES = { st1: "dormant", st2: "green tip", st3: "pink bud", st4: "full bloom", st5: "petal fall", st6: "fruit set", st7: "fruit growth", st8: "pre-harvest", st9: "after harvest / leaf fall" };
 const BUCKET = "dx-photos";
 
-const SYSTEM = `You are "Seb Saathi", helping apple growers in Himachal Pradesh and Kashmir (mostly Royal Delicious and other Delicious types, also spur types and Gala on clonal rootstocks, grown at roughly 1,500 to 2,700 m).
+const SYSTEM = `You are "Seb Saathi", helping apple growers in Himachal Pradesh, Jammu & Kashmir and Uttarakhand (mostly Royal Delicious and other Delicious types, also spur types and Gala on clonal rootstocks, grown at roughly 1,500 to 2,700 m).
 
 Look at the grower's photo(s) and say what the most likely problem is. Choose ids ONLY from this list:
 scab = apple scab (Venturia): olive to black velvety spots on leaves, dark corky scabby spots and cracks on fruit
@@ -51,7 +50,7 @@ Give "name": a short disease name in LANGUAGE for every match (for apple ids too
 Rules:
 - Be honest about uncertainty. Give 1 to 3 matches, best first, with confidence "high", "medium" or "low". Use "high" only when the signs are clear and typical.
 - If the photo is blurry, too far, too dark, or not an apple tree/fruit, set photo_ok to false and explain what photo to take instead.
-- NEVER name chemicals, products, brands or doses, and never invent a spray. For anything to spray, say to follow the official Himachal Pradesh apple spray schedule for the tree's current stage and the product label.
+- NEVER name chemicals, products, brands or doses, and never invent a spray. For anything to spray, say to follow the official apple spray schedule of the grower's state (Himachal Pradesh, Jammu & Kashmir or Uttarakhand) for the tree's current stage and the product label.
 - Next steps must be practical things a grower can do: sanitation, pruning, drainage, checking more trees, taking a better photo, contacting the horticulture officer or KVK.
 - Set see_expert to true for root/collar problems, fast spreading problems, or when you are unsure.
 - "recheck_days": in how many days the grower should look at the same trees again to see if it is spreading or getting better (3 to 21; sooner for fast or severe problems).
@@ -60,15 +59,6 @@ Rules:
 
 Reply with ONLY this JSON, no other text:
 {"photo_ok":true,"photo_issue":"","matches":[{"id":"scab","name":"...","confidence":"medium","why":"..."}],"severity":"mild","summary":"...","next_steps":["..."],"see_expert":false,"recheck_days":7}`;
-
-/* other hill fruits: no fixed list, the AI names the problem and uses id "other" (or "healthy") */
-const CROP_NOTE = {
-  cherry: "The photo is of a CHERRY tree (sweet cherry, grown in the same hills). Common problems: bacterial canker/gummosis, cherry leaf spot (shot hole), powdery mildew, brown rot, black cherry aphid, fruit cracking after rain, birds.",
-  pear: "The photo is of a PEAR tree. Common problems: pear scab, fire blight, Fabraea/leaf spot, pear psylla, canker, stony pit, nutrient deficiency.",
-  plum: "The photo is of a PLUM tree. Common problems: plum pocket, bacterial leaf spot/shot hole, brown rot, rust, gummosis, aphids (leaf curl), scale.",
-  walnut: "The photo is of a WALNUT tree. Common problems: walnut blight (bacterial black spots on nuts and leaves), anthracnose (brown leaf blotches), canker, codling moth or nut borer, sunburn, nut drop."
-};
-const cropRule = c => c === "apple" ? "" : CROP_NOTE[c] + "\nFor this fruit ignore the apple id list: use id \"other\" for any problem (put the problem in \"name\") or \"healthy\". All other rules still apply.\n";
 
 function send(res, code, obj) {
   res.statusCode = code;
@@ -275,34 +265,15 @@ module.exports = async (req, res) => {
   if (typeof body === "string") { try { body = JSON.parse(body); } catch (e) { body = null; } }
   if (!body) return send(res, 400, { error: "photos" });
 
-  // 1b. "Ask an expert" on an earlier check whose photos were not kept: keep them now (does not use up a photo check)
-  if (body.action === "attach") {
-    const id = String(body.id || "");
-    if (!/^[0-9a-f-]{36}$/i.test(id)) return send(res, 400, { error: "id" });
-    const imgs = readImages(body.images); if (!imgs) return send(res, 400, { error: "photos" });
-    try {
-      const own = await fetch(SB_URL + "/rest/v1/diagnoses?select=id,photo_paths&id=eq." + id + "&user_id=eq." + encodeURIComponent(user.id), { headers: sbHeaders(token) });
-      const rows = own.ok ? await own.json() : [];
-      if (!rows.length) return send(res, 404, { error: "id" });
-      if (rows[0].photo_paths && rows[0].photo_paths.length) return send(res, 200, { ok: true, kept: rows[0].photo_paths.length });
-    } catch (e) { return send(res, 502, { error: "db_down" }); }
-    const paths = await keepPhotos(token, user.id, id, imgs);
-    if (!paths.length) return send(res, 502, { error: "store" });
-    const up = await fetch(SB_URL + "/rest/v1/diagnoses?id=eq." + id, { method: "PATCH", headers: sbHeaders(token, { Prefer: "return=minimal" }),
-      body: JSON.stringify({ photo_paths: paths, consent: true, ask_expert: true }) }).catch(() => null);
-    return send(res, up && up.ok ? 200 : 502, up && up.ok ? { ok: true, kept: paths.length } : { error: "db_down" });
-  }
-
   if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "not_setup" });
 
   // 2. Check the request
   const images = readImages(body.images);
   if (!images) return send(res, 400, { error: "photos" });
   const part = PARTS.includes(body.part) ? body.part : "";
-  const crop = CROPS.includes(body.crop) ? body.crop : "apple";
+  const crop = "apple";   /* diagnosis is apple only */
   const consent = body.consent === true;
   const note = String(body.note || "").slice(0, 400);
-  const seen = (Array.isArray(body.seen) ? body.seen : []).map(x => String(x || "").slice(0, 160).trim()).filter(Boolean).slice(0, 10);
   const lang = body.lang === "hi" || body.lang === "hn" ? body.lang : "en";
   const stage = STAGES[body.stage] ? body.stage : "";
   const orchardId = /^[A-Za-z0-9_-]{1,40}$/.test(String(body.orchard_id || "")) ? String(body.orchard_id) : "";
@@ -322,10 +293,9 @@ module.exports = async (req, res) => {
   // 4. Ask the AI (with the chosen orchard's record as background)
   const [oc, own] = await Promise.all([orchardContext(token, user.id, orchardId).catch(() => ({ text: "", name: "", ctx: null })), ownModel(images, part, stage)]);
   const partWord = { leaf: "leaves", fruit: "fruit", bark: "branch, bark or trunk", tree: "whole tree or roots" }[part] || "not said";
-  const userText = cropRule(crop) + "Part of the tree in the photo: " + partWord + ".\n" +
+  const userText = "Part of the tree in the photo: " + partWord + ".\n" +
     (stage ? "Tree stage now (grower says): " + STAGES[stage] + ".\n" : "") +
     (own ? "Second opinion from Seb Saathi's own model (trained on local photos): " + own.predictions.map(p => p.id + " " + Math.round(p.score * 100) + "%").join(", ") + "\n" : "") +
-    (seen.length ? "Signs the grower ticked in the symptom checker (seen up close, use them with the photo): " + seen.join("; ") + "\n" : "") +
     (note ? "Grower's note: " + note + "\n" : "") +
     (oc.text ? "Orchard record (background from the grower's own records; the photo comes first, use this to weigh likely causes, e.g. recent rain and humidity, days since the last spray, variety, altitude, soil calcium or boron, and problems seen here before):\n" + oc.text + "\n" : "") +
     "LANGUAGE: " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (simple Hindi written in English/Roman letters, like \"Patton par kaale daag hain\")" : "English");
@@ -351,7 +321,6 @@ module.exports = async (req, res) => {
     const parsed = parseJson(text);
     if (!parsed) { console.error("ai-json", text.slice(0, 500)); return send(res, 502, { error: "ai" }); }
     result = clean(parsed);
-    if (crop !== "apple") result.matches = result.matches.filter(m => m.id === "other" || m.id === "healthy");
   } catch (e) { console.error("ai-fail", e); return send(res, 502, { error: "ai" }); }
 
   // 5. Keep the photos (only with the grower's permission), then save the check

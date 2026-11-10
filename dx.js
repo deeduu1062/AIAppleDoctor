@@ -1,26 +1,22 @@
 /* Seb Saathi — disease diagnosis, part 2 (loaded after the main page script and uses its helpers: $, tr, esc, T, lang, user, sb, S, DX ...)
-   1. clearer photo result: severity, spray schedule link, read aloud, ask an expert
+   1. clearer photo result: severity, spray schedule link, read aloud
    2. keep photos only with the grower's permission
    3. expert answers shown back to the grower
    4. disease history and a health score for each orchard
    5. disease risk from the weather (scab, premature leaf fall)
    6. problems reported nearby (counts only, about 10 km squares) with a map
    7. voice typing for the note and for Saathi
-   8. other hill fruits: cherry, pear, plum, walnut
    Needs supabase/diagnosis_plus.sql for 2, 3 and 6. Everything else works without it. */
 (function () {
 "use strict";
 
 /* ---------- words ---------- */
 Object.assign(T.en, {
-  dx_crop: "Which fruit tree?", cr_apple: "Apple", cr_cherry: "Cherry", cr_pear: "Pear", cr_plum: "Plum", cr_walnut: "Walnut",
   dx_keep: "Keep my photos to help Seb Saathi learn",
   dx_keep_p: "Optional. Your photos are kept privately. Only the Seb Saathi team and the plant experts working with us can see them. Your name is never shown. With this ticked, an expert can also check this result.",
   mic_start: "Speak", mic_stop: "Stop", mic_on: "Listening… speak now. Tap Stop when done.", mic_err: "Could not hear. Check the microphone permission and try again.",
   dx_sev_mild: "Mild", dx_sev_moderate: "Spreading", dx_sev_severe: "Severe",
   dx_listen: "🔊 Listen", dx_listen_stop: "■ Stop",
-  dx_ask: "Ask an expert", dx_asked: "Sent to an expert. The answer will show under My photo checks and in this orchard's Tree health card.",
-  dx_ask_nophoto: "Sent. The photos were not kept, so the expert will only see this result and your note.",
   dx_kept: "Photos kept to help Seb Saathi learn. Thank you.", dx_review: "This one needs a closer look, so our expert will also check it.",
   dx_e_plus: "This part is not switched on yet. Please try again later.",
   dxm_h: "My photo checks", dxm_none: "No photo checks yet.", dxm_exp: "Expert says", dxm_wait: "Waiting for an expert", dxm_more: "Show older checks",
@@ -50,14 +46,11 @@ Object.assign(T.en, {
   dxa_you: "Your orchard"
 });
 Object.assign(T.hi, {
-  dx_crop: "कौन सा फल का पेड़?", cr_apple: "सेब", cr_cherry: "चेरी", cr_pear: "नाशपाती", cr_plum: "प्लम (आलूचा)", cr_walnut: "अखरोट",
   dx_keep: "सेब साथी को सिखाने के लिए मेरी फ़ोटो रखें",
   dx_keep_p: "ज़रूरी नहीं। आपकी फ़ोटो निजी रखी जाती हैं। सिर्फ़ सेब साथी टीम और हमारे साथ काम करने वाले पौध-विशेषज्ञ इन्हें देख सकते हैं। आपका नाम कभी नहीं दिखता। इस पर टिक होने से विशेषज्ञ इस नतीजे को भी जाँच सकते हैं।",
   mic_start: "बोलें", mic_stop: "रुकें", mic_on: "सुन रहे हैं… अब बोलें। हो जाने पर रुकें दबाएँ।", mic_err: "सुनाई नहीं दिया। माइक की अनुमति देखें और फिर कोशिश करें।",
   dx_sev_mild: "हल्का", dx_sev_moderate: "फैल रहा है", dx_sev_severe: "गंभीर",
   dx_listen: "🔊 सुनें", dx_listen_stop: "■ रोकें",
-  dx_ask: "विशेषज्ञ से पूछें", dx_asked: "विशेषज्ञ को भेज दिया। जवाब 'मेरी फ़ोटो जाँच' में और इस बाग़ के 'पेड़ों की सेहत' कार्ड में दिखेगा।",
-  dx_ask_nophoto: "भेज दिया। फ़ोटो नहीं रखी गई थीं, इसलिए विशेषज्ञ सिर्फ़ यह नतीजा और आपका नोट देखेंगे।",
   dx_kept: "सेब साथी को सिखाने के लिए फ़ोटो रख ली गईं। धन्यवाद।", dx_review: "इसे ध्यान से देखने की ज़रूरत है, इसलिए हमारे विशेषज्ञ भी इसे जाँचेंगे।",
   dx_e_plus: "यह हिस्सा अभी चालू नहीं है। बाद में फिर कोशिश करें।",
   dxm_h: "मेरी फ़ोटो जाँच", dxm_none: "अभी कोई फ़ोटो जाँच नहीं।", dxm_exp: "विशेषज्ञ की राय", dxm_wait: "विशेषज्ञ के जवाब का इंतज़ार", dxm_more: "पुरानी जाँच दिखाएँ",
@@ -87,14 +80,11 @@ Object.assign(T.hi, {
   dxa_you: "आपका बाग़"
 });
 Object.assign(T.hn, {
-  dx_crop: "Kaun sa phal ka ped?", cr_apple: "Seb", cr_cherry: "Cherry", cr_pear: "Nashpati", cr_plum: "Plum (Aloocha)", cr_walnut: "Akhrot",
   dx_keep: "Seb Saathi ko sikhane ke liye meri photo rakhein",
   dx_keep_p: "Zaroori nahi. Aapki photo private rakhi jaati hain. Sirf Seb Saathi team aur hamare saath kaam karne wale paudh-visheshagya inhe dekh sakte hain. Aapka naam kabhi nahi dikhta. Is par tick hone se expert is nateeje ko bhi jaanch sakte hain.",
   mic_start: "Bolein", mic_stop: "Rukein", mic_on: "Sun rahe hain… ab bolein. Ho jaane par Rukein dabayein.", mic_err: "Sunai nahi diya. Mic ki permission dekhein aur phir koshish karein.",
   dx_sev_mild: "Halka", dx_sev_moderate: "Phail raha hai", dx_sev_severe: "Gambhir",
   dx_listen: "🔊 Sunein", dx_listen_stop: "■ Rokein",
-  dx_ask: "Expert se poochhein", dx_asked: "Expert ko bhej diya. Jawab 'Meri photo jaanch' mein aur is bagiche ke 'Pedon ki sehat' card mein dikhega.",
-  dx_ask_nophoto: "Bhej diya. Photo nahi rakhi gayi thi, isliye expert sirf ye nateeja aur aapka note dekhenge.",
   dx_kept: "Seb Saathi ko sikhane ke liye photo rakh li gayi. Dhanyavaad.", dx_review: "Ise dhyaan se dekhne ki zaroorat hai, isliye hamare expert bhi ise jaanchenge.",
   dx_e_plus: "Ye hissa abhi chalu nahi hai. Baad mein phir koshish karein.",
   dxm_h: "Meri photo jaanch", dxm_none: "Abhi koi photo jaanch nahi.", dxm_exp: "Expert ki raay", dxm_wait: "Expert ke jawab ka intezaar", dxm_more: "Purani jaanch dikhayein",
@@ -124,7 +114,6 @@ Object.assign(T.hn, {
   dxa_you: "Aapka bagicha"
 });
 
-const CROPS = ["apple", "cherry", "pear", "plum", "walnut"];
 const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
 const fmtD = iso => { try { return new Date(iso).toLocaleDateString(dloc(), { day: "numeric", month: "short" }); } catch (e) { return String(iso).slice(0, 10); } };
 const orchName = id => { const o = S && S.orchards ? S.orchards.find(x => x.id === id) : null; return o ? (o.name || tr("orchard_fallback")) : ""; };
@@ -181,8 +170,6 @@ const STAGES = ["st1", "st2", "st3", "st4", "st5", "st6", "st7", "st8", "st9"];
 /* a first guess from the month (hills: bud break in March, harvest July to October) */
 function stageGuess() { const m = +new Date(Date.now() + 330 * 60000).toISOString().slice(5, 7); return { 12: "st1", 1: "st1", 2: "st1", 3: "st2", 4: "st4", 5: "st6", 6: "st7", 7: "st7", 8: "st8", 9: "st8", 10: "st9", 11: "st9" }[m]; }
 function renderForm() {
-  const c = $("dxCrop"); if (!c) return;
-  c.innerHTML = '<option value="apple" selected>' + esc(tr("cr_apple")) + "</option>";   /* fruit picker taken out: always apple */
   const st = $("dxStage");
   if (st) { const cur = st.value || stageGuess(); st.innerHTML = '<option value="">' + esc(tr("dx_stage_none")) + "</option>" +
     STAGES.map(k => '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + esc(tr(k)) + "</option>").join(""); }
@@ -196,12 +183,10 @@ window.dxAfter = j => {
 };
 
 /* ---------- 1. the photo result ---------- */
-let dxMsg = "";
 renderDiagAi = function (id, r) {
   const box = $("dxAi");
   if (!r) { box.innerHTML = ""; return; }
-  const crop = (dxLast && dxLast.crop) || "apple";
-  let h = '<div class="dxcards"><article class="dxcard top"><h5>' + tr("dx_ai_h") + (crop !== "apple" ? ' <em class="chip">' + esc(tr("cr_" + crop)) + "</em>" : "") + sevChip(r.severity) + "</h5>";
+  let h = '<div class="dxcards"><article class="dxcard top"><h5>' + tr("dx_ai_h") + sevChip(r.severity) + "</h5>";
   if (!r.photo_ok) h += '<p class="urgent">' + tr("dx_photo_bad") + (r.photo_issue ? ": " + esc(r.photo_issue) : "") + "</p>";
   if (r.summary) h += "<p>" + esc(r.summary) + "</p>";
   if (speakOk) h += '<div><button class="btn-s sm" type="button" data-dxact="listen">' + tr(speaking ? "dx_listen_stop" : "dx_listen") + "</button></div>";
@@ -209,7 +194,7 @@ renderDiagAi = function (id, r) {
   (r.matches || []).forEach(m => {
     const d = DX[m.id];
     const name = d ? dxL(d) : (m.name || tr(m.id === "healthy" ? "dx_healthy" : "dx_other"));
-    const spray = (d && d.spray) || (crop !== "apple" && m.id !== "healthy");
+    const spray = d && d.spray;
     h += '<article class="dxcard"><h5>' + esc(name) + confChip(m.confidence) + "</h5>" +
       (m.why ? "<p>" + esc(m.why) + "</p>" : "") +
       (d && d.urgent ? '<p class="urgent">' + tr("dx_urgent") + "</p>" : "") +
@@ -231,8 +216,6 @@ renderDiagAi = function (id, r) {
     const asked = (row && row.ask_expert) || (dxLast && dxLast.asked);
     h += '<div class="dxfb">' + (dxLast && dxLast.fb ? '<span class="fine">' + tr("dx_fb_thanks") + "</span>" :
       "<span>" + tr("dx_fb") + "</span>" + ["right", "wrong", "unsure"].map(k => '<button class="btn-s" type="button" data-dxfb="' + k + '">' + tr("dx_fb_" + k) + "</button>").join("")) + "</div>";
-    h += '<div class="dxfb">' + "" +   /* "Ask an expert" button taken out */
-      (dxMsg ? '<span class="fine">' + esc(dxMsg) + "</span>" : "") + "</div>";
     if (dxLast && dxLast.kept) h += '<p class="fine dxok">✓ ' + tr("dx_kept") + "</p>";
     if (dxLast && dxLast.review && !asked) h += '<p class="fine">' + tr("dx_review") + "</p>";
   }
@@ -246,10 +229,9 @@ function speakResult() {
   if (!speakOk) return;
   if (speaking) { speechSynthesis.cancel(); speaking = false; renderDiagAi(dxLast && dxLast.id, dxLast && dxLast.result); return; }
   const r = dxLast && dxLast.result; if (!r) return;
-  const crop = dxLast.crop || "apple";
   const parts = [];
   if (!r.photo_ok) parts.push(tr("dx_photo_bad") + ". " + (r.photo_issue || ""));
-  (r.matches || []).slice(0, 2).forEach(m => parts.push((DX[m.id] && crop === "apple" ? dxL(DX[m.id]) : m.name || "") + ", " + tr("dx_c_" + m.confidence) + ". " + (m.why || "")));
+  (r.matches || []).slice(0, 2).forEach(m => parts.push((DX[m.id] ? dxL(DX[m.id]) : m.name || "") + ", " + tr("dx_c_" + m.confidence) + ". " + (m.why || "")));
   if (r.summary) parts.push(r.summary);
   (r.next_steps || []).forEach(s => parts.push(s));
   const u = new SpeechSynthesisUtterance(parts.join(" \n"));
@@ -257,30 +239,6 @@ function speakResult() {
   const v = speechSynthesis.getVoices().find(x => x.lang && x.lang.replace("_", "-").toLowerCase() === u.lang.toLowerCase()); if (v) u.voice = v;
   u.onend = u.onerror = () => { speaking = false; renderDiagAi(dxLast && dxLast.id, dxLast && dxLast.result); };
   speechSynthesis.cancel(); speechSynthesis.speak(u); speaking = true; renderDiagAi(dxLast.id, dxLast.result);
-}
-
-/* ask an expert: keep the photos now if they were not kept, and flag the check */
-async function askExpert(id) {
-  if (!sb || !id) return;
-  dxMsg = "…"; renderDiagAi(dxLast && dxLast.id, dxLast && dxLast.result); renderMine();
-  const row = all && all.find(x => x.id === id);
-  const kept = (dxLast && dxLast.id === id && dxLast.kept) || (row && row.photo_paths && row.photo_paths.length);
-  let ok = false, nophoto = false;
-  if (!kept && dxLast && dxLast.id === id && dxFiles && dxFiles.length) {
-    try {
-      const s = await sb.auth.getSession(), token = s && s.data && s.data.session ? s.data.session.access_token : "";
-      const r = await fetch("/api/diagnose", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-        body: JSON.stringify({ action: "attach", id, images: dxFiles }) });
-      ok = r.ok; if (ok) dxLast.kept = dxFiles.length;
-    } catch (e) { ok = false; }
-  }
-  if (!ok) {
-    try { const r = await sb.from("diagnoses").update({ ask_expert: true }).eq("id", id); ok = !r.error; } catch (e) { ok = false; }
-    nophoto = !kept;
-  }
-  dxMsg = ok ? tr(nophoto ? "dx_ask_nophoto" : "dx_asked") : tr("dx_e_plus");
-  if (ok) { if (dxLast && dxLast.id === id) dxLast.asked = true; if (row) row.ask_expert = true; }
-  renderDiagAi(dxLast && dxLast.id, dxLast && dxLast.result); renderMine(id); refreshCards();
 }
 
 /* ---------- 3. my photo checks (with the expert's answers) ---------- */
@@ -314,13 +272,13 @@ async function loadMyPhotos() {
   document.head.appendChild(st);
 })();
 function mineRow(x) {
-  const t = topOf(x), crop = x.crop || "apple";
-  const name = t ? dzName(crop === "apple" ? t.id : "", t.name) : tr("dx_photo_bad");
+  const t = topOf(x);
+  const name = t ? dzName(t.id, t.name) : tr("dx_photo_bad");
   const on = x.orchard_id ? orchName(x.orchard_id) : "";
   let h = '<li><div class="mr1"><span class="dd">' + esc(fmtD(x.created_at)) + '</span><span class="dt"><b>' + esc(name) + "</b>" +
     (t && !t.expert ? confChip(t.confidence) : "") + sevChip(x.severity || (x.result && x.result.severity)) + "</span></div>" +
-    '<div class="mr2 fine">' + esc([crop !== "apple" ? tr("cr_" + crop) : "", on].filter(Boolean).join(" · ")) +
-    (x.feedback ? (on || crop !== "apple" ? " · " : "") + tr("th_fb_" + x.feedback) : "") + "</div>";
+    '<div class="mr2 fine">' + esc(on || "") +
+    (x.feedback ? (on ? " · " : "") + tr("th_fb_" + x.feedback) : "") + "</div>";
   if ((x.photo_paths || []).length) h += '<div class="mpics">' + x.photo_paths.map(p => myUrls[p]
     ? '<a href="' + esc(myUrls[p]) + '" target="_blank" rel="noopener"><img src="' + esc(myUrls[p]) + '" alt="" loading="lazy"></a>' : '<span class="mph"></span>').join("") + "</div>";
   if (x.reviewed_at) {
@@ -334,7 +292,7 @@ function mineRow(x) {
 }
 function renderMine(justAsked) {
   const sec = $("dxMine"); if (!sec) return;
-  if (justAsked) mineMsg = { id: justAsked, t: dxMsg };
+  if (justAsked) mineMsg = { id: justAsked, t: "" };
   sec.hidden = !user;
   if (!user) return;
   if (!all) { $("dxMineList").innerHTML = '<p class="hint">' + tr("dxa_load") + "</p>"; return; }
@@ -400,7 +358,7 @@ function nearOf(o) {
   if (!area || !hasLoc(o)) return null;
   const since = Date.now() - 14 * 864e5, by = {};
   area.forEach(r => {
-    if ((r.crop || "apple") !== "apple" || Date.parse(r.last_at) < since) return;
+    if (Date.parse(r.last_at) < since) return;
     if (kmBetween(+o.profile.lat, +o.profile.lon, +r.lat, +r.lon) > 15) return;
     by[r.disease] = (by[r.disease] || 0) + (+r.n || 0);
   });
@@ -494,7 +452,7 @@ function healthOf(o) {
     const sv = { mild: 1, moderate: 2, severe: 3 }[x.severity || (x.result && x.result.severity)] || 1.5;
     const age = now - Date.parse(x.created_at) <= 30 * 864e5 ? 1 : 0.5;
     pen += 6 * w * sv * (URG[t.id] || 1) * age;
-    const nm = dzName((x.crop || "apple") === "apple" ? t.id : "", t.name); found[nm] = found[nm] || x.created_at;
+    const nm = dzName(t.id, t.name); found[nm] = found[nm] || x.created_at;
   });
   pen = Math.min(45, pen); score -= pen;
   const fk = Object.keys(found);
@@ -522,7 +480,7 @@ function cardInner(o) {
     '<ul class="hswhy">' + hs.why.map(w => "<li>" + esc(w) + "</li>").join("") + "</ul>" + riskHtml(hs.rk, true) + nearHtml(o, hs.rk);
   const rec = (all || []).filter(x => x.orchard_id === o.id).slice(0, 3);
   if (rec.length) h += '<p class="subhead">' + tr("hs_recent") + '</p><ul class="dxmine sm">' + rec.map(x => {
-    const t = topOf(x); return "<li><div class=\"mr1\"><span class=\"dd\">" + esc(fmtD(x.created_at)) + '</span><span class="dt">' + esc(t ? dzName((x.crop || "apple") === "apple" ? t.id : "", t.name) : tr("dx_photo_bad")) +
+    const t = topOf(x); return "<li><div class=\"mr1\"><span class=\"dd\">" + esc(fmtD(x.created_at)) + '</span><span class="dt">' + esc(t ? dzName(t.id, t.name) : tr("dx_photo_bad")) +
       (x.reviewed_at ? ' <em class="chip hi">' + tr("dxm_exp") + "</em>" : x.ask_expert ? ' <em class="chip">⏳</em>' : "") + "</span></div></li>";
   }).join("") + "</ul>";
   h += '<div class="dels"><button class="btn-s add" type="button" data-dxact="check" data-o="' + esc(o.id) + '">' + tr("hs_check") + "</button>" +
@@ -576,7 +534,7 @@ function areaCells() {
   L.sort((a, b) => (a.km != null && b.km != null ? a.km - b.km : b.n - a.n));
   return { L, mine };
 }
-const dzLabel = d => (d.crop && d.crop !== "apple" ? tr("cr_" + d.crop) + ": " : "") + dzName(d.id, "");
+const dzLabel = d => dzName(d.id, "");
 function renderArea() {
   const box = $("dxAreaList"); if (!box) return;
   if (!user) { box.innerHTML = '<p class="hint">' + tr("dxa_login") + "</p>"; $("dxAreaMap").hidden = true; return; }
@@ -651,7 +609,6 @@ document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-dxact]"); if (!b) return;
   const a = b.dataset.dxact;
   if (a === "listen") speakResult();
-  else if (a === "ask") askExpert(b.dataset.id);
   else if (a === "more") { mineMore = true; renderMine(); }
   else if (a === "remind") remind();
   else if (a === "ics") remindIcs();
