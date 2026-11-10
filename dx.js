@@ -43,7 +43,8 @@ Object.assign(T.en, {
   dxa_none: "No problems reported in the last 30 days yet.", dxa_load: "Loading…", dxa_map: "Show on map", dxa_hide: "Hide map",
   dxa_km: "~{n} km from your orchard", dxa_reports: "{n} reports", dxa_report1: "1 report", dxa_noplace: "Area not named",
   dxa_login: "Log in to see problems reported near you.", dxa_maperr: "The map could not load. Check your internet.",
-  dxa_you: "Your orchard"
+  dxa_you: "Your orchard",
+  dx_wa: "Share on WhatsApp", dx_wa_h: "Seb Saathi photo check", dx_wa_find: "Found", dx_wa_try: "Check your orchard free on Seb Saathi:"
 });
 Object.assign(T.hi, {
   dx_keep: "सेब साथी को सिखाने के लिए मेरी फ़ोटो रखें",
@@ -77,7 +78,8 @@ Object.assign(T.hi, {
   dxa_none: "पिछले 30 दिन में अभी कोई समस्या दर्ज नहीं।", dxa_load: "लोड हो रहा है…", dxa_map: "नक्शे पर देखें", dxa_hide: "नक्शा छिपाएँ",
   dxa_km: "आपके बाग़ से ~{n} किमी", dxa_reports: "{n} रिपोर्ट", dxa_report1: "1 रिपोर्ट", dxa_noplace: "इलाक़े का नाम नहीं",
   dxa_login: "अपने पास मिली समस्याएँ देखने के लिए लॉग इन करें।", dxa_maperr: "नक्शा लोड नहीं हुआ। इंटरनेट देखें।",
-  dxa_you: "आपका बाग़"
+  dxa_you: "आपका बाग़",
+  dx_wa: "WhatsApp पर भेजें", dx_wa_h: "सेब साथी फ़ोटो जाँच", dx_wa_find: "मिला", dx_wa_try: "सेब साथी पर अपने बाग़ की मुफ़्त जाँच करें:"
 });
 Object.assign(T.hn, {
   dx_keep: "Seb Saathi ko sikhane ke liye meri photo rakhein",
@@ -111,7 +113,8 @@ Object.assign(T.hn, {
   dxa_none: "Pichhle 30 din mein abhi koi samasya darj nahi.", dxa_load: "Load ho raha hai…", dxa_map: "Naqshe par dekhein", dxa_hide: "Naqsha chhupayein",
   dxa_km: "Aapke bagiche se ~{n} km", dxa_reports: "{n} report", dxa_report1: "1 report", dxa_noplace: "Ilaake ka naam nahi",
   dxa_login: "Apne paas mili samasyayein dekhne ke liye log in karein.", dxa_maperr: "Naqsha load nahi hua. Internet dekhein.",
-  dxa_you: "Aapka bagicha"
+  dxa_you: "Aapka bagicha",
+  dx_wa: "WhatsApp par bhejein", dx_wa_h: "Seb Saathi photo jaanch", dx_wa_find: "Mila", dx_wa_try: "Seb Saathi par apne bagiche ki free jaanch karein:"
 });
 
 const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
@@ -189,7 +192,9 @@ renderDiagAi = function (id, r) {
   let h = '<div class="dxcards"><article class="dxcard top"><h5>' + tr("dx_ai_h") + sevChip(r.severity) + "</h5>";
   if (!r.photo_ok) h += '<p class="urgent">' + tr("dx_photo_bad") + (r.photo_issue ? ": " + esc(r.photo_issue) : "") + "</p>";
   if (r.summary) h += "<p>" + esc(r.summary) + "</p>";
-  if (speakOk) h += '<div><button class="btn-s sm" type="button" data-dxact="listen">' + tr(speaking ? "dx_listen_stop" : "dx_listen") + "</button></div>";
+  const wa = r.photo_ok !== false && (r.matches || []).length ? waText(r) : "";
+  if (speakOk || wa) h += '<div class="dels">' + (speakOk ? '<button class="btn-s sm" type="button" data-dxact="listen">' + tr(speaking ? "dx_listen_stop" : "dx_listen") + "</button>" : "") +
+    (wa ? '<a class="btn-s sm wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(wa) + '">' + tr("dx_wa") + "</a>" : "") + "</div>";
   h += "</article>";
   (r.matches || []).forEach(m => {
     const d = DX[m.id];
@@ -221,6 +226,22 @@ renderDiagAi = function (id, r) {
   }
   box.innerHTML = h + "</div>";
 };
+
+/* the result as a WhatsApp message, in the grower's language, with their invite link */
+function waText(r) {
+  const L = ["🍎 *" + tr("dx_wa_h") + "*"];
+  const o = dxLast && dxLast.orch ? orchName(dxLast.orch) : "";
+  if (o) L.push(o);
+  const m = r.matches[0];   /* only the main answer, not the less likely ones */
+  const name = DX[m.id] ? dxL(DX[m.id]) : (m.name || tr(m.id === "healthy" ? "dx_healthy" : "dx_other"));
+  L.push(tr("dx_wa_find") + ": *" + name + "* (" + tr("dx_c_" + m.confidence) + ")" + (r.severity ? ", " + tr("dx_sev_" + r.severity) : ""));
+  if (r.summary) L.push("", r.summary);
+  if (r.next_steps && r.next_steps.length) { L.push("", "*" + tr("dx_steps") + "*"); r.next_steps.forEach(x => L.push("• " + x)); }
+  if (r.see_expert) L.push("", tr("dx_expert"));
+  let link = location.origin; try { if (typeof shareLink === "function") link = shareLink(); } catch (e) {}
+  L.push("", tr("dx_wa_try"), link);
+  return L.join("\n").slice(0, 3500);
+}
 
 /* read the result aloud with the phone's own voice */
 const speakOk = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
