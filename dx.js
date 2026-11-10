@@ -145,13 +145,11 @@ function topOf(row) {
 /* ---------- form: fruit, keep photos ---------- */
 function renderForm() {
   const c = $("dxCrop"); if (!c) return;
-  const cur = ls.get("dx-crop") || "apple";
-  c.innerHTML = CROPS.map(k => '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + esc(tr("cr_" + k)) + "</option>").join("");
+  c.innerHTML = '<option value="apple" selected>' + esc(tr("cr_apple")) + "</option>";   /* fruit picker taken out: always apple */
   const k = $("dxKeep"); if (k) k.checked = ls.get("dx-keep") !== "0";   /* ticked by default; stays off only if the grower unticks it */
 }
-$("dxCrop").addEventListener("change", e => ls.set("dx-crop", e.target.value));
 $("dxKeep").addEventListener("change", e => ls.set("dx-keep", e.target.checked ? "1" : "0"));
-window.dxExtra = () => ({ crop: CROPS.includes($("dxCrop").value) ? $("dxCrop").value : "apple", consent: !!$("dxKeep").checked });
+window.dxExtra = () => ({ crop: "apple", consent: !!$("dxKeep").checked });
 window.dxAfter = j => {
   if (dxLast) { dxLast.review = !!j.review; dxLast.kept = j.kept || 0; renderDiagAi(dxLast.id, dxLast.result); }
   loadAll(true);
