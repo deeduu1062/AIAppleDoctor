@@ -960,9 +960,9 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .mggrid{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;counter-reset:mg}
 .mggrid li{display:flex}
 .lpdcard{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:20px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
-.lpdpic{margin:0}.lpdpic svg{width:100%;height:auto;display:block;border-radius:14px}.lpdpic figcaption{text-align:center;margin-top:6px}
+.lpdpic{margin:0}.lpdpic img{width:100%;height:auto;display:block;border-radius:14px}.lpdpic figcaption{text-align:center;margin-top:6px}
 .lpdres h3{margin:6px 0 4px}.lpdres p{margin:0 0 8px}.lpdres ul{margin:0 0 12px;padding-left:20px}.lpdres li{margin:0 0 4px}.lpdsev{color:#9A6400;background:color-mix(in srgb,#E0A21A 20%,transparent)}
-@media (max-width:640px){.lpdcard{grid-template-columns:1fr}.lpdpic svg{max-width:240px;margin:0 auto}}
+@media (max-width:640px){.lpdcard{grid-template-columns:1fr}.lpdpic img{max-width:260px;margin:0 auto}}
 .mgcard{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:auto 1fr;column-gap:12px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--fg);transition:border-color .15s,transform .15s}
 .mgcard:hover{border-color:var(--apple)}
 .mgcard:focus-visible,.mgnote:focus-visible,.mgnews:focus-visible{outline:3px solid var(--apple);outline-offset:2px}
@@ -2309,14 +2309,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <p class="lede" data-i18n="lpd_p"></p>
     <div class="lpdcard">
       <figure class="lpdpic">
-        <svg viewBox="0 0 220 220" role="img" aria-labelledby="lpdAlt"><title id="lpdAlt" data-i18n="lpd_alt"></title>
-          <rect width="220" height="220" rx="14" fill="#EEF3E6"/>
-          <path d="M40 184 C30 120 70 48 168 30 C186 104 150 176 40 184 Z" fill="#5E8F3A"/>
-          <path d="M40 184 C80 140 120 90 168 30" stroke="#3F6B26" stroke-width="3" fill="none"/>
-          <g stroke="#4A7A2E" stroke-width="1.6" fill="none"><path d="M70 150 L56 118"/><path d="M90 128 L74 92"/><path d="M112 104 L100 66"/><path d="M134 80 L128 48"/><path d="M80 140 L116 150"/><path d="M104 114 L140 122"/><path d="M126 90 L156 92"/></g>
-          <g fill="#2F3424" opacity=".92"><circle cx="88" cy="104" r="9"/><circle cx="118" cy="132" r="7"/><circle cx="134" cy="70" r="6"/><circle cx="72" cy="160" r="5"/><circle cx="104" cy="84" r="4"/><circle cx="146" cy="104" r="5"/></g>
-          <g fill="#6B6A3A" opacity=".55"><circle cx="88" cy="104" r="13"/><circle cx="118" cy="132" r="10"/><circle cx="134" cy="70" r="9"/></g>
-        </svg>
+        <img src="/img/example-scab-fruit.jpg" width="369" height="395" alt="" data-i18n-alt="lpd_alt" id="lpdImg" loading="lazy">
         <figcaption class="fine" data-i18n="lpd_cap"></figcaption>
       </figure>
       <div class="lpdres">
@@ -3068,6 +3061,7 @@ function renderSocial() {
 function applyLang() {
   document.documentElement.lang = lang === "hn" ? "hi-Latn" : lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-i18n-alt]").forEach(el => { el.alt = tr(el.getAttribute("data-i18n-alt")); });
   $("langBtn").value = lang;
   setOrchTabs();
   renderHero(); renderMonths(); renderSocial(); renderQLines(); renderQ(); renderCmp(); renderAll(); renderOrchGate(); renderDiag(); renderInstall(); renderPromo(); if (typeof renderShare === "function") renderShare(); if (typeof renderChat === "function") renderChat(); if (typeof loadNews === "function") { if (!$("tp-news").hidden) loadNews(); else renderNews(); } if (typeof renderLib === "function") { renderLib(); } if (window.ADFeedback) ADFeedback.render(); if (typeof renderPlans === "function") renderPlans(); if (typeof renderContact === "function") renderContact();
@@ -6486,26 +6480,26 @@ Object.assign(T.hi, {
 });
 Object.assign(T.en, {
   lpd_h: "See a photo check", lpd_p: "Take a photo of a leaf, fruit or bark. Saathi tells you what it most likely is, how sure it is, and what to do next.",
-  lpd_alt: "Drawing of an apple leaf with dark olive spots", lpd_cap: "Example drawing", lpd_tag: "Example result",
+  lpd_alt: "Apple fruit with dark, corky scab spots", lpd_cap: "Example photo", lpd_tag: "Example result",
   lpd_name: "Apple scab", lpd_conf: "Quite sure", lpd_sev: "Spreading",
-  lpd_why: "Olive to black velvety spots on the leaf, after a wet week at your orchard's height. This is typical of scab.",
-  lpd_next: "Next steps", lpd_s1: "Pick up and destroy fallen leaves; they carry scab to next spring.", lpd_s2: "Keep spray cover on before the next rain, as per the spray schedule for your tree's stage.", lpd_s3: "Look at the same trees again in 5 days. Saathi will remind you.",
+  lpd_why: "Dark, corky spots on the fruit skin, some joining up and cracking. This is typical of scab.",
+  lpd_next: "Next steps", lpd_s1: "Remove scabby fruit, and this winter pick up and destroy fallen leaves; they carry scab to next spring.", lpd_s2: "Keep spray cover on before the next rain, as per the spray schedule for your tree's stage.", lpd_s3: "Look at the same trees again in 5 days. Saathi will remind you.",
   lpd_go: "Check your own photo", lpd_note: "An example. A real check also looks at your orchard's weather, recent sprays and stage."
 });
 Object.assign(T.hi, {
   lpd_h: "फ़ोटो जाँच देखें", lpd_p: "पत्ते, फल या छाल की फ़ोटो लें। साथी बताएगा कि सबसे ज़्यादा क्या होने की संभावना है, कितना पक्का है, और आगे क्या करें।",
-  lpd_alt: "सेब के पत्ते का चित्र जिस पर गहरे जैतूनी धब्बे हैं", lpd_cap: "उदाहरण चित्र", lpd_tag: "उदाहरण नतीजा",
+  lpd_alt: "सेब का फल जिस पर गहरे, खुरदुरे स्कैब के धब्बे हैं", lpd_cap: "उदाहरण फ़ोटो", lpd_tag: "उदाहरण नतीजा",
   lpd_name: "सेब का स्कैब (धब्बा रोग)", lpd_conf: "काफ़ी पक्का", lpd_sev: "फैल रहा है",
-  lpd_why: "पत्ते पर जैतूनी से काले मख़मली धब्बे, आपके बाग़ की ऊँचाई पर एक गीले हफ़्ते के बाद। यह स्कैब की पहचान है।",
-  lpd_next: "अगले क़दम", lpd_s1: "गिरे पत्ते इकट्ठा करके नष्ट करें; वे स्कैब को अगले वसंत तक ले जाते हैं।", lpd_s2: "अगली बारिश से पहले पेड़ की अवस्था के स्प्रे शेड्यूल के हिसाब से स्प्रे कवर रखें।", lpd_s3: "5 दिन बाद उन्हीं पेड़ों को फिर देखें। साथी याद दिलाएगा।",
+  lpd_why: "फल के छिलके पर गहरे, खुरदुरे धब्बे, कुछ आपस में जुड़कर फट रहे हैं। यह स्कैब की पहचान है।",
+  lpd_next: "अगले क़दम", lpd_s1: "स्कैब वाले फल हटाएँ, और इस सर्दी गिरे पत्ते इकट्ठा करके नष्ट करें; वे स्कैब को अगले वसंत तक ले जाते हैं।", lpd_s2: "अगली बारिश से पहले पेड़ की अवस्था के स्प्रे शेड्यूल के हिसाब से स्प्रे कवर रखें।", lpd_s3: "5 दिन बाद उन्हीं पेड़ों को फिर देखें। साथी याद दिलाएगा।",
   lpd_go: "अपनी फ़ोटो जाँचें", lpd_note: "यह एक उदाहरण है। असली जाँच आपके बाग़ का मौसम, हाल के स्प्रे और अवस्था भी देखती है।"
 });
 Object.assign(T.hn, {
   lpd_h: "Photo jaanch dekhein", lpd_p: "Patte, phal ya chhaal ki photo lein. Saathi batayega ki sabse zyada kya hone ki sambhavna hai, kitna pakka hai, aur aage kya karein.",
-  lpd_alt: "Seb ke patte ka chitra jis par gehre jaitooni daag hain", lpd_cap: "Example chitra", lpd_tag: "Example nateeja",
+  lpd_alt: "Seb ka phal jis par gehre, khurdure scab ke daag hain", lpd_cap: "Example photo", lpd_tag: "Example nateeja",
   lpd_name: "Apple scab (seb ka dhabba rog)", lpd_conf: "Kaafi pakka", lpd_sev: "Phail raha hai",
-  lpd_why: "Patte par jaitooni se kaale makhmali daag, aapke bagiche ki unchai par ek geele hafte ke baad. Ye scab ki pehchaan hai.",
-  lpd_next: "Agle kadam", lpd_s1: "Gire patte ikattha karke nasht karein; ye scab ko agle basant tak le jaate hain.", lpd_s2: "Agli baarish se pehle ped ki avastha ke spray schedule ke hisaab se spray cover rakhein.", lpd_s3: "5 din baad unhi pedon ko phir dekhein. Saathi yaad dilayega.",
+  lpd_why: "Phal ke chhilke par gehre, khurdure daag, kuch aapas mein judkar phat rahe hain. Ye scab ki pehchaan hai.",
+  lpd_next: "Agle kadam", lpd_s1: "Scab wale phal hatayein, aur is sardi gire patte ikattha karke nasht karein; ye scab ko agle basant tak le jaate hain.", lpd_s2: "Agli baarish se pehle ped ki avastha ke spray schedule ke hisaab se spray cover rakhein.", lpd_s3: "5 din baad unhi pedon ko phir dekhein. Saathi yaad dilayega.",
   lpd_go: "Apni photo jaanchein", lpd_note: "Ye ek example hai. Asli jaanch aapke bagiche ka mausam, haal ke spray aur avastha bhi dekhti hai."
 });
 function setGuest(g) {
