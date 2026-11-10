@@ -247,7 +247,24 @@ async function loadAll(force) {
   } catch (e) { all = all || []; }
   allBusy = false;
   renderMine(); refreshCards(); renderRisk();
+  loadMyPhotos();
 }
+/* the grower's own kept photos: private links, valid for an hour */
+var myUrls = {};
+async function loadMyPhotos() {
+  const paths = []; (all || []).forEach(x => (x.photo_paths || []).forEach(p => { if (!myUrls[p]) paths.push(p); }));
+  if (!paths.length || !sb) return;
+  try {
+    const r = await sb.storage.from("dx-photos").createSignedUrls(paths.slice(0, 300), 3600);
+    (r.data || []).forEach(x => { if (x.signedUrl) myUrls[x.path] = x.signedUrl; });
+  } catch (e) { return; }
+  renderMine();
+}
+(function () {
+  const st = document.createElement("style");
+  st.textContent = ".mpics{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.mpics img,.mph{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line,#ddd);display:block}.mph{background:var(--line,#eee)}";
+  document.head.appendChild(st);
+})();
 function mineRow(x) {
   const t = topOf(x), crop = x.crop || "apple";
   const name = t ? dzName(crop === "apple" ? t.id : "", t.name) : tr("dx_photo_bad");
@@ -256,12 +273,13 @@ function mineRow(x) {
     (t && !t.expert ? confChip(t.confidence) : "") + sevChip(x.severity || (x.result && x.result.severity)) + "</span></div>" +
     '<div class="mr2 fine">' + esc([crop !== "apple" ? tr("cr_" + crop) : "", on].filter(Boolean).join(" · ")) +
     (x.feedback ? (on || crop !== "apple" ? " · " : "") + tr("th_fb_" + x.feedback) : "") + "</div>";
+  if ((x.photo_paths || []).length) h += '<div class="mpics">' + x.photo_paths.map(p => myUrls[p]
+    ? '<a href="' + esc(myUrls[p]) + '" target="_blank" rel="noopener"><img src="' + esc(myUrls[p]) + '" alt="" loading="lazy"></a>' : '<span class="mph"></span>').join("") + "</div>";
   if (x.reviewed_at) {
     const ai = x.result && x.result.matches && x.result.matches[0];
     h += '<p class="mexp"><b>' + tr("dxm_exp") + ":</b> " + esc(dzName(x.expert_id, x.expert_name)) + (x.expert_note ? " — " + esc(x.expert_note) : "") + "</p>";
     void ai;
   } else if (x.ask_expert) h += '<p class="fine mwait">⏳ ' + tr("dxm_wait") + "</p>";
-  else h += '<div><button class="btn-s sm" type="button" data-dxact="ask" data-id="' + esc(x.id) + '">' + tr("dx_ask") + "</button></div>";
   if (mineMsg.id === x.id && mineMsg.t) h += '<p class="fine">' + esc(mineMsg.t) + "</p>";
   return h + "</li>";
 }
