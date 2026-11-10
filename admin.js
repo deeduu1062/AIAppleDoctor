@@ -1330,7 +1330,9 @@ Object.assign(T.hi, {
   cr_apple: "सेब", cr_cherry: "चेरी", cr_pear: "नाशपाती", cr_plum: "प्लम", cr_walnut: "अखरोट"
 });
 const DQ_IDS = { scab: "Apple scab", mars: "Premature leaf fall (Marssonina)", alt: "Alternaria leaf spot", pm: "Powdery mildew", sooty: "Sooty blotch / flyspeck", pit: "Bitter pit",
-  canker: "Canker", collar: "Collar rot", wrr: "White root rot", woolly: "Woolly apple aphid", mite: "Red spider mite", sjs: "San Jose scale", borer: "Stem or root borer",
+  canker: "Canker", collar: "Collar rot", wrr: "White root rot", woolly: "Woolly apple aphid", mite: "Red spider mite", sjs: "San Jose scale", borer: "Stem borer",
+  rborer: "Root borer", brot: "Brown rot / fruit rot", core: "Core rot", mosaic: "Apple mosaic virus", miner: "Leaf miner", thrips: "Blossom thrips",
+  zn: "Zinc shortage", bor: "Boron shortage", hail: "Hail damage", sburn: "Spray burn",
   other: "Something else", healthy: "Healthy", unclear: "Photo not clear enough" };
 let DQ = null, dqWhich = "open", dqBusy = false, dqStats = null, dqUrls = {}, dqMsg = {};
 async function loadDq() {

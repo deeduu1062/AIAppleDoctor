@@ -439,7 +439,7 @@ function riskHtml(rk, short) {
 }
 
 /* ---------- 4. tree health score for an orchard ---------- */
-const URG = { collar: 2, wrr: 2, canker: 1.4, borer: 1.3 };
+const URG = { collar: 2, wrr: 2, rborer: 2, canker: 1.4, borer: 1.3, brot: 1.2 };
 function healthOf(o) {
   const now = Date.now(), why = [];
   let score = 100;
@@ -548,7 +548,7 @@ function renderArea() {
     '<button class="btn-s sm" type="button" data-dxact="map">' + tr(mapOn ? "dxa_hide" : "dxa_map") + "</button>";
   if (mapOn) drawMap();
 }
-const DZC = { scab: "#5B6B2F", mars: "#8A4B1F", alt: "#9A5BA8", pm: "#7C8C99", sooty: "#333", pit: "#B8791F", canker: "#6B3B2A", collar: "#B3261E", wrr: "#E0E0E0", woolly: "#C9C3B0", mite: "#C2412F", sjs: "#5A5A5A", borer: "#6A4FB3" };
+const DZC = { scab: "#5B6B2F", mars: "#8A4B1F", alt: "#9A5BA8", pm: "#7C8C99", sooty: "#333", pit: "#B8791F", canker: "#6B3B2A", collar: "#B3261E", wrr: "#E0E0E0", woolly: "#C9C3B0", mite: "#C2412F", sjs: "#5A5A5A", borer: "#6A4FB3", rborer: "#3F2A8C", brot: "#7A4A2A", core: "#4E6B4A", mosaic: "#D4B23A", miner: "#9DB3A0", thrips: "#B05C7A", zn: "#A8B83A", bor: "#8C6D3F", hail: "#5F86A8", sburn: "#C77A2E" };
 function drawMap() {
   const el = $("dxAreaMap"); el.hidden = false;
   if (typeof loadLeaflet !== "function") return;

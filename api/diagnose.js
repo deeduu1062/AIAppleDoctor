@@ -19,7 +19,7 @@ const PLAN_LIMIT = { free: 3, basic: 15, premium: 50 };   /* photo checks a mont
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 50;
 
-const IDS = ["scab", "mars", "alt", "pm", "sooty", "pit", "canker", "collar", "wrr", "woolly", "mite", "sjs", "borer", "other", "healthy"];
+const IDS = ["scab", "mars", "alt", "pm", "sooty", "pit", "canker", "collar", "wrr", "woolly", "mite", "sjs", "borer", "rborer", "brot", "core", "mosaic", "miner", "thrips", "zn", "bor", "hail", "sburn", "other", "healthy"];
 const PARTS = ["leaf", "fruit", "bark", "tree"];
 const SEV = ["mild", "moderate", "severe"];
 const STAGES = { st1: "dormant", st2: "green tip", st3: "pink bud", st4: "full bloom", st5: "petal fall", st6: "fruit set", st7: "fruit growth", st8: "pre-harvest", st9: "after harvest / leaf fall" };
@@ -40,8 +40,18 @@ wrr = white root rot (Dematophora): white fungal threads/fans on roots, tree wit
 woolly = woolly apple aphid: white cottony masses on twigs, pruning cuts or roots, with swellings
 mite = red spider / European red mite: dull, bronzed or speckled leaves, tiny red dots on leaf underside, fine webbing
 sjs = San Jose scale: grey crusty scales on bark/twigs, small red-ringed spots on fruit
-borer = stem or root borer: holes in trunk/branches with sawdust-like frass, or wilting from root damage
-other = a different problem (e.g. hail, nutrient deficiency, spray burn, frost, sunburn, other pest) — explain in "why"
+borer = stem borer: holes in trunk/branches with fresh sawdust-like frass, branches above may wilt or break
+rborer = root borer: tree wilting, yellowing and declining with no trunk holes; big white grubs tunnelling in the roots
+brot = brown rot / fruit rot: soft brown rot on fruit spreading fast, often with grey or buff spore rings; shrivelled mummified fruit; near harvest and in storage
+core = core rot / mouldy core: fruit looks fine outside but the core is mouldy or brown when cut; early colouring or drop
+mosaic = apple mosaic virus: bright cream or yellow patches, rings or vein bands on leaves, mostly spring leaves
+miner = leaf miner: winding silvery or white trails or blotch mines inside leaves
+thrips = blossom thrips: tiny thin insects in flowers, browned or scarred petals, rough russet scars on young fruit
+zn = zinc shortage (little leaf / rosette): small narrow leaves bunched at shoot tips, short shoots, yellowing between veins
+bor = boron shortage: brown corky patches inside or on fruit, cracked or misshapen fruit, shoot tip dieback (bitter pit is just under the skin; boron cork is spread through the flesh)
+hail = hail damage: dents, bruises and wounds on fruit, torn or holed leaves, bark wounds, mostly on one side
+sburn = spray burn / chemical injury: scorched leaf edges or spots, or russet on fruit, a few days after a spray, often even over many trees
+other = a different problem not in this list (e.g. frost, sunburn, another nutrient shortage, another pest) — explain in "why"
 healthy = no clear problem visible
 
 Also say how bad it looks on what is visible: "severity" is "mild" (a few spots), "moderate" (clearly spreading on this part) or "severe" (heavy damage, many leaves/fruit, or a tree at risk). Leave it "" for healthy or unclear photos.
@@ -52,7 +62,7 @@ Rules:
 - If the photo is blurry, too far, too dark, or not an apple tree/fruit, set photo_ok to false and explain what photo to take instead.
 - NEVER name chemicals, products, brands or doses, and never invent a spray. For anything to spray, say to follow the official apple spray schedule of the grower's state (Himachal Pradesh, Jammu & Kashmir or Uttarakhand) for the tree's current stage and the product label.
 - Next steps must be practical things a grower can do: sanitation, pruning, drainage, checking more trees, taking a better photo, contacting the horticulture officer or KVK.
-- Set see_expert to true for root/collar problems, fast spreading problems, or when you are unsure.
+- Set see_expert to true for root/collar problems (including root borer), fast spreading problems, or when you are unsure.
 - "recheck_days": in how many days the grower should look at the same trees again to see if it is spreading or getting better (3 to 21; sooner for fast or severe problems).
 - If a "Second opinion from Seb Saathi's own model" is given, weigh it with what you see. It is trained on local photos but can be wrong; the photo decides.
 - Write "why", "summary", "photo_issue" and "next_steps" in LANGUAGE, short and simple, for a farmer. Hindi means simple Devanagari Hindi; common English farm words (spray, scab, KVK) are fine.
