@@ -769,6 +769,7 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .gltiles .warn b{color:var(--apple)}
 .gltiles b.neg{color:var(--bad)}
 .glacts{display:flex;gap:8px;flex-wrap:wrap}
+.glcam{width:100%;justify-content:center;font-size:1.08rem;min-height:52px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
 .glcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
 .glbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;align-content:start;min-width:0}
 .glbox h4{font-size:1.08rem;font-weight:700}
@@ -2182,10 +2183,11 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
           <select id="dxPart" hidden aria-hidden="true" tabindex="-1"></select>
           <div class="field"><label for="dxOrch" data-i18n="dx_orch"></label><select id="dxOrch"></select><p class="fine" data-i18n="dx_orch_p" style="margin:4px 0 0"></p></div>
           <div class="field"><label for="dxStage" data-i18n="dx_stage"></label><select id="dxStage"></select><p class="fine" data-i18n="dx_stage_p" style="margin:4px 0 0"></p></div>
-          <div class="field"><label for="dxFile" data-i18n="dx_file"></label><p class="fine" data-i18n="dx_shots" style="margin:0 0 6px"></p><input id="dxFile" type="file" accept="image/*" multiple></div>
+          <div class="field"><label for="dxFile" data-i18n="dx_file"></label><p class="fine" data-i18n="dx_shots" style="margin:0 0 6px"></p><input id="dxFile" type="file" accept="image/*" multiple><input id="dxCam" type="file" accept="image/*" capture="environment" aria-hidden="true" tabindex="-1" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></div>
           <div class="dxthumbs" id="dxThumbs"></div>
           <div class="field"><label for="dxNote" data-i18n="dx_note"></label><div class="microw"><textarea id="dxNote" rows="2" maxlength="400"></textarea><button class="micbtn" type="button" data-mic="dxNote" hidden></button></div><p class="fine micst" id="dxNoteMic" role="status"></p></div>
           <label class="chk dxkeep"><input type="checkbox" id="dxKeep"><span><b data-i18n="dx_keep"></b><br><small class="fine" data-i18n="dx_keep_p"></small></span></label>
+          <label class="chk dxkeep"><input type="checkbox" id="dxSpeak"><span><b data-i18n="dx_speak"></b></span></label>
           <p class="dxseen" id="dxSeen" hidden></p>
           <div class="linkrow"><button class="btn-s add" type="button" id="dxGo" data-i18n="dx_go"></button><span class="fine" id="dxStat" role="status"></span></div>
           <p class="autherr" id="dxErr" role="alert"></p>
@@ -6299,14 +6301,21 @@ function dxShrink(file) {
     img.src = url;
   });
 }
-$("dxFile").addEventListener("change", async () => {
-  const fs = Array.from($("dxFile").files || []);
+async function dxTakeFiles(fs) {
   set("dxErr", fs.length > 3 ? tr("dx_max") : "");
   dxFiles = []; dxQ = []; dxQualOk = false; $("dxGo").textContent = tr("dx_go");
   for (const f of fs.slice(0, 3)) { try { const r = await dxShrink(f); dxFiles.push(r.url); dxQ.push(r.q); } catch (e) { set("dxErr", tr("dx_e_photos")); } }
   $("dxThumbs").innerHTML = dxFiles.map((d, i) => '<span class="dxth' + (dxQ[i] ? " bad" : "") + '"><img alt="" src="' + d + '">' + (dxQ[i] ? "<small>⚠ " + esc(tr("dx_q_" + dxQ[i] + "_s")) + "</small>" : "") + "</span>").join("");
   const bad = dxQ.map((q, i) => q ? tr("dx_q_n").replace("{n}", i + 1) + " " + tr("dx_q_" + q) : "").filter(Boolean);
   if (bad.length) set("dxErr", bad.join(" ") + " " + tr("dx_q_tip"));
+}
+$("dxFile").addEventListener("change", () => dxTakeFiles(Array.from($("dxFile").files || [])));
+/* one tap from the home screen: camera opens straight away, and the check starts as soon as the photo is taken */
+$("dxCam").addEventListener("change", async () => {
+  const fs = Array.from($("dxCam").files || []); $("dxCam").value = "";
+  if (!fs.length) return;
+  await dxTakeFiles(fs);
+  if (dxFiles.length) $("dxGo").click();
 });
 
 let dxQ = [], dxQualOk = false;
@@ -6444,7 +6453,11 @@ function dashDxHtml1() {
 function goDiag(what) {
   tabPicked = true; showTool("diag", false, false);
   let target = $("tp-diag");
-  if (what === "photo") target = $("dxPhH");
+  if (what === "cam") {   /* open the camera now, inside the tap, so the phone allows it */
+    target = $("dxPhH");
+    if (user && $("dxCam")) { set("dxErr", ""); try { $("dxCam").click(); } catch (e) {} }
+  }
+  else if (what === "photo") target = $("dxPhH");
   else if (what === "sym") target = $("dxPhH");
   else if (what && what.startsWith("d:")) {
     const id = what.slice(2);
@@ -6743,8 +6756,9 @@ function glanceHtml() {
   if (glY == null || (ys.length && ys.indexOf(glY) < 0 && glY !== curHYear())) glY = ys.length ? ys[0] : curHYear();
   const y = glY, d = yearSummary(y), t = d.tot;
   const chips = ys.length > 1 ? '<div class="glyears" role="group">' + ys.slice(0, 5).map(v => '<button type="button" class="tab" data-gl="y:' + v + '" aria-pressed="' + (v === y) + '">' + v + "</button>").join("") + "</div>" : "";
-  const acts = '<div class="glacts"><button class="btn-s add" type="button" data-gl="sale">+ ' + tr("gl_add_sale") + '</button><button class="btn-s" type="button" data-gl="exp">+ ' + tr("gl_add_exp") + '</button><button class="btn-s" type="button" data-gl="dx">' + tr("gl_check") + "</button></div>";
-  let h = '<section class="glance"><div class="glhead"><div><h3>' + tr("gl_h").replace("{y}", y) + '</h3><p class="fine">' + tr("gl_range").replace("{a}", y - 1).replace("{b}", y) + "</p></div>" + chips + "</div>";
+  const cam = '<button class="btn primary glcam" type="button" data-gl="dx"><span aria-hidden="true">📷</span> ' + tr("gl_check") + "</button>";
+  const acts = '<div class="glacts"><button class="btn-s add" type="button" data-gl="sale">+ ' + tr("gl_add_sale") + '</button><button class="btn-s" type="button" data-gl="exp">+ ' + tr("gl_add_exp") + "</button></div>";
+  let h = '<section class="glance"><div class="glhead"><div><h3>' + tr("gl_h").replace("{y}", y) + '</h3><p class="fine">' + tr("gl_range").replace("{a}", y - 1).replace("{b}", y) + "</p></div>" + chips + "</div>" + cam;
   if (!d.rows.length || !(t.sales || t.pbe || t.yearly)) {
     return h + '<div class="glempty"><b>' + tr("gl_none").replace("{y}", y) + "</b><p>" + tr("gl_none_p") + "</p></div>" + acts + "</section>";
   }
@@ -6781,7 +6795,7 @@ $("dash").addEventListener("click", e => {
     const o = S.orchards.find(x => x.id === sel.o) || S.orchards[0]; if (!o) return;
     dashView = o.id; otab = "work"; dashYear = null; profEdit = false; diaryEdit = null; kAdd = true; renderDash();
     const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); return; }
-  if (g === "dx") goDiag("sym");
+  if (g === "dx") goDiag("cam");
 });
 function prJoin() { if (user) { tabPicked = true; showTool("orch", false, true); } else goLogin(true); }
 $("heroJoin").addEventListener("click", prJoin);
@@ -7608,7 +7622,7 @@ if (window.ADFeedback) ADFeedback.init({
 });
 applyLang();
 </script>
-<script src="/dx.js?v=6"></script>
+<script src="/dx.js?v=7"></script>
 
 </body>
 </html>

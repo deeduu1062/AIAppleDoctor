@@ -44,7 +44,7 @@ Object.assign(T.en, {
   dxa_km: "~{n} km from your orchard", dxa_reports: "{n} reports", dxa_report1: "1 report", dxa_noplace: "Area not named",
   dxa_login: "Log in to see problems reported near you.", dxa_maperr: "The map could not load. Check your internet.",
   dxa_you: "Your orchard",
-  dx_wa: "Share on WhatsApp", dx_wa_h: "Seb Saathi photo check", dx_wa_find: "Found", dx_wa_try: "Check your orchard free on Seb Saathi:"
+  dx_speak: "Read the answer aloud", dx_wa: "Share on WhatsApp", dx_wa_h: "Seb Saathi photo check", dx_wa_find: "Found", dx_wa_try: "Check your orchard free on Seb Saathi:"
 });
 Object.assign(T.hi, {
   dx_keep: "सेब साथी को सिखाने के लिए मेरी फ़ोटो रखें",
@@ -79,7 +79,7 @@ Object.assign(T.hi, {
   dxa_km: "आपके बाग़ से ~{n} किमी", dxa_reports: "{n} रिपोर्ट", dxa_report1: "1 रिपोर्ट", dxa_noplace: "इलाक़े का नाम नहीं",
   dxa_login: "अपने पास मिली समस्याएँ देखने के लिए लॉग इन करें।", dxa_maperr: "नक्शा लोड नहीं हुआ। इंटरनेट देखें।",
   dxa_you: "आपका बाग़",
-  dx_wa: "WhatsApp पर भेजें", dx_wa_h: "सेब साथी फ़ोटो जाँच", dx_wa_find: "मिला", dx_wa_try: "सेब साथी पर अपने बाग़ की मुफ़्त जाँच करें:"
+  dx_speak: "जवाब बोलकर सुनाएँ", dx_wa: "WhatsApp पर भेजें", dx_wa_h: "सेब साथी फ़ोटो जाँच", dx_wa_find: "मिला", dx_wa_try: "सेब साथी पर अपने बाग़ की मुफ़्त जाँच करें:"
 });
 Object.assign(T.hn, {
   dx_keep: "Seb Saathi ko sikhane ke liye meri photo rakhein",
@@ -114,7 +114,7 @@ Object.assign(T.hn, {
   dxa_km: "Aapke bagiche se ~{n} km", dxa_reports: "{n} report", dxa_report1: "1 report", dxa_noplace: "Ilaake ka naam nahi",
   dxa_login: "Apne paas mili samasyayein dekhne ke liye log in karein.", dxa_maperr: "Naqsha load nahi hua. Internet dekhein.",
   dxa_you: "Aapka bagicha",
-  dx_wa: "WhatsApp par bhejein", dx_wa_h: "Seb Saathi photo jaanch", dx_wa_find: "Mila", dx_wa_try: "Seb Saathi par apne bagiche ki free jaanch karein:"
+  dx_speak: "Jawab bolkar sunayein", dx_wa: "WhatsApp par bhejein", dx_wa_h: "Seb Saathi photo jaanch", dx_wa_find: "Mila", dx_wa_try: "Seb Saathi par apne bagiche ki free jaanch karein:"
 });
 
 const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
@@ -179,10 +179,14 @@ function renderForm() {
   const k = $("dxKeep"); if (k) k.checked = ls.get("dx-keep") !== "0";   /* ticked by default; stays off only if the grower unticks it */
 }
 $("dxKeep").addEventListener("change", e => ls.set("dx-keep", e.target.checked ? "1" : "0"));
+/* read the answer aloud by itself: on by default, the grower can switch it off */
+const sp = $("dxSpeak");
+if (sp) { sp.checked = ls.get("dx-speak") !== "0"; sp.addEventListener("change", e => ls.set("dx-speak", e.target.checked ? "1" : "0")); }
 window.dxExtra = () => ({ crop: "apple", consent: !!$("dxKeep").checked, stage: $("dxStage") ? $("dxStage").value : "" });
 window.dxAfter = j => {
   if (dxLast) { dxLast.review = !!j.review; dxLast.kept = j.kept || 0; dxLast.recheck = j.recheck_on || ""; dxLast.reminded = ""; renderDiagAi(dxLast.id, dxLast.result); }
   loadAll(true);
+  if (dxLast && dxLast.result && speakOk && $("dxSpeak") && $("dxSpeak").checked) { try { speechSynthesis.cancel(); speaking = false; speakResult(); } catch (e) {} }
 };
 
 /* ---------- 1. the photo result ---------- */
