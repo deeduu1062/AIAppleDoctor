@@ -183,7 +183,7 @@ renderDiagAi = function (id, r) {
     const asked = (row && row.ask_expert) || (dxLast && dxLast.asked);
     h += '<div class="dxfb">' + (dxLast && dxLast.fb ? '<span class="fine">' + tr("dx_fb_thanks") + "</span>" :
       "<span>" + tr("dx_fb") + "</span>" + ["right", "wrong", "unsure"].map(k => '<button class="btn-s" type="button" data-dxfb="' + k + '">' + tr("dx_fb_" + k) + "</button>").join("")) + "</div>";
-    h += '<div class="dxfb">' + (asked ? "" : '<button class="btn-s add" type="button" data-dxact="ask" data-id="' + esc(id) + '">' + tr("dx_ask") + "</button>") +
+    h += '<div class="dxfb">' + "" +   /* "Ask an expert" button taken out */
       (dxMsg ? '<span class="fine">' + esc(dxMsg) + "</span>" : "") + "</div>";
     if (dxLast && dxLast.kept) h += '<p class="fine dxok">✓ ' + tr("dx_kept") + "</p>";
     if (dxLast && dxLast.review && !asked) h += '<p class="fine">' + tr("dx_review") + "</p>";
