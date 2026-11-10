@@ -179,9 +179,9 @@ function renderForm() {
   const k = $("dxKeep"); if (k) k.checked = ls.get("dx-keep") !== "0";   /* ticked by default; stays off only if the grower unticks it */
 }
 $("dxKeep").addEventListener("change", e => ls.set("dx-keep", e.target.checked ? "1" : "0"));
-/* read the answer aloud by itself: on by default, the grower can switch it off */
+/* read the answer aloud by itself: off by default, the grower can switch it on */
 const sp = $("dxSpeak");
-if (sp) { sp.checked = ls.get("dx-speak") !== "0"; sp.addEventListener("change", e => ls.set("dx-speak", e.target.checked ? "1" : "0")); }
+if (sp) { sp.checked = ls.get("dx-speak") === "1"; sp.addEventListener("change", e => ls.set("dx-speak", e.target.checked ? "1" : "0")); }
 window.dxExtra = () => ({ crop: "apple", consent: !!$("dxKeep").checked, stage: $("dxStage") ? $("dxStage").value : "" });
 window.dxAfter = j => {
   if (dxLast) { dxLast.review = !!j.review; dxLast.kept = j.kept || 0; dxLast.recheck = j.recheck_on || ""; dxLast.reminded = ""; renderDiagAi(dxLast.id, dxLast.result); }
@@ -200,7 +200,7 @@ renderDiagAi = function (id, r) {
   if (speakOk || wa) h += '<div class="dels">' + (speakOk ? '<button class="btn-s sm" type="button" data-dxact="listen">' + tr(speaking ? "dx_listen_stop" : "dx_listen") + "</button>" : "") +
     (wa ? '<a class="btn-s sm wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(wa) + '">' + tr("dx_wa") + "</a>" : "") + "</div>";
   h += "</article>";
-  (r.matches || []).forEach(m => {
+  (r.matches || []).slice(0, 1).forEach(m => {   /* show only the most likely answer */
     const d = DX[m.id];
     const name = d ? dxL(d) : (m.name || tr(m.id === "healthy" ? "dx_healthy" : "dx_other"));
     const spray = d && d.spray;
@@ -256,7 +256,7 @@ function speakResult() {
   const r = dxLast && dxLast.result; if (!r) return;
   const parts = [];
   if (!r.photo_ok) parts.push(tr("dx_photo_bad") + ". " + (r.photo_issue || ""));
-  (r.matches || []).slice(0, 2).forEach(m => parts.push((DX[m.id] ? dxL(DX[m.id]) : m.name || "") + ", " + tr("dx_c_" + m.confidence) + ". " + (m.why || "")));
+  (r.matches || []).slice(0, 1).forEach(m => parts.push((DX[m.id] ? dxL(DX[m.id]) : m.name || "") + ", " + tr("dx_c_" + m.confidence) + ". " + (m.why || "")));
   if (r.summary) parts.push(r.summary);
   (r.next_steps || []).forEach(s => parts.push(s));
   const u = new SpeechSynthesisUtterance(parts.join(" \n"));

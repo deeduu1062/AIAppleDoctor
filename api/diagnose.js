@@ -65,6 +65,7 @@ Rules:
 - Set see_expert to true for root/collar problems (including root borer), fast spreading problems, or when you are unsure.
 - "recheck_days": in how many days the grower should look at the same trees again to see if it is spreading or getting better (3 to 21; sooner for fast or severe problems).
 - If a "Second opinion from Seb Saathi's own model" is given, weigh it with what you see. It is trained on local photos but can be wrong; the photo decides.
+- The grower is shown only the first (most likely) match, so write "summary" and "next_steps" about that one problem only; do not list other possibilities there.
 - Write "why", "summary", "photo_issue" and "next_steps" in LANGUAGE, short and simple, for a farmer. Hindi means simple Devanagari Hindi; common English farm words (spray, scab, KVK) are fine.
 
 Reply with ONLY this JSON, no other text:
