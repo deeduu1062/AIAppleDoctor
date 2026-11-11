@@ -2516,7 +2516,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 <script src="/plans.js?v=6" defer></script>
 <script>
 /* Fill in your page links here and the buttons appear. Leave a value empty to hide it. */
-const SOCIAL = { facebook: "", instagram: "", whatsapp: "" };
+const SOCIAL = { facebook: "", instagram: "", youtube: "", whatsapp: "" };   /* filled from the admin page (Marketing tab) via public_social_links() */
 
 const T = {
 en: {
@@ -3075,7 +3075,7 @@ function renderMonths() {
     (i === now ? '<span class="now">' + tr("now") + "</span>" : "") + "</li>").join("");
 }
 function renderSocial() {
-  const defs = [["facebook","Facebook"],["instagram","Instagram"],["whatsapp","WhatsApp"]];
+  const defs = [["facebook","Facebook"],["instagram","Instagram"],["youtube","YouTube"],["whatsapp","WhatsApp"]];
   const links = defs.filter(d => SOCIAL[d[0]]);
   $("soc").innerHTML = links.length
     ? links.map(d => '<a class="btn ghost" href="' + esc(SOCIAL[d[0]]) + '" target="_blank" rel="noopener">' + d[1] + "</a>").join("")
@@ -3319,6 +3319,12 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
 let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
+/* your social media pages, saved on the admin page; until then the site says "coming soon" */
+if (sb) sb.rpc("public_social_links").then(r => {
+  const d = r && !r.error && r.data; if (!d) return;
+  Object.keys(SOCIAL).forEach(k => { const v = String(d[k] || ""); if (/^https:\/\//.test(v)) SOCIAL[k] = v; });
+  try { renderSocial(); } catch (e) {}
+}).catch(() => {});
 
 /* ---------- site visits for the admin Overview (table public.site_visits, see supabase/visits.sql) ---------- */
 let visitLogged = false;
