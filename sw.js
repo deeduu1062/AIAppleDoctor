@@ -2,7 +2,7 @@
 // The page itself: try the internet first (so updates show straight away), fall back to the saved copy when offline.
 // Fonts, icons and the sign-in library: use the saved copy, refresh it in the background.
 // Never touches sign-in, saving, or the photo check (/api, supabase.co): those always need the internet.
-const CACHE = "seb-saathi-v4";
+const CACHE = "seb-saathi-v5";
 const CORE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

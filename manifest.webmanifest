@@ -1,7 +1,7 @@
 {
   "name": "Seb Saathi – Your Orchard Manager",
   "short_name": "Seb Saathi",
-  "description": "Knowledge • Technology • Profit. Records, profit calculator, disease check, sprays, mandi rates and guides for apple growers in Himachal Pradesh and Kashmir.",
+  "description": "Knowledge • Technology • Profit. Orchard records, real profit per box, photo disease check and spray schedule for apple growers in Himachal Pradesh, Jammu & Kashmir and Uttarakhand.",
   "id": "/",
   "start_url": "/?source=app",
   "scope": "/",
