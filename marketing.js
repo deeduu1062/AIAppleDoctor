@@ -32,6 +32,15 @@ Object.assign(T.en, {
   mk_post_done_fb: "Posted on Facebook", mk_post_done_ig: "Posted on Instagram", mk_post_view: "View", mk_post_fail: "{w} failed: {m}",
   mk_post_need: "Write something or add a photo first.", mk_post_err: "Could not reach your accounts: {m}", mk_post_recent: "Recent posts",
   mk_post_setup_h: "One-time setup (about 20–30 minutes)", mk_post_setup_p: "Do this once with your own Facebook login. After that you can post from here.",
+  mk_q_h: "Auto posts (AI drafts + schedule)", mk_q_p: "One tap: the AI writes the next week's posts for this month in the orchard. Check them, add a photo for Instagram, then Approve all. Each one goes out by itself at its time (within 10 minutes).",
+  mk_q_setup: "Run supabase/social_queue.sql in Supabase once to turn this on.", mk_q_draft: "✨ Draft next week with AI", mk_q_drafting: "Writing posts…",
+  mk_q_n: "{n} posts", mk_q_l_hn: "Hinglish", mk_q_l_hi: "Hindi", mk_q_l_en: "English",
+  mk_q_drafts: "Drafts to check ({n})", mk_q_sched: "Scheduled ({n})", mk_q_done: "Posted recently", mk_q_none: "No drafts. Tap the button above to get a week of posts.",
+  mk_q_when: "When (India time)", mk_q_photo_idea: "Photo idea: {t}", mk_q_ig_need: "Add a photo to post on Instagram too.",
+  mk_q_approve: "Approve", mk_q_approve_all: "Approve all and schedule ({n})", mk_q_del: "Delete", mk_q_del_sure: "Tap again to delete",
+  mk_q_unsched: "Back to drafts", mk_q_retry: "Try again", mk_q_failed: "Failed", mk_q_partial: "{w} failed: {m}",
+  mk_q_err: "Could not do that: {m}", mk_q_ai_err: "The AI could not write posts just now. Try again in a minute.",
+  mk_q_notoken: "Scheduled posts wait until posting is connected (box above).", mk_q_empty: "Write something first.",
   mk_change: "Change link", mk_how: "How to set it up", mk_copy_bs: "Copy short bio", mk_copy_bl: "Copy long description",
   mk_local: "Ticks are saved on this device only. Run supabase/marketing.sql in Supabase to keep them everywhere."
 });
@@ -63,6 +72,15 @@ Object.assign(T.hi, {
   mk_post_done_fb: "Facebook पर पोस्ट हुआ", mk_post_done_ig: "Instagram पर पोस्ट हुआ", mk_post_view: "देखें", mk_post_fail: "{w} नहीं हुआ: {m}",
   mk_post_need: "पहले कुछ लिखें या फ़ोटो जोड़ें।", mk_post_err: "अकाउंट तक नहीं पहुँच पाए: {m}", mk_post_recent: "हाल के पोस्ट",
   mk_post_setup_h: "एक बार का सेटअप (लगभग 20–30 मिनट)", mk_post_setup_p: "यह एक बार अपने Facebook लॉगिन से करें। उसके बाद यहीं से पोस्ट कर सकेंगे।",
+  mk_q_h: "अपने-आप पोस्ट (AI ड्राफ़्ट + शेड्यूल)", mk_q_p: "एक टैप: AI इस महीने के बाग़ीचे के काम पर अगले हफ़्ते के पोस्ट लिखता है। जाँचें, Instagram के लिए फ़ोटो जोड़ें, फिर सब मंज़ूर करें। हर पोस्ट अपने समय पर अपने-आप जाएगा (10 मिनट के अंदर)।",
+  mk_q_setup: "इसे चालू करने के लिए Supabase में एक बार supabase/social_queue.sql चलाएँ।", mk_q_draft: "✨ AI से अगले हफ़्ते के पोस्ट", mk_q_drafting: "पोस्ट लिखे जा रहे हैं…",
+  mk_q_n: "{n} पोस्ट", mk_q_l_hn: "Hinglish", mk_q_l_hi: "हिंदी", mk_q_l_en: "English",
+  mk_q_drafts: "जाँचने के लिए ड्राफ़्ट ({n})", mk_q_sched: "शेड्यूल हुए ({n})", mk_q_done: "हाल में पोस्ट हुए", mk_q_none: "कोई ड्राफ़्ट नहीं। ऊपर का बटन दबाकर हफ़्ते भर के पोस्ट पाएँ।",
+  mk_q_when: "कब (भारत का समय)", mk_q_photo_idea: "फ़ोटो का सुझाव: {t}", mk_q_ig_need: "Instagram पर भी डालने के लिए फ़ोटो जोड़ें।",
+  mk_q_approve: "मंज़ूर करें", mk_q_approve_all: "सब मंज़ूर करें और शेड्यूल करें ({n})", mk_q_del: "हटाएँ", mk_q_del_sure: "हटाने के लिए फिर दबाएँ",
+  mk_q_unsched: "वापस ड्राफ़्ट में", mk_q_retry: "फिर से कोशिश करें", mk_q_failed: "नहीं हुआ", mk_q_partial: "{w} नहीं हुआ: {m}",
+  mk_q_err: "यह नहीं हो सका: {m}", mk_q_ai_err: "AI अभी पोस्ट नहीं लिख पाया। एक मिनट बाद फिर कोशिश करें।",
+  mk_q_notoken: "शेड्यूल हुए पोस्ट तब तक रुके रहेंगे जब तक पोस्टिंग जुड़ नहीं जाती (ऊपर वाला बॉक्स)।", mk_q_empty: "पहले कुछ लिखें।",
   mk_change: "लिंक बदलें", mk_how: "कैसे बनाएँ", mk_copy_bs: "छोटा बायो कॉपी करें", mk_copy_bl: "लंबा विवरण कॉपी करें",
   mk_local: "टिक सिर्फ़ इसी डिवाइस पर सेव हैं। हर जगह रखने के लिए Supabase में supabase/marketing.sql चलाएँ।"
 });
@@ -156,7 +174,7 @@ async function loadMk() {
     mkLocal = true;
     try { MK = JSON.parse(localStorage.getItem("mk-state") || "{}") || {}; } catch (x) { MK = {}; }
   }
-  renderMk(); loadSoc();
+  renderMk(); loadSoc(); loadQ();
   mkInv = null; mkInvErr = "";
   try { const r = await sb.rpc("admin_invites"); if (r.error) mkInvErr = "setup"; else mkInv = r.data || []; } catch (e) { mkInvErr = "setup"; }
   renderMk();
@@ -269,6 +287,130 @@ async function mkDoPost() {
   } catch (e) { mkPostRes = '<p class="mkwarn">' + esc(String(e.message || e)) + "</p>"; }
   mkPostBusy = ""; renderMk();
 }
+/* ---- auto posts: AI drafts + schedule (api/social-draft.js, api/social-cron.js, supabase/social_queue.sql) ---- */
+let mkQ = null, mkQErr = "", mkQBusy = false, mkQMsg = "", mkQN = 3, mkQLang = "hn", mkQDel = null;
+const qIst = iso => iso ? new Date(Date.parse(iso) + 330 * 60000).toISOString().slice(0, 16) : "";
+const qUtc = v => new Date(Date.parse(v + ":00Z") - 330 * 60000).toISOString();
+const qShow = iso => iso ? new Date(Date.parse(iso) + 330 * 60000).toLocaleString(lang === "hi" ? "hi-IN" : "en-IN", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "";
+async function loadQ() {
+  try {
+    const since = new Date(Date.now() - 21 * 86400000).toISOString();
+    const r = await sb.from("social_queue").select("*").or("status.in.(draft,scheduled,posting),updated_at.gte." + since).order("post_at", { ascending: true }).limit(100);
+    if (r.error) throw r.error;
+    mkQ = r.data || []; mkQErr = "";
+  } catch (e) { mkQ = null; mkQErr = "setup"; }
+  renderMk();
+}
+const qGet = id => (mkQ || []).find(x => String(x.id) === String(id));
+async function qUpd(id, patch) {
+  const r = await sb.from("social_queue").update(Object.assign({}, patch, { updated_at: new Date().toISOString() })).eq("id", id).select().single();
+  if (r.error) throw r.error;
+  const i = mkQ.findIndex(x => String(x.id) === String(id)); if (i >= 0) mkQ[i] = r.data;
+  return r.data;
+}
+function qApprovePatch(x) {
+  const p = { status: "scheduled" };
+  if (x.ig && !x.image_url) p.ig = false;
+  if (!x.post_at || Date.parse(x.post_at) < Date.now()) p.post_at = new Date().toISOString();
+  return p;
+}
+function qHtml() {
+  if (mkQErr) return '<p class="fine mkwarn">' + tr("mk_q_setup") + "</p>";
+  if (!mkQ) return '<p class="fine">' + tr("mk_post_checking") + "</p>";
+  const hasIg = !!(mkSoc && mkSoc.ok && mkSoc.ig_id);
+  let h = '<p class="fine">' + tr("mk_q_p") + "</p>";
+  if (mkSoc && !mkSoc.ok) h += '<p class="fine mkwarn">' + tr("mk_q_notoken") + "</p>";
+  h += '<div class="mkrow"><select class="mkin mksel" id="mkqN">' + [3, 5, 7].map(n => '<option value="' + n + '"' + (n === mkQN ? " selected" : "") + ">" + tr("mk_q_n").replace("{n}", n) + "</option>").join("") + "</select>" +
+    '<select class="mkin mksel" id="mkqLang">' + ["hn", "hi", "en"].map(l => '<option value="' + l + '"' + (l === mkQLang ? " selected" : "") + ">" + tr("mk_q_l_" + l) + "</option>").join("") + "</select>" +
+    '<button class="btn-s add" type="button" data-mkq="draft"' + (mkQBusy ? " disabled" : "") + ">" + tr(mkQBusy ? "mk_q_drafting" : "mk_q_draft") + "</button></div>";
+  if (mkQMsg) h += '<div class="mkres" role="status"><p class="mkwarn">' + esc(mkQMsg) + "</p></div>";
+  const drafts = mkQ.filter(x => x.status === "draft"), sched = mkQ.filter(x => x.status === "scheduled" || x.status === "posting"),
+    done = mkQ.filter(x => x.status === "posted" || x.status === "failed").sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+  h += "<p><b>" + tr("mk_q_drafts").replace("{n}", drafts.length) + "</b></p>";
+  if (!drafts.length) h += '<p class="fine">' + tr("mk_q_none") + "</p>";
+  drafts.forEach(x => {
+    h += '<div class="mkq">' + (x.topic ? "<b>" + esc(x.topic) + "</b>" : "") +
+      '<label class="fine" for="mkqw-' + x.id + '">' + tr("mk_q_when") + '</label><input class="mkin" type="datetime-local" id="mkqw-' + x.id + '" data-qf="post_at" data-id="' + x.id + '" value="' + qIst(x.post_at) + '">' +
+      '<textarea class="mkin mkta" rows="7" data-qf="text" data-id="' + x.id + '">' + esc(x.text) + "</textarea>" +
+      (x.photo_idea ? '<p class="fine">' + esc(tr("mk_q_photo_idea").replace("{t}", x.photo_idea)) + "</p>" : "") +
+      '<div class="mkrow">' + (x.image_url ? '<img class="mkprev" src="' + esc(x.image_url) + '" alt="">' : "") +
+      '<label class="btn-s mkfile">' + tr(x.image_url ? "mk_post_photo_ch" : "mk_post_photo") + '<input type="file" accept="image/*" data-qimg="' + x.id + '" hidden></label>' +
+      (x.image_url ? '<button class="btn-s" type="button" data-mkq="rmimg" data-id="' + x.id + '">' + tr("mk_post_rm") + "</button>" : "") + "</div>" +
+      '<div class="mkrow"><label class="chk"><input type="checkbox" data-qf="fb" data-id="' + x.id + '"' + (x.fb ? " checked" : "") + "><span>" + tr("mk_post_fb") + '</span></label>' +
+      '<label class="chk"><input type="checkbox" data-qf="ig" data-id="' + x.id + '"' + (x.ig && x.image_url ? " checked" : "") + (hasIg && x.image_url ? "" : " disabled") + "><span>" + tr("mk_post_igc") + "</span></label></div>" +
+      (!x.image_url ? '<p class="fine">' + tr("mk_q_ig_need") + "</p>" : "") +
+      '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="approve" data-id="' + x.id + '">' + tr("mk_q_approve") + '</button><button class="btn-s" type="button" data-mkq="del" data-id="' + x.id + '">' + tr(mkQDel === String(x.id) ? "mk_q_del_sure" : "mk_q_del") + "</button></div></div>";
+  });
+  if (drafts.length > 1) h += '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="approveall">' + tr("mk_q_approve_all").replace("{n}", drafts.length) + "</button></div>";
+  if (sched.length) h += "<p><b>" + tr("mk_q_sched").replace("{n}", sched.length) + '</b></p><ul class="mkwatch">' + sched.map(x =>
+    "<li>" + esc(qShow(x.post_at)) + " · " + esc(x.topic || x.text.slice(0, 60)) + " · " + (x.fb ? "Facebook" : "") + (x.fb && x.ig ? " + " : "") + (x.ig ? "Instagram" : "") +
+    (x.status === "scheduled" ? ' <button class="btn-s" type="button" data-mkq="unsched" data-id="' + x.id + '">' + tr("mk_q_unsched") + "</button>" : " · " + tr("mk_post_busy")) + "</li>").join("") + "</ul>";
+  if (done.length) h += "<p><b>" + tr("mk_q_done") + '</b></p><ul class="mkwatch">' + done.slice(0, 10).map(x => {
+    const R = x.result || {}, part = (o, w) => o ? (o.ok ? ' · <a href="' + esc(o.link) + '" target="_blank" rel="noopener">' + w + "</a>" : ' · <span class="mkwarn">' + esc(tr("mk_q_partial").replace("{w}", w).replace("{m}", o.error === "need_photo" ? tr("mk_post_igc") : o.error === "no_ig" ? tr("mk_post_noig") : o.error)) + "</span>") : "";
+    return "<li>" + esc(qShow(x.post_at)) + " · " + esc(x.topic || x.text.slice(0, 60)) + part(R.fb, "Facebook") + part(R.ig, "Instagram") +
+      (x.status === "failed" ? ' · <span class="mkwarn">' + tr("mk_q_failed") + (R.error ? ": " + esc(R.error) : "") + '</span> <button class="btn-s" type="button" data-mkq="retry" data-id="' + x.id + '">' + tr("mk_q_retry") + "</button>" : "") + "</li>";
+  }).join("") + "</ul>";
+  return h;
+}
+async function qDraft() {
+  mkQBusy = true; mkQMsg = ""; renderMk();
+  try {
+    const r = await fetch("/api/social-draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ n: mkQN, lang: mkQLang }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) mkQMsg = j.error === "not_setup" ? tr("mk_q_setup") : j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : tr("mk_q_err").replace("{m}", j.error || r.status);
+  } catch (e) { mkQMsg = tr("mk_q_err").replace("{m}", String(e.message || e)); }
+  mkQBusy = false; await loadQ();
+}
+async function qAct(fn) {
+  mkQMsg = "";
+  try { await fn(); } catch (e) { mkQMsg = tr("mk_q_err").replace("{m}", String(e.message || e)); }
+  renderMk();
+}
+$("mkBody").addEventListener("input", e => {
+  const f = e.target.dataset && e.target.dataset.qf; if (f !== "text") return;
+  const x = qGet(e.target.dataset.id); if (x) x.text = e.target.value;
+});
+$("mkBody").addEventListener("change", async e => {
+  const t = e.target;
+  if (t.id === "mkqN") { mkQN = +t.value || 3; return; }
+  if (t.id === "mkqLang") { mkQLang = t.value; return; }
+  if (t.dataset && t.dataset.qimg) {
+    const id = t.dataset.qimg, f = t.files && t.files[0]; if (!f) return;
+    return qAct(async () => {
+      const blob = await mkJpeg(f);
+      const path = "social/" + new Date().toISOString().slice(0, 10) + "/" + Math.random().toString(36).slice(2, 10) + ".jpg";
+      const up = await sb.storage.from("library").upload(path, blob, { contentType: "image/jpeg", upsert: false });
+      if (up.error) throw up.error;
+      await qUpd(id, { image_url: sb.storage.from("library").getPublicUrl(path).data.publicUrl, ig: !!(mkSoc && mkSoc.ig_id) });
+    });
+  }
+  const f = t.dataset && t.dataset.qf; if (!f) return;
+  const id = t.dataset.id;
+  if (f === "text") return qAct(() => qUpd(id, { text: t.value.slice(0, 2200) }));
+  if (f === "post_at") { if (t.value) return qAct(() => qUpd(id, { post_at: qUtc(t.value) })); return; }
+  if (f === "fb" || f === "ig") return qAct(() => qUpd(id, { [f]: t.checked }));
+});
+$("mkBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-mkq]"); if (!b) return;
+  const a = b.dataset.mkq, id = b.dataset.id, x = qGet(id);
+  if (a !== "del") mkQDel = null;
+  if (a === "draft") return qDraft();
+  if (a === "approve" && x) {
+    if (!String(x.text || "").trim() && !x.image_url) { mkQMsg = tr("mk_q_empty"); renderMk(); return; }
+    return qAct(() => qUpd(id, Object.assign({ text: x.text }, qApprovePatch(x))));
+  }
+  if (a === "approveall") return qAct(async () => {
+    for (const d of mkQ.filter(y => y.status === "draft" && (String(y.text || "").trim() || y.image_url))) await qUpd(d.id, Object.assign({ text: d.text }, qApprovePatch(d)));
+  });
+  if (a === "del") {
+    if (mkQDel !== id) { mkQDel = id; renderMk(); return; }
+    mkQDel = null;
+    return qAct(async () => { const r = await sb.from("social_queue").delete().eq("id", id); if (r.error) throw r.error; mkQ = mkQ.filter(y => String(y.id) !== String(id)); });
+  }
+  if (a === "rmimg") return qAct(() => qUpd(id, { image_url: null, ig: false }));
+  if (a === "unsched") return qAct(() => qUpd(id, { status: "draft" }));
+  if (a === "retry") return qAct(() => qUpd(id, { status: "scheduled", post_at: new Date().toISOString(), result: null }));
+});
 const mkOpen = new Set(["soc"]);   /* which sections are open; social media starts open */
 const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
 function renderMk() {
@@ -282,6 +424,7 @@ function renderMk() {
     (next.length ? next.map(t => mkBox(t[0], t[1])).join("") : "<p>" + tr("mk_all_done") + "</p>") + "</section>";
   /* posting */
   h += mkSec("post", tr("mk_post_h"), mkSoc && mkSoc.ok ? "✓" : "", postHtml());
+  h += mkSec("auto", tr("mk_q_h"), mkQ ? tr("mk_q_sched").replace("{n}", mkQ.filter(x => x.status === "scheduled").length) : "", qHtml());
   /* 2. social media */
   const socDone = MK_SOCIAL.filter(x => MK["link:" + x[0]] && MK["link:" + x[0]].value).length;
   h += mkSec("soc", tr("mk_soc_h"), tr("mk_done_n").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length),
