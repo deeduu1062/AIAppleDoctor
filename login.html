@@ -1486,7 +1486,7 @@ Object.assign(T.hn, { pin_p:"Apne mobile number aur 6 ankon ke PIN se login kare
   pin_pin:"6 ankon ka PIN", pin_new:"6 ankon ka PIN chunein", pin_new2:"PIN dobara daalein", pin_login:"Login", pin_create:"Account banayein", pin_to_up:"Naye hain? Account banayein", pin_to_in:"Mera account pehle se hai",
   pin_forgot:"PIN bhool gaye? Apne mobile number ke saath humein message bhejein, hum PIN badal denge.", pin_e_pin:"PIN 6 ankon ka hona chahiye.", pin_e_diff:"Dono PIN ek jaise nahi hain.",
   pin_e_cred:"Mobile number ya PIN galat hai. Naye hain? Account banayein dabayein.", pin_e_exists:"Is mobile number ka account pehle se hai. Apne PIN se login karein, ya PIN bhool gaye dabayein.", pin_e_make:"Account nahi ban saka: {m}" });
-const phoneOn = PHONE_READY || PHONE_PIN || /[?&]phone=1/.test(location.search);
+const phoneOn = PHONE_READY || PHONE_PIN || /[?&](phone|otp)=1/.test(location.search);
 let authMethod = "email";
 try { const m = localStorage.getItem("ad-auth"); authMethod = phoneOn ? (m === "email" ? "email" : "phone") : "email"; } catch (e) { authMethod = phoneOn ? "phone" : "email"; }
 let phPending = "", phChannel = "sms", phTimer = null, phLeft = 0;
@@ -1637,7 +1637,8 @@ function renderMode() {
 $("swA").addEventListener("click", e => {
   e.preventDefault();
   mode = mode === "login" ? "signup" : "login";
-  try { history.replaceState(null, "", mode === "signup" ? "/login.html?mode=signup" : "/login.html"); } catch (x) {}
+  const keep = PHONE_PIN ? "" : (mode === "signup" ? "&" : "?") + "otp=1";
+  try { history.replaceState(null, "", (mode === "signup" ? "/login.html?mode=signup" : "/login.html") + keep); } catch (x) {}
   authClear(); renderMode(); try { $("authEmail").focus(); } catch (x) {}
 });
 function applyLang() {
