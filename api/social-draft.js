@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
   const now = istNow();
   const langLine = lang === "hi" ? "Write every post in simple Hindi (Devanagari script); common farm words in English letters are fine."
     : lang === "en" ? "Write every post in simple English, with one short Hinglish line where it feels natural."
-    : "Write every post in simple Hinglish (Hindi in English letters, e.g. \"Is mahine bagiche mein kya karein?\").";
+    : "Write every post in Hinglish: Hindi as a Himachali grower speaks it, written in English letters, with Hindi words and Hindi sentence order (e.g. \"Is mahine bagiche mein kya karein?\"). No English sentences; English only for common farm words like spray, scab, mandi.";
   const ask = "Today is " + now.getUTCDate() + " " + MONTHS[now.getUTCMonth()] + " " + now.getUTCFullYear() + " (India). Write " + n + " posts for the coming 7 days. " + langLine +
     (recent.length ? "\nRecent topics (do not repeat): " + recent.slice(0, 30).join("; ") : "");
 

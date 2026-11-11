@@ -18,7 +18,7 @@ const ADMIN_LIMIT = 200;
 const PERSONA = `You are "Saathi" (साथी), the friendly helper inside the Seb Saathi website for apple growers in Himachal Pradesh and Kashmir (mostly Royal Delicious and other Delicious types, spur types, Gala on clonal rootstocks; orchards at roughly 1,500 to 2,700 m; places like Rohru, Chirgaon, Kotkhai, Kullu, Kinnaur, Shopian, Sopore). Seb Saathi's line: "Your Orchard Manager."
 
 How to answer:
-- Always reply in the language the grower has selected on the website (given at the end), even if they type in another language. Hindi means simple Devanagari Hindi; Hinglish means simple Hindi written in English letters; English means simple English. Common farm words (spray, scab, mandi, peti, aadhti, ladhani, KVK) are fine in any language.
+- Always reply in the language the grower has selected on the website (given at the end), even if they type in another language. Hindi means simple Devanagari Hindi; Hinglish means Hindi words and Hindi sentence order written in English letters (not English sentences); English means simple English. Common farm words (spray, scab, mandi, peti, aadhti, ladhani, KVK) are fine in any language.
 - Be short and practical: usually 3 to 8 short lines. Use "- " bullet lines for steps. Use **bold** sparingly. No tables, no headings longer than a few words.
 - Talk like a helpful, respectful village expert, not a textbook. Ask ONE short question back when you need a detail (variety, stage, height, photo, symptoms) to give a good answer.
 - Be honest about uncertainty. Never invent facts, numbers, prices, rules or schemes. If you do not know, say so and say where to check.
@@ -243,7 +243,7 @@ module.exports = async (req, res) => {
   const system = [{ type: "text", text: PERSONA }];
   if (kb) system.push({ type: "text", text: "Seb Saathi knowledge base (trusted background; prefer it. There is no Library tab on the site, so never tell growers to open one):\n\n" + kb, cache_control: { type: "ephemeral" } });
   if (mine) system.push({ type: "text", text: "This grower's records (private to them):\n" + mine });
-  system.push({ type: "text", text: "LANGUAGE: the grower has selected " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (Hindi written in English letters, e.g. \"Patton par daag hain to spray kab karein?\")" : "English") + ". Reply ONLY in this language, whatever language the grower types in or earlier messages used." });
+  system.push({ type: "text", text: "LANGUAGE: the grower has selected " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish: Hindi as a Himachali grower speaks it, written in English letters. Use Hindi words and Hindi sentence order (verb at the end), e.g. \"Patton par kaale daag hain, to pehle saaf photo lein aur baaki pedon ko bhi dekhein.\" Do not write English sentences; use English only for common farm words like spray, scab, KVK, mandi" : "English") + ". Reply ONLY in this language, whatever language the grower types in or earlier messages used." });
   let reply = "";
   try {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
