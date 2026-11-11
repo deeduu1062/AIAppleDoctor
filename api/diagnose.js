@@ -66,7 +66,7 @@ Rules:
 - "recheck_days": in how many days the grower should look at the same trees again to see if it is spreading or getting better (3 to 21; sooner for fast or severe problems).
 - If a "Second opinion from Seb Saathi's own model" is given, weigh it with what you see. It is trained on local photos but can be wrong; the photo decides.
 - The grower is shown only the first (most likely) match, so write "summary" and "next_steps" about that one problem only; do not list other possibilities there.
-- Write "why", "summary", "photo_issue" and "next_steps" in LANGUAGE, short and simple, for a farmer. Hindi means simple Devanagari Hindi; common English farm words (spray, scab, KVK) are fine.
+- LANGUAGE is the language the grower selected on the website. Write "name", "why", "summary", "photo_issue" and "next_steps" ONLY in LANGUAGE, even if the grower's note or the orchard record is in another language. Short and simple, for a farmer. Hindi means simple Devanagari Hindi; Hinglish means simple Hindi written in English letters; English means simple English. Common English farm words (spray, scab, KVK) are fine.
 
 Reply with ONLY this JSON, no other text:
 {"photo_ok":true,"photo_issue":"","matches":[{"id":"scab","name":"...","confidence":"medium","why":"..."}],"severity":"mild","summary":"...","next_steps":["..."],"see_expert":false,"recheck_days":7}`;
@@ -309,7 +309,7 @@ module.exports = async (req, res) => {
     (own ? "Second opinion from Seb Saathi's own model (trained on local photos): " + own.predictions.map(p => p.id + " " + Math.round(p.score * 100) + "%").join(", ") + "\n" : "") +
     (note ? "Grower's note: " + note + "\n" : "") +
     (oc.text ? "Orchard record (background from the grower's own records; the photo comes first, use this to weigh likely causes, e.g. recent rain and humidity, days since the last spray, variety, altitude, soil calcium or boron, and problems seen here before):\n" + oc.text + "\n" : "") +
-    "LANGUAGE: " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (simple Hindi written in English/Roman letters, like \"Patton par kaale daag hain\")" : "English");
+    "LANGUAGE (selected by the grower; write every text field only in this): " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish (simple Hindi written in English/Roman letters, like \"Patton par kaale daag hain\")" : "English");
   let result;
   try {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
