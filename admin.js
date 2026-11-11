@@ -1192,7 +1192,11 @@ Object.assign(T.en, {
   pf_c_when: "When", pf_c_what: "What", pf_c_detail: "Details",
   pf_k_join: "Created account", pf_k_login: "Signed in", pf_k_save: "Saved orchard records", pf_k_q: "Asked Saathi", pf_k_dx: "Photo check", pf_k_pay: "Payment", pf_k_fb: "Feedback", pf_k_share: "Shared records",
   pf_dx_none: "No clear match", pf_l_en: "English", pf_l_hi: "Hindi", pf_l_hn: "Hinglish", pf_p_email: "Email", pf_p_phone: "Mobile OTP",
-  pf_err_setup: "Profiles are not set up yet. Run supabase/admin_profiles.sql once in the Supabase SQL Editor.", pf_err: "Could not load: {m}", pf_gone: "This account no longer exists."
+  pf_err_setup: "Profiles are not set up yet. Run supabase/admin_profiles.sql once in the Supabase SQL Editor.", pf_err: "Could not load: {m}", pf_gone: "This account no longer exists.",
+  pf_c_qt: "Questions today", pf_c_dxm: "Photo checks this month", pf_c_orch: "Orchards", pf_c_lim: "Limits",
+  pf_lim_hit: "Limit reached", pf_lim_q: "Questions", pf_lim_dx: "Photo checks", pf_lim_o: "Orchards", pf_lim_none: "–",
+  pf_only_lim: "Only growers at a limit ({n})", pf_lim_setup: "To see limits here, run supabase/admin_profiles.sql again in Supabase.",
+  pf_of: "{a} of {b}"
 });
 Object.assign(T.hi, {
   adm_t_prof: "प्रोफ़ाइल", pf_h: "बाग़वान की प्रोफ़ाइल और गतिविधि", pf_p: "किसी बाग़वान पर टैप करें और उनकी प्रोफ़ाइल व सेब साथी पर किया गया हर काम देखें।",
@@ -1205,8 +1209,28 @@ Object.assign(T.hi, {
   pf_c_when: "समय", pf_c_what: "क्या", pf_c_detail: "ब्योरा",
   pf_k_join: "खाता बनाया", pf_k_login: "लॉग इन किया", pf_k_save: "बाग़ का रिकॉर्ड सेव किया", pf_k_q: "साथी से पूछा", pf_k_dx: "फ़ोटो जाँच", pf_k_pay: "भुगतान", pf_k_fb: "सुझाव", pf_k_share: "रिकॉर्ड साझा किया",
   pf_dx_none: "साफ़ मिलान नहीं", pf_l_en: "अंग्रेज़ी", pf_l_hi: "हिंदी", pf_l_hn: "हिंग्लिश", pf_p_email: "ईमेल", pf_p_phone: "मोबाइल OTP",
-  pf_err_setup: "प्रोफ़ाइल अभी सेट नहीं हुई। Supabase SQL Editor में supabase/admin_profiles.sql एक बार चलाएँ।", pf_err: "लोड नहीं हो सका: {m}", pf_gone: "यह खाता अब मौजूद नहीं है।"
+  pf_err_setup: "प्रोफ़ाइल अभी सेट नहीं हुई। Supabase SQL Editor में supabase/admin_profiles.sql एक बार चलाएँ।", pf_err: "लोड नहीं हो सका: {m}", pf_gone: "यह खाता अब मौजूद नहीं है।",
+  pf_c_qt: "आज के सवाल", pf_c_dxm: "इस महीने फ़ोटो जाँच", pf_c_orch: "बाग़", pf_c_lim: "सीमा",
+  pf_lim_hit: "सीमा पूरी", pf_lim_q: "सवाल", pf_lim_dx: "फ़ोटो जाँच", pf_lim_o: "बाग़", pf_lim_none: "–",
+  pf_only_lim: "सिर्फ़ सीमा पर पहुँचे बाग़वान ({n})", pf_lim_setup: "यहाँ सीमा देखने के लिए Supabase में supabase/admin_profiles.sql फिर से चलाएँ।",
+  pf_of: "{b} में से {a}"
 });
+/* plan limits: keep in step with api/chat.js, api/diagnose.js and REC_LIMIT in index.html */
+const PF_LIM = { free: { q: 5, dx: 3, o: 2 }, basic: { q: 20, dx: 15, o: 5 }, premium: { q: 30, dx: 50, o: 10 } };
+let pfOnlyLim = false;
+const pfIsAdm = u => ADMIN_EMAILS.indexOf(String(u.email || "").toLowerCase()) >= 0;
+function pfHits(u) {   /* which limits this grower has reached right now */
+  if (pfIsAdm(u) || u.q_today == null) return [];
+  const L = PF_LIM[u.plan] || PF_LIM.free, h = [];
+  if (+u.q_today >= L.q) h.push("q"); if (+u.dx_month >= L.dx) h.push("dx"); if (+u.orchards >= L.o) h.push("o");
+  return h;
+}
+const pfCell = (u, k, f) => {
+  if (u[f] == null) return "–";
+  const L = PF_LIM[u.plan] || PF_LIM.free, v = +u[f] || 0;
+  if (pfIsAdm(u)) return fmtN(v);
+  return '<span class="' + (v >= L[k] ? "pflim" : "") + '">' + tr("pf_of").replace("{a}", fmtN(v)).replace("{b}", fmtN(L[k])) + "</span>";
+};
 let PF = null, pfBusy = false, pfSel = null, pfOne = null, pfWant = null;
 function pfWhen(iso) {
   if (!iso) return "–";
@@ -1247,13 +1271,21 @@ function renderProf() {
   if (pfSel) { renderProfOne(); return; }
   if (!PF) { $("pfList").innerHTML = ""; return; }
   const q = $("pfFind").value.trim().toLowerCase();
-  const rows = PF.filter(u => !q || (String(u.email || "") + " " + String(u.phone || "")).toLowerCase().indexOf(q) >= 0);
-  if (!rows.length) { $("pfList").innerHTML = '<p class="empty">' + tr("pf_none") + "</p>"; return; }
-  const head = ["pf_c_who", "pf_c_plan", "pf_c_seen", "pf_c_q", "pf_c_dx"];
-  $("pfList").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-    rows.map(u => '<tr><th scope="row"><button class="pflink" type="button" data-pf="' + esc(u.id) + '">' + esc(pfName(u)) + "</button></th>" +
-      '<td><span class="tag' + (u.plan && u.plan !== "free" ? " ok" : "") + '">' + pfPlan(u.plan) + "</span></td><td>" + adWhen(u.last_seen) + '</td><td class="n">' + fmtN(+u.questions || 0) +
-      '</td><td class="n">' + fmtN(+u.checks || 0) + "</td></tr>").join("") + "</tbody></table></div>";
+  const nLim = PF.filter(u => pfHits(u).length).length, setup = !PF.length || PF[0].q_today != null;
+  const rows = PF.filter(u => (!q || (String(u.email || "") + " " + String(u.phone || "")).toLowerCase().indexOf(q) >= 0) && (!pfOnlyLim || pfHits(u).length));
+  const top = setup ? '<label class="chk pfonly"><input type="checkbox" id="pfOnlyLim"' + (pfOnlyLim ? " checked" : "") + "><span>" + tr("pf_only_lim").replace("{n}", nLim) + "</span></label>"
+    : '<p class="fine">' + tr("pf_lim_setup") + "</p>";
+  if (!rows.length) { $("pfList").innerHTML = top + '<p class="empty">' + tr("pf_none") + "</p>"; return; }
+  const head = ["pf_c_who", "pf_c_plan", "pf_c_lim", "pf_c_qt", "pf_c_dxm", "pf_c_orch", "pf_c_seen"];
+  $("pfList").innerHTML = top + '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map(u => {
+      const hits = pfHits(u);
+      return '<tr' + (hits.length ? ' class="pfhit"' : "") + '><th scope="row"><button class="pflink" type="button" data-pf="' + esc(u.id) + '">' + esc(pfName(u)) + "</button></th>" +
+        '<td><span class="tag' + (u.plan && u.plan !== "free" ? " ok" : "") + '">' + pfPlan(u.plan) + "</span></td>" +
+        "<td>" + (hits.length ? '<span class="tag pfbad">' + tr("pf_lim_hit") + "</span> " + hits.map(h => tr("pf_lim_" + h)).join(", ") : tr("pf_lim_none")) + "</td>" +
+        '<td class="n">' + pfCell(u, "q", "q_today") + '</td><td class="n">' + pfCell(u, "dx", "dx_month") + '</td><td class="n">' + pfCell(u, "o", "orchards") + "</td>" +
+        "<td>" + adWhen(u.last_seen) + "</td></tr>";
+    }).join("") + "</tbody></table></div>";
 }
 function renderProfOne() {
   const box = $("pfOne"), back = '<button class="btn-s" type="button" data-pfback="1">' + tr("pf_back") + "</button>";
@@ -1263,6 +1295,8 @@ function renderProfOne() {
   const dDate = d => new Date(d + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {day: "numeric", month: "short", year: "numeric"});
   const planTxt = pl ? pfPlan(pl.plan) + " · " + tr(pl.period === "year" ? "pf_year" : "pf_month") + (pl.valid_until ? " · " + tr("pf_until").replace("{d}", dDate(pl.valid_until)) : "") : tr("pf_free");
   const row = (k, v) => v ? '<tr><th scope="row">' + tr(k) + "</th><td>" + v + "</td></tr>" : "";
+  const LL = PF_LIM[pl && pl.plan] || PF_LIM.free, adm = pfIsAdm(p);
+  const pfOfL = (v, k) => adm ? fmtN(v) : '<span class="' + (v >= LL[k] ? "pflim" : "") + '">' + tr("pf_of").replace("{a}", fmtN(v)).replace("{b}", fmtN(LL[k])) + (v >= LL[k] ? " · " + tr("pf_lim_hit") : "") + "</span>";
   const st = (k, v, sub, main) => "<div" + (main ? ' class="main"' : "") + "><span>" + tr(k) + "</span><b>" + fmtN(+v || 0) + "</b>" + (sub ? '<span class="sub">' + sub + "</span>" : "") + "</div>";
   const detail = a => {
     if (a.kind === "dx") return esc(a.detail ? String(a.detail).replace(/[_-]+/g, " ") : tr("pf_dx_none")) + (a.extra ? " · " + esc(a.extra) : "");
@@ -1279,9 +1313,9 @@ function renderProfOne() {
       row("pf_lang", langs[p.lang] ? tr(langs[p.lang]) : "") + row("pf_how", p.provider ? esc(p.provider === "phone" ? tr("pf_p_phone") : p.provider === "email" ? tr("pf_p_email") : p.provider) : "") +
       row("pf_ref", esc(p.ref || "")) + row("pf_saved", r.saved_at ? pfWhen(r.saved_at) : "") + "</tbody></table></div>" +
     '<h5 class="ovsub">' + tr("pf_use_h") + '</h5><div class="ystats">' +
-      st("pf_s_q", c.q_total, tr("pf_sub_q").replace("{a}", fmtN(+c.q_today || 0)).replace("{b}", fmtN(+c.q_30 || 0)), true) +
-      st("pf_s_dx", c.dx_total, tr("pf_sub_dx").replace("{a}", fmtN(+c.dx_month || 0)), true) +
-      st("pf_s_orch", orch.length) + st("pf_s_years", r.years) + st("pf_s_lots", r.lots) + st("pf_s_pay", c.pay_total) + st("pf_s_fb", c.fb_total) + st("pf_s_share", c.shares) + "</div>" +
+      st("pf_s_q", c.q_total, tr("pf_sub_q").replace("{a}", pfOfL(+c.q_today || 0, "q")).replace("{b}", fmtN(+c.q_30 || 0)), true) +
+      st("pf_s_dx", c.dx_total, tr("pf_sub_dx").replace("{a}", pfOfL(+c.dx_month || 0, "dx")), true) +
+      st("pf_s_orch", orch.length, pfOfL(orch.length, "o")) + st("pf_s_years", r.years) + st("pf_s_lots", r.lots) + st("pf_s_pay", c.pay_total) + st("pf_s_fb", c.fb_total) + st("pf_s_share", c.shares) + "</div>" +
     '<h5 class="ovsub">' + tr("pf_orch_h") + "</h5>" + (orch.length ? '<div class="tablewrap"><table class="ledger"><tbody>' +
       orch.map(o => '<tr><th scope="row" style="color:var(--fg)">' + esc(o.name || "–") + "</th><td>" + (+o.trees > 0 ? tr("pf_trees").replace("{n}", fmtN(+o.trees)) : "–") + "</td></tr>").join("") + "</tbody></table></div>"
       : '<p class="empty">' + tr("pf_orch_none") + "</p>") +
@@ -1292,6 +1326,7 @@ function renderProfOne() {
 }
 $("pfRefresh").addEventListener("click", loadProf);
 $("pfFind").addEventListener("input", renderProf);
+$("pfList").addEventListener("change", e => { if (e.target.id === "pfOnlyLim") { pfOnlyLim = e.target.checked; renderProf(); } });
 $("pfList").addEventListener("click", e => { const b = e.target.closest("[data-pf]"); if (b) { pfOpen(b.dataset.pf); window.scrollTo(0, 0); } });
 $("pfOne").addEventListener("click", e => { if (e.target.closest("[data-pfback]")) { pfSel = null; pfOne = null; set("pfErr", ""); renderProf(); } });
 /* in the Growers tab, tapping an email opens that grower's profile */

@@ -9,6 +9,8 @@ create or replace function public.admin_profiles() returns json
 language plpgsql stable security definer set search_path = public as $$
 declare
   today date := (now() at time zone 'Asia/Kolkata')::date;
+  t0    timestamptz := (date_trunc('day', now() at time zone 'Asia/Kolkata')) at time zone 'Asia/Kolkata';
+  m0    timestamptz := (date_trunc('month', now() at time zone 'Asia/Kolkata')) at time zone 'Asia/Kolkata';
   res json;
 begin
   if not public.is_admin() then raise exception 'not allowed' using errcode = '42501'; end if;
@@ -20,6 +22,11 @@ begin
                  and (p.valid_until is null or p.valid_until >= today) order by p.valid_until desc nulls first limit 1), 'free') as plan,
       (select count(1) from chat_messages c where c.user_id = u.id and c.role = 'user') as questions,
       (select count(1) from diagnoses d where d.user_id = u.id) as checks,
+      -- usage against the plan limits (reset: questions daily, photo checks monthly, India time)
+      (select count(1) from chat_messages c where c.user_id = u.id and c.role = 'user' and c.created_at >= t0) as q_today,
+      (select count(1) from diagnoses d where d.user_id = u.id and d.created_at >= m0) as dx_month,
+      (select count(1) from ledgers l, jsonb_array_elements(case when jsonb_typeof(l.data::jsonb -> 'orchards') = 'array' then l.data::jsonb -> 'orchards' else '[]'::jsonb end) o
+        where l.user_id = u.id and o ->> 'ex' is distinct from 'true') as orchards,
       greatest(u.last_sign_in_at,
         (select max(c.created_at) from chat_messages c where c.user_id = u.id),
         (select max(d.created_at) from diagnoses d where d.user_id = u.id),

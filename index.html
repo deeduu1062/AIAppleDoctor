@@ -6395,6 +6395,7 @@ $("dxGo").addEventListener("click", async () => {
     else {
       const k = { signin: "dx_e_signin", limit: j.per === "month" ? "dx_e_limit_m" : "dx_e_limit", not_setup: "dx_e_setup", photos: "dx_e_photos" }[j.error] || "dx_e_net";
       set("dxErr", tr(k).replace("{n}", j.limit || ""));
+      if (j.error === "limit" && j.plan !== "admin" && typeof limShow === "function") limShow({k: REC_LIMIT[j.plan] ? j.plan : "free"}, tr(k).replace("{n}", j.limit || ""), "dx");
     }
   } catch (e) { set("dxErr", tr("dx_e_net")); }
   dxBusy = false; $("dxGo").disabled = false; set("dxStat", ""); dxQualOk = false; $("dxGo").textContent = tr("dx_go");
@@ -7295,6 +7296,7 @@ async function chatAsk(text) {
     CHAT.pop(); $("chatIn").value = text; chatGrow();
     const e = data && data.error;
     chatErr = e === "limit" ? tr("ch_e_limit").replace("{n}", data.limit || "") : e === "not_setup" ? tr("ch_e_setup") : status === 401 ? tr("ch_e_signin") : tr("ch_e_net");
+    if (e === "limit" && data.plan !== "admin" && typeof limShow === "function") limShow({k: REC_LIMIT[data.plan] ? data.plan : "free"}, chatErr, "chat");
   }
   renderChat();
 }
@@ -7439,9 +7441,10 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
    Free 2 orchards / 2 harvest years, Saathi 5 / 5, Saathi Plus 10 / 10. Admins have no limit.
    Records already saved are never removed; only adding more is stopped. */
 const REC_LIMIT = {free: {o: 2, y: 2}, basic: {o: 5, y: 5}, premium: {o: 10, y: 10}};
-Object.assign(T.en, {lim_h: "Plan limit reached", lim_go: "Upgrade to {p}", lim_no: "Not now", lim_ok: "OK", lim_next: "{p}: {o} orchards, keep records up to {y} years", lim_price: "{r} a year", lim_top: "You are on our biggest plan. For more, contact us.", lim_o: "Your {p} plan keeps up to {n} orchards. To add more, upgrade in My account.", lim_y: "Your {p} plan lets you keep records up to {n} years ({a} onwards). To add {y}, upgrade in My account."});
-Object.assign(T.hi, {lim_h: "प्लान की सीमा पूरी", lim_go: "{p} में अपग्रेड करें", lim_no: "अभी नहीं", lim_ok: "ठीक है", lim_next: "{p}: {o} बाग़, {y} साल तक का रिकॉर्ड", lim_price: "{r} साल भर का", lim_top: "आप हमारे सबसे बड़े प्लान पर हैं। और के लिए हमसे संपर्क करें।", lim_o: "आपके {p} प्लान में {n} बाग़ों तक का रिकॉर्ड रख सकते हैं। और जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।", lim_y: "आपके {p} प्लान में {n} साल तक का रिकॉर्ड रख सकते हैं ({a} से)। {y} जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।"});
-if (T.hn) Object.assign(T.hn, {lim_h: "Plan ki seema poori", lim_go: "{p} mein upgrade karein", lim_no: "Abhi nahi", lim_ok: "Theek hai", lim_next: "{p}: {o} bagiche, {y} saal tak record", lim_price: "{r} saal bhar ka", lim_top: "Aap hamare sabse bade plan par hain. Aur ke liye humse sampark karein.", lim_o: "Aapke {p} plan mein {n} bagichon tak ka record rakh sakte hain. Aur jodne ke liye Mera account mein upgrade karein.", lim_y: "Aapke {p} plan mein {n} saal tak ka record rakh sakte hain ({a} se). {y} jodne ke liye Mera account mein upgrade karein."});
+const USE_LIMIT = {free: {dx: 3, q: 5}, basic: {dx: 15, q: 20}, premium: {dx: 50, q: 30}};   /* keep in step with api/diagnose.js and api/chat.js */
+Object.assign(T.en, {lim_next_dx: "{p}: {n} photo checks a month", lim_next_ch: "{p}: {n} questions a day to Saathi", lim_h: "Plan limit reached", lim_go: "Upgrade to {p}", lim_no: "Not now", lim_ok: "OK", lim_next: "{p}: {o} orchards, keep records up to {y} years", lim_price: "{r} a year", lim_top: "You are on our biggest plan. For more, contact us.", lim_o: "Your {p} plan keeps up to {n} orchards. To add more, upgrade in My account.", lim_y: "Your {p} plan lets you keep records up to {n} years ({a} onwards). To add {y}, upgrade in My account."});
+Object.assign(T.hi, {lim_next_dx: "{p}: महीने में {n} फ़ोटो जाँच", lim_next_ch: "{p}: साथी से रोज़ {n} सवाल", lim_h: "प्लान की सीमा पूरी", lim_go: "{p} में अपग्रेड करें", lim_no: "अभी नहीं", lim_ok: "ठीक है", lim_next: "{p}: {o} बाग़, {y} साल तक का रिकॉर्ड", lim_price: "{r} साल भर का", lim_top: "आप हमारे सबसे बड़े प्लान पर हैं। और के लिए हमसे संपर्क करें।", lim_o: "आपके {p} प्लान में {n} बाग़ों तक का रिकॉर्ड रख सकते हैं। और जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।", lim_y: "आपके {p} प्लान में {n} साल तक का रिकॉर्ड रख सकते हैं ({a} से)। {y} जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।"});
+if (T.hn) Object.assign(T.hn, {lim_next_dx: "{p}: mahine mein {n} photo jaanch", lim_next_ch: "{p}: Saathi se roz {n} sawal", lim_h: "Plan ki seema poori", lim_go: "{p} mein upgrade karein", lim_no: "Abhi nahi", lim_ok: "Theek hai", lim_next: "{p}: {o} bagiche, {y} saal tak record", lim_price: "{r} saal bhar ka", lim_top: "Aap hamare sabse bade plan par hain. Aur ke liye humse sampark karein.", lim_o: "Aapke {p} plan mein {n} bagichon tak ka record rakh sakte hain. Aur jodne ke liye Mera account mein upgrade karein.", lim_y: "Aapke {p} plan mein {n} saal tak ka record rakh sakte hain ({a} se). {y} jodne ke liye Mera account mein upgrade karein."});
 function recLim() {
   if (typeof isAdmin === "function" && isAdmin()) return null;
   const st = typeof myPlanState === "function" ? myPlanState() : {paid: null};
@@ -7460,14 +7463,16 @@ function recBlockY(y) {
   limShow(L, tr("lim_y").replace("{p}", recPlan(L)).replace("{n}", L.y).replace("{a}", first).replace("{y}", y)); return true;
 }
 /* the limit message: a coloured box in the middle of the screen, with the next plan and an Upgrade button (opens the UPI payment box) */
-function limShow(L, msg) {
+function limShow(L, msg, kind) {
   const d = $("limDlg"); if (!d) { alert(msg); return; }
   const next = L.k === "free" ? "basic" : L.k === "basic" ? "premium" : null;
   const e = x => String(x).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
   let h = '<div class="limtop"><div class="limic" aria-hidden="true">🍎</div><h3 id="limH">' + e(tr("lim_h")) + "</h3></div><div class=\"limbody\"><p>" + e(msg) + "</p>";
   if (next) {
     const N = REC_LIMIT[next], pr = typeof PRICES !== "undefined" && PRICES[next] ? PRICES[next].year : null;
-    h += '<p class="limnext">' + e(tr("lim_next").replace("{p}", recPlan({k: next})).replace("{o}", N.o).replace("{y}", N.y)) +
+    const nl = kind === "dx" ? tr("lim_next_dx").replace("{n}", USE_LIMIT[next].dx) : kind === "chat" ? tr("lim_next_ch").replace("{n}", USE_LIMIT[next].q)
+      : tr("lim_next").replace("{o}", N.o).replace("{y}", N.y);
+    h += '<p class="limnext">' + e(nl.replace("{p}", recPlan({k: next}))) +
       (pr ? "<small>" + e(tr("lim_price").replace("{r}", "₹" + pr)) + "</small>" : "") + "</p>" +
       '<div class="limbtns"><button class="limgo" type="button" data-pl="' + next + '" data-lim="close">' + e(tr("lim_go").replace("{p}", recPlan({k: next}))) + "</button>" +
       '<button class="limno" type="button" data-lim="close">' + e(tr("lim_no")) + "</button></div>";
