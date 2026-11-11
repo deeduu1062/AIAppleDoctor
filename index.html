@@ -2529,7 +2529,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 </dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="/feedback.js?v=2"></script>
-<script src="/plans.js?v=7" defer></script>
+<script src="/plans.js?v=8" defer></script>
 <script>
 /* Fill in your page links here and the buttons appear. Leave a value empty to hide it. */
 const SOCIAL = { facebook: "", instagram: "", youtube: "", whatsapp: "" };   /* filled from the admin page (Marketing tab) via public_social_links() */
@@ -3368,7 +3368,7 @@ function renderContact() {
   if (CONTACT.whatsapp) L.push('<a class="wa" href="https://wa.me/' + encodeURIComponent(CONTACT.whatsapp) + '" target="_blank" rel="noopener">' + tr("ct_wa") + "</a>");
   if (CONTACT.email) L.push('<a href="mailto:' + encodeURIComponent(CONTACT.email).replace("%40", "@") + '">' + tr("ct_mail") + ": " + CONTACT.email.replace(/[<>&"]/g, "") + "</a>");
   $("ctLinks").innerHTML = L.join(""); $("ctOther").hidden = !L.length;
-  if (user && !$("ctReach").value) $("ctReach").value = user.email || user.phone || "";
+  if (user && !$("ctReach").value) $("ctReach").value = userLabel(user);
 }
 $("ctForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -3428,7 +3428,7 @@ function renderAcct() {
   if (typeof renderPromo === "function") try { renderPromo(); } catch (e) {}
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (typeof renderChat === "function" && $("chatDlg") && T.en.ch_fab) { if (!user) { CHAT = []; chatLoadedFor = null; chatLeft = null; chatErr = ""; } renderChat(); }
-  if (user) set("acct_email", tr("auth_as").replace("{e}", user.email || fmtPhone(user.phone)));
+  if (user) set("acct_email", tr("auth_as").replace("{e}", userLabel(user)));
 }
 let recovering = false, pwOpen = false;
 
@@ -7721,9 +7721,14 @@ function renderGuestDash() {
 
 /* ---------- My account tab: plan details, change or reset password, log out ---------- */
 let acMsg = {}, acBusy = false, acPwOpen = false;
+/* mobile + PIN accounts (login.html, api/phone-signup.js): stored as 91XXXXXXXXXX@m.sebsaathi.com with password "sspin-<PIN>-Ss" */
+const isPinUser = u => !!(u && /@m\.sebsaathi\.com$/i.test(String(u.email || "")));
+const pinPw = p => "sspin-" + p + "-Ss";
+const userLabel = u => !u ? "" : isPinUser(u) ? fmtPhone(String(u.email).split("@")[0]) : (u.email || fmtPhone(u.phone));
 function renderAcctTab() {
   const el = $("acctTab"); if (!el || !user) return;
-  const em = user.email || "", ph = user.phone ? fmtPhone(user.phone) : "";
+  const pin = isPinUser(user);
+  const em = pin ? "" : (user.email || ""), ph = user.phone ? fmtPhone(user.phone) : pin ? userLabel(user) : "";
   const since = user.created_at ? fmtDay(String(user.created_at).slice(0, 10), true) : "";
   const pay = typeof myPay !== "undefined" ? myPay : null, st = typeof myPlanState === "function" ? myPlanState() : {paid: null};
   const pn = k => (typeof plName === "function" ? plName(k) : k);
@@ -7745,10 +7750,10 @@ function renderAcctTab() {
       (em ? "<div><dt>" + tr("ac_email") + "</dt><dd>" + esc(em) + "</dd></div>" : "") + (ph ? "<div><dt>" + tr("ac_phone") + "</dt><dd>" + esc(ph) + "</dd></div>" : "") +
       (since ? "<div><dt>" + tr("ac_since") + "</dt><dd>" + esc(since) + "</dd></div>" : "") + "</dl></section>" +
     '<section class="accard"><h4>' + tr("ac_plan") + "</h4>" + plan + '<div class="dels">' + btns.join("") + "</div></section>" +
-    '<section class="accard"><h4>' + tr("ac_pw") + "</h4>" + (!acPwOpen ? msg("pw") + '<div><button class="btn-s" type="button" data-ac="pwopen">🔒 ' + tr("ac_pwchg") + "</button></div>" :
-      '<p class="fine">' + tr("ac_pw_p") + '</p><form id="acPwForm" novalidate>' +
-      '<div class="field"><label for="acPw1">' + tr("pw_new") + '</label><input id="acPw1" type="password" autocomplete="new-password"></div>' +
-      '<div class="field"><label for="acPw2">' + tr("ac_pw2") + '</label><input id="acPw2" type="password" autocomplete="new-password"></div>' +
+    '<section class="accard"><h4>' + tr(pin ? "ac_pin" : "ac_pw") + "</h4>" + (!acPwOpen ? msg("pw") + '<div><button class="btn-s" type="button" data-ac="pwopen">🔒 ' + tr(pin ? "ac_pinchg" : "ac_pwchg") + "</button></div>" :
+      '<p class="fine">' + tr(pin ? "ac_pin_p" : "ac_pw_p") + '</p><form id="acPwForm" novalidate>' +
+      '<div class="field"><label for="acPw1">' + tr(pin ? "pin_new" : "pw_new") + '</label><input id="acPw1" type="password" autocomplete="new-password"' + (pin ? ' inputmode="numeric" maxlength="6"' : "") + '></div>' +
+      '<div class="field"><label for="acPw2">' + tr(pin ? "ac_pin2" : "ac_pw2") + '</label><input id="acPw2" type="password" autocomplete="new-password"' + (pin ? ' inputmode="numeric" maxlength="6"' : "") + '></div>' +
       msg("pw") + '<div class="dels"><button class="btn-s add" type="submit"' + (acBusy ? " disabled" : "") + ">" + tr("pw_save") + '</button><button class="btn-s" type="button" data-ac="pwclose">' + tr("pw_cancel") + "</button></div></form>" +
       (em ? '<div class="acreset"><p class="fine">' + tr("ac_reset_p").replace("{e}", esc(em)) + '</p><button class="btn-s" type="button" data-ac="reset"' + (acBusy ? " disabled" : "") + ">" + tr("ac_reset") + "</button>" + msg("reset") + "</div>" : "")) +
     "</section>" +
@@ -7772,15 +7777,18 @@ document.addEventListener("click", async e => {
 document.addEventListener("submit", async e => {
   if (!e.target || e.target.id !== "acPwForm") return;
   e.preventDefault();
-  const p1 = $("acPw1").value, p2 = $("acPw2").value;
-  if (p1.length < 8) { acMsg.pw = {t: tr("auth_err_pw"), err: true}; renderAcctTab(); return; }
+  const p1 = $("acPw1").value, p2 = $("acPw2").value, pin = isPinUser(user);
+  if (pin ? !/^\d{6}$/.test(p1) : p1.length < 8) { acMsg.pw = {t: tr(pin ? "pin_err" : "auth_err_pw"), err: true}; renderAcctTab(); return; }
   if (p1 !== p2) { acMsg.pw = {t: tr("ac_pw_diff"), err: true}; renderAcctTab(); $("acPw1").value = p1; return; }
   if (!sb || acBusy) return;
   acBusy = true; acMsg.pw = null; renderAcctTab();
-  let err = null; try { const r = await sb.auth.updateUser({password: p1}); err = r.error; } catch (x) { err = x; }
-  acBusy = false; acMsg.pw = err ? {t: String((err && err.message) || err), err: true} : {t: tr("ac_pw_ok")}; if (!err) acPwOpen = false; renderAcctTab();
+  let err = null; try { const r = await sb.auth.updateUser({password: pin ? pinPw(p1) : p1}); err = r.error; } catch (x) { err = x; }
+  acBusy = false; acMsg.pw = err ? {t: String((err && err.message) || err), err: true} : {t: tr(pin ? "ac_pin_ok" : "ac_pw_ok")}; if (!err) acPwOpen = false; renderAcctTab();
 });
 Object.assign(T.en, { ac_pwchg:"Change password", ac_inc:"What your plan includes" }); Object.assign(T.hi, { ac_pwchg:"पासवर्ड बदलें", ac_inc:"आपके प्लान में क्या-क्या है" }); Object.assign(T.hn, { ac_pwchg:"Password badlein", ac_inc:"Aapke plan mein kya-kya hai" });
+Object.assign(T.en, { ac_pin:"PIN", ac_pinchg:"Change PIN", ac_pin_p:"Choose a new 6-digit PIN. You log in with your mobile number and this PIN.", pin_new:"New PIN", ac_pin2:"New PIN again", pin_err:"The PIN must be 6 digits.", ac_pin_ok:"Your PIN is changed." });
+Object.assign(T.hi, { ac_pin:"पिन", ac_pinchg:"पिन बदलें", ac_pin_p:"नया 6 अंकों का पिन चुनें। आप मोबाइल नंबर और इसी पिन से लॉग इन करेंगे।", pin_new:"नया पिन", ac_pin2:"नया पिन दोबारा", pin_err:"पिन 6 अंकों का होना चाहिए।", ac_pin_ok:"आपका पिन बदल गया।" });
+Object.assign(T.hn, { ac_pin:"PIN", ac_pinchg:"PIN badlein", ac_pin_p:"Naya 6 ankon ka PIN chunein. Aap mobile number aur isi PIN se login karenge.", pin_new:"Naya PIN", ac_pin2:"Naya PIN dobara", pin_err:"PIN 6 ankon ka hona chahiye.", ac_pin_ok:"Aapka PIN badal gaya." });
 Object.assign(T.en, { tt_acct:"My account", ac_me:"My details", ac_email:"Email", ac_phone:"Phone", ac_since:"Member since", ac_plan:"My plan", ac_till:"Valid till {d}", ac_left:"{n} days left",
   ac_rej:"Your last payment could not be confirmed. Please contact us.", ac_up:"Upgrade plan", ac_plans:"See all plans", ac_pw:"Password",
   ac_pw_p:"Change your password here. Use at least 8 characters.", ac_pw2:"Type the new password again", ac_pw_diff:"The two passwords do not match.", ac_pw_ok:"Password changed.",

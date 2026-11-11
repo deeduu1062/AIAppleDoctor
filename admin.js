@@ -1242,7 +1242,8 @@ function pfErrMsg(err) {
   return code === "PGRST202" || /could not find the function/i.test(m) ? tr("pf_err_setup")
     : code === "42501" || /not allowed|permission denied/i.test(m) ? tr("ad_err_deny") : tr("pf_err").replace("{m}", m);
 }
-const pfName = u => u.email || (u.phone ? "+" + String(u.phone).replace(/^\+/, "") : "–");
+const pfIsPin = u => /@m\.sebsaathi\.com$/i.test(String((u && u.email) || ""));
+const pfName = u => pfIsPin(u) ? "📱 +" + String(u.email).split("@")[0] : (u.email || (u.phone ? "+" + String(u.phone).replace(/^\+/, "") : "–"));
 const pfPlan = p => tr(p === "premium" ? "pf_premium" : p === "basic" ? "pf_basic" : "pf_free");
 async function loadProf() {
   if (!isAdmin() || !sb || pfBusy) return;
@@ -1288,9 +1289,11 @@ function renderProf() {
     }).join("") + "</tbody></table></div>";
 }
 function renderProfOne() {
-  const box = $("pfOne"), back = '<button class="btn-s" type="button" data-pfback="1">' + tr("pf_back") + "</button>";
+  let back = '<button class="btn-s" type="button" data-pfback="1">' + tr("pf_back") + "</button>";
+  const box = $("pfOne");
   if (!pfOne) { box.innerHTML = back; return; }
   const p = pfOne.profile || {}, c = pfOne.counts || {}, r = pfOne.records || {}, pl = pfOne.plan, act = pfOne.activity || [], orch = r.orchards || [];
+  if (pfIsPin(p)) back += ' <button class="btn-s" type="button" data-pfpin="' + esc(p.id || pfSel || "") + '">🔑 ' + tr("pf_pin") + "</button>" + (pfPinMsg ? ' <span class="fine" role="status">' + esc(pfPinMsg) + "</span>" : "");
   const langs = { en: "pf_l_en", hi: "pf_l_hi", hn: "pf_l_hn" };
   const dDate = d => new Date(d + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {day: "numeric", month: "short", year: "numeric"});
   const planTxt = pl ? pfPlan(pl.plan) + " · " + tr(pl.period === "year" ? "pf_year" : "pf_month") + (pl.valid_until ? " · " + tr("pf_until").replace("{d}", dDate(pl.valid_until)) : "") : tr("pf_free");
@@ -1328,7 +1331,24 @@ $("pfRefresh").addEventListener("click", loadProf);
 $("pfFind").addEventListener("input", renderProf);
 $("pfList").addEventListener("change", e => { if (e.target.id === "pfOnlyLim") { pfOnlyLim = e.target.checked; renderProf(); } });
 $("pfList").addEventListener("click", e => { const b = e.target.closest("[data-pf]"); if (b) { pfOpen(b.dataset.pf); window.scrollTo(0, 0); } });
-$("pfOne").addEventListener("click", e => { if (e.target.closest("[data-pfback]")) { pfSel = null; pfOne = null; set("pfErr", ""); renderProf(); } });
+let pfPinMsg = "";
+Object.assign(T.en, { pf_pin: "Set new PIN", pf_pin_ask: "New 6-digit PIN for this grower (tell them on WhatsApp or by phone):", pf_pin_ok: "New PIN set: {p}", pf_pin_err: "Could not set the PIN: {m}" });
+Object.assign(T.hi, { pf_pin: "नया पिन रखें", pf_pin_ask: "इस बाग़वान का नया 6 अंकों का पिन (उन्हें WhatsApp या फ़ोन पर बताएँ):", pf_pin_ok: "नया पिन रखा गया: {p}", pf_pin_err: "पिन नहीं बदला जा सका: {m}" });
+$("pfOne").addEventListener("click", async e => {
+  const b = e.target.closest("[data-pfpin]"); if (!b) return;
+  const pin = (prompt(tr("pf_pin_ask"), String(Math.floor(100000 + Math.random() * 900000))) || "").trim();
+  if (!pin) return;
+  if (!/^\d{6}$/.test(pin)) { pfPinMsg = tr("pf_pin_err").replace("{m}", "6 digits"); renderProfOne(); return; }
+  let m = "";
+  try {
+    const s = await sb.auth.getSession(), tok = s && s.data && s.data.session ? s.data.session.access_token : "";
+    const r = await fetch("/api/admin-pin", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + tok }, body: JSON.stringify({ user_id: b.dataset.pfpin, pin }) });
+    const j = await r.json().catch(() => ({}));
+    m = r.ok ? tr("pf_pin_ok").replace("{p}", pin) : tr("pf_pin_err").replace("{m}", j.error || r.status);
+  } catch (x) { m = tr("pf_pin_err").replace("{m}", String(x.message || x)); }
+  pfPinMsg = m; renderProfOne();
+});
+$("pfOne").addEventListener("click", e => { if (e.target.closest("[data-pfback]")) { pfPinMsg = ""; pfSel = null; pfOne = null; set("pfErr", ""); renderProf(); } });
 /* in the Growers tab, tapping an email opens that grower's profile */
 $("adTable").addEventListener("click", e => {
   const b = e.target.closest("[data-pfmail]"); if (!b) return;

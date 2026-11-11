@@ -40,7 +40,7 @@ async function rzpPay() {
     const rz = new window.Razorpay({
       key: o.key_id, order_id: o.order_id, amount: o.amount, currency: o.currency || "INR",
       name: "Seb Saathi", description: plName(plan) + " · " + tr(per === "year" ? "pay_year" : "pay_month"), image: location.origin + "/icons/icon-192.png",
-      prefill: { email: user.email || "", contact: user.phone ? "+" + String(user.phone).replace(/^\+/, "") : "" },
+      prefill: (() => { const pinU = /@m\.sebsaathi\.com$/i.test(String(user.email || "")); const ph = pinU ? String(user.email).split("@")[0] : String(user.phone || "").replace(/^\+/, ""); return { email: pinU ? "" : (user.email || ""), contact: ph ? "+" + ph : "" }; })(),
       notes: { plan, period: per }, theme: { color: "#2F8F3A" },
       handler: async resp => {
         rzpPaid = true; payDlgShow(true); renderPay("pay_rzp_wait");

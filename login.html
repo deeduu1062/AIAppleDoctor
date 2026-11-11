@@ -1220,6 +1220,18 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
           <button class="tab" role="tab" id="authM-email" type="button" aria-selected="true" data-i18n="em_tab"></button>
         </div>
         <div id="authPhone" hidden>
+          <div id="pinBox" hidden>
+            <p id="pinIntro"></p>
+            <form id="pinForm" novalidate>
+              <div class="field"><label for="pinNum" data-i18n="ph_num"></label><div class="phrow"><span class="phcc">+91</span><input id="pinNum" type="tel" inputmode="tel" autocomplete="username" maxlength="16" placeholder="98765 43210"></div></div>
+              <div class="field"><label for="pinPin" id="pinPinL"></label><input id="pinPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" placeholder="••••••"></div>
+              <div class="field" id="pinPin2F" hidden><label for="pinPin2" id="pinPin2L"></label><input id="pinPin2" type="password" inputmode="numeric" autocomplete="new-password" maxlength="6" placeholder="••••••"></div>
+              <p class="autherr" id="pinErr" role="alert"></p>
+              <div class="dels"><button class="btn-s add" type="submit" id="pinGo"></button><button class="btn-s" type="button" id="pinAlt"></button></div>
+              <div class="dels"><a class="link" id="pinForgot" href="/#contact"></a></div>
+            </form>
+          </div>
+          <div id="phOtp">
           <p id="phIntro"></p>
           <div id="phStep1">
             <form id="phForm" novalidate>
@@ -1235,6 +1247,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
               <p class="autherr" id="phCodeErr" role="alert"></p>
               <div class="dels"><button class="btn-s add" type="submit" id="phVerify" data-i18n="ph_verify"></button><button class="btn-s" type="button" id="phResend"></button><button class="link" type="button" id="phOther" data-i18n="ph_other"></button></div>
             </form>
+          </div>
           </div>
         </div>
         <div id="authEmailBox">
@@ -1457,7 +1470,23 @@ Object.assign(T.hi, {
   ph_e_wait:"दूसरा कोड मँगवाने से पहले एक मिनट रुकें।", ph_e_off:"मोबाइल से लॉग इन अभी चालू नहीं है। अभी के लिए ईमेल इस्तेमाल करें।",
   ph_e_send:"कोड नहीं भेजा जा सका: {m}"
 });
-const phoneOn = PHONE_READY || /[?&]phone=1/.test(location.search);
+/* Mobile number + 6-digit PIN (no SMS): api/phone-signup.js makes the account; login is a normal password login
+   on 91XXXXXXXXXX@m.sebsaathi.com with password "sspin-<PIN>-Ss" (same rule in index.html: isPinUser / pinPw).
+   When SMS/WhatsApp codes are ready (PHONE_READY), set PHONE_PIN = false to show the code login instead. */
+const PHONE_PIN = true;
+Object.assign(T.en, { pin_p:"Log in with your mobile number and your 6-digit PIN.", pin_p_up:"Enter your mobile number and choose a 6-digit PIN that is easy for you to remember. You will log in with these.",
+  pin_pin:"6-digit PIN", pin_new:"Choose a 6-digit PIN", pin_new2:"Type the PIN again", pin_login:"Log in", pin_create:"Create account", pin_to_up:"New here? Create account", pin_to_in:"I already have an account",
+  pin_forgot:"Forgot your PIN? Send us a message with your mobile number and we will reset it.", pin_e_pin:"The PIN must be 6 digits.", pin_e_diff:"The two PINs do not match.",
+  pin_e_cred:"Mobile number or PIN is wrong. New here? Tap Create account.", pin_e_exists:"This mobile number already has an account. Log in with your PIN, or tap Forgot your PIN.", pin_e_make:"Could not create the account: {m}" });
+Object.assign(T.hi, { pin_p:"अपने मोबाइल नंबर और 6 अंकों के पिन से लॉग इन करें।", pin_p_up:"अपना मोबाइल नंबर डालें और 6 अंकों का ऐसा पिन चुनें जो आपको याद रहे। इन्हीं से आप लॉग इन करेंगे।",
+  pin_pin:"6 अंकों का पिन", pin_new:"6 अंकों का पिन चुनें", pin_new2:"पिन दोबारा डालें", pin_login:"लॉग इन", pin_create:"खाता बनाएँ", pin_to_up:"नए हैं? खाता बनाएँ", pin_to_in:"मेरा खाता पहले से है",
+  pin_forgot:"पिन भूल गए? अपने मोबाइल नंबर के साथ हमें संदेश भेजें, हम पिन बदल देंगे।", pin_e_pin:"पिन 6 अंकों का होना चाहिए।", pin_e_diff:"दोनों पिन एक जैसे नहीं हैं।",
+  pin_e_cred:"मोबाइल नंबर या पिन ग़लत है। नए हैं? खाता बनाएँ दबाएँ।", pin_e_exists:"इस मोबाइल नंबर का खाता पहले से है। अपने पिन से लॉग इन करें, या पिन भूल गए दबाएँ।", pin_e_make:"खाता नहीं बन सका: {m}" });
+Object.assign(T.hn, { pin_p:"Apne mobile number aur 6 ankon ke PIN se login karein.", pin_p_up:"Apna mobile number daalein aur 6 ankon ka aisa PIN chunein jo aapko yaad rahe. Inhi se aap login karenge.",
+  pin_pin:"6 ankon ka PIN", pin_new:"6 ankon ka PIN chunein", pin_new2:"PIN dobara daalein", pin_login:"Login", pin_create:"Account banayein", pin_to_up:"Naye hain? Account banayein", pin_to_in:"Mera account pehle se hai",
+  pin_forgot:"PIN bhool gaye? Apne mobile number ke saath humein message bhejein, hum PIN badal denge.", pin_e_pin:"PIN 6 ankon ka hona chahiye.", pin_e_diff:"Dono PIN ek jaise nahi hain.",
+  pin_e_cred:"Mobile number ya PIN galat hai. Naye hain? Account banayein dabayein.", pin_e_exists:"Is mobile number ka account pehle se hai. Apne PIN se login karein, ya PIN bhool gaye dabayein.", pin_e_make:"Account nahi ban saka: {m}" });
+const phoneOn = PHONE_READY || PHONE_PIN || /[?&]phone=1/.test(location.search);
 let authMethod = "email";
 try { const m = localStorage.getItem("ad-auth"); authMethod = phoneOn ? (m === "email" ? "email" : "phone") : "email"; } catch (e) { authMethod = phoneOn ? "phone" : "email"; }
 let phPending = "", phChannel = "sms", phTimer = null, phLeft = 0;
@@ -1485,6 +1514,9 @@ function renderAuthMethod() {
     b.tabIndex = authMethod === m ? 0 : -1;
   });
   $("authPhone").hidden = authMethod !== "phone";
+  $("pinBox").hidden = !PHONE_PIN; $("phOtp").hidden = PHONE_PIN;
+  set("lgP", PHONE_PIN && authMethod === "phone" ? "" : tr("lg_p_" + mode));
+  if (PHONE_PIN) renderPin();
   $("authEmailBox").hidden = authMethod !== "email";
   const main = PHONE_CHANNELS[0] || "sms", alt = PHONE_CHANNELS[1];
   set("phSend", tr(main === "whatsapp" ? "ph_wa" : "ph_send"));
@@ -1549,6 +1581,46 @@ $("phOther").addEventListener("click", () => {
   $("phStep1").hidden = false; $("phStep2").hidden = true; set("phErr", ""); set("phCodeErr", "");
   renderAuthMethod();
 });
+/* ---- mobile + PIN ---- */
+const pinEmail = e164 => e164.replace(/\D/g, "") + "@m.sebsaathi.com";
+const pinPw = p => "sspin-" + p + "-Ss";
+let pinBusy = false;
+function renderPin() {
+  const up = mode === "signup";
+  set("pinIntro", tr(up ? "pin_p_up" : "pin_p"));
+  set("pinPinL", tr(up ? "pin_new" : "pin_pin")); set("pinPin2L", tr("pin_new2"));
+  $("pinPin2F").hidden = !up; $("pinPin").autocomplete = up ? "new-password" : "current-password";
+  set("pinGo", tr(up ? "pin_create" : "pin_login")); set("pinAlt", tr(up ? "pin_to_in" : "pin_to_up"));
+  set("pinForgot", tr("pin_forgot")); $("pinForgot").hidden = up;
+  $("pinGo").disabled = pinBusy;
+}
+$("pinAlt").addEventListener("click", () => { set("pinErr", ""); $("swA").click(); });
+$("pinForm").addEventListener("submit", async e => {
+  e.preventDefault(); set("pinErr", "");
+  const phone = normPhone($("pinNum").value), pin = $("pinPin").value.trim(), up = mode === "signup";
+  if (!phone || !phone.startsWith("+91")) { set("pinErr", tr("ph_e_num")); return; }
+  if (!/^\d{6}$/.test(pin)) { set("pinErr", tr("pin_e_pin")); return; }
+  if (up && $("pinPin2").value.trim() !== pin) { set("pinErr", tr("pin_e_diff")); return; }
+  if (!sb) { set("pinErr", tr("auth_err_lib")); return; }
+  pinBusy = true; renderPin(); justSignedIn = true;
+  try {
+    if (up) {
+      const r = await fetch("/api/phone-signup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone, pin, lang, data: refData() }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        justSignedIn = false; pinBusy = false; renderPin();
+        set("pinErr", j.error === "exists" ? tr("pin_e_exists") : j.error === "pin" ? tr("pin_e_pin") : j.error === "phone" ? tr("ph_e_num") : tr("pin_e_make").replace("{m}", j.error || r.status));
+        return;
+      }
+    }
+    const res = await sb.auth.signInWithPassword({ email: pinEmail(phone), password: pinPw(pin) });
+    if (res.error) throw res.error;
+  } catch (x) {
+    justSignedIn = false;
+    set("pinErr", /invalid login/i.test(String((x && x.message) || "")) ? tr("pin_e_cred") : netMsg(x));
+  }
+  pinBusy = false; renderPin();
+});
 renderAuthMethod();
 
 function renderMode() {
@@ -1560,6 +1632,7 @@ function renderMode() {
   $("authCreate").hidden = !up; $("authCreate").className = "btn-s add";
   $("authPw").autocomplete = up ? "new-password" : "current-password";
   document.title = "Seb Saathi – " + tr("lg_h_" + mode);
+  renderAuthMethod();
 }
 $("swA").addEventListener("click", e => {
   e.preventDefault();
