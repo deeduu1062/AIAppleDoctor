@@ -24,6 +24,8 @@ Object.assign(T.en, {
   mk_bio_s: "Short bio (Instagram)", mk_bio_l: "Long description (Facebook, YouTube, WhatsApp channel)",
   mk_bud_h: "Budget (rough, about ₹60,000 for the season)", mk_c_item: "Item", mk_c_when: "When", mk_c_cost: "Rough cost",
   mk_watch_h: "Cautions",
+  mk_next_h: "Next steps", mk_all_done: "All plan tasks are done.", mk_inv_sub: "{n} friends joined · {m} free months", mk_more_h: "Budget, cautions and plan doc",
+  mk_change: "Change link", mk_how: "How to set it up", mk_copy_bs: "Copy short bio", mk_copy_bl: "Copy long description",
   mk_local: "Ticks are saved on this device only. Run supabase/marketing.sql in Supabase to keep them everywhere."
 });
 Object.assign(T.hi, {
@@ -46,6 +48,8 @@ Object.assign(T.hi, {
   mk_bio_s: "छोटा बायो (Instagram)", mk_bio_l: "लंबा विवरण (Facebook, YouTube, WhatsApp चैनल)",
   mk_bud_h: "बजट (मोटा अनुमान, सीज़न के लिए लगभग ₹60,000)", mk_c_item: "चीज़", mk_c_when: "कब", mk_c_cost: "मोटा ख़र्च",
   mk_watch_h: "सावधानियाँ",
+  mk_next_h: "अगले काम", mk_all_done: "प्लान के सारे काम पूरे।", mk_inv_sub: "{n} दोस्त जुड़े · {m} मुफ़्त महीने", mk_more_h: "बजट, सावधानियाँ और प्लान डॉक",
+  mk_change: "लिंक बदलें", mk_how: "कैसे बनाएँ", mk_copy_bs: "छोटा बायो कॉपी करें", mk_copy_bl: "लंबा विवरण कॉपी करें",
   mk_local: "टिक सिर्फ़ इसी डिवाइस पर सेव हैं। हर जगह रखने के लिए Supabase में supabase/marketing.sql चलाएँ।"
 });
 
@@ -154,60 +158,66 @@ async function mkSave(key, patch) {
 const mkDone = k => !!(MK[k] && MK[k].done);
 const mkBox = (k, label) => '<label class="chk mkchk"><input type="checkbox" data-mk="' + k + '"' + (mkDone(k) ? " checked" : "") + "><span>" + esc(label) + "</span></label>";
 
+const mkOpen = new Set(["soc"]);   /* which sections are open; social media starts open */
+const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
 function renderMk() {
   const box = $("mkBody"); if (!box) return;
   let h = "";
   if (mkLocal) h += '<p class="fine mkwarn">' + tr("mk_local") + "</p>";
-  /* files */
-  h += '<h5 class="ovsub">' + tr("mk_links_h") + '</h5><div class="mklinks"><a class="btn-s" href="' + MK_DOC + '" target="_blank" rel="noopener">' + tr("mk_doc") + '</a><a class="btn-s" href="' + MK_DESIGN + '" target="_blank" rel="noopener">' + tr("mk_design") + "</a></div>";
-  /* invites */
-  h += '<h5 class="ovsub">' + tr("mk_inv_h") + '</h5><p class="fine">' + tr("mk_inv_p") + "</p>";
-  if (mkInvErr) h += '<p class="fine">' + tr("mk_inv_setup") + "</p>";
+  /* 1. next steps: the first 3 unticked tasks of the plan */
+  const all = []; MK_PHASES.forEach(p => p.tasks.forEach(t => all.push([t[0], t[1], p.name])));
+  const done = all.filter(t => mkDone(t[0])).length, next = all.filter(t => !mkDone(t[0])).slice(0, 3);
+  h += '<section class="mknext"><div class="mkph"><b>' + tr("mk_next_h") + '</b><span class="fine">' + tr("mk_done_n").replace("{d}", done).replace("{n}", all.length) + '</span></div><div class="mkbar"><i style="width:' + Math.round(done / all.length * 100) + '%"></i></div>' +
+    (next.length ? next.map(t => mkBox(t[0], t[1])).join("") : "<p>" + tr("mk_all_done") + "</p>") + "</section>";
+  /* 2. social media */
+  const socDone = MK_SOCIAL.filter(x => MK["link:" + x[0]] && MK["link:" + x[0]].value).length;
+  h += mkSec("soc", tr("mk_soc_h"), tr("mk_done_n").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length),
+    '<ul class="mksoc">' + MK_SOCIAL.map(x => {
+      const k = "link:" + x[0], v = MK[k] ? MK[k].value || "" : "", live = !!v;
+      return "<li><div class=\"mkrow\"><b>" + esc(x[1]) + '</b><span class="fine">' + tr(live ? "mk_soc_live" : "mk_soc_todo") + "</span>" +
+        (live ? '<a class="btn-s add" href="' + esc(v) + '" target="_blank" rel="noopener">' + tr("mk_open") + '</a><a class="btn-s" href="' + x[3] + '" target="_blank" rel="noopener">' + tr("mk_manage") + "</a>"
+              : '<a class="btn-s add" href="' + x[2] + '" target="_blank" rel="noopener">' + tr("mk_create") + "</a>") + "</div>" +
+        '<details class="mkmore"><summary>' + tr(live ? "mk_change" : "mk_how") + "</summary>" + (live ? "" : '<ol class="mksteps">' + x[5].map(t => "<li>" + esc(t) + "</li>").join("") + "</ol>") +
+        '<label class="fine" for="mkl-' + x[0] + '">' + tr("mk_c_link") + '</label><div class="mkrow"><input class="mkin" type="url" id="mkl-' + x[0] + '" value="' + esc(v) + '" placeholder="' + x[4] + '…"><button class="btn-s" type="button" data-mksave="' + x[0] + '">' + tr("mk_save") + '</button></div><p class="fine mkwarn" id="mke-' + x[0] + '"></p></details></li>';
+    }).join("") + "</ul>" +
+    '<div class="mklinks"><button class="btn-s" type="button" data-mkcopy="bs">' + tr(mkCopied.bs ? "mk_copied" : "mk_copy_bs") + '</button><button class="btn-s" type="button" data-mkcopy="bl">' + tr(mkCopied.bl ? "mk_copied" : "mk_copy_bl") + '</button><a class="btn-s" href="' + MK_DESIGN + '" target="_blank" rel="noopener">' + tr("mk_design") + "</a></div>");
+  /* 3. messages */
+  h += mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + MK_MSGS.map((m, i) => {
+    const full = m[1] + (i === 3 ? "" : "\n" + mkLink());
+    return '<div class="mkmsg"><b>' + esc(m[0]) + "</b><pre>" + esc(full) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="m' + i + '">' + tr(mkCopied["m" + i] ? "mk_copied" : "mk_copy") + '</button><a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(full) + '">' + tr("mk_wa") + "</a></div></div>";
+  }).join(""));
+  /* 4. invites */
+  let inv = "";
+  if (mkInvErr) inv = '<p class="fine">' + tr("mk_inv_setup") + "</p>";
   else if (mkInv) {
-    const tot = mkInv.reduce((a, x) => a + (+x.joined || 0), 0), months = mkInv.reduce((a, x) => a + (+x.claimed || 0), 0);
-    h += '<div class="ystats"><div><span>' + tr("mk_s_total") + "</span><b>" + tot + "</b></div><div><span>" + tr("mk_s_inviters") + "</span><b>" + mkInv.length + "</b></div><div><span>" + tr("mk_s_months") + "</span><b>" + months + "</b></div></div>";
-    h += mkInv.length ? '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("mk_c_grower") + '</th><th scope="col" class="n">' + tr("mk_c_joined") + '</th><th scope="col" class="n">' + tr("mk_c_claimed") + "</th></tr></thead><tbody>" +
-      mkInv.slice(0, 50).map(x => "<tr><td>" + esc(x.email || "–") + '</td><td class="n">' + (+x.joined || 0) + '</td><td class="n">' + (+x.claimed || 0) + "</td></tr>").join("") + "</tbody></table></div>"
-      : '<p class="fine">' + tr("mk_inv_none") + "</p>";
+    inv = '<p class="fine">' + tr("mk_inv_p") + "</p>" + (mkInv.length ? '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("mk_c_grower") + '</th><th scope="col" class="n">' + tr("mk_c_joined") + '</th><th scope="col" class="n">' + tr("mk_c_claimed") + "</th></tr></thead><tbody>" +
+      mkInv.slice(0, 50).map(x => "<tr><td>" + esc(x.email || "–") + '</td><td class="n">' + (+x.joined || 0) + '</td><td class="n">' + (+x.claimed || 0) + "</td></tr>").join("") + "</tbody></table></div>" : '<p class="fine">' + tr("mk_inv_none") + "</p>");
   }
-  /* season plan */
-  h += '<h5 class="ovsub">' + tr("mk_plan_h") + '</h5><div class="mkphases">';
+  const invSub = mkInv ? tr("mk_inv_sub").replace("{n}", mkInv.reduce((a, x) => a + (+x.joined || 0), 0)).replace("{m}", mkInv.reduce((a, x) => a + (+x.claimed || 0), 0)) : "";
+  h += mkSec("inv", tr("mk_inv_h"), invSub, inv);
+  /* 5. full plan and videos */
+  let plan = '<div class="mkphases">';
   MK_PHASES.forEach(p => {
     const d = p.tasks.filter(t => mkDone(t[0])).length;
-    h += '<section class="mkphase' + (p.main ? " main" : "") + '"><div class="mkph"><span class="fine">' + esc(p.when) + "</span><b>" + esc(p.name) + '</b><span class="fine">' + tr("mk_done_n").replace("{d}", d).replace("{n}", p.tasks.length) + "</span></div>" +
+    plan += '<section class="mkphase' + (p.main ? " main" : "") + '"><div class="mkph"><span class="fine">' + esc(p.when) + "</span><b>" + esc(p.name) + '</b><span class="fine">' + tr("mk_done_n").replace("{d}", d).replace("{n}", p.tasks.length) + "</span></div>" +
       p.tasks.map(t => mkBox(t[0], t[1])).join("") + '<p class="mktarget">Target: ' + esc(p.target) + "</p></section>";
   });
-  h += "</div>";
-  /* videos */
-  h += '<h5 class="ovsub">' + tr("mk_vid_h") + '</h5><p class="fine">' + tr("mk_vid_p") + '</p><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("mk_c_week") + '</th><th scope="col">' + tr("mk_c_video") + '</th><th scope="col">' + tr("mk_c_hook") + '</th><th scope="col">' + tr("mk_c_show") + '</th><th scope="col">' + tr("mk_c_posted") + "</th></tr></thead><tbody>" +
-    MK_VIDEOS.map((v, i) => "<tr><td>" + v[0] + "</td><td><b>" + esc(v[1]) + "</b></td><td>" + esc(v[2]) + "</td><td>" + esc(v[3]) + '</td><td><input type="checkbox" aria-label="' + esc(tr("mk_c_posted") + ": " + v[1]) + '" data-mk="v' + (i + 1) + '"' + (mkDone("v" + (i + 1)) ? " checked" : "") + "></td></tr>").join("") + "</tbody></table></div>";
-  /* messages */
-  h += '<h5 class="ovsub">' + tr("mk_msg_h") + '</h5><p class="fine">' + tr("mk_msg_p") + "</p>";
-  MK_MSGS.forEach((m, i) => {
-    const full = m[1] + (i === 3 ? "" : "\n" + mkLink());
-    h += '<div class="mkmsg"><b>' + esc(m[0]) + '</b><pre>' + esc(full) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="m' + i + '">' + tr(mkCopied["m" + i] ? "mk_copied" : "mk_copy") + '</button><a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(full) + '">' + tr("mk_wa") + "</a></div></div>";
-  });
-  /* social */
-  const socDone = MK_SOCIAL.filter(x => MK["link:" + x[0]] && MK["link:" + x[0]].value).length;
-  h += '<h5 class="ovsub">' + tr("mk_soc_h") + ' <span class="fine">· ' + tr("mk_done_n").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length) + '</span></h5><p class="fine">' + tr("mk_soc_p") + '</p>' +
-    '<div class="mklinks"><a class="btn-s" href="https://business.facebook.com/" target="_blank" rel="noopener">' + tr("mk_meta") + '</a><a class="btn-s" href="https://studio.youtube.com/" target="_blank" rel="noopener">' + tr("mk_yts") + '</a><a class="btn-s" href="' + MK_DESIGN + '" target="_blank" rel="noopener">' + tr("mk_design") + "</a></div>";
-  h += '<div class="mkphases">' + MK_SOCIAL.map(x => {
-    const k = "link:" + x[0], v = MK[k] ? MK[k].value || "" : "", live = !!v;
-    return '<section class="mkphase' + (live ? " main" : "") + '"><div class="mkph"><b>' + esc(x[1]) + '</b><span class="fine">' + tr(live ? "mk_soc_live" : "mk_soc_todo") + "</span></div>" +
-      (live
-        ? '<div class="mklinks"><a class="btn-s add" href="' + esc(v) + '" target="_blank" rel="noopener">' + tr("mk_open") + '</a><a class="btn-s" href="' + x[3] + '" target="_blank" rel="noopener">' + tr("mk_manage") + "</a></div>"
-        : '<a class="btn-s add" href="' + x[2] + '" target="_blank" rel="noopener">' + tr("mk_create") + '</a><ol class="mksteps">' + x[5].map(t => "<li>" + esc(t) + "</li>").join("") + "</ol>") +
-      '<label class="fine" for="mkl-' + x[0] + '">' + tr("mk_c_link") + '</label><input class="mkin" type="url" id="mkl-' + x[0] + '" value="' + esc(v) + '" placeholder="' + x[4] + '…">' +
-      '<div class="mklinks"><button class="btn-s" type="button" data-mksave="' + x[0] + '">' + tr("mk_save") + '</button></div><p class="fine mkwarn" id="mke-' + x[0] + '"></p></section>';
-  }).join("") + "</div>";
-  h += '<div class="mkmsg"><b>' + tr("mk_bio_s") + "</b><pre>" + esc(MK_BIO_S) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="bs">' + tr(mkCopied.bs ? "mk_copied" : "mk_copy") + "</button></div></div>";
-  h += '<div class="mkmsg"><b>' + tr("mk_bio_l") + "</b><pre>" + esc(MK_BIO_L) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="bl">' + tr(mkCopied.bl ? "mk_copied" : "mk_copy") + "</button></div></div>";
-  /* budget + cautions */
-  h += '<h5 class="ovsub">' + tr("mk_bud_h") + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("mk_c_item") + '</th><th scope="col">' + tr("mk_c_when") + '</th><th scope="col" class="n">' + tr("mk_c_cost") + "</th></tr></thead><tbody>" +
-    MK_BUDGET.map(b => "<tr><td>" + esc(b[0]) + "</td><td>" + esc(b[1]) + '</td><td class="n">' + esc(b[2]) + "</td></tr>").join("") + "</tbody></table></div>";
-  h += '<h5 class="ovsub">' + tr("mk_watch_h") + '</h5><ul class="mkwatch">' + MK_WATCH.map(w => "<li>" + esc(w) + "</li>").join("") + "</ul>";
+  plan += "</div>";
+  h += mkSec("plan", tr("mk_plan_h"), "", plan);
+  const vd = MK_VIDEOS.filter((v, i) => mkDone("v" + (i + 1))).length;
+  h += mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", MK_VIDEOS.length), '<p class="fine">' + tr("mk_vid_p") + '</p><ul class="mkvids">' +
+    MK_VIDEOS.map((v, i) => '<li><label class="chk mkchk"><input type="checkbox" data-mk="v' + (i + 1) + '"' + (mkDone("v" + (i + 1)) ? " checked" : "") + "><span><b>" + esc(v[1]) + "</b> · " + esc(v[2]) + '<br><span class="fine">' + tr("mk_c_week") + " " + v[0] + " · " + esc(v[3]) + "</span></span></label></li>").join("") + "</ul>");
+  /* 6. budget, cautions, files */
+  h += mkSec("more", tr("mk_more_h"), "", '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("mk_c_item") + '</th><th scope="col">' + tr("mk_c_when") + '</th><th scope="col" class="n">' + tr("mk_c_cost") + "</th></tr></thead><tbody>" +
+    MK_BUDGET.map(b => "<tr><td>" + esc(b[0]) + "</td><td>" + esc(b[1]) + '</td><td class="n">' + esc(b[2]) + "</td></tr>").join("") + "</tbody></table></div>" +
+    '<p><b>' + tr("mk_watch_h") + '</b></p><ul class="mkwatch">' + MK_WATCH.map(w => "<li>" + esc(w) + "</li>").join("") + "</ul>" +
+    '<div class="mklinks"><a class="btn-s" href="' + MK_DOC + '" target="_blank" rel="noopener">' + tr("mk_doc") + "</a></div>");
   box.innerHTML = h;
 }
+$("mkBody").addEventListener("toggle", e => {
+  const d = e.target; if (!d.dataset || !d.dataset.mksec) return;
+  if (d.open) mkOpen.add(d.dataset.mksec); else mkOpen.delete(d.dataset.mksec);
+}, true);
 
 function mkText(id) {
   if (id === "bs") return MK_BIO_S;
