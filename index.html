@@ -557,6 +557,18 @@ footer p{max-width:70ch}
 .instdlg::backdrop{background:rgba(20,14,10,.45)}
 .instdlg-head{display:flex;align-items:center;gap:12px}
 .instdlg-head img{border-radius:10px}
+.limdlg{border:0;border-radius:18px;padding:0;max-width:min(400px,calc(100vw - 32px));background:var(--surface);color:var(--fg);box-shadow:0 16px 48px rgba(0,0,0,.3);overflow:hidden;text-align:center;margin:auto}
+.limdlg::backdrop{background:rgba(20,14,10,.55)}
+.limdlg .limtop{background:linear-gradient(135deg,#C8312B,#E2632A);color:#fff;padding:22px 20px 18px}
+.limdlg .limtop .limic{font-size:2.2rem;line-height:1}
+.limdlg .limtop h3{margin:8px 0 0;color:#fff;font-size:1.2rem}
+.limdlg .limbody{padding:16px 20px 20px}
+.limdlg .limbody>p{margin:0 0 12px}
+.limdlg .limnext{background:#EAF6EC;border:1px solid #9BD3A4;color:#1E5E28;border-radius:12px;padding:10px 12px;margin:0 0 14px;font-weight:600}
+.limdlg .limnext small{display:block;font-weight:400;margin-top:2px}
+.limdlg .limbtns{display:flex;flex-direction:column;gap:8px}
+.limdlg .limgo{background:#2F8F3A;color:#fff;border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer}
+.limdlg .limno{background:none;border:0;color:var(--muted);font:inherit;padding:8px;cursor:pointer}
 .instdlg-head h3{font-size:1.2rem;font-weight:800;margin:0}
 .inststeps{margin:16px 0 0;padding-left:1.4em;display:grid;gap:10px;font-size:1rem;line-height:1.45}
 .inststeps b{white-space:nowrap}
@@ -2506,6 +2518,8 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
   <p class="fine" data-i18n="wl_p" style="font-size:1rem"></p>
   <div class="dels"><button class="btn-s add" type="button" id="welGo"></button><button class="btn-s" type="button" id="welNo" data-i18n="wl_no"></button></div>
 </dialog>
+
+<dialog class="limdlg" id="limDlg" aria-labelledby="limH"></dialog>
 
 <dialog class="instdlg" id="instDlg" aria-labelledby="instDlgH">
   <div class="instdlg-head"><img src="/icons/icon-192.png" alt="" width="44" height="44"><h3 id="instDlgH" data-i18n="ig_h"></h3></div>
@@ -7425,9 +7439,9 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
    Free 2 orchards / 2 harvest years, Saathi 5 / 5, Saathi Plus 10 / 10. Admins have no limit.
    Records already saved are never removed; only adding more is stopped. */
 const REC_LIMIT = {free: {o: 2, y: 2}, basic: {o: 5, y: 5}, premium: {o: 10, y: 10}};
-Object.assign(T.en, {lim_o: "Your {p} plan keeps up to {n} orchards. To add more, upgrade in My account.", lim_y: "Your {p} plan keeps records for the last {n} harvest years ({a} onwards). To add {y}, upgrade in My account."});
-Object.assign(T.hi, {lim_o: "आपके {p} प्लान में {n} बाग़ों तक का रिकॉर्ड रख सकते हैं। और जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।", lim_y: "आपके {p} प्लान में पिछले {n} फ़सल वर्षों ({a} से) का रिकॉर्ड रहता है। {y} जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।"});
-if (T.hn) Object.assign(T.hn, {lim_o: "Aapke {p} plan mein {n} bagichon tak ka record rakh sakte hain. Aur jodne ke liye Mera account mein upgrade karein.", lim_y: "Aapke {p} plan mein pichhle {n} harvest saal ({a} se) ka record rehta hai. {y} jodne ke liye Mera account mein upgrade karein."});
+Object.assign(T.en, {lim_h: "Plan limit reached", lim_go: "Upgrade to {p}", lim_no: "Not now", lim_ok: "OK", lim_next: "{p}: {o} orchards, {y} years", lim_price: "{r} a year", lim_top: "You are on our biggest plan. For more, contact us.", lim_o: "Your {p} plan keeps up to {n} orchards. To add more, upgrade in My account.", lim_y: "Your {p} plan keeps records for the last {n} harvest years ({a} onwards). To add {y}, upgrade in My account."});
+Object.assign(T.hi, {lim_h: "प्लान की सीमा पूरी", lim_go: "{p} में अपग्रेड करें", lim_no: "अभी नहीं", lim_ok: "ठीक है", lim_next: "{p}: {o} बाग़, {y} साल", lim_price: "{r} साल भर का", lim_top: "आप हमारे सबसे बड़े प्लान पर हैं। और के लिए हमसे संपर्क करें।", lim_o: "आपके {p} प्लान में {n} बाग़ों तक का रिकॉर्ड रख सकते हैं। और जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।", lim_y: "आपके {p} प्लान में पिछले {n} फ़सल वर्षों ({a} से) का रिकॉर्ड रहता है। {y} जोड़ने के लिए मेरा अकाउंट में अपग्रेड करें।"});
+if (T.hn) Object.assign(T.hn, {lim_h: "Plan ki seema poori", lim_go: "{p} mein upgrade karein", lim_no: "Abhi nahi", lim_ok: "Theek hai", lim_next: "{p}: {o} bagiche, {y} saal", lim_price: "{r} saal bhar ka", lim_top: "Aap hamare sabse bade plan par hain. Aur ke liye humse sampark karein.", lim_o: "Aapke {p} plan mein {n} bagichon tak ka record rakh sakte hain. Aur jodne ke liye Mera account mein upgrade karein.", lim_y: "Aapke {p} plan mein pichhle {n} harvest saal ({a} se) ka record rehta hai. {y} jodne ke liye Mera account mein upgrade karein."});
 function recLim() {
   if (typeof isAdmin === "function" && isAdmin()) return null;
   const st = typeof myPlanState === "function" ? myPlanState() : {paid: null};
@@ -7437,14 +7451,36 @@ function recLim() {
 const recPlan = L => (typeof plName === "function" ? plName(L.k) : L.k);
 function recBlockO() {
   const L = recLim(); if (!L || S.orchards.filter(x => !x.ex).length < L.o) return false;   /* example orchards do not count */
-  alert(tr("lim_o").replace("{p}", recPlan(L)).replace("{n}", L.o)); return true;
+  limShow(L, tr("lim_o").replace("{p}", recPlan(L)).replace("{n}", L.o)); return true;
 }
 function recBlockY(y) {
   const L = recLim(); if (!L || !y) return false;
   const first = curHYear() - (L.y - 1);
   if (y >= first) return false;
-  alert(tr("lim_y").replace("{p}", recPlan(L)).replace("{n}", L.y).replace("{a}", first).replace("{y}", y)); return true;
+  limShow(L, tr("lim_y").replace("{p}", recPlan(L)).replace("{n}", L.y).replace("{a}", first).replace("{y}", y)); return true;
 }
+/* the limit message: a coloured box in the middle of the screen, with the next plan and an Upgrade button (opens the UPI payment box) */
+function limShow(L, msg) {
+  const d = $("limDlg"); if (!d) { alert(msg); return; }
+  const next = L.k === "free" ? "basic" : L.k === "basic" ? "premium" : null;
+  const e = x => String(x).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+  let h = '<div class="limtop"><div class="limic" aria-hidden="true">🍎</div><h3 id="limH">' + e(tr("lim_h")) + "</h3></div><div class=\"limbody\"><p>" + e(msg) + "</p>";
+  if (next) {
+    const N = REC_LIMIT[next], pr = typeof PRICES !== "undefined" && PRICES[next] ? PRICES[next].year : null;
+    h += '<p class="limnext">' + e(tr("lim_next").replace("{p}", recPlan({k: next})).replace("{o}", N.o).replace("{y}", N.y)) +
+      (pr ? "<small>" + e(tr("lim_price").replace("{r}", "₹" + pr)) + "</small>" : "") + "</p>" +
+      '<div class="limbtns"><button class="limgo" type="button" data-pl="' + next + '" data-lim="close">' + e(tr("lim_go").replace("{p}", recPlan({k: next}))) + "</button>" +
+      '<button class="limno" type="button" data-lim="close">' + e(tr("lim_no")) + "</button></div>";
+  } else {
+    h += '<p class="limnext">' + e(tr("lim_top")) + '</p><div class="limbtns"><a class="limgo" href="#contact" data-lim="close" style="text-decoration:none">' + e(tr("lim_ok")) + "</a></div>";
+  }
+  d.innerHTML = h + "</div>";
+  if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute("open", "");
+}
+if ($("limDlg")) $("limDlg").addEventListener("click", ev => {
+  const d = $("limDlg");
+  if (ev.target === d || ev.target.closest("[data-lim=close]")) { if (d.close) d.close(); else d.removeAttribute("open"); }
+});
 
 /* ---- "Orchards Record" tab: a filled-in example of one orchard's record, so growers see what they will keep ---- */
 Object.assign(T.en, {
