@@ -771,7 +771,7 @@ function renderPayAdmin() {
       const expired = x.status === "approved" && x.valid_until && x.valid_until < today;
       return "<tr>" + sel + "<td>" + paDate(x.created_at) + "</td><td>" + esc(x.email || "–") + "</td>" +
         "<td>" + plName(x.plan) + '<br><span class="fine">' + tr(x.period === "year" ? "pay_year" : "pay_month") + "</span></td>" +
-        '<td class="n">' + paRup(x.amount) + '</td><td><code>' + (x.source === "referral" ? "Invite reward" : esc(x.utr)) + "</code></td>" +
+        '<td class="n">' + paRup(x.amount) + '</td><td><code>' + (x.source === "referral" ? "Invite reward" : x.method === "razorpay" ? "Razorpay " + esc(x.rzp_payment_id || "") : esc(x.utr)) + "</code></td>" +
         "<td>" + (x.valid_until ? paDay(x.valid_until) + (expired ? ' <span class="tag">' + tr("pa_expired") + "</span>" : "") : "–") + "</td>" +
         "<td>" + (x.reviewed_at ? paDate(x.reviewed_at) + '<br><span class="fine">' + esc(x.reviewed_by || "") + "</span>" : "–") + "</td></tr>";
     }).join("") + "</tbody></table></div>";
@@ -808,7 +808,7 @@ if (document.getElementById("paList")) {
     const row = PA.find(x => x.id === sel.dataset.pa); if (!row) return;
     const to = sel.value;
     const ask = to === "approved" ? tr("pa_ask_ok") : to === "rejected" ? tr("pa_ask_no") : tr("pa_ask_back");
-    if (!confirm(ask.replace("{a}", paRup(row.amount)).replace("{u}", row.utr).replace("{e}", row.email || "–"))) { sel.value = row.status; return; }
+    if (!confirm(ask.replace("{a}", paRup(row.amount)).replace("{u}", row.utr || row.rzp_payment_id || "").replace("{e}", row.email || "–"))) { sel.value = row.status; return; }
     sel.disabled = true;
     let err = null;
     try { const r = await sb.from("payments").update({ status: to }).eq("id", row.id).select().single(); if (r.error) err = r.error; else Object.assign(row, r.data); } catch (x) { err = x; }
