@@ -51,12 +51,11 @@ const T = {
 "pl_mo": "or ₹{m} a month",
 "pl_best": "Best value",
 "pl_f_free": [
-"Quick profit calculator",
 "Apple register for 2 orchards, keep records up to 2 years",
-"Season calendar and spray schedule",
 "3 photo disease checks a month",
 "5 questions a day to Saathi",
-"Daily apple news"
+"Daily apple news",
+"Season calendar and spray schedule"
 ],
 "pl_f_basic": [
 "Everything in Free",
@@ -234,12 +233,11 @@ const T = {
 "pl_mo": "या ₹{m} महीना",
 "pl_best": "सबसे फ़ायदेमंद",
 "pl_f_free": [
-"झटपट मुनाफ़ा कैलकुलेटर",
 "2 बाग़ों का सेब रजिस्टर, 2 साल तक का रिकॉर्ड रखें",
-"सीज़न कैलेंडर और स्प्रे शेड्यूल",
 "महीने में 3 फ़ोटो से बीमारी जाँच",
 "साथी से रोज़ 5 सवाल",
-"रोज़ सेब समाचार"
+"रोज़ सेब समाचार",
+"सीज़न कैलेंडर और स्प्रे शेड्यूल"
 ],
 "pl_f_basic": [
 "मुफ़्त प्लान की सब सुविधाएँ",
