@@ -25,6 +25,13 @@ Object.assign(T.en, {
   mk_bud_h: "Budget (rough, about ₹60,000 for the season)", mk_c_item: "Item", mk_c_when: "When", mk_c_cost: "Rough cost",
   mk_watch_h: "Cautions",
   mk_next_h: "Next steps", mk_all_done: "All plan tasks are done.", mk_inv_sub: "{n} friends joined · {m} free months", mk_more_h: "Budget, cautions and plan doc",
+  mk_post_h: "Post to Facebook + Instagram", mk_post_checking: "Checking your accounts…",
+  mk_post_conn: "Connected: Facebook page {f}{i}", mk_post_ig: " · Instagram @{u}", mk_post_noig: " · Instagram not linked to the Page yet",
+  mk_post_text: "What to post", mk_post_ready: "Use a ready message…", mk_post_photo: "Add a photo", mk_post_photo_ch: "Change photo", mk_post_rm: "Remove photo",
+  mk_post_fb: "Facebook", mk_post_igc: "Instagram (needs a photo)", mk_post_go: "Post now", mk_post_busy: "Posting…", mk_post_up: "Preparing the photo…",
+  mk_post_done_fb: "Posted on Facebook", mk_post_done_ig: "Posted on Instagram", mk_post_view: "View", mk_post_fail: "{w} failed: {m}",
+  mk_post_need: "Write something or add a photo first.", mk_post_err: "Could not reach your accounts: {m}", mk_post_recent: "Recent posts",
+  mk_post_setup_h: "One-time setup (about 20–30 minutes)", mk_post_setup_p: "Do this once with your own Facebook login. After that you can post from here.",
   mk_change: "Change link", mk_how: "How to set it up", mk_copy_bs: "Copy short bio", mk_copy_bl: "Copy long description",
   mk_local: "Ticks are saved on this device only. Run supabase/marketing.sql in Supabase to keep them everywhere."
 });
@@ -49,6 +56,13 @@ Object.assign(T.hi, {
   mk_bud_h: "बजट (मोटा अनुमान, सीज़न के लिए लगभग ₹60,000)", mk_c_item: "चीज़", mk_c_when: "कब", mk_c_cost: "मोटा ख़र्च",
   mk_watch_h: "सावधानियाँ",
   mk_next_h: "अगले काम", mk_all_done: "प्लान के सारे काम पूरे।", mk_inv_sub: "{n} दोस्त जुड़े · {m} मुफ़्त महीने", mk_more_h: "बजट, सावधानियाँ और प्लान डॉक",
+  mk_post_h: "Facebook + Instagram पर पोस्ट करें", mk_post_checking: "आपके अकाउंट जाँच रहे हैं…",
+  mk_post_conn: "जुड़ा हुआ: Facebook पेज {f}{i}", mk_post_ig: " · Instagram @{u}", mk_post_noig: " · Instagram अभी पेज से नहीं जुड़ा",
+  mk_post_text: "क्या पोस्ट करें", mk_post_ready: "तैयार संदेश चुनें…", mk_post_photo: "फ़ोटो जोड़ें", mk_post_photo_ch: "फ़ोटो बदलें", mk_post_rm: "फ़ोटो हटाएँ",
+  mk_post_fb: "Facebook", mk_post_igc: "Instagram (फ़ोटो ज़रूरी)", mk_post_go: "अभी पोस्ट करें", mk_post_busy: "पोस्ट हो रहा है…", mk_post_up: "फ़ोटो तैयार हो रही है…",
+  mk_post_done_fb: "Facebook पर पोस्ट हुआ", mk_post_done_ig: "Instagram पर पोस्ट हुआ", mk_post_view: "देखें", mk_post_fail: "{w} नहीं हुआ: {m}",
+  mk_post_need: "पहले कुछ लिखें या फ़ोटो जोड़ें।", mk_post_err: "अकाउंट तक नहीं पहुँच पाए: {m}", mk_post_recent: "हाल के पोस्ट",
+  mk_post_setup_h: "एक बार का सेटअप (लगभग 20–30 मिनट)", mk_post_setup_p: "यह एक बार अपने Facebook लॉगिन से करें। उसके बाद यहीं से पोस्ट कर सकेंगे।",
   mk_change: "लिंक बदलें", mk_how: "कैसे बनाएँ", mk_copy_bs: "छोटा बायो कॉपी करें", mk_copy_bl: "लंबा विवरण कॉपी करें",
   mk_local: "टिक सिर्फ़ इसी डिवाइस पर सेव हैं। हर जगह रखने के लिए Supabase में supabase/marketing.sql चलाएँ।"
 });
@@ -142,7 +156,7 @@ async function loadMk() {
     mkLocal = true;
     try { MK = JSON.parse(localStorage.getItem("mk-state") || "{}") || {}; } catch (x) { MK = {}; }
   }
-  renderMk();
+  renderMk(); loadSoc();
   mkInv = null; mkInvErr = "";
   try { const r = await sb.rpc("admin_invites"); if (r.error) mkInvErr = "setup"; else mkInv = r.data || []; } catch (e) { mkInvErr = "setup"; }
   renderMk();
@@ -158,6 +172,103 @@ async function mkSave(key, patch) {
 const mkDone = k => !!(MK[k] && MK[k].done);
 const mkBox = (k, label) => '<label class="chk mkchk"><input type="checkbox" data-mk="' + k + '"' + (mkDone(k) ? " checked" : "") + "><span>" + esc(label) + "</span></label>";
 
+/* ---- posting (api/social-post.js) ---- */
+const MK_SETUP = [
+  ["Make sure Instagram is a Business account and is linked to your Facebook Page", "Instagram → Settings → Account type → Professional; then Facebook Page → Settings → Linked accounts → Instagram"],
+  ["Create a free Meta app", "developers.facebook.com → My Apps → Create app → name \"Seb Saathi poster\" → use case: Manage everything on your Page", "https://developers.facebook.com/apps/"],
+  ["Get a token with posting permission", "Graph API Explorer → choose your app → Get User Access Token → tick pages_show_list, pages_read_engagement, pages_manage_posts, instagram_basic, instagram_content_publish, business_management → Generate", "https://developers.facebook.com/tools/explorer/"],
+  ["Make it last", "Access Token Debugger → paste the token → Extend Access Token → copy the long-lived token", "https://developers.facebook.com/tools/debug/accesstoken/"],
+  ["Get the Page token", "Back in Graph API Explorer, paste the long-lived token, run GET me/accounts, and copy the access_token of the Seb Saathi page"],
+  ["Add it to Vercel", "Vercel → your project → Settings → Environment Variables → name META_PAGE_TOKEN, value = that Page token → Save → Deployments → Redeploy", "https://vercel.com/dashboard"],
+  ["Come back here and tap Refresh", "This box will show your Page and Instagram name, and the Post button"]
+];
+let mkSoc = null, mkPostText = "", mkImg = null, mkPostBusy = "", mkPostRes = null;
+async function mkTok() { try { const r = await sb.auth.getSession(); return r && r.data && r.data.session ? r.data.session.access_token : ""; } catch (e) { return ""; } }
+async function loadSoc() {
+  mkSoc = null; renderMk();
+  try { const r = await fetch("/api/social-post", { headers: { Authorization: "Bearer " + await mkTok() } }); mkSoc = await r.json(); }
+  catch (e) { mkSoc = { setup: true, ok: false, error: String(e.message || e) }; }
+  if (mkSoc && mkSoc.ok) mkOpen.add("post");
+  renderMk();
+}
+function mkJpeg(file) {   /* JPEG, at most 1440 px wide, cropped to what Instagram accepts (4:5 to 1.91:1) */
+  return new Promise((ok, no) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      let sw = img.width, sh = img.height, sx = 0, sy = 0;
+      if (sw / sh < 0.8) { const h = sw / 0.8; sy = (sh - h) / 2; sh = h; }
+      else if (sw / sh > 1.91) { const w = sh * 1.91; sx = (sw - w) / 2; sw = w; }
+      const k = Math.min(1, 1440 / sw), c = document.createElement("canvas");
+      c.width = Math.round(sw * k); c.height = Math.round(sh * k);
+      c.getContext("2d").drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      c.toBlob(b => b ? ok(b) : no(new Error("image")), "image/jpeg", 0.88);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); no(new Error("image")); };
+    img.src = url;
+  });
+}
+function postHtml() {
+  if (!mkSoc) return '<p class="fine">' + tr("mk_post_checking") + "</p>";
+  if (!mkSoc.setup || !mkSoc.ok) {
+    return (mkSoc.error ? '<p class="fine mkwarn">' + esc(tr("mk_post_err").replace("{m}", mkSoc.error)) + "</p>" : "") +
+      "<p><b>" + tr("mk_post_setup_h") + '</b></p><p class="fine">' + tr("mk_post_setup_p") + '</p><ol class="mksteps">' +
+      MK_SETUP.map(x => "<li><b>" + esc(x[0]) + "</b><br><span class=\"fine\">" + esc(x[1]) + "</span>" + (x[2] ? ' <a href="' + x[2] + '" target="_blank" rel="noopener">' + tr("mk_open") + "</a>" : "") + "</li>").join("") + "</ol>" +
+      '<div class="mklinks"><button class="btn-s" type="button" data-mkpost="refresh">' + tr("ad_refresh") + "</button></div>";
+  }
+  const S = mkSoc, hasIg = !!S.ig_id;
+  let h = '<p class="fine">' + esc(tr("mk_post_conn").replace("{f}", S.page_name || "").replace("{i}", hasIg ? tr("mk_post_ig").replace("{u}", S.ig_user || "") : tr("mk_post_noig"))) + "</p>";
+  h += '<label class="fine" for="mkpText">' + tr("mk_post_text") + '</label><select class="mkin" id="mkpReady"><option value="">' + tr("mk_post_ready") + "</option>" +
+    MK_MSGS.map((m, i) => '<option value="m' + i + '">' + esc(m[0]) + "</option>").join("") + "</select>" +
+    '<textarea class="mkin mkta" id="mkpText" rows="6">' + esc(mkPostText) + "</textarea>";
+  h += '<div class="mkrow">' + (mkImg ? '<img class="mkprev" src="' + esc(mkImg.prev) + '" alt="">' : "") +
+    '<label class="btn-s mkfile">' + tr(mkImg ? "mk_post_photo_ch" : "mk_post_photo") + '<input type="file" accept="image/*" id="mkpFile" hidden></label>' +
+    (mkImg ? '<button class="btn-s" type="button" data-mkpost="rmimg">' + tr("mk_post_rm") + "</button>" : "") + "</div>";
+  h += '<div class="mkrow"><label class="chk"><input type="checkbox" id="mkpFb" checked><span>' + tr("mk_post_fb") + '</span></label><label class="chk"><input type="checkbox" id="mkpIg"' + (hasIg && mkImg ? " checked" : "") + (hasIg ? "" : " disabled") + "><span>" + tr("mk_post_igc") + "</span></label></div>";
+  h += '<div class="mklinks"><button class="btn-s add" type="button" data-mkpost="go"' + (mkPostBusy ? " disabled" : "") + ">" + tr(mkPostBusy || "mk_post_go") + "</button></div>";
+  if (mkPostRes) h += '<div class="mkres" role="status">' + mkPostRes + "</div>";
+  const recent = Object.keys(MK).filter(k => k.indexOf("post:") === 0).sort().reverse().slice(0, 5);
+  if (recent.length) {
+    h += "<p><b>" + tr("mk_post_recent") + '</b></p><ul class="mkwatch">' + recent.map(k => {
+      let v = {}; try { v = JSON.parse(MK[k].value || "{}"); } catch (e) {}
+      const d = new Date(+k.slice(5)).toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { day: "numeric", month: "short" });
+      return "<li>" + esc(d) + " · " + esc(v.t || "") + (v.fb ? ' · <a href="' + esc(v.fb) + '" target="_blank" rel="noopener">Facebook</a>' : "") + (v.ig ? ' · <a href="' + esc(v.ig) + '" target="_blank" rel="noopener">Instagram</a>' : "") + "</li>";
+    }).join("") + "</ul>";
+  }
+  return h;
+}
+async function mkDoPost() {
+  const fb = $("mkpFb") && $("mkpFb").checked, ig = $("mkpIg") && $("mkpIg").checked;
+  mkPostText = ($("mkpText").value || "").trim();
+  if (!mkPostText && !mkImg) { mkPostRes = '<p class="mkwarn">' + tr("mk_post_need") + "</p>"; renderMk(); return; }
+  mkPostRes = null;
+  try {
+    let url = "";
+    if (mkImg) {
+      if (!mkImg.url) {
+        mkPostBusy = "mk_post_up"; renderMk();
+        const path = "social/" + new Date().toISOString().slice(0, 10) + "/" + Math.random().toString(36).slice(2, 10) + ".jpg";
+        const up = await sb.storage.from("library").upload(path, mkImg.blob, { contentType: "image/jpeg", upsert: false });
+        if (up.error) throw up.error;
+        mkImg.url = sb.storage.from("library").getPublicUrl(path).data.publicUrl;
+      }
+      url = mkImg.url;
+    }
+    mkPostBusy = "mk_post_busy"; renderMk();
+    const r = await fetch("/api/social-post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ text: mkPostText, image_url: url, fb, ig }) });
+    const j = await r.json(); const R = j.result || {};
+    let h = "";
+    const line = (x, okKey, name) => x ? (x.ok ? "<p>✓ " + tr(okKey) + ' · <a href="' + esc(x.link) + '" target="_blank" rel="noopener">' + tr("mk_post_view") + "</a></p>"
+      : '<p class="mkwarn">' + esc(tr("mk_post_fail").replace("{w}", name).replace("{m}", x.error === "need_photo" ? tr("mk_post_igc") : x.error === "no_ig" ? tr("mk_post_noig") : x.error)) + "</p>") : "";
+    h += line(R.fb, "mk_post_done_fb", "Facebook") + line(R.ig, "mk_post_done_ig", "Instagram");
+    if (!h) h = '<p class="mkwarn">' + esc(j.error || "error") + "</p>";
+    mkPostRes = h;
+    if ((R.fb && R.fb.ok) || (R.ig && R.ig.ok)) {
+      await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: mkPostText.slice(0, 80), fb: R.fb && R.fb.ok ? R.fb.link : "", ig: R.ig && R.ig.ok ? R.ig.link : "" }).slice(0, 500) });
+      mkPostText = ""; mkImg = null;
+    }
+  } catch (e) { mkPostRes = '<p class="mkwarn">' + esc(String(e.message || e)) + "</p>"; }
+  mkPostBusy = ""; renderMk();
+}
 const mkOpen = new Set(["soc"]);   /* which sections are open; social media starts open */
 const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
 function renderMk() {
@@ -169,6 +280,8 @@ function renderMk() {
   const done = all.filter(t => mkDone(t[0])).length, next = all.filter(t => !mkDone(t[0])).slice(0, 3);
   h += '<section class="mknext"><div class="mkph"><b>' + tr("mk_next_h") + '</b><span class="fine">' + tr("mk_done_n").replace("{d}", done).replace("{n}", all.length) + '</span></div><div class="mkbar"><i style="width:' + Math.round(done / all.length * 100) + '%"></i></div>' +
     (next.length ? next.map(t => mkBox(t[0], t[1])).join("") : "<p>" + tr("mk_all_done") + "</p>") + "</section>";
+  /* posting */
+  h += mkSec("post", tr("mk_post_h"), mkSoc && mkSoc.ok ? "✓" : "", postHtml());
   /* 2. social media */
   const socDone = MK_SOCIAL.filter(x => MK["link:" + x[0]] && MK["link:" + x[0]].value).length;
   h += mkSec("soc", tr("mk_soc_h"), tr("mk_done_n").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length),
@@ -254,3 +367,23 @@ $("mkBody").addEventListener("click", async e => {
 $("mkRefresh").addEventListener("click", () => loadMk());
 if (typeof tab !== "undefined" && tab === "mk" && typeof isAdmin === "function" && isAdmin() && !loaded.mk) { loaded.mk = true; loadMk(); }
 document.querySelectorAll('[data-i18n^="mk_"],[data-i18n="adm_t_mk"]').forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
+
+$("mkBody").addEventListener("input", e => { if (e.target.id === "mkpText") mkPostText = e.target.value; });
+$("mkBody").addEventListener("change", async e => {
+  if (e.target.id === "mkpReady" && e.target.value) {
+    const v = mkText(e.target.value); mkPostText = (mkPostText ? mkPostText + "\n\n" : "") + v; renderMk(); return;
+  }
+  if (e.target.id === "mkpFile") {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try { const blob = await mkJpeg(f); if (mkImg && mkImg.prev) URL.revokeObjectURL(mkImg.prev); mkImg = { blob, prev: URL.createObjectURL(blob), url: "" }; }
+    catch (x) { mkPostRes = '<p class="mkwarn">' + esc(String(x.message || x)) + "</p>"; }
+    renderMk();
+  }
+});
+$("mkBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-mkpost]"); if (!b) return;
+  const a = b.dataset.mkpost;
+  if (a === "go") mkDoPost();
+  else if (a === "refresh") loadSoc();
+  else if (a === "rmimg") { if (mkImg && mkImg.prev) URL.revokeObjectURL(mkImg.prev); mkImg = null; renderMk(); }
+});
