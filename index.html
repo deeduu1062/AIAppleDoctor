@@ -7436,7 +7436,7 @@ function recLim() {
 }
 const recPlan = L => (typeof plName === "function" ? plName(L.k) : L.k);
 function recBlockO() {
-  const L = recLim(); if (!L || S.orchards.length < L.o) return false;
+  const L = recLim(); if (!L || S.orchards.filter(x => !x.ex).length < L.o) return false;   /* example orchards do not count */
   alert(tr("lim_o").replace("{p}", recPlan(L)).replace("{n}", L.o)); return true;
 }
 function recBlockY(y) {
