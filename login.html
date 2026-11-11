@@ -1473,7 +1473,7 @@ Object.assign(T.hi, {
 /* Mobile number + 6-digit PIN (no SMS): api/phone-signup.js makes the account; login is a normal password login
    on 91XXXXXXXXXX@m.sebsaathi.com with password "sspin-<PIN>-Ss" (same rule in index.html: isPinUser / pinPw).
    When SMS/WhatsApp codes are ready (PHONE_READY), set PHONE_PIN = false to show the code login instead. */
-const PHONE_PIN = true;
+const PHONE_PIN = !/[?&]otp=1/.test(location.search);   /* /login.html?otp=1 = private test of WhatsApp codes while growers use PIN */
 Object.assign(T.en, { pin_p:"Log in with your mobile number and your 6-digit PIN.", pin_p_up:"Enter your mobile number and choose a 6-digit PIN that is easy for you to remember. You will log in with these.",
   pin_pin:"6-digit PIN", pin_new:"Choose a 6-digit PIN", pin_new2:"Type the PIN again", pin_login:"Log in", pin_create:"Create account", pin_to_up:"New here? Create account", pin_to_in:"I already have an account",
   pin_forgot:"Forgot your PIN? Send us a message with your mobile number and we will reset it.", pin_e_pin:"The PIN must be 6 digits.", pin_e_diff:"The two PINs do not match.",
