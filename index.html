@@ -769,6 +769,23 @@ html[lang="hi"] .libcard .cat{text-transform:none;letter-spacing:0;font-size:.85
 .gltiles .warn b{color:var(--apple)}
 .gltiles b.neg{color:var(--bad)}
 .glacts{display:flex;gap:8px;flex-wrap:wrap}
+.sharerew{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 12px;background:var(--surface);display:grid;gap:8px}
+.sharerew p{margin:0;font-weight:600}
+.home{display:grid;gap:14px;max-width:640px;margin:0 auto}
+.hmhi{margin:0;font-family:var(--display);font-size:1.5rem}
+.hmcam{width:100%;justify-content:center;font-size:1.25rem;min-height:72px;border-radius:16px;display:flex;align-items:center;gap:10px}
+.hmcard{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:var(--surface);display:grid;gap:6px;text-align:left;font:inherit;color:inherit;width:100%}
+button.hmcard{cursor:pointer}
+.hmcard .k{font-size:.9rem;color:var(--muted);font-weight:600}
+.hmbig{font:700 2.4rem/1.1 var(--display);font-variant-numeric:tabular-nums}
+.hmbig.neg{color:var(--bad)}
+.hmcard .s{font-size:.95rem;color:var(--muted)}
+.hmtip{border-left:0;background:var(--brand-tint, var(--surface))}
+.hmtip b{font-size:1.1rem;line-height:1.35}
+.hmchips{display:flex;flex-wrap:wrap;gap:6px}
+.hmchips span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.9rem;background:var(--bg)}
+.hmgo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hmgo .btn-s{min-height:52px;justify-content:center}
 .glcam{width:100%;justify-content:center;font-size:1.08rem;min-height:52px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
 .glcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
 .glbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;align-content:start;min-width:0}
@@ -1989,7 +2006,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <a class="brand" href="#top"><i aria-hidden="true"></i>Seb Saathi</a>
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-home" aria-selected="false" aria-controls="tp-home" type="button" data-i18n="tt_home" hidden></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -2272,6 +2289,9 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
       <div id="acctTab"></div>
     </div>
 
+    <div class="tpanel" id="tp-home" role="tabpanel" aria-labelledby="tt-home" hidden>
+      <div id="homeBody"></div>
+    </div>
     <div class="tpanel" id="tp-orch" role="tabpanel" aria-labelledby="tt-orch" hidden>
       <div class="thead" id="orchHead"><h3 data-i18n="tab_orch"></h3><span class="pill" id="orchPill"></span></div>
       <div class="promo" id="promo"></div>
@@ -2468,6 +2488,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 <dialog class="sharedlg" id="shareDlg" aria-labelledby="shareH">
   <h3 id="shareH" data-i18n="sh_h"></h3>
   <p data-i18n="sh_p"></p>
+  <div class="sharerew" id="shareRew" hidden><p id="shareRewP"></p><button class="btn-s add" type="button" id="shareClaim" hidden></button></div>
   <div class="sharemsg" id="shareMsg"></div>
   <div class="sharebtns">
     <a class="btn-s wa" id="shareWa" href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.8-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3z"/></svg><span data-i18n="sh_wa"></span></a>
@@ -3410,7 +3431,8 @@ function setOrchTabs() {
   const t = $("tt-orch"), r = $("tt-rec"); if (!t || !r) return;
   t.setAttribute("data-i18n", user ? "tt_orch" : "tt_dash"); t.textContent = tr(user ? "tt_orch" : "tt_dash");
   r.hidden = !!user;
-  if (user && !$("tp-rec").hidden && typeof showTool === "function") showTool("orch");
+  const hm = $("tt-home"); if (hm) { hm.hidden = !user; if (!user && !$("tp-home").hidden && typeof showTool === "function") showTool("calc"); }
+  if (user && !$("tp-rec").hidden && typeof showTool === "function") showTool("home");
   if (!user && T.en.rc_h && !$("tp-rec").hidden) renderRec();
 }
 function renderOrchGate() {
@@ -3428,7 +3450,7 @@ function dropEmptySeasons() {
   const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
   if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded) save(); }
 }
-function renderAll() { dropEmptySeasons(); if (typeof renderDxOrch === "function") renderDxOrch(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); }
+function renderAll() { dropEmptySeasons(); if (typeof renderDxOrch === "function") renderDxOrch(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); if ($("tp-home") && !$("tp-home").hidden && typeof renderHome === "function") renderHome(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -3444,8 +3466,8 @@ async function loadMine() {
   S = parsed || makeSample();
   loaded = true; rev = 0; savedRev = 0; sel.o = null; sel.y = null; fixSel();
   setStatus("st_cloud"); entryOpen = false; showSub("year"); renderAll(); renderOrchGate();
-  if (justSignedIn) { justSignedIn = false; showTool("orch", false, true); if (location.hash === "#dashboard") try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
-  else if (!tabPicked) showTool("orch");
+  if (justSignedIn) { justSignedIn = false; showTool("home", false, true); if (location.hash === "#dashboard") try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
+  else if (!tabPicked) showTool("home");
 }
 /* each grower's language is kept in their account, so it follows them to any phone */
 const LANGS = ["en", "hi", "hn"];
@@ -3512,7 +3534,7 @@ function fmtPhone(p) {
 }
 $("signOut").addEventListener("click", async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} applyUser(null); });
 $("loadRetry").addEventListener("click", () => { if (user) loadMine(); });
-$("signBtn").addEventListener("click", () => { if (user) showTool("orch", false, true); else goLogin(false); });
+$("signBtn").addEventListener("click", () => { if (user) showTool("home", false, true); else goLogin(false); });
 
 let curSub = "quick";
 function showSub(w) {
@@ -4998,6 +5020,7 @@ function wxBlock(list, one, mini) {
   return '<div class="wxcards">' + cards + "</div>" + wl + '<p class="fine">' + tr("wx_src") + "</p>";
 }
 function refreshWx() {
+  if ($("tp-home") && !$("tp-home").hidden && typeof renderHome === "function") renderHome();
   document.querySelectorAll("[data-wx]").forEach(el => {
     const id = el.dataset.wx;
     if (id.indexOf("mini-") === 0) { const o = S.orchards.find(x => x.id === id.slice(5)); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true, true); }
@@ -6732,6 +6755,73 @@ Object.assign(T.hi, {
   gl_add_sale:"बिक्री जोड़ें", gl_add_exp:"ख़र्च जोड़ें", gl_check:"रोग जाँचें",
   gl_none:"{y} के लिए अभी कुछ दर्ज नहीं है।", gl_none_p:"पहला लॉट या ख़र्च जोड़ें, आपका हिसाब यहाँ दिखेगा।"
 });
+/* ---------- Home (signed-in growers): camera, profit per box, one tip for today ---------- */
+Object.assign(T.en, {
+  tt_home:"Home", hm_hi:"Namaste 🙏", hm_cam:"Check a disease",
+  hm_ppb:"Net profit per peti · {y} season", hm_ppb_s:"Sales {s} · {b} boxes", hm_ppb_none:"Add your first sale lot", hm_ppb_none_s:"See your real profit on every peti.",
+  hm_tip:"Today in the orchard", hm_tip_noloc:"Add your orchard's location to get a weather warning here.", hm_month:"Watch for this month",
+  hm_go_orch:"Orchard Record", hm_go_sales:"Season sales record", hm_go_spray:"Spray schedule", hm_go_chat:"Ask Saathi"
+});
+Object.assign(T.hi, {
+  tt_home:"होम", hm_hi:"नमस्ते 🙏", hm_cam:"रोग जाँचें",
+  hm_ppb:"प्रति पेटी शुद्ध मुनाफ़ा · {y} सीज़न", hm_ppb_s:"बिक्री {s} · {b} पेटियाँ", hm_ppb_none:"अपना पहला लॉट जोड़ें", hm_ppb_none_s:"हर पेटी पर असली मुनाफ़ा देखें।",
+  hm_tip:"आज बग़ीचे में", hm_tip_noloc:"मौसम की चेतावनी के लिए अपने बग़ीचे की जगह जोड़ें।", hm_month:"इस महीने ध्यान दें",
+  hm_go_orch:"बाग़ रिकॉर्ड", hm_go_sales:"सीज़न बिक्री रिकॉर्ड", hm_go_spray:"स्प्रे शेड्यूल", hm_go_chat:"साथी से पूछें"
+});
+Object.assign(T.hn, {
+  tt_home:"Home", hm_hi:"Namaste 🙏", hm_cam:"Bimari jaanchein",
+  hm_ppb:"Har peti par shuddh munafa · {y} season", hm_ppb_s:"Bikri {s} · {b} petiyan", hm_ppb_none:"Apna pehla lot jodein", hm_ppb_none_s:"Har peti par asli munafa dekhiye.",
+  hm_tip:"Aaj bagiche mein", hm_tip_noloc:"Mausam ki chetavani ke liye apne bagiche ki jagah jodein.", hm_month:"Is mahine dhyan dein",
+  hm_go_orch:"Bagicha record", hm_go_sales:"Season bikri record", hm_go_spray:"Spray schedule", hm_go_chat:"Saathi se poochhein"
+});
+function homePpb() {
+  /* the latest harvest year with sales: the current one if it has any, else the last finished season */
+  const cands = [curHYear()].concat(glYears());
+  for (const y of cands) {
+    const t = yearSummary(y).tot;
+    const eq = S.orchards.reduce((a, o) => { const se = seFor(o.id, y); return a + (se ? seasonCalc(se).eq : 0); }, 0);
+    if (t.sales > 0 && eq > 0) return { y, net: t.net, ppb: t.net / eq, sales: t.sales, boxes: t.boxes };
+  }
+  return null;
+}
+function homeTip() {
+  const o = S.orchards.find(hasLoc);
+  if (!o) return { t: tr("hm_tip_noloc"), noloc: true };
+  const c = wxGet(o);
+  if (!c || !c.d) return { t: "…" };
+  const w = wxWarn(o, c.d), cur = c.d.cur;
+  const now = cur && cur.temperature_2m != null ? Math.round(cur.temperature_2m) + "°C, " + wcWord(cur.weather_code) : "";
+  return { t: w.length ? w[0].t : tr("wx_ok"), now, kind: w.length ? w[0].c : "ok" };
+}
+function renderHome() {
+  const el = $("homeBody"); if (!el || !user) return;
+  let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>";
+  h += '<button class="btn primary hmcam" type="button" data-hm="cam"><span aria-hidden="true">📷</span> ' + tr("hm_cam") + "</button>";
+  let p = null; try { p = S.orchards.length ? homePpb() : null; } catch (e) {}
+  h += p
+    ? '<button class="hmcard" type="button" data-hm="sales"><span class="k">' + tr("hm_ppb").replace("{y}", p.y) + '</span><span class="hmbig' + (p.ppb < 0 ? " neg" : "") + '">' + inr(p.ppb) + '</span><span class="s">' + tr("hm_ppb_s").replace("{s}", inr(p.sales)).replace("{b}", fmtN(p.boxes)) + "</span></button>"
+    : '<button class="hmcard" type="button" data-hm="addsale"><span class="k">' + tr("hm_ppb").replace("{y}", curHYear() - 1) + '</span><span class="hmbig">+ ' + tr("hm_ppb_none") + '</span><span class="s">' + tr("hm_ppb_none_s") + "</span></button>";
+  let tip = null; try { tip = homeTip(); } catch (e) {}
+  const m = new Date(Date.now() + 5.5 * 3600e3).getUTCMonth() + 1;
+  const watch = (typeof DX_MONTH !== "undefined" && DX_MONTH[m] || []).slice(0, 4).filter(id => DX[id]).map(id => "<span>" + esc(dxL(DX[id])) + "</span>").join("");
+  h += '<div class="hmcard hmtip"><span class="k">' + tr("hm_tip") + (tip && tip.now ? " · " + esc(tip.now) : "") + "</span>" +
+    (tip ? (tip.noloc ? '<button class="link" type="button" data-hm="loc">' + esc(tip.t) + "</button>" : "<b>" + esc(tip.t) + "</b>") : "") +
+    (watch ? '<span class="k" style="margin-top:6px">' + tr("hm_month") + '</span><div class="hmchips">' + watch + "</div>" : "") + "</div>";
+  h += '<div class="hmgo"><button class="btn-s" type="button" data-hm="orch">' + tr("hm_go_orch") + '</button><button class="btn-s" type="button" data-hm="sales">' + tr("hm_go_sales") + "</button>" +
+    '<button class="btn-s" type="button" data-hm="spray">' + tr("hm_go_spray") + '</button><button class="btn-s" type="button" data-hm="chat">' + tr("hm_go_chat") + "</button></div></div>";
+  el.innerHTML = h;
+}
+$("homeBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-hm]"); if (!b) return;
+  const a = b.dataset.hm; tabPicked = true;
+  if (a === "cam") goDiag("cam");
+  else if (a === "sales") { showTool("calc", false, true); showSub("orch"); }
+  else if (a === "addsale") { const o = S.orchards[0]; if (o) goSeason(o.id, curHYear() - 1); else showTool("orch", false, true); }
+  else if (a === "orch" || a === "loc") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
+  else if (a === "spray") showTool("spray", false, true);
+  else if (a === "chat") { const f = $("chatFab"); if (f) f.click(); }
+});
+
 var glY = null;
 function glYears() {
   const ys = new Set();
@@ -6797,7 +6887,7 @@ $("dash").addEventListener("click", e => {
     const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); return; }
   if (g === "dx") goDiag("cam");
 });
-function prJoin() { if (user) { tabPicked = true; showTool("orch", false, true); } else goLogin(true); }
+function prJoin() { if (user) { tabPicked = true; showTool("home", false, true); } else goLogin(true); }
 $("heroJoin").addEventListener("click", prJoin);
 /* ---- install as an app (PWA) ---- */
 Object.assign(T.en, {
@@ -7218,7 +7308,9 @@ Object.assign(T.en, {
   sh_msg:"Namaste! Lost your diary, can't remember the accounts? I now use 🍎 *Seb Saathi* 🍎: orchard records, sales and profit, spray reminders, weather alerts and photo disease checks, all in one app. Free to start:",
   sh_join_h:"Know another grower?", sh_join_p:"Recommend Seb Saathi to friends and family. It is free, and they can add it to their phone like an app.",
   wl_h:"Welcome to Seb Saathi", wl_p:"A friend shared Seb Saathi with you. Add it to your phone and open it like an app, any time. It is free.",
-  wl_go:"Add to my phone", wl_how:"Show me how", wl_no:"Maybe later"
+  wl_go:"Add to my phone", wl_how:"Show me how", wl_no:"Maybe later",
+  rw_p:"Every 3 friends who join with your link = 1 free month of the Saathi plan. Friends joined so far: {n}.", rw_claim:"Take my free month",
+  rw_done:"Free month added. Your plan now runs until {d}.", rw_err:"Could not add the free month. Try again in a moment."
 });
 Object.assign(T.hi, {
   sh_btn:"शेयर", sh_invite:"दोस्तों को बुलाएँ", sh_h:"सेब साथी की सिफ़ारिश करें", sh_p:"इसे दूसरे सेब बाग़वानों को भेजें। लिंक खोलकर वे सेब साथी को अपने फ़ोन में जोड़ सकते हैं।",
@@ -7226,14 +7318,47 @@ Object.assign(T.hi, {
   sh_msg:"नमस्ते! डायरी खो जाती है, हिसाब याद नहीं रहता? मैं अब 🍎 *सेब साथी* 🍎 इस्तेमाल करता हूँ: बाग़ का रिकॉर्ड, बिक्री और मुनाफ़ा, स्प्रे रिमाइंडर, मौसम की चेतावनी और फ़ोटो से बीमारी जाँच, सब एक ऐप में। मुफ़्त में शुरू करें:",
   sh_join_h:"कोई और बाग़वान जानते हैं?", sh_join_p:"दोस्तों और परिवार को सेब साथी के बारे में बताएँ। यह मुफ़्त है, और वे इसे ऐप की तरह फ़ोन में रख सकते हैं।",
   wl_h:"सेब साथी में आपका स्वागत है", wl_p:"एक दोस्त ने आपको सेब साथी भेजा है। इसे फ़ोन में जोड़ें और जब चाहें ऐप की तरह खोलें। यह मुफ़्त है।",
-  wl_go:"मेरे फ़ोन में जोड़ें", wl_how:"तरीक़ा देखें", wl_no:"बाद में"
+  wl_go:"मेरे फ़ोन में जोड़ें", wl_how:"तरीक़ा देखें", wl_no:"बाद में",
+  rw_p:"आपके लिंक से हर 3 दोस्त जुड़ें = साथी प्लान का 1 महीना मुफ़्त। अब तक जुड़े दोस्त: {n}।", rw_claim:"मेरा मुफ़्त महीना लें",
+  rw_done:"मुफ़्त महीना जुड़ गया। आपका प्लान अब {d} तक चलेगा।", rw_err:"मुफ़्त महीना नहीं जुड़ पाया। थोड़ी देर बाद फिर कोशिश करें।"
+});
+Object.assign(T.hn, {
+  rw_p:"Aapke link se har 3 dost judein = Saathi plan ka 1 mahina free. Ab tak jude dost: {n}.", rw_claim:"Mera free mahina lein",
+  rw_done:"Free mahina jud gaya. Aapka plan ab {d} tak chalega.", rw_err:"Free mahina nahi jud paya. Thodi der baad phir koshish karein."
 });
 const myRef = () => user && user.id ? String(user.id).replace(/-/g, "").slice(0, 8) : "1";
 const shareLink = () => location.origin + "/?invite=" + myRef();
 const shareMsg = () => (T.hn && T.hn.sh_msg) || tr("sh_msg");  /* invite message is always sent in Hinglish */
 const shareText = () => shareMsg() + "\n" + shareLink();
+/* invite reward: every 3 friends who join = 1 free month (supabase/referrals.sql); hidden until that is set up */
+let rwInfo = null;
+async function loadInvites() {
+  rwInfo = null; renderInvites();
+  if (!user || !sb) return;
+  try { const r = await sb.rpc("my_invites"); if (!r.error && r.data) rwInfo = r.data; } catch (e) {}
+  renderInvites();
+}
+function renderInvites() {
+  const box = $("shareRew"); if (!box) return;
+  box.hidden = !rwInfo;
+  if (!rwInfo) return;
+  set("shareRewP", tr("rw_p").replace("{n}", rwInfo.joined || 0));
+  const b = $("shareClaim"); b.textContent = tr("rw_claim"); b.hidden = !(rwInfo.free > 0);
+}
+$("shareClaim").addEventListener("click", async () => {
+  const b = $("shareClaim"); b.disabled = true;
+  try {
+    const r = await sb.rpc("claim_invite_month");
+    if (r.error || !r.data) set("shareNote", tr("rw_err"));
+    else {
+      set("shareNote", tr("rw_done").replace("{d}", r.data.valid_until));
+      if (typeof loadMyPay === "function") { try { await loadMyPay(); } catch (e) {} if (typeof renderPlans === "function") try { renderPlans(); } catch (e) {} }
+    }
+  } catch (e) { set("shareNote", tr("rw_err")); }
+  b.disabled = false; await loadInvites().catch(() => {});
+});
 function shareOpen() {
-  set("shareMsg", shareText()); set("shareNote", "");
+  set("shareMsg", shareText()); set("shareNote", ""); loadInvites();
   $("shareWa").href = "https://wa.me/?text=" + encodeURIComponent(shareText());
   $("shareMore").hidden = !navigator.share;
   const d = $("shareDlg");
@@ -7256,7 +7381,7 @@ $("shareCopy").addEventListener("click", async () => {
 });
 function renderShare() {
   $("shareBtn").setAttribute("aria-label", tr("sh_btn")); $("shareBtn").title = tr("sh_btn");
-  if ($("shareDlg").open) set("shareMsg", shareText());
+  if ($("shareDlg").open) { set("shareMsg", shareText()); renderInvites(); }
   set("welGo", tr(instEvt ? "wl_go" : "wl_how"));
 }
 /* someone opened a shared link */
@@ -7584,7 +7709,7 @@ Object.assign(T.hn, { tt_acct:"Mera account", ac_me:"Meri jaankari", ac_email:"E
   ac_rej:"Aapka pichhla payment pakka nahi ho saka. Kripya humse sampark karein.", ac_up:"Plan upgrade karein", ac_plans:"Sabhi plan dekhein", ac_pw:"Password",
   ac_pw_p:"Yahan apna password badlein. Kam se kam 8 akshar rakhein.", ac_pw2:"Naya password phir se likhein", ac_pw_diff:"Dono password ek jaise nahi hain.", ac_pw_ok:"Password badal diya gaya.",
   ac_reset_p:"Password bhool gaye? Hum {e} par reset link bhej sakte hain.", ac_reset:"Reset link email karein", ac_reset_ok:"{e} par reset link bhej diya. Naya password banane ke liye ise isi phone par kholein.", ac_out:"Log out" });
-const TT = ["orch","rec","calc","diag","spray","news","cal","acct"];  /* Library tab removed from the site; its articles still feed Saathi */
+const TT = ["home","orch","rec","calc","diag","spray","news","cal","acct"];  /* Library tab removed from the site; its articles still feed Saathi */
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -7600,6 +7725,7 @@ function showTool(w, focus, scroll) {
   if (w === "news") loadNews();
   if (w === "rec") renderRec();
   if (w === "acct") renderAcctTab();
+  if (w === "home") renderHome();
 }
 TT.forEach((n, i) => {
   const b = $("tt-" + n);

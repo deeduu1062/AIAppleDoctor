@@ -771,7 +771,7 @@ function renderPayAdmin() {
       const expired = x.status === "approved" && x.valid_until && x.valid_until < today;
       return "<tr>" + sel + "<td>" + paDate(x.created_at) + "</td><td>" + esc(x.email || "–") + "</td>" +
         "<td>" + plName(x.plan) + '<br><span class="fine">' + tr(x.period === "year" ? "pay_year" : "pay_month") + "</span></td>" +
-        '<td class="n">' + paRup(x.amount) + '</td><td><code>' + esc(x.utr) + "</code></td>" +
+        '<td class="n">' + paRup(x.amount) + '</td><td><code>' + (x.source === "referral" ? "Invite reward" : esc(x.utr)) + "</code></td>" +
         "<td>" + (x.valid_until ? paDay(x.valid_until) + (expired ? ' <span class="tag">' + tr("pa_expired") + "</span>" : "") : "–") + "</td>" +
         "<td>" + (x.reviewed_at ? paDate(x.reviewed_at) + '<br><span class="fine">' + esc(x.reviewed_by || "") + "</span>" : "–") + "</td></tr>";
     }).join("") + "</tbody></table></div>";
@@ -1518,7 +1518,7 @@ async function exportTraining() {
 $("dqExport").addEventListener("click", exportTraining);
 
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["ov", "pay", "cost", "users", "prof", "dx", "fb"]; /* library editor tab removed from the menu; its code is kept but not shown */
+const TABS = ["ov", "pay", "cost", "users", "prof", "dx", "fb", "mk"]; /* library editor tab removed from the menu; its code is kept but not shown */
 let tab = "ov";
 try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; } catch (e) {}
 const loaded = {};
@@ -1528,7 +1528,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "dx") loadDq(); else if (t === "fb") loadFeedback();
+  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "dx") loadDq(); else if (t === "fb") loadFeedback(); else if (t === "mk" && typeof loadMk === "function") loadMk();
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
@@ -1537,7 +1537,7 @@ function applyLang() {
   set("langBtn", tr("lang_btn"));
   document.title = tr("adm_title");
   renderGate();
-  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq();
+  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => {
