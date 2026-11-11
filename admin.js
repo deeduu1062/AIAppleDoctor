@@ -1293,7 +1293,7 @@ function renderProfOne() {
   const box = $("pfOne");
   if (!pfOne) { box.innerHTML = back; return; }
   const p = pfOne.profile || {}, c = pfOne.counts || {}, r = pfOne.records || {}, pl = pfOne.plan, act = pfOne.activity || [], orch = r.orchards || [];
-  if (pfIsPin(p)) back += ' <button class="btn-s" type="button" data-pfpin="' + esc(p.id || pfSel || "") + '">🔑 ' + tr("pf_pin") + "</button>" + (pfPinMsg ? ' <span class="fine" role="status">' + esc(pfPinMsg) + "</span>" : "");
+  if (false && pfIsPin(p)) back +=   /* PIN reset: off since login moved to WhatsApp codes */ ' <button class="btn-s" type="button" data-pfpin="' + esc(p.id || pfSel || "") + '">🔑 ' + tr("pf_pin") + "</button>" + (pfPinMsg ? ' <span class="fine" role="status">' + esc(pfPinMsg) + "</span>" : "");
   const langs = { en: "pf_l_en", hi: "pf_l_hi", hn: "pf_l_hn" };
   const dDate = d => new Date(d + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {day: "numeric", month: "short", year: "numeric"});
   const planTxt = pl ? pfPlan(pl.plan) + " · " + tr(pl.period === "year" ? "pf_year" : "pf_month") + (pl.valid_until ? " · " + tr("pf_until").replace("{d}", dDate(pl.valid_until)) : "") : tr("pf_free");

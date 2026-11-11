@@ -1448,7 +1448,7 @@ $("authOther").addEventListener("click", () => { pendingEmail = ""; $("authStep1
    Until then the Mobile tab is hidden; add ?phone=1 to the address to test it.
    PHONE_CHANNELS: how the code is sent. The first one is the main button.
      "whatsapp" needs a WhatsApp sender approved in Twilio; "sms" needs India DLT registration. */
-const PHONE_READY = false;
+const PHONE_READY = true;
 const PHONE_CHANNELS = ["whatsapp"];
 Object.assign(T.en, {
   ph_tab:"Mobile number", em_tab:"Email",
@@ -1473,7 +1473,7 @@ Object.assign(T.hi, {
 /* Mobile number + 6-digit PIN (no SMS): api/phone-signup.js makes the account; login is a normal password login
    on 91XXXXXXXXXX@m.sebsaathi.com with password "sspin-<PIN>-Ss" (same rule in index.html: isPinUser / pinPw).
    When SMS/WhatsApp codes are ready (PHONE_READY), set PHONE_PIN = false to show the code login instead. */
-const PHONE_PIN = !/[?&]otp=1/.test(location.search);   /* /login.html?otp=1 = private test of WhatsApp codes while growers use PIN */
+const PHONE_PIN = /[?&]pin=1/.test(location.search);   /* WhatsApp codes for everyone; /login.html?pin=1 still opens the old PIN login as a back-up */
 Object.assign(T.en, { pin_p:"Log in with your mobile number and your 6-digit PIN.", pin_p_up:"Enter your mobile number and choose a 6-digit PIN that is easy for you to remember. You will log in with these.",
   pin_pin:"6-digit PIN", pin_new:"Choose a 6-digit PIN", pin_new2:"Type the PIN again", pin_login:"Log in", pin_create:"Create account", pin_to_up:"New here? Create account", pin_to_in:"I already have an account",
   pin_forgot:"Forgot your PIN? Send us a message with your mobile number and we will reset it.", pin_e_pin:"The PIN must be 6 digits.", pin_e_diff:"The two PINs do not match.",
@@ -1637,7 +1637,7 @@ function renderMode() {
 $("swA").addEventListener("click", e => {
   e.preventDefault();
   mode = mode === "login" ? "signup" : "login";
-  const keep = PHONE_PIN ? "" : (mode === "signup" ? "&" : "?") + "otp=1";
+  const keep = PHONE_PIN ? (mode === "signup" ? "&" : "?") + "pin=1" : "";
   try { history.replaceState(null, "", (mode === "signup" ? "/login.html?mode=signup" : "/login.html") + keep); } catch (x) {}
   authClear(); renderMode(); try { $("authEmail").focus(); } catch (x) {}
 });
