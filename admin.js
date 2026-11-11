@@ -52,7 +52,7 @@ const T = {
 "pl_best": "Best value",
 "pl_f_free": [
 "Quick profit calculator",
-"Apple register for 2 orchards, 2 years",
+"Apple register for 2 orchards, keep records up to 2 years",
 "Season calendar and spray schedule",
 "3 photo disease checks a month",
 "5 questions a day to Saathi",
@@ -60,7 +60,7 @@ const T = {
 ],
 "pl_f_basic": [
 "Everything in Free",
-"Apple register for 5 orchards, 5 years",
+"Apple register for 5 orchards, keep records up to 5 years",
 "15 photo disease checks a month",
 "20 questions a day to Saathi",
 "Spray reminders on WhatsApp",
@@ -68,7 +68,7 @@ const T = {
 ],
 "pl_f_premium": [
 "Everything in Saathi",
-"Apple register for 10 orchards, 10 years",
+"Apple register for 10 orchards, keep records up to 10 years",
 "Year-on-year profit comparison",
 "50 photo disease checks a month",
 "30 questions a day to Saathi",
@@ -235,7 +235,7 @@ const T = {
 "pl_best": "सबसे फ़ायदेमंद",
 "pl_f_free": [
 "झटपट मुनाफ़ा कैलकुलेटर",
-"2 बाग़ों का सेब रजिस्टर, 2 साल का",
+"2 बाग़ों का सेब रजिस्टर, 2 साल तक का रिकॉर्ड रखें",
 "सीज़न कैलेंडर और स्प्रे शेड्यूल",
 "महीने में 3 फ़ोटो से बीमारी जाँच",
 "साथी से रोज़ 5 सवाल",
@@ -243,7 +243,7 @@ const T = {
 ],
 "pl_f_basic": [
 "मुफ़्त प्लान की सब सुविधाएँ",
-"5 बाग़ों का सेब रजिस्टर, 5 साल का",
+"5 बाग़ों का सेब रजिस्टर, 5 साल तक का रिकॉर्ड रखें",
 "महीने में 15 फ़ोटो से बीमारी जाँच",
 "साथी से रोज़ 20 सवाल",
 "WhatsApp पर स्प्रे रिमाइंडर",
@@ -251,7 +251,7 @@ const T = {
 ],
 "pl_f_premium": [
 "साथी प्लान की सब सुविधाएँ",
-"10 बाग़ों का सेब रजिस्टर, 10 साल का",
+"10 बाग़ों का सेब रजिस्टर, 10 साल तक का रिकॉर्ड रखें",
 "साल-दर-साल मुनाफ़े की तुलना",
 "महीने में 50 फ़ोटो से बीमारी जाँच",
 "साथी से रोज़ 30 सवाल",
