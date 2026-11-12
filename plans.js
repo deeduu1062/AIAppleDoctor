@@ -6,7 +6,7 @@ const QR_SRC = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";
 
 let payPlan = "basic", payPer = "year", myPay = null, qrLoad = null;
 
-/* ---- Razorpay (automatic payments): api/rzp-order.js, api/rzp-verify.js. Until it is set up in Vercel, only the UPI-by-hand way shows. ---- */
+/* ---- Razorpay (automatic payments): api/rzp-order.js, api/rzp-verify.js. Turned off for now with RZP_SWITCH below; only the UPI-by-hand way shows. ---- */
 let rzpOn = null, rzpLoad = null, rzpBusy = false, rzpPaid = false;
 Object.assign(T.en, { pay_rzp: "Pay {a} now", pay_rzp_n: "UPI, card or net banking. Your plan starts straight away.", pay_manual: "Or pay to our UPI ID yourself and send the reference",
   pay_rzp_wait: "Confirming your payment…", pay_rzp_ok: "Payment received. {p} is active till {d}. Thank you!", pay_rzp_cancel: "Payment cancelled. You have not been charged.",
@@ -17,7 +17,10 @@ Object.assign(T.hi, { pay_rzp: "अभी {a} भरें", pay_rzp_n: "UPI, �
 if (T.hn) Object.assign(T.hn, { pay_rzp: "Abhi {a} bharein", pay_rzp_n: "UPI, card ya net banking. Aapka plan turant chalu hoga.", pay_manual: "Ya khud hamari UPI ID par bhejein aur reference number daalein",
   pay_rzp_wait: "Payment ki pushti ho rahi hai…", pay_rzp_ok: "Payment mil gaya. {p} {d} tak chalu hai. Dhanyavaad!", pay_rzp_cancel: "Payment cancel hua. Aapke paise nahi kate.",
   pay_rzp_err: "Abhi payment ki pushti nahi ho saki. Agar paise kate hain to kuch minute mein plan chalu ho jayega; nahi to humse sampark karein.", pay_rzp_fail: "Payment nahi hua: {m}" });
-fetch("/api/rzp-order").then(r => r.ok ? r.json() : {}).then(j => { rzpOn = !!(j && j.enabled); if (document.getElementById("payDlg") && document.getElementById("payDlg").open) renderPay(); }).catch(() => { rzpOn = false; });
+/* Switch: false = growers see only the UPI-by-hand way (link, QR, reference number). Set to true to bring Razorpay back. */
+const RZP_SWITCH = false;
+if (!RZP_SWITCH) rzpOn = false;
+else fetch("/api/rzp-order").then(r => r.ok ? r.json() : {}).then(j => { rzpOn = !!(j && j.enabled); if (document.getElementById("payDlg") && document.getElementById("payDlg").open) renderPay(); }).catch(() => { rzpOn = false; });
 function loadRzp() {
   if (window.Razorpay) return Promise.resolve(true);
   if (!rzpLoad) rzpLoad = new Promise(res => {
