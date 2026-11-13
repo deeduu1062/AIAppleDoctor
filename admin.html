@@ -1507,7 +1507,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <body>
 <header class="wrap admtop">
   <a class="brand" href="/" id="brandLink"><i aria-hidden="true"></i>Seb Saathi <small data-i18n="tt_admin"></small></a>
-  <nav aria-label="Admin"><span id="whoami"></span><a href="/" id="siteLink" data-i18n="adm_site"></a><button class="lang" id="langBtn" type="button">हिंदी</button><button class="lang" id="signOut" type="button" data-i18n="adm_out" hidden></button></nav>
+  <nav aria-label="Admin"><span id="whoami"></span><a href="/" id="siteLink" data-i18n="adm_site"></a><button class="lang" id="langBtn" type="button">हिंदी</button><button class="lang" id="pwBtn" type="button" data-i18n="adm_pw" hidden></button><button class="lang" id="signOut" type="button" data-i18n="adm_out" hidden></button></nav>
 </header>
 <main class="wrap admmain">
   <div class="gate" id="gate"><h2 data-i18n="adm_gate_h"></h2><p id="gateMsg"></p><a class="btn-s add" id="gateLogin" href="/login.html?next=admin" data-i18n="adm_gate_login" hidden></a></div>
@@ -1657,9 +1657,14 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
     </div>
   </div>
 </main>
+<dialog class="instdlg" id="pwDlg" aria-labelledby="pwH"><h3 id="pwH" data-i18n="adm_pw_h" style="margin:0 0 6px"></h3><p class="fine" data-i18n="adm_pw_p"></p>
+<form id="pwForm" novalidate><div class="field"><label for="pw1" data-i18n="adm_pw_new"></label><input id="pw1" type="password" autocomplete="new-password" minlength="8"></div>
+<div class="field"><label for="pw2" data-i18n="adm_pw_again"></label><input id="pw2" type="password" autocomplete="new-password" minlength="8"></div>
+<p class="fine" id="pwMsg" role="status"></p><div class="dels"><button class="btn-s add" type="submit" id="pwSave" data-i18n="adm_pw_save"></button><button class="btn-s" type="button" id="pwX" data-i18n="adm_pw_close"></button></div></form>
+<p class="fine" style="margin-top:14px"><button class="link" type="button" id="pwReset" data-i18n="adm_pw_reset"></button></p></dialog>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=21"></script>
+<script src="/admin.js?v=22"></script>
 <script src="/marketing.js?v=5"></script>
 </body>
 </html>

@@ -1639,10 +1639,36 @@ $("signOut").addEventListener("click", async () => {
   location.replace("/login.html?next=admin");
 });
 $("prevX").addEventListener("click", () => { const d = $("prevDlg"); if (d.close) d.close(); else d.removeAttribute("open"); });
+/* change password: for the admin accounts, which never see the grower site's My account */
+Object.assign(T.en, { adm_pw: "Password", adm_pw_h: "Change your password", adm_pw_p: "Use at least 8 characters. You stay signed in on this device.", adm_pw_new: "New password", adm_pw_again: "New password again",
+  adm_pw_save: "Save password", adm_pw_short: "Use at least 8 characters.", adm_pw_diff: "The two passwords do not match.", adm_pw_ok: "Password changed.", adm_pw_err: "Could not change it: {m}",
+  adm_pw_reset: "Forgot it? Email me a reset link instead", adm_pw_sent: "Reset link sent to {e}.", adm_pw_close: "Close" });
+Object.assign(T.hi, { adm_pw: "पासवर्ड", adm_pw_h: "अपना पासवर्ड बदलें", adm_pw_p: "कम से कम 8 अक्षर रखें। आप इस डिवाइस पर लॉग इन रहेंगे।", adm_pw_new: "नया पासवर्ड", adm_pw_again: "नया पासवर्ड फिर से",
+  adm_pw_save: "पासवर्ड सेव करें", adm_pw_short: "कम से कम 8 अक्षर रखें।", adm_pw_diff: "दोनों पासवर्ड एक जैसे नहीं हैं।", adm_pw_ok: "पासवर्ड बदल दिया गया।", adm_pw_err: "बदल नहीं सका: {m}",
+  adm_pw_reset: "भूल गए? इसकी जगह रीसेट लिंक ईमेल करें", adm_pw_sent: "{e} पर रीसेट लिंक भेज दिया।", adm_pw_close: "बंद करें" });
+const pwDlg = $("pwDlg");
+$("pwBtn").addEventListener("click", () => { $("pw1").value = ""; $("pw2").value = ""; set("pwMsg", ""); if (pwDlg.showModal) pwDlg.showModal(); else pwDlg.setAttribute("open", ""); $("pw1").focus(); });
+$("pwX").addEventListener("click", () => { if (pwDlg.close) pwDlg.close(); else pwDlg.removeAttribute("open"); });
+$("pwForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const a = $("pw1").value, b = $("pw2").value;
+  if (a.length < 8) { set("pwMsg", tr("adm_pw_short")); return; }
+  if (a !== b) { set("pwMsg", tr("adm_pw_diff")); return; }
+  $("pwSave").disabled = true;
+  let err = null; try { const r = await sb.auth.updateUser({ password: a }); err = r.error; } catch (x) { err = x; }
+  $("pwSave").disabled = false;
+  set("pwMsg", err ? tr("adm_pw_err").replace("{m}", String(err.message || err)) : tr("adm_pw_ok"));
+  if (!err) { $("pw1").value = ""; $("pw2").value = ""; }
+});
+$("pwReset").addEventListener("click", async () => {
+  if (!user || !user.email) return;
+  let err = null; try { const r = await sb.auth.resetPasswordForEmail(user.email, { redirectTo: location.origin + "/admin.html" }); err = r.error; } catch (x) { err = x; }
+  set("pwMsg", err ? tr("adm_pw_err").replace("{m}", String(err.message || err)) : tr("adm_pw_sent").replace("{e}", user.email));
+});
 let checked = false;
 function renderGate() {
   const ok = isAdmin();
-  $("gate").hidden = ok; $("adminApp").hidden = !ok; $("signOut").hidden = !user;
+  $("gate").hidden = ok; $("adminApp").hidden = !ok; $("signOut").hidden = !user; $("pwBtn").hidden = !(user && user.email);
   set("whoami", user ? (user.email || "") : "");
   const only = !!(user && user.email && ADMIN_ONLY.indexOf(user.email.toLowerCase()) >= 0);
   $("siteLink").hidden = only; $("brandLink").setAttribute("href", only ? "/admin.html" : "/");
@@ -1655,7 +1681,7 @@ function applyUser(u) {
   if (isAdmin() && !was) { Object.keys(loaded).forEach(k => delete loaded[k]); showTab(tab); }
 }
 if (sb) {
-  sb.auth.onAuthStateChange((ev, session) => setTimeout(() => applyUser(session ? session.user : null), 0));
+  sb.auth.onAuthStateChange((ev, session) => setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") $("pwBtn").click(); }, 0));   /* opened from a reset email: ask for the new password straight away */
   sb.auth.getSession().then(r => { const s = r && r.data && r.data.session; applyUser(s ? s.user : null); }).catch(() => applyUser(null));
 } else { checked = true; }
 applyLang();
