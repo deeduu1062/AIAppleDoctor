@@ -1488,6 +1488,32 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 .svb.now i{background:var(--brand)}.svb:hover i,.svb:focus i{background:var(--good)}
 .svax{display:flex;justify-content:space-between;font:500 .75rem var(--mono);color:var(--muted);padding-top:5px}
 details.svdays summary{cursor:pointer}
+/* Video Studio (studio.js) */
+.vsbox{margin-top:18px}
+.vsgrid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;align-items:start;margin-top:12px}
+.vsprev{position:sticky;top:12px}
+#vsCanvas{display:block;width:100%;max-height:70vh;object-fit:contain;border-radius:14px;background:#0E2418;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.vsctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.btn-s.vsgo{background:var(--brand);color:var(--on-brand);border-color:var(--brand);text-decoration:none;display:inline-flex;align-items:center}
+.vsout{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface)}.vsout p{margin:0 0 8px}
+.vsgrp{margin:0 0 12px}.vsl{display:block;font:500 .8rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.vschips{display:flex;flex-wrap:wrap;gap:6px}
+.vschip{font:600 .92rem var(--body);padding:7px 14px;min-height:40px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.vschip[aria-pressed="true"]{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.vsscene{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--surface)}
+.vsscene.on{border-color:var(--good);box-shadow:0 0 0 2px color-mix(in srgb,var(--good) 25%,transparent)}
+.vshd{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}.vshd b{margin-right:auto;font-family:var(--display)}
+.vsdur{font-size:.88rem;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.vsdur select{min-height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);padding:4px 6px}
+.btn-s.vsmini{min-height:36px;padding:5px 10px;font-size:.85rem}
+.vsrow{display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:8px}
+.vsf{margin:0 0 6px}.vsf label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:3px}
+.vsf input,.vsf textarea{width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:500 1rem var(--body)}
+.vsf textarea{resize:vertical;line-height:1.4}
+.vsmedia{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px}
+.vsthumb{font-size:.9rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-s.vsfile{display:inline-flex;align-items:center;cursor:pointer}
+@media (max-width:760px){.vsgrid{grid-template-columns:1fr}.vsprev{position:static;max-width:300px;margin:0 auto}}
 #ovTab .ledger th,#ovTab .ledger td{padding:10px 6px}
 #ovTab .ledger td{font-size:.9rem}
 #ovTab .ledger th:first-child{padding-left:10px}
@@ -1673,7 +1699,8 @@ details.svdays summary{cursor:pointer}
 <p class="fine" style="margin-top:14px"><button class="link" type="button" id="pwReset" data-i18n="adm_pw_reset"></button></p></dialog>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=22"></script>
+<script src="/admin.js?v=23"></script>
 <script src="/marketing.js?v=5"></script>
+<script src="/studio.js?v=1"></script>
 </body>
 </html>

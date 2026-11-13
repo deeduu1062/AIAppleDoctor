@@ -1653,7 +1653,7 @@ function applyLang() {
   set("langBtn", tr("lang_btn"));
   document.title = tr("adm_title");
   renderGate();
-  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk();
+  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk(); if (typeof renderStudio === "function") renderStudio();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => {
