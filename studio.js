@@ -24,7 +24,29 @@ Object.assign(T.en, {
   vs_total: "Length: {s} seconds", vs_hidden: "Recording paused while this tab was hidden, so the video may jump. Make it again with the tab in front.",
   vs_cap: "Post caption", vs_copy: "Copy", vs_copied: "Copied",
   vs_how: "Post the video as a Reel from Meta Business Suite or the Instagram app, as a Short on YouTube, and on your WhatsApp Status. Photos and clips stay on this device; nothing is uploaded.",
-  vs_bad_file: "That file can't be used. Choose a photo (JPG/PNG) or a video clip (MP4/MOV)."
+  vs_bad_file: "That file can't be used. Choose a photo (JPG/PNG) or a video clip (MP4/MOV).",
+  yt_h: "YouTube", yt_checking: "Checking YouTube…", yt_conn: "Connected: {c}", yt_connect: "Connect YouTube channel", yt_disc: "Disconnect", yt_open: "Open channel",
+  yt_disc_q: "Disconnect the YouTube channel from the admin page? You can connect it again any time.",
+  yt_none: "Not connected yet. Press the button, sign in with the Google account that owns the Seb Saathi channel, pick the channel, and allow uploads.",
+  yt_unverified: "Google will warn that the app isn't verified (it's your own app): tap Advanced, then Go to Seb Saathi.",
+  yt_setup_h: "One-time setup (on a computer, about 15 minutes)",
+  yt_missing: "Still missing: {m}",
+  yt_s1: "Google Cloud: make a project", yt_s1p: "Open console.cloud.google.com, sign in with the Google account that owns the channel, and create a project called Seb Saathi.",
+  yt_s2: "Turn on the YouTube API", yt_s2p: "APIs & Services → Library → search \"YouTube Data API v3\" → Enable.",
+  yt_s3: "Set up the sign-in screen", yt_s3p: "Google Auth Platform → Branding: app name Seb Saathi and your email. Audience: External, then press \"Publish app\" (otherwise the connection stops working after 7 days).",
+  yt_s4: "Make the key", yt_s4p: "Google Auth Platform → Clients → Create client → Web application. Under Authorised redirect URIs add https://sebsaathi.com/api/youtube and https://sebsaathi.vercel.app/api/youtube. Create, then copy the Client ID and Client secret.",
+  yt_s5: "Put the key in Vercel", yt_s5p: "Vercel → your project → Settings → Environment Variables: add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET with those two values, then Deployments → Redeploy.",
+  yt_s6: "Make the table in Supabase", yt_s6p: "Supabase → SQL Editor → New query → paste supabase/youtube.sql from the GitHub repo → Run.",
+  yt_s7: "Connect", yt_s7p: "Come back here, press Refresh, then Connect YouTube channel.",
+  yt_refresh: "Refresh",
+  yt_up_h: "Upload to YouTube", yt_title: "Title", yt_desc: "Description", yt_priv: "Who can see it",
+  yt_p_public: "Public", yt_p_unlisted: "Unlisted (only with the link)", yt_p_private: "Private (only you)",
+  yt_go: "Upload to YouTube", yt_upping: "Uploading… {p}%", yt_starting: "Starting upload…",
+  yt_done: "Uploaded to YouTube ✓", yt_watch: "Watch", yt_studio: "Open in YouTube Studio",
+  yt_locked: "YouTube has kept it Private. Videos uploaded through a new, unaudited app stay private: open it in YouTube Studio and set it to Public (one tap). To stop this, send Google the YouTube API audit form once.",
+  yt_err: "Upload failed: {m}", yt_reconnect: "The YouTube connection has expired or was removed. Connect again.",
+  yt_back_ok: "YouTube channel connected.", yt_back_err: "YouTube didn't connect: {m}",
+  yt_connect_first: "Connect your YouTube channel below to upload straight from here."
 });
 Object.assign(T.hi, {
   vs_h: "वीडियो स्टूडियो",
@@ -46,7 +68,29 @@ Object.assign(T.hi, {
   vs_total: "लंबाई: {s} सेकंड", vs_hidden: "टैब छिपा था, इसलिए वीडियो अटक सकता है। टैब सामने रखकर दोबारा बनाएँ।",
   vs_cap: "पोस्ट का कैप्शन", vs_copy: "कॉपी", vs_copied: "कॉपी हुआ",
   vs_how: "वीडियो को Meta Business Suite या Instagram ऐप से Reel के रूप में, YouTube पर Short के रूप में और अपने WhatsApp स्टेटस पर डालें। फ़ोटो और क्लिप इसी डिवाइस पर रहती हैं; कुछ भी अपलोड नहीं होता।",
-  vs_bad_file: "यह फ़ाइल नहीं चलेगी। फ़ोटो (JPG/PNG) या वीडियो क्लिप (MP4/MOV) चुनें।"
+  vs_bad_file: "यह फ़ाइल नहीं चलेगी। फ़ोटो (JPG/PNG) या वीडियो क्लिप (MP4/MOV) चुनें।",
+  yt_h: "YouTube", yt_checking: "YouTube जाँच रहे हैं…", yt_conn: "जुड़ा हुआ: {c}", yt_connect: "YouTube चैनल जोड़ें", yt_disc: "हटाएँ", yt_open: "चैनल खोलें",
+  yt_disc_q: "YouTube चैनल को एडमिन पेज से हटाएँ? आप कभी भी दोबारा जोड़ सकते हैं।",
+  yt_none: "अभी जुड़ा नहीं है। बटन दबाएँ, Seb Saathi चैनल वाले Google खाते से साइन इन करें, चैनल चुनें और अपलोड की अनुमति दें।",
+  yt_unverified: "Google चेतावनी देगा कि ऐप verified नहीं है (यह आपका अपना ऐप है): Advanced दबाएँ, फिर Go to Seb Saathi।",
+  yt_setup_h: "एक बार की सेटिंग (कंप्यूटर पर, लगभग 15 मिनट)",
+  yt_missing: "अभी बाकी: {m}",
+  yt_s1: "Google Cloud: प्रोजेक्ट बनाएँ", yt_s1p: "console.cloud.google.com खोलें, चैनल वाले Google खाते से साइन इन करें और Seb Saathi नाम का प्रोजेक्ट बनाएँ।",
+  yt_s2: "YouTube API चालू करें", yt_s2p: "APIs & Services → Library → \"YouTube Data API v3\" खोजें → Enable।",
+  yt_s3: "साइन-इन स्क्रीन बनाएँ", yt_s3p: "Google Auth Platform → Branding: ऐप का नाम Seb Saathi और आपका ईमेल। Audience: External, फिर \"Publish app\" दबाएँ (वरना 7 दिन बाद कनेक्शन बंद हो जाएगा)।",
+  yt_s4: "चाबी बनाएँ", yt_s4p: "Google Auth Platform → Clients → Create client → Web application। Authorised redirect URIs में https://sebsaathi.com/api/youtube और https://sebsaathi.vercel.app/api/youtube जोड़ें। Create करें, फिर Client ID और Client secret कॉपी करें।",
+  yt_s5: "चाबी Vercel में डालें", yt_s5p: "Vercel → आपका प्रोजेक्ट → Settings → Environment Variables: GOOGLE_CLIENT_ID और GOOGLE_CLIENT_SECRET में ये दोनों डालें, फिर Deployments → Redeploy।",
+  yt_s6: "Supabase में टेबल बनाएँ", yt_s6p: "Supabase → SQL Editor → New query → GitHub से supabase/youtube.sql पेस्ट करें → Run।",
+  yt_s7: "जोड़ें", yt_s7p: "यहाँ वापस आएँ, Refresh दबाएँ, फिर YouTube चैनल जोड़ें।",
+  yt_refresh: "Refresh",
+  yt_up_h: "YouTube पर अपलोड", yt_title: "शीर्षक", yt_desc: "विवरण", yt_priv: "कौन देख सकता है",
+  yt_p_public: "सभी (Public)", yt_p_unlisted: "सिर्फ़ लिंक वाले (Unlisted)", yt_p_private: "सिर्फ़ आप (Private)",
+  yt_go: "YouTube पर अपलोड करें", yt_upping: "अपलोड हो रहा है… {p}%", yt_starting: "अपलोड शुरू हो रहा है…",
+  yt_done: "YouTube पर अपलोड हो गया ✓", yt_watch: "देखें", yt_studio: "YouTube Studio में खोलें",
+  yt_locked: "YouTube ने इसे Private रखा है। नए, बिना ऑडिट वाले ऐप से अपलोड वीडियो private रहते हैं: YouTube Studio में खोलकर Public करें (एक टैप)। इसे बंद करने के लिए Google को एक बार YouTube API ऑडिट फ़ॉर्म भेजें।",
+  yt_err: "अपलोड नहीं हुआ: {m}", yt_reconnect: "YouTube कनेक्शन ख़त्म हो गया या हटा दिया गया। दोबारा जोड़ें।",
+  yt_back_ok: "YouTube चैनल जुड़ गया।", yt_back_err: "YouTube नहीं जुड़ा: {m}",
+  yt_connect_first: "यहीं से अपलोड करने के लिए नीचे अपना YouTube चैनल जोड़ें।"
 });
 
 /* ---------- templates: words for each video language ---------- */
@@ -335,8 +379,8 @@ function vsStart(record) {
     rec.onstop = () => {
       const type = mime.split(";")[0], blob = new Blob(chunks, { type });
       if (VS.out) URL.revokeObjectURL(VS.out.url);
-      VS.out = { url: URL.createObjectURL(blob), size: blob.size, ext: type.indexOf("mp4") >= 0 ? "mp4" : "webm", secs: Math.round(vsTotal()), hidden: P.hidden };
-      VS.msg = ""; renderStudio();
+      VS.out = { url: URL.createObjectURL(blob), blob, size: blob.size, ext: type.indexOf("mp4") >= 0 ? "mp4" : "webm", secs: Math.round(vsTotal()), hidden: P.hidden };
+      VS.msg = ""; YTU = { title: vsYtTitle(), desc: vsCaption(), priv: (YTU && YTU.priv) || "public" }; renderStudio();
     };
   } else vsAudio();
   const P = { t0: performance.now(), rec, cur: -1, hidden: false, last: 0 };
@@ -373,6 +417,79 @@ function vsCaption() {
   return [head, "", ...pts, "", VS.cta, "👉 https://sebsaathi.com", "", b.name + " · " + b.tag, VS_TAGS].join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
+/* ---------- YouTube: connect the channel and upload (api/youtube.js, supabase/youtube.sql) ---------- */
+let YT = null, YTU = null, ytBusy = "", ytRes = "", ytNote = "";
+const vsYtTitle = () => (String((VS.scenes[0] || {}).title || VS_BRAND[VS.vlang].name).replace(/[<>]/g, "").slice(0, 88) + " #Shorts").trim();
+async function ytCall(action) {
+  const r = await fetch("/api/youtube", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ action }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+  return j;
+}
+async function ytLoad() {
+  YT = null; renderStudio();
+  try { YT = await ytCall("status"); } catch (e) { YT = { setup: false, error: String(e.message || e) }; }
+  renderStudio();
+}
+function ytCardHtml() {
+  let h = '<div class="vsscene"><div class="vshd"><b>' + tr("yt_h") + '</b><button type="button" class="btn-s vsmini" data-yt="refresh">' + tr("yt_refresh") + "</button></div>";
+  if (ytNote) h += '<p class="fine" role="status">' + esc(ytNote) + "</p>";
+  if (!YT) return h + '<p class="fine">' + tr("yt_checking") + "</p></div>";
+  if (YT.error) h += '<p class="autherr">' + esc(YT.error) + "</p>";
+  if (!YT.setup) {
+    const steps = [1, 2, 3, 4, 5, 6, 7];
+    return h + "<p><b>" + tr("yt_setup_h") + "</b></p>" + (YT.missing && YT.missing.length ? '<p class="fine">' + esc(tr("yt_missing").replace("{m}", YT.missing.join(", "))) + "</p>" : "") +
+      '<ol class="mksteps">' + steps.map(n => "<li><b>" + tr("yt_s" + n) + '</b><br><span class="fine">' + tr("yt_s" + n + "p") + "</span></li>").join("") + "</ol></div>";
+  }
+  if (YT.connected && YT.channel) {
+    return h + '<div class="vsmedia"><span class="vsthumb">▶ ' + esc(tr("yt_conn").replace("{c}", YT.channel.title + (YT.channel.handle ? " (" + YT.channel.handle + ")" : ""))) + "</span>" +
+      '<a class="btn-s vsmini" href="' + esc(YT.channel.url) + '" target="_blank" rel="noopener">' + tr("yt_open") + "</a>" +
+      '<button type="button" class="btn-s vsmini" data-yt="disconnect">' + tr("yt_disc") + "</button></div></div>";
+  }
+  return h + '<p class="fine">' + tr("yt_none") + '</p><div class="vsctl"><button type="button" class="btn-s vsgo" data-yt="connect"' + (ytBusy ? " disabled" : "") + ">" + tr("yt_connect") + '</button></div><p class="fine">' + tr("yt_unverified") + "</p></div>";
+}
+function ytOutHtml() {
+  if (!VS.out) return "";
+  if (!YT || !YT.connected) return '<p class="fine">' + tr("yt_connect_first") + "</p>";
+  const u = YTU || { title: vsYtTitle(), desc: vsCaption(), priv: "public" }; YTU = u;
+  return '<div class="ytup"><p><b>' + tr("yt_up_h") + "</b> · " + esc(YT.channel.title) + "</p>" +
+    '<div class="vsf"><label for="ytTitle">' + tr("yt_title") + '</label><input id="ytTitle" maxlength="100" value="' + esc(u.title) + '"></div>' +
+    '<div class="vsf"><label for="ytDesc">' + tr("yt_desc") + '</label><textarea id="ytDesc" rows="4" maxlength="4900">' + esc(u.desc) + "</textarea></div>" +
+    '<div class="vsf"><label for="ytPriv">' + tr("yt_priv") + '</label><select id="ytPriv" class="ytsel">' + ["public", "unlisted", "private"].map(p => '<option value="' + p + '"' + (p === u.priv ? " selected" : "") + ">" + tr("yt_p_" + p) + "</option>").join("") + "</select></div>" +
+    '<div class="vsctl"><button type="button" class="btn-s vsgo" data-yt="upload"' + (ytBusy ? " disabled" : "") + ">" + (ytBusy ? esc(ytBusy) : tr("yt_go")) + "</button></div>" +
+    (ytRes ? '<div role="status">' + ytRes + "</div>" : "") + "</div>";
+}
+function ytProgress(t) { ytBusy = t; const b = document.querySelector('[data-yt="upload"]'); if (b) { b.textContent = t || tr("yt_go"); b.disabled = !!t; } }
+async function ytUpload() {
+  const o = VS.out; if (!o || !o.blob || ytBusy) return;
+  const u = YTU, title = String(u.title || "").replace(/[<>]/g, "").trim().slice(0, 100) || vsYtTitle();
+  ytRes = ""; ytProgress(tr("yt_starting"));
+  try {
+    const k = await ytCall("token");
+    if (!k.access_token) { YT.connected = !!k.connected && k.error !== "reconnect"; throw new Error(k.error === "reconnect" ? tr("yt_reconnect") : (k.error || tr("yt_reconnect"))); }
+    const type = o.blob.type || "video/mp4";
+    const init = await fetch("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + k.access_token, "Content-Type": "application/json; charset=UTF-8", "X-Upload-Content-Type": type, "X-Upload-Content-Length": String(o.blob.size) },
+      body: JSON.stringify({ snippet: { title, description: String(u.desc || "").replace(/[<>]/g, "").slice(0, 4900), categoryId: "27", defaultLanguage: VS.vlang === "en" ? "en" : "hi", defaultAudioLanguage: VS.vlang === "en" ? "en" : "hi", tags: ["Seb Saathi", "सेब साथी", "apple farming", "सेब", "Himachal apple", "Kashmir apple"] },
+        status: { privacyStatus: u.priv || "public", selfDeclaredMadeForKids: false } })
+    });
+    if (!init.ok) { const j = await init.json().catch(() => ({})); throw new Error((j.error && j.error.message) || ("YouTube " + init.status)); }
+    const loc = init.headers.get("Location"); if (!loc) throw new Error("no upload address");
+    const v = await new Promise((ok, bad) => {
+      const x = new XMLHttpRequest(); x.open("PUT", loc); x.setRequestHeader("Content-Type", type);
+      x.upload.onprogress = ev => { if (ev.lengthComputable) ytProgress(tr("yt_upping").replace("{p}", Math.round(ev.loaded / ev.total * 100))); };
+      x.onload = () => { let j = {}; try { j = JSON.parse(x.responseText); } catch (e) {} if (x.status >= 200 && x.status < 300 && j.id) ok(j); else bad(new Error((j.error && j.error.message) || ("YouTube " + x.status))); };
+      x.onerror = () => bad(new Error("network")); x.send(o.blob);
+    });
+    const watch = "https://youtube.com/shorts/" + v.id, studio = "https://studio.youtube.com/video/" + v.id + "/edit";
+    const locked = (u.priv || "public") !== "private" && v.status && v.status.privacyStatus === "private";
+    ytRes = "<p>" + tr("yt_done") + ' · <a href="' + watch + '" target="_blank" rel="noopener">' + tr("yt_watch") + '</a> · <a href="' + studio + '" target="_blank" rel="noopener">' + tr("yt_studio") + "</a></p>" + (locked ? '<p class="autherr">' + tr("yt_locked") + "</p>" : "");
+    if (typeof mkSave === "function") { try { await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: ("YouTube: " + title).slice(0, 80), fb: "", ig: "", yt: watch }).slice(0, 500) }); } catch (e) {} }
+  } catch (e) { ytRes = '<p class="autherr">' + esc(tr("yt_err").replace("{m}", String(e.message || e))) + "</p>"; }
+  ytBusy = ""; renderStudio();
+}
+
 /* ---------- page ---------- */
 const vsChip = (grp, val, cur, label) => '<button type="button" class="vschip" data-vs' + grp + '="' + val + '" aria-pressed="' + (val === cur) + '">' + label + "</button>";
 const vsKb = n => n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.round(n / 1024) + " KB";
@@ -404,7 +521,7 @@ function renderStudio() {
     '<p class="fine" id="vsMsg" role="status">' + esc(VS.msg) + "</p>" +
     (VS.err ? '<p class="autherr" role="alert">' + esc(VS.err) + "</p>" : "") +
     (o && !busy ? '<div class="vsout"><p>' + tr("vs_done").replace("{t}", o.secs).replace("{size}", vsKb(o.size)) + '</p><a class="btn-s vsgo" href="' + o.url + '" download="seb-saathi-' + VS.tpl + "-" + new Date().toISOString().slice(0, 10) + "." + o.ext + '">' + tr("vs_dl") + " (" + o.ext.toUpperCase() + ")</a>" +
-      (o.ext !== "mp4" ? '<p class="autherr">' + tr("vs_webm") + "</p>" : "") + (o.hidden ? '<p class="autherr">' + tr("vs_hidden") + "</p>" : "") + "</div>" : "") +
+      (o.ext !== "mp4" ? '<p class="autherr">' + tr("vs_webm") + "</p>" : "") + (o.hidden ? '<p class="autherr">' + tr("vs_hidden") + "</p>" : "") + ytOutHtml() + "</div>" : "") +
     "</div>" +
     '<div class="vsform"' + (busy ? ' inert' : "") + '>' +
     '<div class="vsgrp"><span class="vsl">' + tr("vs_tpl") + '</span><div class="vschips">' + ["tip", "feat", "alert", "season"].map(k => vsChip("tpl", k, VS.tpl, tr("vs_t_" + k))).join("") + "</div></div>" +
@@ -419,6 +536,7 @@ function renderStudio() {
       '<label class="vsdur">' + tr("vs_vol") + ' <input type="range" id="vsVol" min="0" max="1" step="0.05" value="' + VS.vol + '"></label>'
       : '<label class="btn-s vsfile">' + tr("vs_music_add") + '<input type="file" accept="audio/*" id="vsMusic" hidden></label>') + "</div>" +
     '<p class="fine">' + tr("vs_music_note") + "</p></div>" +
+    ytCardHtml() +
     '<div class="vsf"><label for="vsCap">' + tr("vs_cap") + '</label><textarea id="vsCap" rows="7" readonly>' + esc(vsCaption()) + '</textarea></div>' +
     '<div class="vsctl"><button type="button" class="btn-s" id="vsCopy">' + tr("vs_copy") + "</button></div>" +
     '<p class="fine">' + tr("vs_how") + "</p></div></div>";
@@ -463,6 +581,13 @@ function vsLoadFile(file, i) {
   body.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     const d = b.dataset;
+    if (d.yt) {
+      if (d.yt === "refresh") { ytNote = ""; ytLoad(); }
+      else if (d.yt === "upload") ytUpload();
+      else if (d.yt === "disconnect") { if (confirm(tr("yt_disc_q"))) ytCall("disconnect").then(ytLoad, err => { ytNote = String(err.message || err); renderStudio(); }); }
+      else if (d.yt === "connect") { ytBusy = "…"; renderStudio(); ytCall("connect").then(j => { if (j.url) location.href = j.url; else { ytBusy = ""; ytLoad(); } }, err => { ytBusy = ""; ytNote = String(err.message || err); renderStudio(); }); }
+      return;
+    }
     if (d.vstpl || d.vslang) {
       if (d.vstpl) VS.tpl = d.vstpl; else VS.vlang = d.vslang;
       vsFromTpl(); VS.sel = 0; vsSave(); renderStudio();
@@ -486,10 +611,13 @@ function vsLoadFile(file, i) {
     const t = e.target, f = t.dataset && t.dataset.vsf, i = vsSceneOf(t);
     if (f && i >= 0 && i < VS.scenes.length && f !== "dur") { VS.scenes[i][f] = t.value; vsSelect(i); vsLight(); }
     else if (t.id === "vs-cta") { VS.cta = t.value; vsSelect(VS.scenes.length); vsLight(); }
+    else if (t.id === "ytTitle" && YTU) YTU.title = t.value;
+    else if (t.id === "ytDesc" && YTU) YTU.desc = t.value;
     else if (t.id === "vsVol") { VS.vol = +t.value; if (vsGain) vsGain.gain.value = VS.vol; else if (VS.music) VS.music.el.volume = VS.vol; vsSave(); }
   });
   body.addEventListener("change", e => {
     const t = e.target;
+    if (t.id === "ytPriv" && YTU) { YTU.priv = t.value; return; }
     if (t.dataset.vsf === "dur") { const i = vsSceneOf(t); VS.scenes[i].dur = +t.value; vsSave(); renderStudio(); }
     else if (t.dataset.vsmedia != null && t.files && t.files[0]) vsLoadFile(t.files[0], +t.dataset.vsmedia);
     else if (t.id === "vsMusic" && t.files && t.files[0]) {
@@ -505,5 +633,15 @@ function vsLoadFile(file, i) {
   if (document.fonts && document.fonts.load) Promise.all(['700 100px "Khand"', '500 40px "Hind"', '600 40px "Hind"', '700 100px "Barlow Semi Condensed"', '600 40px "IBM Plex Mono"']
     .map(f => document.fonts.load(f, "सेब साथी Seb Saathi 123").catch(() => {}))).then(() => vsStill());
   document.querySelectorAll("#ap-mk [data-i18n]").forEach(el => { el.textContent = tr(el.dataset.i18n); });
-  renderStudio();
+  /* back from Google's sign-in page: say how it went, then tidy the address */
+  try {
+    const q = new URLSearchParams(location.search), r = q.get("yt");
+    if (r) {
+      const why = q.get("m") || "", map = { setup: tr("yt_missing").replace("{m}", "GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET"), expired: "please try again", no_channel: "no YouTube channel on that Google account", no_refresh: "please try again", access_denied: "access not allowed" };
+      ytNote = r === "ok" ? tr("yt_back_ok") : tr("yt_back_err").replace("{m}", map[why] || why);
+      history.replaceState(null, "", location.pathname + location.hash);
+      setTimeout(() => { const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start" }); }, 600);
+    }
+  } catch (e) {}
+  renderStudio();   /* the YouTube check starts when the Marketing tab opens for a signed-in admin (admin.js showTab) */
 })();

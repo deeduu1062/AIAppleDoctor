@@ -1644,7 +1644,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "dx") loadDq(); else if (t === "fb") loadFeedback(); else if (t === "mk" && typeof loadMk === "function") loadMk();
+  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "dx") loadDq(); else if (t === "fb") loadFeedback(); else if (t === "mk" && typeof loadMk === "function") { loadMk(); if (typeof ytLoad === "function") ytLoad(); }
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
