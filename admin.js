@@ -845,7 +845,7 @@ Object.assign(T.en, {
   ov_fb_h:"Feedback received", ov_fb_total:"Total", ov_fb_new:"New (not done)", ov_fb_7:"Last 7 days", ov_fb_today:"Today",
   ov_ch_h:"Saathi questions received", ov_ch_today:"Today", ov_ch_7:"Last 7 days", ov_ch_30:"Last 30 days", ov_ch_total:"Total",
   ov_ch_users:"Growers asking (30 days)", ov_q_h:"Latest questions", ov_q_none:"No questions yet.",
-  ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_sv_h:"Site visits", ov_sv_hits:"Visits (page opens)", ov_sv_uniq:"Different visitors", ov_sv_in:"Visits by logged-in growers", ov_sv_note:"Your own admin visits are not counted. A visitor is one phone or computer.", ov_sv_refs:"Where visitors came from (30 days)", ov_sv_dev:"Phone or computer (30 days)", ov_sv_days:"Last 14 days", ov_sv_day:"Day", ov_sv_n:"Visits", ov_sv_u:"Visitors", ov_sv_direct:"Direct / app / WhatsApp", ov_d_mobile:"Phone", ov_d_desktop:"Computer", ov_d_tablet:"Tablet", ov_sv_src:"Source", ov_sv_devc:"Device", ov_err_sv:"Visit counting not set up yet (supabase/visits.sql).", ov_pa_h:"Payments", ov_t_money:"Money received", ov_t_paid:"Payments approved", ov_t_wait:"Waiting for check", ov_t_active:"Active paid plans", ov_err_pa:"Payments table not set up yet (supabase/payments.sql).", ov_t_received:"Received", ov_t_notdone:"Not done yet", ov_t_questions:"Questions", ov_t_growers:"Growers asking", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
+  ov_c_what:"", ov_r_fb:"Feedback received", ov_r_fbnew:"Feedback not done yet", ov_r_ch:"Saathi questions", ov_r_users:"Growers asking Saathi", ov_c_when:"When", ov_c_lang:"Language", ov_c_q:"Question", ov_sv_h:"Site visits", ov_sv_hits:"Visits (page opens)", ov_sv_uniq:"Different visitors", ov_sv_in:"Visits by logged-in growers", ov_sv_note:"Your own admin visits are not counted. A visitor is one phone or computer.", ov_sv_refs:"Where visitors came from (30 days)", ov_sv_dev:"Phone or computer (30 days)", ov_sv_days:"Day by day", ov_sv_trend:"Visit trend, last {n} days", ov_sv_cmp:"Last 7 days: {a} visits. The 7 days before: {b}.", ov_sv_upby:"▲ {x}% up", ov_sv_downby:"▼ {x}% down", ov_sv_same:"no change", ov_sv_key:"Bar = visits on that day (India time). Today is the darker bar. Tap or hover a bar for visitors.", ov_sv_tip:"{d}: {n} visits, {u} visitors", ov_sv_old:"Showing 14 days. Run supabase/visits.sql again in Supabase to see 30 days.", ov_sv_day:"Day", ov_sv_n:"Visits", ov_sv_u:"Visitors", ov_sv_direct:"Direct / app / WhatsApp", ov_d_mobile:"Phone", ov_d_desktop:"Computer", ov_d_tablet:"Tablet", ov_sv_src:"Source", ov_sv_devc:"Device", ov_err_sv:"Visit counting not set up yet (supabase/visits.sql).", ov_pa_h:"Payments", ov_t_money:"Money received", ov_t_paid:"Payments approved", ov_t_wait:"Waiting for check", ov_t_active:"Active paid plans", ov_err_pa:"Payments table not set up yet (supabase/payments.sql).", ov_t_received:"Received", ov_t_notdone:"Not done yet", ov_t_questions:"Questions", ov_t_growers:"Growers asking", ov_c_today:"Today", ov_c_7:"7 days", ov_c_30:"30 days", ov_c_total:"Total",
   rv_h:"Saathi answers to check", rv_p:"Answers growers marked 👎. Fix the Library guide that covers it (Saathi reads the Library before every answer), then mark it checked.",
   rv_up:"👍 Helpful (30 days): {n}", rv_down:"👎 Not helpful (30 days): {n}", rv_none:"Nothing to check. No 👎 answers waiting.", rv_q:"Question", rv_note:"Grower's note", rv_done:"Mark as checked", rv_setup:"Ratings not set up yet: run supabase/chat_feedback.sql in Supabase.",
   ov_err_fb:"Feedback table not set up yet (supabase/feedback.sql).", ov_err_ch:"Saathi chat table not set up yet (supabase/chat.sql).", ov_err:"Could not load: {m}"
@@ -855,7 +855,7 @@ Object.assign(T.hi, {
   ov_fb_h:"मिले सुझाव", ov_fb_total:"कुल", ov_fb_new:"नए (बाकी)", ov_fb_7:"पिछले 7 दिन", ov_fb_today:"आज",
   ov_ch_h:"साथी से पूछे गए सवाल", ov_ch_today:"आज", ov_ch_7:"पिछले 7 दिन", ov_ch_30:"पिछले 30 दिन", ov_ch_total:"कुल",
   ov_ch_users:"सवाल पूछने वाले बाग़वान (30 दिन)", ov_q_h:"ताज़ा सवाल", ov_q_none:"अभी कोई सवाल नहीं।",
-  ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_sv_h:"साइट विज़िट", ov_sv_hits:"विज़िट (पेज खुले)", ov_sv_uniq:"अलग-अलग विज़िटर", ov_sv_in:"लॉग-इन बाग़वानों की विज़िट", ov_sv_note:"आपकी अपनी एडमिन विज़िट नहीं गिनी जातीं। एक विज़िटर = एक फ़ोन या कंप्यूटर।", ov_sv_refs:"विज़िटर कहाँ से आए (30 दिन)", ov_sv_dev:"फ़ोन या कंप्यूटर (30 दिन)", ov_sv_days:"पिछले 14 दिन", ov_sv_day:"दिन", ov_sv_n:"विज़िट", ov_sv_u:"विज़िटर", ov_sv_direct:"सीधे / ऐप / WhatsApp", ov_d_mobile:"फ़ोन", ov_d_desktop:"कंप्यूटर", ov_d_tablet:"टैबलेट", ov_sv_src:"स्रोत", ov_sv_devc:"डिवाइस", ov_err_sv:"विज़िट गिनती अभी सेट नहीं (supabase/visits.sql)।", ov_pa_h:"भुगतान", ov_t_money:"प्राप्त रकम", ov_t_paid:"मंज़ूर भुगतान", ov_t_wait:"जाँच बाकी", ov_t_active:"चालू पेड प्लान", ov_err_pa:"भुगतान टेबल अभी नहीं बनी (supabase/payments.sql)।", ov_t_received:"मिले", ov_t_notdone:"बाकी", ov_t_questions:"सवाल", ov_t_growers:"पूछने वाले बाग़वान", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
+  ov_c_what:"", ov_r_fb:"मिले सुझाव", ov_r_fbnew:"बाकी सुझाव", ov_r_ch:"साथी से सवाल", ov_r_users:"सवाल पूछने वाले बाग़वान", ov_c_when:"समय", ov_c_lang:"भाषा", ov_c_q:"सवाल", ov_sv_h:"साइट विज़िट", ov_sv_hits:"विज़िट (पेज खुले)", ov_sv_uniq:"अलग-अलग विज़िटर", ov_sv_in:"लॉग-इन बाग़वानों की विज़िट", ov_sv_note:"आपकी अपनी एडमिन विज़िट नहीं गिनी जातीं। एक विज़िटर = एक फ़ोन या कंप्यूटर।", ov_sv_refs:"विज़िटर कहाँ से आए (30 दिन)", ov_sv_dev:"फ़ोन या कंप्यूटर (30 दिन)", ov_sv_days:"दिन-ब-दिन", ov_sv_trend:"विज़िट का रुझान, पिछले {n} दिन", ov_sv_cmp:"पिछले 7 दिन: {a} विज़िट। उससे पहले के 7 दिन: {b}।", ov_sv_upby:"▲ {x}% बढ़ी", ov_sv_downby:"▼ {x}% घटी", ov_sv_same:"कोई बदलाव नहीं", ov_sv_key:"हर बार = उस दिन की विज़िट (भारत समय)। आज का बार गहरा है। विज़िटर देखने के लिए बार पर टैप करें।", ov_sv_tip:"{d}: {n} विज़िट, {u} विज़िटर", ov_sv_old:"14 दिन दिख रहे हैं। 30 दिन देखने के लिए Supabase में supabase/visits.sql दोबारा चलाएँ।", ov_sv_day:"दिन", ov_sv_n:"विज़िट", ov_sv_u:"विज़िटर", ov_sv_direct:"सीधे / ऐप / WhatsApp", ov_d_mobile:"फ़ोन", ov_d_desktop:"कंप्यूटर", ov_d_tablet:"टैबलेट", ov_sv_src:"स्रोत", ov_sv_devc:"डिवाइस", ov_err_sv:"विज़िट गिनती अभी सेट नहीं (supabase/visits.sql)।", ov_pa_h:"भुगतान", ov_t_money:"प्राप्त रकम", ov_t_paid:"मंज़ूर भुगतान", ov_t_wait:"जाँच बाकी", ov_t_active:"चालू पेड प्लान", ov_err_pa:"भुगतान टेबल अभी नहीं बनी (supabase/payments.sql)।", ov_t_received:"मिले", ov_t_notdone:"बाकी", ov_t_questions:"सवाल", ov_t_growers:"पूछने वाले बाग़वान", ov_c_today:"आज", ov_c_7:"7 दिन", ov_c_30:"30 दिन", ov_c_total:"कुल",
   rv_h:"जाँचने वाले साथी के जवाब", rv_p:"जिन जवाबों पर बाग़वानों ने 👎 दिया। उस विषय की जानकारी भंडार गाइड ठीक करें (साथी हर जवाब से पहले उसे पढ़ता है), फिर जाँचा हुआ मार्क करें।",
   rv_up:"👍 काम आया (30 दिन): {n}", rv_down:"👎 काम नहीं आया (30 दिन): {n}", rv_none:"जाँचने को कुछ नहीं। कोई 👎 जवाब बाक़ी नहीं।", rv_q:"सवाल", rv_note:"बाग़वान की टिप्पणी", rv_done:"जाँचा हुआ मार्क करें", rv_setup:"रेटिंग अभी सेट नहीं है: Supabase में supabase/chat_feedback.sql चलाएँ।",
   ov_err_fb:"सुझाव टेबल अभी नहीं बनी (supabase/feedback.sql)।", ov_err_ch:"साथी चैट टेबल अभी नहीं बनी (supabase/chat.sql)।", ov_err:"लोड नहीं हो सका: {m}"
@@ -921,6 +921,30 @@ async function loadOverview() {
   ovBusy = false; $("ovRefresh").disabled = false;
   OV = o; set("ovErr", errs.join(" ")); renderOverview();
 }
+/* daily visit trend: one bar per day (India time), missing days count as 0 */
+function svTrend(sv) {
+  const span = +sv.span || 14, by = {};
+  (sv.days || []).forEach(d => { by[String(d.day).slice(0, 10)] = d; });
+  const ist = new Date(Date.now() + 5.5 * 3600e3), days = [];
+  for (let i = span - 1; i >= 0; i--) {
+    const k = new Date(Date.UTC(ist.getUTCFullYear(), ist.getUTCMonth(), ist.getUTCDate() - i)).toISOString().slice(0, 10), r = by[k];
+    days.push({ k, n: r ? +r.n : 0, u: r ? +r.u : 0 });
+  }
+  const max = Math.max(1, ...days.map(d => d.n));
+  const lbl = (k, o) => new Date(k + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", o || { day: "numeric", month: "short" });
+  const sum = a => a.reduce((s, d) => s + d.n, 0), a = sum(days.slice(-7)), b = sum(days.slice(-14, -7));
+  const pct = b ? Math.round((a - b) / b * 100) : null;
+  const chg = pct == null ? "" : ' <b class="' + (pct > 0 ? "svup" : pct < 0 ? "svdn" : "") + '">' + (pct > 0 ? tr("ov_sv_upby").replace("{x}", pct) : pct < 0 ? tr("ov_sv_downby").replace("{x}", -pct) : tr("ov_sv_same")) + "</b>";
+  const bars = days.map((d, i) => {
+    const t = esc(tr("ov_sv_tip").replace("{d}", lbl(d.k, { weekday: "short", day: "numeric", month: "short" })).replace("{n}", fmtN(d.n)).replace("{u}", fmtN(d.u)));
+    return '<div class="svb' + (i === days.length - 1 ? " now" : "") + '" title="' + t + '" tabindex="0" aria-label="' + t + '"><i style="height:' + (d.n ? Math.max(3, d.n / max * 100) : 0) + '%"></i></div>';
+  }).join("");
+  return '<h5 class="ovsub">' + tr("ov_sv_trend").replace("{n}", span) + '</h5>' +
+    '<p class="svcmp">' + tr("ov_sv_cmp").replace("{a}", fmtN(a)).replace("{b}", fmtN(b)) + chg + "</p>" +
+    '<div class="svchart"><span class="svmax">' + fmtN(max) + '</span><div class="svbars" role="img" aria-label="' + esc(tr("ov_sv_trend").replace("{n}", span)) + '">' + bars + "</div>" +
+    '<div class="svax"><span>' + lbl(days[0].k) + "</span><span>" + lbl(days[Math.floor(days.length / 2)].k) + "</span><span>" + lbl(days[days.length - 1].k) + "</span></div></div>" +
+    '<p class="fine">' + tr("ov_sv_key") + (span < 30 ? " " + tr("ov_sv_old") : "") + "</p>";
+}
 function renderOverview() {
   if (!$("ovTab")) return;
   if (!OV) { $("ovTab").innerHTML = $("ovQ").innerHTML = ""; set("ovAt", ""); return; }
@@ -938,9 +962,10 @@ function renderOverview() {
     '<p class="fine">' + tr("ov_sv_note") + "</p>" +
     (OV.sv ? two("ov_sv_refs", "ov_sv_src", "ov_sv_n", (sv.refs || []).map(r => '<tr><th scope="row">' + esc(r.name === "direct" ? tr("ov_sv_direct") : r.name) + '</th><td class="n">' + fmtN(+r.n) + "</td></tr>")) +
       two("ov_sv_dev", "ov_sv_devc", "ov_sv_n", (sv.devices || []).map(r => '<tr><th scope="row">' + tr("ov_d_" + r.name) + '</th><td class="n">' + fmtN(+r.n) + "</td></tr>")) +
-      '<h5 class="ovsub">' + tr("ov_sv_days") + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ov_sv_day") + '</th><th scope="col" class="n">' + tr("ov_sv_n") + '</th><th scope="col" class="n">' + tr("ov_sv_u") + "</th></tr></thead><tbody>" +
+      svTrend(sv) +
+      '<details class="svdays"><summary class="ovsub">' + tr("ov_sv_days") + '</summary><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ov_sv_day") + '</th><th scope="col" class="n">' + tr("ov_sv_n") + '</th><th scope="col" class="n">' + tr("ov_sv_u") + "</th></tr></thead><tbody>" +
       ((sv.days || []).length ? sv.days.map(d => '<tr><th scope="row">' + esc(new Date(d.day + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { weekday: "short", day: "numeric", month: "short" })) + '</th><td class="n">' + fmtN(+d.n) + '</td><td class="n">' + fmtN(+d.u) + "</td></tr>").join("") : '<tr><td colspan="3">–</td></tr>') +
-      "</tbody></table></div>" : "");
+      "</tbody></table></div></details>" : "");
   $("ovTab").innerHTML = svHtml + tbl("ov_pa_h", money(pa.money) + row("ov_t_paid", pa.paid || [null, null, null, null]) + row("ov_t_wait", pa.wait || [null, null, null, null], "sub") + row("ov_t_active", [null, null, null, pa.active], "sub")) + tbl("ov_fb_h", row("ov_t_received", [f.d, f.w, f.m, f.t]) + row("ov_t_notdone", [null, null, null, f.n], "sub")) +
     tbl("ov_ch_h", row("ov_t_questions", [c.d, c.w, c.m, c.t]) + row("ov_t_growers", [null, null, c.users, null], "sub"));
   const q = OV.q || [];

@@ -1479,6 +1479,15 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 #pfOne .pfact td:first-child{white-space:nowrap;color:var(--muted);font-size:.85rem;width:1%;vertical-align:top}
 #ovTab .tablewrap,#ovQ .tablewrap{margin-top:12px}
 #ovTab table.ledger,#ovQ table.ledger{min-width:0}
+.svcmp{margin:6px 0 8px;font-size:.95rem}.svcmp .svup{color:var(--good)}.svcmp .svdn{color:var(--bad)}
+.svchart{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:22px 12px 8px}
+.svmax{position:absolute;top:4px;left:12px;font:500 .75rem var(--mono);color:var(--muted)}
+.svbars{display:flex;align-items:flex-end;gap:3px;height:140px;border-bottom:1px solid var(--line)}
+.svb{flex:1;height:100%;display:flex;align-items:flex-end;border-radius:3px 3px 0 0;cursor:default;outline-offset:2px}
+.svb i{display:block;width:100%;background:var(--seg-pack);border-radius:3px 3px 0 0}
+.svb.now i{background:var(--brand)}.svb:hover i,.svb:focus i{background:var(--good)}
+.svax{display:flex;justify-content:space-between;font:500 .75rem var(--mono);color:var(--muted);padding-top:5px}
+details.svdays summary{cursor:pointer}
 #ovTab .ledger th,#ovTab .ledger td{padding:10px 6px}
 #ovTab .ledger td{font-size:.9rem}
 #ovTab .ledger th:first-child{padding-left:10px}

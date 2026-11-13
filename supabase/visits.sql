@@ -2,6 +2,7 @@
 -- Run once AFTER admins.sql: Supabase → SQL Editor → New query → paste → Run.
 -- Each page open stores only: time, a random browser id (not personal), which site sent the visitor,
 -- phone or computer, language, and whether someone was logged in. Admin visits are not counted.
+-- Re-run this file any time it changes (safe: it keeps existing visits). Daily trend covers 30 days.
 -- Visitors can only add rows; only admins can see the totals, through admin_site_stats().
 
 create table if not exists public.site_visits (
@@ -56,7 +57,8 @@ begin
       group by 1 order by 2 desc) r), '[]'::json),
     'days', coalesce((select json_agg(r order by r.day desc) from (
       select (at at time zone 'Asia/Kolkata')::date as day, count(*) as n, count(distinct visitor) as u
-      from site_visits where at >= now() - interval '14 days' group by 1) r), '[]'::json)
+      from site_visits where at >= now() - interval '30 days' group by 1) r), '[]'::json),
+    'span', 30
   ) into res;
   return res;
 end $$;
