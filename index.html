@@ -2143,7 +2143,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
             <p class="hint" data-i18n="th_note"></p><p class="lottab" id="th_sum" role="status"></p>
           </div>
           <div class="field possel"><label for="ne_pos" data-i18n="ne_pos"></label><select id="ne_pos"></select></div>
-          <div id="ne_boxpart"><p class="hint" data-i18n="exp_note"></p>
+          <div id="ne_boxpart"><p class="hint" id="ne_expnote" data-i18n="exp_note"></p>
           <div class="lottab" id="ne_sum"></div>
           <div id="ne_rows"></div>
           <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button></div>
@@ -3281,6 +3281,9 @@ const GRADE_KEY = {"A Grade":"g_a", "B Grade":"g_b", "Red Gold":"g_rg", "Gift":"
 /* how a lot was sold: Mandi, Adani, or Theka (one lump sum for the crop; the buyer pays picking, packing and transport) */
 const SALE_TYPES = ["mandi", "adani", "theka"];
 const isTheka = l => !!(l && l.type === "theka");
+/* Adani buys by the kilo: those entries keep kg and rate per kg; for per-box figures 20 kg counts as one box */
+const KG_BOX = 20;
+const isKg = n => !!(n && n.kg != null);
 const stChip = l => l && SALE_TYPES.indexOf(l.type) >= 0 ? '<span class="stchip st-' + l.type + '">' + tr("st_" + l.type) + "</span>" : "";
 const pv = (prev, k) => (prev ? (+prev[k] || 0) : 0);
 function blankLine(prev, grade) { return {id:newId(), grade:grade || "", date:"", boxes:0, rate:0, tod:pv(prev, "tod"), grd:pv(prev, "grd"), car:pv(prev, "car"), exp:0, com:pv(prev, "com"), half:false, paid:false, paidOn:""}; }
@@ -3307,7 +3310,7 @@ function makeSample() {
 function lineCalc(n) {
   const b = +n.boxes || 0, r = +n.rate || 0;
   const e = (+n.tod || 0) + (+n.grd || 0) + (+n.car || 0) + (+n.exp || 0);
-  const gross = +n.lump > 0 ? +n.lump : b * r, com = gross * Math.min(Math.max(+n.com || 0, 0), 100) / 100, exp = b * e + com;
+  const gross = +n.lump > 0 ? +n.lump : isKg(n) ? (+n.kg || 0) * (+n.rkg || 0) : b * r, com = gross * Math.min(Math.max(+n.com || 0, 0), 100) / 100, exp = b * e + com + (+n.xtot || 0);
   return {b, eq:n.half ? b / 2 : b, gross, exp, com, epb:b ? exp / b : e, net:gross - exp};
 }
 function lotCalc(l) {
@@ -3678,20 +3681,25 @@ function lastLineFor(oid, y) {
 const wb = t => esc(t).replace(/\//g, "/<wbr>");
 let draft = [];
 const EXPK = ["tod", "grd", "car", "exp", "com"];
-function neRow(prev) { const r = {grade:"", boxes:"", rate:""}; EXPK.forEach(k => { r[k] = prev && +prev[k] ? String(+prev[k]) : ""; }); return r; }
-const draftLine = r => Object.assign(blankLine(), {grade:r.grade, boxes:numOf(r.boxes), rate:numOf(r.rate), tod:numOf(r.tod), grd:numOf(r.grd), car:numOf(r.car), exp:numOf(r.exp), com:numOf(r.com)});
-const draftFilled = r => !!(r.grade || numOf(r.boxes) || numOf(r.rate));
+function neRow(prev) { const r = {grade:"", boxes:"", rate:"", kg:"", rkg:"", xtot:""}; EXPK.forEach(k => { r[k] = prev && +prev[k] ? String(+prev[k]) : ""; }); return r; }
+const draftLine = r => neType === "adani"
+  ? Object.assign(blankLine(), {grade:r.grade, kg:numOf(r.kg), rkg:numOf(r.rkg), xtot:numOf(r.xtot), boxes:numOf(r.kg) / KG_BOX, rate:numOf(r.rkg) * KG_BOX, tod:0, grd:0, car:0, exp:0, com:0})
+  : Object.assign(blankLine(), {grade:r.grade, boxes:numOf(r.boxes), rate:numOf(r.rate), tod:numOf(r.tod), grd:numOf(r.grd), car:numOf(r.car), exp:numOf(r.exp), com:numOf(r.com)});
+const draftFilled = r => neType === "adani" ? !!(r.grade || numOf(r.kg) || numOf(r.rkg)) : !!(r.grade || numOf(r.boxes) || numOf(r.rate));
 function rowHtml(r, i) {
   const id = "ne" + i + "_";
   const f = (k, lab) => '<div class="field"><label for="' + id + k + '">' + wb(tr(lab)) + '</label><input id="' + id + k + '" data-ne="' + i + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(r[k]) + '"></div>';
   const typeSel = '<div class="field"><label for="' + id + 'grade">' + tr("f_type") + '</label><select id="' + id + 'grade" data-ne="' + i + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
     GRADES.map(g => '<option value="' + esc(g) + '"' + (g === r.grade ? " selected" : "") + ">" + esc(tr(GRADE_KEY[g])) + "</option>").join("") + "</select></div>";
+  if (neType === "adani") return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b></div>" +
+    '<div class="erow">' + typeSel + f("kg", "f_kg") + f("rkg", "f_rkg") + f("xtot", "f_xtot") + '</div><p class="hint">' + tr("kg_note") + '</p><p class="warn" id="ne_warn" role="status"></p></div>';
   return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b></div>" +
     '<div class="erow">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + f("com", "f_com") + "</div>" +
     '<p class="warn" id="ne_warn" role="status"></p></div>';
 }
 let editIdx = 0;
-const rowOk = r => !!(r.grade && numOf(r.boxes) && numOf(r.rate));
+const rowOk = r => neType === "adani" ? !!(r.grade && numOf(r.kg) && numOf(r.rkg)) : !!(r.grade && numOf(r.boxes) && numOf(r.rate));
+const rowMiss = r => !r.grade ? "grade" : neType === "adani" ? (!numOf(r.kg) ? "kg" : "rkg") : (!numOf(r.boxes) ? "boxes" : "rate");
 function renderDraft() {
   if (editIdx < 0 || editIdx >= draft.length) editIdx = draft.length - 1;
   $("ne_rows").innerHTML = draft.length ? rowHtml(draft[editIdx], editIdx) : "";
@@ -3702,7 +3710,7 @@ function curBad() {
   const cur = draft[editIdx];
   if (cur && draftFilled(cur) && !rowOk(cur)) {
     set("ne_err", tr("ne_err").replace("{n}", editIdx + 1));
-    focusNe(editIdx, !cur.grade ? "grade" : !numOf(cur.boxes) ? "boxes" : "rate");
+    focusNe(editIdx, rowMiss(cur));
     return true;
   }
   return false;
@@ -3716,7 +3724,7 @@ function lotTable(rows, acts) {
   rows.forEach(x => {
     const c = lineCalc(x[1]);
     const ed = !!(acts && acts.isEd(x));
-    h += '<tr' + (ed ? ' class="editing"' : "") + '><th scope="row">' + x[0] + '</th><td class="t olg-' + gradeKey(x[1].grade) + '"><span class="olgr">' + esc(gname(x[1].grade)) + "</span></td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) +
+    h += '<tr' + (ed ? ' class="editing"' : "") + '><th scope="row">' + x[0] + '</th><td class="t olg-' + gradeKey(x[1].grade) + '"><span class="olgr">' + esc(gname(x[1].grade)) + "</span></td><td>" + (isKg(x[1]) ? fmtN(+x[1].kg || 0) + " kg" : fmtN(c.b)) + "</td><td>" + inr(c.gross) + "</td><td>" + inr(c.exp) +
       '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + "</td>" +
       (acts ? '<td class="acts">' + (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : '<button class="link" type="button" ' + acts.attr(x, "edit") + ">" + tr("ne_edit") + "</button>") +
         '<button class="link del" type="button" ' + acts.attr(x, "del") + ">" + tr("ne_del") + "</button></td>" : "") + "</tr>";
@@ -3732,8 +3740,9 @@ function lotTable(rows, acts) {
 /* Warnings for entries that look unusual for this orchard (never blocks saving) */
 const median = a => { if (!a.length) return 0; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
 function oddWarn(oid, n, skipId) {
+  if (isKg(n)) return [];   /* kilo sales: no box history to compare with */
   const out = [], b = +n.boxes || 0, r = +n.rate || 0, com = +n.com || 0;
-  const pool = []; S.seasons.forEach(x => x.lots.forEach(l => l.lines.forEach(q => { if (q.id !== skipId && q.grade !== "Theka" && +q.boxes > 0 && +q.rate > 0) pool.push({o: x.oid, g: gradeKey(q.grade), b: +q.boxes, r: +q.rate}); })));
+  const pool = []; S.seasons.forEach(x => x.lots.forEach(l => l.lines.forEach(q => { if (q.id !== skipId && q.grade !== "Theka" && !isKg(q) && +q.boxes > 0 && +q.rate > 0) pool.push({o: x.oid, g: gradeKey(q.grade), b: +q.boxes, r: +q.rate}); })));
   if (r > 0) {
     const gk = gradeKey(n.grade);
     let same = pool.filter(q => q.o === oid && q.g === gk);
@@ -3767,14 +3776,14 @@ function updDraft() {
 function byTypeHtml(ss) {
   const t = {}; ss.forEach(se => se.lots.forEach(l => { if (SALE_TYPES.indexOf(l.type) < 0) return; const c = lotCalc(l); const x = t[l.type] = t[l.type] || {b: 0, eq: 0, net: 0}; x.b += c.b; x.eq += c.eq; x.net += c.net; }));
   const ks = SALE_TYPES.filter(k => t[k] && t[k].b > 0); if (!ks.length) return "";
-  return '<div class="bytype"><b>' + tr("st_by") + "</b>" + ks.map(k => '<span class="st-' + k + '">' + stChip({type: k}) + " " + (k === "theka" ? "≈ " : "") + tr("st_by_l").replace("{b}", fmtN(t[k].b)).replace("{p}", inr(t[k].eq ? t[k].net / t[k].eq : 0)) + "</span>").join("") + "</div>";
+  return '<div class="bytype"><b>' + tr("st_by") + "</b>" + ks.map(k => '<span class="st-' + k + '">' + stChip({type: k}) + " " + (k === "theka" ? "≈ " : "") + tr(k === "adani" ? "st_by_kg" : "st_by_l").replace("{kg}", fmtN(t[k].b * KG_BOX)).replace("{b}", fmtN(t[k].b)).replace("{p}", inr(t[k].eq ? t[k].net / t[k].eq : 0)) + "</span>").join("") + "</div>";
 }
 let neType = "mandi";
 function renderSaleType() {
   const el = $("ne_stype"); if (!el) return;
   el.innerHTML = SALE_TYPES.map(k => '<button type="button" class="stbtn st-' + k + '" data-stype="' + k + '" aria-pressed="' + (neType === k) + '"><b>' + tr("st_" + k) + "</b><small>" + tr("st_" + k + "_p") + "</small></button>").join("");
   const th = neType === "theka";
-  $("ne_theka").hidden = !th; $("ne_boxpart").hidden = th;
+  $("ne_theka").hidden = !th; $("ne_boxpart").hidden = th; $("ne_expnote").hidden = neType === "adani";
   updTheka();
 }
 function updTheka() {
@@ -3783,7 +3792,7 @@ function updTheka() {
 }
 $("ne_stype").addEventListener("click", e => {
   const b = e.target.closest("[data-stype]"); if (!b) return;
-  neType = b.dataset.stype; set("ne_err", ""); renderSaleType();
+  neType = b.dataset.stype; set("ne_err", ""); renderSaleType(); renderDraft();
   const f = neType === "theka" ? $("th_amt") : $("ne" + editIdx + "_grade"); if (f) f.focus();
 });
 $("ne_theka").addEventListener("input", () => { set("ne_err", ""); updTheka(); });
@@ -3809,17 +3818,20 @@ document.addEventListener("change", e => {
   save(); renderAll();
 });
 Object.assign(T.en, { ne_stype: "How did you sell this lot?", st_mandi: "Mandi", st_adani: "Adani", st_theka: "Theka",
-  st_mandi_p: "Boxes at the mandi", st_adani_p: "Sold to Adani", st_theka_p: "Lump sum for the crop",
+  st_mandi_p: "Boxes at the mandi", st_adani_p: "By the kilo", st_theka_p: "Lump sum for the crop",
   th_amt: "Theka amount (₹)", th_boxes: "Estimated boxes", th_note: "The buyer pays picking, packing and transport, so a theka has no expenses here. The boxes are your estimate, used only to work out profit per box.",
-  th_err: "Enter the theka amount and the estimated number of boxes.", th_sum: "About {x} a box", g_theka: "Theka (lump sum)", f_stype: "Sold at", st_by: "By way of selling:", st_by_l: "{b} boxes · {p} a box" });
+  th_err: "Enter the theka amount and the estimated number of boxes.", th_sum: "About {x} a box", g_theka: "Theka (lump sum)", f_stype: "Sold at", st_by: "By way of selling:", st_by_l: "{b} boxes · {p} a box", st_by_kg: "{kg} kg · {p} a box (20 kg)",
+  f_kg: "Weight (kg)", f_rkg: "Rate per kg (₹)", f_xtot: "Your expenses (₹ total)", kg_note: "Weight after any deduction. Expenses are everything you paid for this, such as picking, crates and transport. For profit per box, 20 kg counts as one box." });
 Object.assign(T.hi, { ne_stype: "यह लॉट कैसे बेचा?", st_mandi: "मंडी", st_adani: "अदानी", st_theka: "ठेका",
-  st_mandi_p: "मंडी में पेटियाँ", st_adani_p: "अदानी को बेचा", st_theka_p: "पूरी फ़सल की एकमुश्त रक़म",
+  st_mandi_p: "मंडी में पेटियाँ", st_adani_p: "किलो के भाव", st_theka_p: "पूरी फ़सल की एकमुश्त रक़म",
   th_amt: "ठेके की रक़म (₹)", th_boxes: "अंदाज़न पेटियाँ", th_note: "तुड़ान, पैकिंग और ढुलाई ख़रीदार देता है, इसलिए यहाँ ठेके का कोई ख़र्च नहीं। पेटियाँ आपका अंदाज़ा हैं, सिर्फ़ प्रति पेटी मुनाफ़ा निकालने के लिए।",
-  th_err: "ठेके की रक़म और अंदाज़न पेटियाँ लिखें।", th_sum: "लगभग {x} प्रति पेटी", g_theka: "ठेका (एकमुश्त)", f_stype: "कहाँ बेचा", st_by: "बेचने के तरीक़े से:", st_by_l: "{b} पेटी · {p} प्रति पेटी" });
+  th_err: "ठेके की रक़म और अंदाज़न पेटियाँ लिखें।", th_sum: "लगभग {x} प्रति पेटी", g_theka: "ठेका (एकमुश्त)", f_stype: "कहाँ बेचा", st_by: "बेचने के तरीक़े से:", st_by_l: "{b} पेटी · {p} प्रति पेटी", st_by_kg: "{kg} किलो · {p} प्रति पेटी (20 किलो)",
+  f_kg: "वज़न (किलो)", f_rkg: "भाव प्रति किलो (₹)", f_xtot: "आपका ख़र्च (₹ कुल)", kg_note: "कटौती के बाद का वज़न। ख़र्च में वह सब जो आपने दिया, जैसे तुड़ाई, क्रेट और ढुलाई। प्रति पेटी मुनाफ़े के लिए 20 किलो को एक पेटी गिना है।" });
 Object.assign(T.hn, { ne_stype: "Yeh lot kaise becha?", st_mandi: "Mandi", st_adani: "Adani", st_theka: "Theka",
-  st_mandi_p: "Mandi mein petiyan", st_adani_p: "Adani ko becha", st_theka_p: "Poori fasal ki ekmusht rakam",
+  st_mandi_p: "Mandi mein petiyan", st_adani_p: "Kilo ke bhaav", st_theka_p: "Poori fasal ki ekmusht rakam",
   th_amt: "Theke ki rakam (₹)", th_boxes: "Andaazan petiyan", th_note: "Tudaan, packing aur dhulai khareedar deta hai, isliye yahan theke ka koi kharcha nahi. Petiyan aapka andaaza hain, sirf prati peti munafa nikaalne ke liye.",
-  th_err: "Theke ki rakam aur andaazan petiyan likhein.", th_sum: "Lagbhag {x} prati peti", g_theka: "Theka (ekmusht)", f_stype: "Kahan becha", st_by: "Bechne ke tareeke se:", st_by_l: "{b} peti · {p} prati peti" });
+  th_err: "Theke ki rakam aur andaazan petiyan likhein.", th_sum: "Lagbhag {x} prati peti", g_theka: "Theka (ekmusht)", f_stype: "Kahan becha", st_by: "Bechne ke tareeke se:", st_by_l: "{b} peti · {p} prati peti", st_by_kg: "{kg} kilo · {p} prati peti (20 kilo)",
+  f_kg: "Wazan (kilo)", f_rkg: "Bhaav prati kilo (₹)", f_xtot: "Aapka kharcha (₹ kul)", kg_note: "Katauti ke baad ka wazan. Kharche mein woh sab jo aapne diya, jaise tudaai, crate aur dhulai. Prati peti munafe ke liye 20 kilo ko ek peti gina hai." });
 $("ne_pos").addEventListener("change", e => { newPos = parseInt(e.target.value, 10) || null; });
 $("entryForm").addEventListener("submit", e => {
   e.preventDefault(); set("ne_err", "");
@@ -3832,7 +3844,7 @@ $("entryForm").addEventListener("submit", e => {
   } else
   for (let i = 0; i < draft.length; i++) {
     const r = draft[i]; if (!draftFilled(r)) continue;
-    if (!rowOk(r)) { editIdx = i; renderDraft(); set("ne_err", tr("ne_err").replace("{n}", i + 1)); focusNe(i, !r.grade ? "grade" : !numOf(r.boxes) ? "boxes" : "rate"); return; }
+    if (!rowOk(r)) { editIdx = i; renderDraft(); set("ne_err", tr("ne_err").replace("{n}", i + 1)); focusNe(i, rowMiss(r)); return; }
     rows.push(draftLine(r));
   }
   if (!rows.length) { set("ne_err", tr("ne_none")); return; }
@@ -3936,6 +3948,15 @@ function renderEditor() {
 }
 function lineHtml(n) {
   const id = "n_" + n.id;
+  if (isKg(n)) {
+    const g = (k, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + wb(tr(lab)) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(v) + '"></div>';
+    const opts = GRADES.slice(); if (n.grade && opts.indexOf(n.grade) < 0) opts.push(n.grade);
+    return '<div class="linebox"><div class="erow"><div class="field"><label for="' + id + '_grade">' + tr("f_type") + '</label><select id="' + id + '_grade" data-line="' + n.id + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
+      opts.map(q => '<option value="' + esc(q) + '"' + (q === n.grade ? " selected" : "") + ">" + esc(GRADE_KEY[q] ? tr(GRADE_KEY[q]) : q) + "</option>").join("") + "</select></div>" +
+      g("kg", "f_kg", n.kg || "") + g("rkg", "f_rkg", n.rkg || "") + g("xtot", "f_xtot", n.xtot || "") +
+      '<div class="field"><label for="' + id + '_date">' + tr("f_date") + '</label><input id="' + id + '_date" data-line="' + n.id + '" data-f="date" type="date" value="' + esc(n.date || "") + '"></div></div>' +
+      '<p class="hint">' + tr("kg_note") + "</p></div>";
+  }
   if (n.grade === "Theka") {
     const g = (k, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + wb(tr(lab)) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(v) + '"></div>';
     return '<div class="linebox"><div class="erow">' + g("lump", "th_amt", n.lump || "") + g("boxes", "th_boxes", n.boxes || "") +
@@ -3974,8 +3995,8 @@ function orchLotsTable(se, only) {
     /* one Edit lot button per lot; its other options appear only after tapping it */
     const lotEd = lotEditId === l.id || !!(editLine && l.lines.some(n => n.id === editLine.line));
     const lotActs = !lotEd ? '<span class="lacts"><button class="btn-s lotedit" type="button" data-act="lotedit" data-id="' + esc(l.id) + '">✎ ' + tr("lot_edit") + "</button></span>" :
-      '<span class="lacts led">' + (isTheka(l) ? "" : '<label class="lstype"><span>' + tr("f_stype") + '</span><select data-lottype="' + esc(l.id) + '"><option value="">–</option>' +
-        ["mandi", "adani"].map(k => '<option value="' + k + '"' + (l.type === k ? " selected" : "") + ">" + tr("st_" + k) + "</option>").join("") + "</select></label>" +
+      '<span class="lacts led">' + (isTheka(l) ? "" : (l.type === "adani" || l.lines.some(isKg) ? "" : '<label class="lstype"><span>' + tr("f_stype") + '</span><select data-lottype="' + esc(l.id) + '"><option value="">–</option>' +
+        '<option value="mandi"' + (l.type === "mandi" ? " selected" : "") + ">" + tr("st_mandi") + "</option></select></label>") +
         '<button class="lbtn ladd" type="button" data-act="addline" data-id="' + esc(l.id) + '">＋ ' + tr("lm_add") + "</button>") +
       (nl > 1 ? '<span class="lmove">' + (i > 0 ? '<button class="lbtn" type="button" data-act="lotup" data-id="' + esc(l.id) + '" aria-label="' + esc(tr("lot_up")) + '">↑ ' + tr("lm_up") + "</button>" : "") +
         (i < nl - 1 ? '<button class="lbtn" type="button" data-act="lotdown" data-id="' + esc(l.id) + '" aria-label="' + esc(tr("lot_down")) + '">↓ ' + tr("lm_down") + "</button>" : "") + "</span>" : "") +
@@ -3987,7 +4008,7 @@ function orchLotsTable(se, only) {
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
     shown.forEach((n, k) => {
       const c = lineCalc(n), ed = !!(editLine && editLine.line === n.id);
-      h += "<tr" + (ed ? ' class="editing"' : lotEd ? ' class="tapedit" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '" tabindex="0"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + (n.grade === "Theka" ? "≈ " : "") + fmtN(c.b) + "</td><td>" + inr(c.gross) +
+      h += "<tr" + (ed ? ' class="editing"' : lotEd ? ' class="tapedit" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '" tabindex="0"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + (isKg(n) ? fmtN(+n.kg || 0) + " kg" : (n.grade === "Theka" ? "≈ " : "") + fmtN(c.b)) + "</td><td>" + inr(c.gross) +
         "</td><td>" + inr(c.exp) + '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + '</td><td class="acts">' +
         (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : lotEd ? '<span class="tapgo" aria-hidden="true">✎</span>' : "") + "</td></tr>";
     });
@@ -4299,7 +4320,7 @@ function salesMoreHtml(o, Y) {
   const costTab = x => {
     const t = {}; if (!x) return null;
     LINE_COSTS.forEach(([k]) => { t[k] = 0; });
-    x.lots.forEach(l => l.lines.forEach(n => LINE_COSTS.forEach(([k]) => { t[k] += k === "com" ? lineCalc(n).com : (+n.boxes || 0) * (+n[k] || 0); })));
+    x.lots.forEach(l => l.lines.forEach(n => { LINE_COSTS.forEach(([k]) => { t[k] += k === "com" ? lineCalc(n).com : (+n.boxes || 0) * (+n[k] || 0); }); t.exp += +n.xtot || 0; }));
     const rr = seasonCalc(x); COST_KEYS.forEach(k => { t["y_" + k] = (+x.costs[k] || 0) + rr.dcosts[k]; });
     return t;
   };
@@ -5969,6 +5990,7 @@ function onEdit(e) {
     else if (d.f === "grade" || d.f === "date" || d.f === "paidOn") n[d.f] = t.value;
     else n[d.f] = numOf(t.value);
     if (n.grade === "Theka") n.rate = +n.boxes > 0 ? (+n.lump || 0) / +n.boxes : 0;
+    if (isKg(n)) { n.boxes = (+n.kg || 0) / KG_BOX; n.rate = (+n.rkg || 0) * KG_BOX; }
     updLineWarn();
   } else if (d.lot) {
     const se = lotSeason(d.lot); const l = se && se.lots.find(x => x.id === d.lot); if (!l) return;
@@ -6065,6 +6087,7 @@ function spClick(e) {
     const se = lotSeason(b.dataset.id); const l = se && se.lots.find(x => x.id === b.dataset.id); if (!l) return;
     const filled = l.lines.filter(n => !lineBlank(n)), nl = blankLine(filled[filled.length - 1], "");
     if (filled.length) nl.exp = +filled[filled.length - 1].exp || 0;
+    if (l.type === "adani") Object.assign(nl, {kg: 0, rkg: 0, xtot: 0, tod: 0, grd: 0, car: 0, exp: 0, com: 0});
     l.lines.push(nl); editLine = {lot: l.id, line: nl.id};
     fixSel(); save(); renderAll(); const el = $("n_" + nl.id + "_grade"); if (el) el.focus(); return;
   } else if (act === "orchpage") { dashView = b.dataset.o; otab = "hisab"; dashYear = +b.dataset.y; profEdit = false; diaryEdit = null; tabPicked = true; renderDash(); showTool("orch", false, true); const ms = $("oMoney"); if (ms && ms.scrollIntoView) ms.scrollIntoView({block: "start"}); return; return;
