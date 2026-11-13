@@ -1541,9 +1541,10 @@ function phCountdown() {
 }
 function phErrMsg(err) {
   const m = String((err && err.message) || err || "");
-  if (/after \d+ seconds|rate limit|too many/i.test(m) || (err && err.status === 429)) return tr("ph_e_wait");
-  if (/provider|sign ?ups? (are )?disabled|unsupported phone/i.test(m)) return tr("ph_e_off");
-  if (/fetch|network|failed|load/i.test(m)) return tr("auth_err_net");
+  const det = m ? " (" + m + ")" : "";   /* Supabase's own words, so a setup problem can be traced */
+  if (/after \d+ seconds|rate limit|too many/i.test(m) || (err && err.status === 429)) return tr("ph_e_wait") + det;
+  if (/phone provider (is )?disabled|unsupported phone provider|sign ?ups? (are )?(disabled|not allowed)/i.test(m)) return tr("ph_e_off") + det;
+  if (/^(failed to fetch|network ?error|load failed)/i.test(m)) return tr("auth_err_net") + det;
   return tr("ph_e_send").replace("{m}", m);
 }
 async function phSendCode(channel, errId) {
