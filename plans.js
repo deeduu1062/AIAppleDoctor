@@ -77,7 +77,13 @@ function myPlanState() {
 const rupees = n => "₹" + Number(n).toLocaleString("en-IN");
 
 /* each UPI app's own link, so the phone does not send growers to its default app (often WhatsApp) */
-const UPI_APPS = [["phonepe", "PhonePe", "phonepe://pay?"], ["gpay", "Google Pay", "tez://upi/pay?"], ["paytm", "Paytm", "paytmmp://pay?"]];
+const PAY_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent || "") || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const PAY_PHONE = PAY_IOS || /Android|Mobi/i.test(navigator.userAgent || "");
+/* app buttons only work on a phone with that app; on a computer growers scan the QR from inside their UPI app instead */
+const UPI_APPS = [["phonepe", "PhonePe", "phonepe://pay?"], ["gpay", "Google Pay", PAY_IOS ? "gpay://upi/pay?" : "tez://upi/pay?"], ["paytm", "Paytm", "paytmmp://pay?"]];
+Object.assign(T.en, { pay_qr: "Open PhonePe, Google Pay or Paytm on your phone, tap Scan QR inside the app, and scan this. Don't use the phone's camera: it may open WhatsApp instead.", pay_noapp: "If the app does not open, copy the UPI ID below and pay to it from your UPI app." });
+Object.assign(T.hi, { pay_qr: "फ़ोन पर PhonePe, Google Pay या Paytm खोलें, ऐप के अंदर Scan QR दबाएँ और यह स्कैन करें। फ़ोन का कैमरा इस्तेमाल न करें: वह WhatsApp खोल सकता है।", pay_noapp: "अगर ऐप न खुले, तो नीचे दी UPI ID कॉपी करें और अपने UPI ऐप से उस पर भेजें।" });
+if (T.hn) Object.assign(T.hn, { pay_qr: "Phone par PhonePe, Google Pay ya Paytm kholein, app ke andar Scan QR dabayein aur yeh scan karein. Phone ka camera use na karein: woh WhatsApp khol sakta hai.", pay_noapp: "Agar app na khule, to neeche di UPI ID copy karein aur apne UPI app se us par bhejein." });
 Object.assign(T.en, { pay_pick: "Choose your UPI app", pay_other: "Other UPI app" });
 Object.assign(T.hi, { pay_pick: "अपना UPI ऐप चुनें", pay_other: "दूसरा UPI ऐप" });
 if (T.hn) Object.assign(T.hn, { pay_pick: "Apna UPI app chunein", pay_other: "Doosra UPI app" });
@@ -189,10 +195,10 @@ function renderPay(msgKey, msgArg, msgVars, done) {
     (auto ? '<button class="btn-s add payapp" type="button" data-pay="rzp"' + (rzpBusy ? " disabled" : "") + ">" + plEsc(tr("pay_rzp").replace("{a}", rupees(amt))) + "</button>" +
       '<p class="fine">' + tr("pay_rzp_n") + "</p>" + (msgTxt ? '<p class="fine" role="status" style="font-size:1rem"><b>' + plEsc(msgTxt) + "</b></p>" : "") +
       '<details class="paymanual"><summary class="fine">' + tr("pay_manual") + "</summary>" : "") +
-    '<p class="fine" style="margin-top:10px"><b>' + tr("pay_pick") + '</b></p><div class="payapps">' +
-    UPI_APPS.map(x => '<a class="btn-s add payapp" href="' + plEsc(upiLink(payPlan, payPer, x[2])) + '">' + x[1] + "</a>").join("") +
-    '<a class="btn-s payapp" href="' + plEsc(upiLink(payPlan, payPer)) + '">' + tr("pay_other") + "</a></div>" +
-    '<div class="payqr" id="payQr" hidden></div><p class="fine" id="payQrN" hidden>' + tr("pay_qr") + "</p>" +
+    (PAY_PHONE ? '<p class="fine" style="margin-top:10px"><b>' + tr("pay_pick") + '</b></p><div class="payapps">' +
+      UPI_APPS.map(x => '<a class="btn-s add payapp" href="' + plEsc(upiLink(payPlan, payPer, x[2])) + '">' + x[1] + "</a>").join("") +
+      '<a class="btn-s payapp" href="' + plEsc(upiLink(payPlan, payPer)) + '">' + tr("pay_other") + '</a></div><p class="fine">' + tr("pay_noapp") + "</p>"
+    : '<div class="payqr" id="payQr" hidden></div><p class="fine" id="payQrN" hidden>' + tr("pay_qr") + "</p>") +
     '<p class="payto">' + tr("pay_to") + ": <b>" + plEsc(UPI.name) + "</b> · <code>" + plEsc(UPI.id) +
     '</code> <button class="btn-s sm" type="button" data-pay="copy">' + tr("pay_copy") + "</button></p>" +
     '<form id="payForm" novalidate><div class="field"><label for="payUtr">' + tr("pay_utr_l") + '</label><input id="payUtr" type="text" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="' +
