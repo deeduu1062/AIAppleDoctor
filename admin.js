@@ -721,6 +721,14 @@ async function loadLibAdmin() { await loadLA(); laCheckStarter(); }
 
 /* ---------- admin: payments (tables public.payments + public.payment_events) ---------- */
 let PA = null, PALOG = null, paBusy = false, paShow = "pending";
+/* "I've paid" rows are switched on straight away; they still need you to see the money in your UPI app */
+const paUnchecked = x => !!(x.self_paid && x.status === "approved" && !x.checked_at);
+const paToCheck = x => x.status === "pending" || paUnchecked(x);
+const paReceived = x => x.status === "approved" && !paUnchecked(x);
+Object.assign(T.en, { pa_ip: "I've paid (no UTR)", pa_ip_tag: "Plan on · check UPI app", pa_ip_ok: "✓ Money received", pa_ip_okd: "Received ✓",
+  pa_ip_ask: "Did {a} from {e} arrive in your UPI app (paid {t})?", pa_ip_no: "Money not received from {e}?\n\nThis rejects the payment and switches their plan off now." });
+Object.assign(T.hi, { pa_ip: "भुगतान कर दिया (UTR नहीं)", pa_ip_tag: "प्लान चालू · UPI ऐप में जाँचें", pa_ip_ok: "✓ पैसे मिल गए", pa_ip_okd: "मिल गए ✓",
+  pa_ip_ask: "क्या {e} के {a} आपके UPI ऐप में आए ({t} को भरे)?", pa_ip_no: "{e} से पैसे नहीं मिले?\n\nइससे भुगतान नामंज़ूर होगा और उनका प्लान अभी बंद हो जाएगा।" });
 const paRup = n => rupees(+n || 0);
 const paDate = iso => iso ? new Date(iso).toLocaleString(lang === "hi" ? "hi-IN" : "en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "–";
 const paDay = d => d ? new Date(d + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { day: "numeric", month: "short", year: "numeric" }) : "–";
@@ -746,8 +754,8 @@ async function loadPayAdmin() {
 function renderPayAdmin() {
   if (!document.getElementById("paList")) return;
   if ($("paSubs")) { set("paSubs", tr("sb_tab").replace("{n}", fmtN(PA ? subsRows().length : 0))); $("paSubs").setAttribute("aria-selected", paShow === "subs" ? "true" : "false"); }
-  if (paShow === "subs") { $("paPend").setAttribute("aria-selected", "false"); $("paAll").setAttribute("aria-selected", "false"); set("paPend", tr("pa_pend").replace("{n}", fmtN((PA || []).filter(x => x.status === "pending").length))); set("paAll", tr("pa_all").replace("{n}", fmtN((PA || []).length))); if (PA) renderSubs(); return; }
-  const all = PA || [], pend = all.filter(x => x.status === "pending"), ok = all.filter(x => x.status === "approved");
+  if (paShow === "subs") { $("paPend").setAttribute("aria-selected", "false"); $("paAll").setAttribute("aria-selected", "false"); set("paPend", tr("pa_pend").replace("{n}", fmtN((PA || []).filter(paToCheck).length))); set("paAll", tr("pa_all").replace("{n}", fmtN((PA || []).length))); if (PA) renderSubs(); return; }
+  const all = PA || [], pend = all.filter(paToCheck), ok = all.filter(paReceived);
   const now = new Date(), ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
   const today = now.toISOString().slice(0, 10);
   const sum = a => a.reduce((s, x) => s + (+x.amount || 0), 0);
@@ -755,7 +763,7 @@ function renderPayAdmin() {
   $("paStats").innerHTML = st("pa_s_total", paRup(sum(ok)), "main") +
     st("pa_s_month", paRup(sum(ok.filter(x => String(x.created_at).slice(0, 7) === ym)))) +
     st("pa_s_pend", fmtN(pend.length) + (pend.length ? " · " + paRup(sum(pend)) : ""), pend.length ? "neg" : "") +
-    st("pa_s_active", fmtN(ok.filter(x => !x.valid_until || x.valid_until >= today).length), "pos");
+    st("pa_s_active", fmtN(all.filter(x => x.status === "approved" && (!x.valid_until || x.valid_until >= today)).length), "pos");
   set("paPend", tr("pa_pend").replace("{n}", fmtN(pend.length)));
   set("paAll", tr("pa_all").replace("{n}", fmtN(all.length)));
   $("paPend").setAttribute("aria-selected", paShow === "pending" ? "true" : "false");
@@ -769,9 +777,11 @@ function renderPayAdmin() {
       const sel = '<td class="fbst"><select class="pa-' + esc(x.status) + '" data-pa="' + esc(x.id) + '" aria-label="' + tr("pa_c_status") + '">' +
         ["pending", "approved", "rejected"].map(s => '<option value="' + s + '"' + (x.status === s ? " selected" : "") + ">" + tr("pa_st_" + s) + "</option>").join("") + "</select></td>";
       const expired = x.status === "approved" && x.valid_until && x.valid_until < today;
-      return "<tr>" + sel + "<td>" + paDate(x.created_at) + "</td><td>" + esc(x.email || "–") + "</td>" +
+      const ip = x.self_paid ? (paUnchecked(x) ? '<br><span class="tag pfbad">' + tr("pa_ip_tag") + '</span><br><button class="btn-s add sm" type="button" data-paok="' + esc(x.id) + '">' + tr("pa_ip_ok") + "</button>"
+        : x.status === "approved" ? '<br><span class="tag ok">' + tr("pa_ip_okd") + "</span>" : "") : "";
+      return "<tr" + (paUnchecked(x) ? ' class="pfhit"' : "") + ">" + sel.replace("</select></td>", "</select>" + ip + "</td>") + "<td>" + paDate(x.created_at) + "</td><td>" + esc(x.email || "–") + "</td>" +
         "<td>" + plName(x.plan) + '<br><span class="fine">' + tr(x.period === "year" ? "pay_year" : "pay_month") + "</span></td>" +
-        '<td class="n">' + paRup(x.amount) + '</td><td><code>' + (x.source === "referral" ? "Invite reward" : x.method === "razorpay" ? "Razorpay " + esc(x.rzp_payment_id || "") : esc(x.utr)) + "</code></td>" +
+        '<td class="n">' + paRup(x.amount) + '</td><td><code>' + (x.source === "referral" ? "Invite reward" : x.method === "razorpay" ? "Razorpay " + esc(x.rzp_payment_id || "") : x.self_paid ? tr("pa_ip") : esc(x.utr)) + "</code></td>" +
         "<td>" + (x.valid_until ? paDay(x.valid_until) + (expired ? ' <span class="tag">' + tr("pa_expired") + "</span>" : "") : "–") + "</td>" +
         "<td>" + (x.reviewed_at ? paDate(x.reviewed_at) + '<br><span class="fine">' + esc(x.reviewed_by || "") + "</span>" : "–") + "</td></tr>";
     }).join("") + "</tbody></table></div>";
@@ -788,7 +798,7 @@ function renderPayAdmin() {
 
 function paCsv() {
   if (!PA || !PA.length) return;
-  const cols = ["created_at", "email", "plan", "period", "amount", "utr", "status", "valid_until", "reviewed_at", "reviewed_by", "note", "id"];
+  const cols = ["created_at", "email", "plan", "period", "amount", "utr", "self_paid", "checked_at", "status", "valid_until", "reviewed_at", "reviewed_by", "note", "id"];
   const q = v => { const s = v == null ? "" : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
   const csv = [cols.join(",")].concat(PA.map(x => cols.map(c => q(x[c])).join(","))).join("\n");
   const a = document.createElement("a");
@@ -803,11 +813,21 @@ if (document.getElementById("paList")) {
   if ($("paSubs")) $("paSubs").addEventListener("click", () => { paShow = "subs"; renderPayAdmin(); });
   $("paRefresh").addEventListener("click", loadPayAdmin);
   $("paCsv").addEventListener("click", paCsv);
+  $("paList").addEventListener("click", async e => {
+    const b = e.target.closest("[data-paok]"); if (!b || !PA) return;
+    const row = PA.find(x => x.id === b.dataset.paok); if (!row) return;
+    if (!confirm(tr("pa_ip_ask").replace("{a}", paRup(row.amount)).replace("{e}", row.email || "–").replace("{t}", paDate(row.created_at)))) return;
+    b.disabled = true;
+    let err = null;
+    try { const r = await sb.from("payments").update({ checked_at: new Date().toISOString() }).eq("id", row.id).select().single(); if (r.error) err = r.error; else Object.assign(row, r.data); } catch (x) { err = x; }
+    if (err) { b.disabled = false; set("paErr", tr("pa_err").replace("{m}", String(err.message || err))); return; }
+    set("paErr", ""); loadPayAdmin();
+  });
   $("paList").addEventListener("change", async e => {
     const sel = e.target.closest("select[data-pa]"); if (!sel || !PA) return;
     const row = PA.find(x => x.id === sel.dataset.pa); if (!row) return;
     const to = sel.value;
-    const ask = to === "approved" ? tr("pa_ask_ok") : to === "rejected" ? tr("pa_ask_no") : tr("pa_ask_back");
+    const ask = row.self_paid && to === "rejected" ? tr("pa_ip_no") : to === "approved" ? tr("pa_ask_ok") : to === "rejected" ? tr("pa_ask_no") : tr("pa_ask_back");
     if (!confirm(ask.replace("{a}", paRup(row.amount)).replace("{u}", row.utr || row.rzp_payment_id || "").replace("{e}", row.email || "–"))) { sel.value = row.status; return; }
     sel.disabled = true;
     let err = null;
@@ -877,15 +897,15 @@ async function loadOverview() {
     errs.push(String(e.code || "") === "PGRST202" || /could not find the function|does not exist|schema cache/i.test(m) ? tr("ov_err_sv") : tr("ov_err").replace("{m}", m));
   }
   try {
-    const r = await sb.from("payments").select("status,amount,created_at,valid_until").limit(10000);
+    const r = await sb.from("payments").select("*").limit(10000);
     if (r.error) throw r.error;
     const P = r.data || [], day = new Date().toISOString().slice(0, 10);
     const per = (rows, since) => rows.filter(x => !since || x.created_at >= since);
-    const ok = P.filter(x => x.status === "approved"), wait = P.filter(x => x.status === "pending");
+    const ok = P.filter(paReceived), wait = P.filter(paToCheck);
     const sum = a => a.reduce((s, x) => s + (+x.amount || 0), 0);
     const four = f => [f(today), f(d7), f(d30), f(null)];
     o.pa = { money: four(s => sum(per(ok, s))), paid: four(s => per(ok, s).length), wait: four(s => per(wait, s).length),
-      active: ok.filter(x => !x.valid_until || x.valid_until >= day).length };
+      active: P.filter(x => x.status === "approved" && (!x.valid_until || x.valid_until >= day)).length };
   } catch (e) { errs.push(ovMissing(e) ? tr("ov_err_pa") : tr("ov_err").replace("{m}", String(e.message || e))); }
   try {
     const [up, down, bad] = await Promise.all([ovCount("chat_messages", q => q.eq("feedback", 1).gte("created_at", d30)), ovCount("chat_messages", q => q.eq("feedback", -1).gte("created_at", d30)),

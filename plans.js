@@ -167,7 +167,9 @@ function loadQr() {
   return qrLoad;
 }
 
+let payDone = null;   /* after "I've paid": keep showing the good news until the box is closed */
 function renderPay(msgKey, msgArg, msgVars, done) {
+  if (!msgKey && payDone) { msgKey = payDone[0]; msgArg = payDone[1]; msgVars = payDone[2]; done = true; }
   const d = document.getElementById("payDlg");
   const name = plName(payPlan);
   let h = '<h3 id="payH">' + tr("pay_h").replace("{p}", name) + "</h3>";
@@ -201,8 +203,7 @@ function renderPay(msgKey, msgArg, msgVars, done) {
     : '<div class="payqr" id="payQr" hidden></div><p class="fine" id="payQrN" hidden>' + tr("pay_qr") + "</p>") +
     '<p class="payto">' + tr("pay_to") + ": <b>" + plEsc(UPI.name) + "</b> · <code>" + plEsc(UPI.id) +
     '</code> <button class="btn-s sm" type="button" data-pay="copy">' + tr("pay_copy") + "</button></p>" +
-    '<form id="payForm" novalidate><div class="field"><label for="payUtr">' + tr("pay_utr_l") + '</label><input id="payUtr" type="text" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="' +
-    plEsc(tr("pay_utr_ph")) + '"></div><div class="dels"><button class="btn-s add" type="submit" id="paySend">' + tr("pay_send") +
+    '<form id="payForm" novalidate><p class="fine">' + plEsc(tr("pay_ip_p").replace("{a}", rupees(amt))) + '</p><div class="dels"><button class="btn-s add" type="submit" id="paySend">' + plEsc(tr("pay_ip_btn").replace("{a}", rupees(amt))) +
     '</button><button class="btn-s" type="button" data-pay="close">' + tr("pay_close") + "</button></div></form>" +
     '<p class="fine" id="payMsg" role="status">' + (msgKey && !auto ? plEsc(msgTxt) : "") + "</p>" + (auto ? "</details>" : "");
   d.innerHTML = h;
@@ -218,7 +219,7 @@ function renderPay(msgKey, msgArg, msgVars, done) {
 }
 
 function openPay(plan) {
-  payPlan = plan; payPer = "year";
+  payPlan = plan; payPer = "year"; payDone = null;
   const d = document.getElementById("payDlg");
   renderPay();
   if (d.showModal) { if (!d.open) d.showModal(); } else d.setAttribute("open", "");
@@ -257,25 +258,36 @@ document.addEventListener("click", e => {
   }
 });
 
+/* "I've paid": the plan switches on straight away (supabase/payments_ipaid.sql); the admin then checks the UPI app and ticks Money received, or rejects */
+Object.assign(T.en, { pay_ip_p: "After paying {a} in your UPI app, come back here and tap I've paid. Your plan switches on straight away. We check every payment in our UPI app, and switch the plan off if the money has not arrived.",
+  pay_ip_btn: "✓ I've paid {a}", pay_ip_q: "Have you paid {a} to Seb Saathi ({u})?", pay_ip_ok: "Thank you! {p} is on till {d}.",
+  pay_ip_wait: "Your last payment is still being checked. Please wait for that before paying again, or contact us." });
+Object.assign(T.hi, { pay_ip_p: "अपने UPI ऐप में {a} भरने के बाद यहाँ लौटें और 'मैंने भुगतान कर दिया' दबाएँ। आपका प्लान तुरंत चालू हो जाएगा। हम हर भुगतान अपने UPI ऐप में जाँचते हैं, और पैसे न आने पर प्लान बंद कर देते हैं।",
+  pay_ip_btn: "✓ मैंने {a} भर दिए", pay_ip_q: "क्या आपने सेब साथी ({u}) को {a} भेज दिए हैं?", pay_ip_ok: "धन्यवाद! {p} {d} तक चालू है।",
+  pay_ip_wait: "आपका पिछला भुगतान अभी जाँच में है। दोबारा भरने से पहले उसका इंतज़ार करें, या हमसे संपर्क करें।" });
+if (T.hn) Object.assign(T.hn, { pay_ip_p: "Apne UPI app mein {a} bharne ke baad yahan lautein aur 'Maine payment kar diya' dabayein. Aapka plan turant chalu ho jayega. Hum har payment apne UPI app mein jaanchte hain, aur paise na aane par plan band kar dete hain.",
+  pay_ip_btn: "✓ Maine {a} bhar diye", pay_ip_q: "Kya aapne Seb Saathi ({u}) ko {a} bhej diye hain?", pay_ip_ok: "Dhanyavaad! {p} {d} tak chalu hai.",
+  pay_ip_wait: "Aapka pichhla payment abhi jaanch mein hai. Dobara bharne se pehle uska intezaar karein, ya humse sampark karein." });
 document.addEventListener("submit", async e => {
   if (!e.target || e.target.id !== "payForm") return;
   e.preventDefault();
-  const msg = document.getElementById("payMsg"), btn = document.getElementById("paySend");
-  const utr = (document.getElementById("payUtr").value || "").replace(/\s+/g, "");
-  if (!/^\d{12}$/.test(utr)) { msg.textContent = tr("pay_bad"); return; }
+  const msg = document.getElementById("payMsg"), btn = document.getElementById("paySend"), amt = PRICES[payPlan][payPer];
   if (typeof sb === "undefined" || !sb || !user) { msg.textContent = tr("pay_err"); return; }
-  btn.disabled = true; btn.textContent = tr("pay_sending");
+  if (!confirm(tr("pay_ip_q").replace("{a}", rupees(amt)).replace("{u}", UPI.id))) return;
+  const label = btn.textContent; btn.disabled = true; btn.textContent = tr("pay_sending");
   try {
-    const r = await sb.from("payments").insert({ plan: payPlan, period: payPer, amount: PRICES[payPlan][payPer], utr: utr, email: user.email || null });
+    const r = await sb.from("payments").insert({ plan: payPlan, period: payPer, amount: amt, email: user.email || (user.phone ? "+" + String(user.phone).replace(/^\+/, "") : null), status: "approved", self_paid: true }).select("plan,status,valid_until,created_at").single();
     if (r && r.error) {
-      const dup = String(r.error.code) === "23505";
-      btn.disabled = false; btn.textContent = tr("pay_send"); msg.textContent = tr(dup ? "pay_dup" : "pay_err"); return;
+      btn.disabled = false; btn.textContent = label; msg.textContent = tr(/ipaid_waiting/.test(String(r.error.message || "")) ? "pay_ip_wait" : "pay_err"); return;
     }
-    myPay = { plan: payPlan, status: "pending" };
-    e.target.hidden = true; msg.textContent = tr("pay_ok").replace("{p}", plName(payPlan));
-    renderPlans();
+    myPay = r.data;
+    payDone = ["pay_ip_ok", plName(payPlan), { d: typeof fmtDay === "function" ? fmtDay(r.data.valid_until, true) : r.data.valid_until }];
+    renderPay(); renderPlans();
+    if (typeof renderAcct === "function") try { renderAcct(); } catch (x) {}
+    if (typeof renderAcctTab === "function") try { renderAcctTab(); } catch (x) {}
+    setTimeout(loadMyPay, 300);
   } catch (err) {
-    btn.disabled = false; btn.textContent = tr("pay_send"); msg.textContent = tr("pay_err");
+    btn.disabled = false; btn.textContent = label; msg.textContent = tr("pay_err");
   }
 });
 
