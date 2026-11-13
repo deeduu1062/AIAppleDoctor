@@ -1276,7 +1276,7 @@ function renderProf() {
   if (!PF) { $("pfList").innerHTML = ""; return; }
   const q = $("pfFind").value.trim().toLowerCase();
   const nLim = PF.filter(u => pfHits(u).length).length, setup = !PF.length || PF[0].q_today != null;
-  const rows = PF.filter(u => (!q || (String(u.email || "") + " " + String(u.phone || "")).toLowerCase().indexOf(q) >= 0) && (!pfOnlyLim || pfHits(u).length) && (!pfPlanF || (!pfIsAdm(u) && pfKey(u) === pfPlanF)));
+  const rows = PF.filter(u => (!q || (String(u.email || "") + " " + String(u.phone || "")).toLowerCase().indexOf(q) >= 0) && (!pfOnlyLim || pfHits(u).length) && (!pfPlanF || (!pfIsAdmOnly(u) && pfKey(u) === pfPlanF)));
   const top = pfMix() + (setup ? '<label class="chk pfonly"><input type="checkbox" id="pfOnlyLim"' + (pfOnlyLim ? " checked" : "") + "><span>" + tr("pf_only_lim").replace("{n}", nLim) + "</span></label>"
     : '<p class="fine">' + tr("pf_lim_setup") + "</p>");
   if (!rows.length) { $("pfList").innerHTML = top + '<p class="empty">' + tr("pf_none") + "</p>"; return; }
@@ -1291,9 +1291,10 @@ function renderProf() {
         "<td>" + adWhen(u.last_seen) + "</td></tr>";
     }).join("") + "</tbody></table></div>";
 }
-/* graphic summary at the top of Profiles: how many growers are on Free, Saathi and Saathi Plus (admin accounts left out) */
+/* graphic summary at the top of Profiles: how many growers are on Free, Saathi and Saathi Plus (admin-only accounts left out) */
+const pfIsAdmOnly = u => ADMIN_ONLY.indexOf(String(u.email || "").toLowerCase()) >= 0;
 function pfMix() {
-  const g = PF.filter(u => !pfIsAdm(u)), n = g.length, c = { free: 0, basic: 0, premium: 0 };
+  const g = PF.filter(u => !pfIsAdmOnly(u)), n = g.length, c = { free: 0, basic: 0, premium: 0 };
   g.forEach(u => c[pfKey(u)]++);
   const pct = v => n ? Math.round(v * 100 / n) : 0, paid = c.basic + c.premium;
   const ks = ["free", "basic", "premium"];
