@@ -278,6 +278,34 @@ module.exports = async (req, res) => {
 
   if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "not_setup" });
 
+  // The grower switched language after a check: translate that answer's words (no photo, no new check, not counted)
+  if (body.translate && typeof body.translate === "object") {
+    const tl = body.lang === "hi" || body.lang === "hn" ? body.lang : "en";
+    const src = clean(body.translate);
+    const words = { photo_issue: src.photo_issue, summary: src.summary, next_steps: src.next_steps, why: src.matches.map(m => m.why) };
+    const want = tl === "hi" ? "simple Devanagari Hindi" : tl === "hn" ? "Hinglish: Hindi as a Himachali apple grower speaks it, written in English letters, with Hindi words and Hindi sentence order (not English sentences); English only for common farm words like spray, scab, KVK, mandi" : "simple English";
+    try {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+        body: JSON.stringify({ model: MODEL, max_tokens: 1400,
+          system: "You translate an apple orchard disease check for a farmer. Return ONLY the same JSON object with the same keys and the same number of list items, every text value rewritten in " + want + ". Keep empty strings empty. Keep product names, doses and numbers exactly. Short and simple.",
+          messages: [{ role: "user", content: JSON.stringify(words) }] })
+      });
+      if (!r.ok) { console.error("ai-tr", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
+      const j = await r.json();
+      const t = parseJson((j.content || []).filter(b => b.type === "text").map(b => b.text).join("")) || {};
+      const why = Array.isArray(t.why) ? t.why : [];
+      const out = Object.assign({}, src, {
+        photo_issue: typeof t.photo_issue === "string" ? t.photo_issue : src.photo_issue,
+        summary: typeof t.summary === "string" ? t.summary : src.summary,
+        next_steps: Array.isArray(t.next_steps) && t.next_steps.length === src.next_steps.length ? t.next_steps.map(x => String(x)) : src.next_steps,
+        matches: src.matches.map((m, i) => Object.assign({}, m, { why: typeof why[i] === "string" ? why[i] : m.why }))
+      });
+      return send(res, 200, { result: clean(out), lang: tl });
+    } catch (e) { console.error("ai-tr-fail", e); return send(res, 502, { error: "ai" }); }
+  }
+
   // 2. Check the request
   const images = readImages(body.images);
   if (!images) return send(res, 400, { error: "photos" });

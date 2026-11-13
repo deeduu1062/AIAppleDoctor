@@ -6425,7 +6425,7 @@ $("dxGo").addEventListener("click", async () => {
       body: JSON.stringify(Object.assign({ images: dxFiles, part: dxSel.part, note: $("dxNote").value.trim(), orchard_id: dxOrchSel || undefined, lang }, typeof dxExtra === "function" ? dxExtra() : {}))
     });
     const j = await r.json().catch(() => ({}));
-    if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, fb: "", kept: j.kept || 0, crop: (typeof dxExtra === "function" ? dxExtra().crop : "apple"), orch: dxOrchSel || "" }; renderDiagAi(j.id, j.result); loadDxHist(true); if (typeof dxAfter === "function") dxAfter(j); }
+    if (r.ok && j.result) { dxLast = { id: j.id, result: j.result, lang: lang, fb: "", kept: j.kept || 0, crop: (typeof dxExtra === "function" ? dxExtra().crop : "apple"), orch: dxOrchSel || "" }; renderDiagAi(j.id, j.result); loadDxHist(true); if (typeof dxAfter === "function") dxAfter(j); }
     else {
       const k = { signin: "dx_e_signin", limit: j.per === "month" ? "dx_e_limit_m" : "dx_e_limit", not_setup: "dx_e_setup", photos: "dx_e_photos" }[j.error] || "dx_e_net";
       set("dxErr", tr(k).replace("{n}", j.limit || ""));
@@ -8026,7 +8026,7 @@ if (window.ADFeedback) ADFeedback.init({
 });
 applyLang();
 </script>
-<script src="/dx.js?v=8"></script>
+<script src="/dx.js?v=9"></script>
 
 <p class="shtoast" id="shToast" role="status" hidden></p>
 </body>

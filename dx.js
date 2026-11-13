@@ -190,9 +190,38 @@ window.dxAfter = j => {
 };
 
 /* ---------- 1. the photo result ---------- */
+/* the answer is written in the language picked at the time of the check; if the grower switches language, translate it once and keep that copy */
+let dxTrBusy = "";
+function dxShown(r) {
+  if (!r || !dxLast || r !== dxLast.result || !dxLast.lang || dxLast.lang === lang) return r;
+  const t = dxLast.tr && dxLast.tr[lang]; if (t) return t;
+  if (dxLast.trFail && dxLast.trFail[lang]) return r;   /* could not translate: show it as written */
+  dxTranslate(); return null;
+}
+async function dxTranslate() {
+  const want = lang, key = (dxLast && dxLast.id) + "|" + want;
+  if (!dxLast || dxTrBusy === key || (dxLast.trFail && dxLast.trFail[want])) return;
+  dxTrBusy = key;
+  let out = null;
+  try {
+    const s = sb ? await sb.auth.getSession() : null, token = s && s.data && s.data.session ? s.data.session.access_token : "";
+    const r = await fetch("/api/diagnose", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ translate: dxLast.result, lang: want }) });
+    const j = await r.json().catch(() => ({})); if (r.ok && j.result) out = j.result;
+  } catch (e) {}
+  if (dxTrBusy === key) dxTrBusy = "";
+  if (!dxLast || key !== dxLast.id + "|" + want) return;
+  if (out) (dxLast.tr = dxLast.tr || {})[want] = out; else (dxLast.trFail = dxLast.trFail || {})[want] = true;
+  renderDiagAi(dxLast.id, dxLast.result);
+}
+Object.assign(T.en, { dx_tr_busy: "Translating the answer into English…" });
+Object.assign(T.hi, { dx_tr_busy: "जवाब हिंदी में बदल रहे हैं…" });
+Object.assign(T.hn, { dx_tr_busy: "Jawab Hinglish mein badal rahe hain…" });
 renderDiagAi = function (id, r) {
   const box = $("dxAi");
   if (!r) { box.innerHTML = ""; return; }
+  const shown = dxShown(r);
+  if (!shown) { box.innerHTML = '<div class="dxcards"><article class="dxcard top"><h5>' + tr("dx_ai_h") + '</h5><p class="fine" role="status">' + tr("dx_tr_busy") + "</p></article></div>"; return; }
+  r = shown;
   let h = '<div class="dxcards"><article class="dxcard top"><h5>' + tr("dx_ai_h") + sevChip(r.severity) + "</h5>";
   if (!r.photo_ok) h += '<p class="urgent">' + tr("dx_photo_bad") + (r.photo_issue ? ": " + esc(r.photo_issue) : "") + "</p>";
   if (r.summary) h += "<p>" + esc(r.summary) + "</p>";
@@ -253,7 +282,7 @@ let speaking = false;
 function speakResult() {
   if (!speakOk) return;
   if (speaking) { speechSynthesis.cancel(); speaking = false; renderDiagAi(dxLast && dxLast.id, dxLast && dxLast.result); return; }
-  const r = dxLast && dxLast.result; if (!r) return;
+  const r = dxLast && (dxShown(dxLast.result) || dxLast.result); if (!r) return;
   const parts = [];
   if (!r.photo_ok) parts.push(tr("dx_photo_bad") + ". " + (r.photo_issue || ""));
   (r.matches || []).slice(0, 1).forEach(m => parts.push((DX[m.id] ? dxL(DX[m.id]) : m.name || "") + ", " + tr("dx_c_" + m.confidence) + ". " + (m.why || "")));
