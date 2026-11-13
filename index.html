@@ -1463,6 +1463,22 @@ details.dsec > summary h4{display:inline}
 .tsum .fine{margin:0}
 .dxth{position:relative;display:inline-block}.dxth.bad img{outline:3px solid #E09A1A;outline-offset:-3px}
 .dxth small{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.65);color:#fff;font-size:.72rem;padding:1px 6px;border-radius:6px}
+/* family sharing */
+.sharebar{border-top:1px solid var(--line)}
+.shbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding-block:8px;font-size:.92rem;font-weight:600}
+.shbar>span{flex:1 1 14rem;min-width:0}
+.shbar small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+.shbar.ed,.shbar.has{color:var(--good)}
+.shbar.clash{color:var(--bad)}
+.shbar .dels{display:flex;flex-wrap:wrap;gap:6px}
+.shlist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.shlist li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.shwho{min-width:0}.shwho b{display:block;overflow-wrap:anywhere}.shwho span{font-size:.88rem;color:var(--muted);overflow-wrap:anywhere}
+.shrole{display:inline-block;font-weight:600;color:var(--muted)}.shrole.ed{color:var(--good)}
+.shform{display:grid;gap:8px}.shpick{display:flex;flex-wrap:wrap;gap:4px 16px}
+.shtoast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;max-width:min(92vw,420px);margin:0;padding:10px 14px;border-radius:10px;background:var(--fg);color:var(--bg);font-weight:600;font-size:.92rem;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+/* view only: hide the add, edit and delete buttons in the record pages */
+html.shro :is(#tp-home,#tp-orch,#tp-calc) :is(.add,.del,.danger,.lotedit,.ladd,.ldel,[data-delo],[data-xhedit],[data-kxe],[data-kxd],[data-act=clearex],[data-dact=clearex],.detadd,[data-xact=detedit],[data-xact=detloc],[data-xact=setloc],[data-xact=todoadd],[data-xact=todoedit],[data-xact=tododone],[data-xact=bladd],[data-xact=lbadd],[data-xact=sladd],[data-xact=vtadd]){display:none!important}
 .accard{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin:10px 0;display:grid;gap:8px}
 .accard h4{margin:0;font:700 1.05rem var(--display);color:var(--apple)}
 .acdl{margin:0;display:grid;gap:6px}.acdl div{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:8px}.acdl dt{color:var(--muted)}.acdl dd{margin:0;overflow-wrap:anywhere;font-weight:600}
@@ -2021,6 +2037,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <a class="brand" href="#top"><i aria-hidden="true"></i>Seb Saathi</a>
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
+  <div class="sharebar" id="shareBar" hidden></div>
   <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-home" aria-selected="false" aria-controls="tp-home" type="button" data-i18n="tt_home" hidden></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button></div></div>
 </div>
 
@@ -3393,6 +3410,10 @@ let user = null, loaded = false, loadFailed = false;
 let justSignedIn = /access_token|refresh_token|[?&]code=|type=magiclink|^#dashboard$/.test(String(location.hash) + String(location.search));
 const goLogin = signup => { location.href = "/login.html" + (signup ? "?mode=signup" : ""); };
 let saving = false, again = false, saveTimer = null, rev = 0, savedRev = 0;
+/* family sharing: shView is set while looking at someone else's records (supabase/sharing.sql) */
+let shView = null, shMine = [], shToMe = [], shReady = false, shNote = "", ledAt = null, ledClash = false, roCopy = null, roTimer = null;
+const ledOwner = () => shView ? shView.owner_id : user.id;
+const shRO = () => !!(shView && !shView.can_edit);
 const isDirty = () => rev > savedRev;
 function setStatus(k) {
   let show = k;
@@ -3401,20 +3422,26 @@ function setStatus(k) {
   ["status", "status2"].forEach(id => { const el = $(id); el.textContent = show ? tr(show) : ""; el.dataset.k = show; el.classList.toggle("chip", show === "st_saved" || show === "st_saving"); el.classList.toggle("err", k === "st_err"); });
   $("status").hidden = !show;
 }
-function save() { if (!user || !loaded) return; rev++; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
+function save() { if (!user || !loaded) return; if (shRO()) { roBlock(); return; } rev++; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
 async function flush() {
-  if (!user || !sb || !loaded) return;
+  if (!user || !sb || !loaded || shRO() || ledClash) return;
   if (saving) { again = true; return; }
   saving = true; setStatus("st_saving");
-  const r = rev, snapshot = JSON.parse(JSON.stringify(S));
+  const r = rev, snapshot = JSON.parse(JSON.stringify(S)), own = ledOwner(), now = new Date().toISOString();
   let ok = true;
   try {
-    const res = await sb.from("ledgers").upsert({user_id: user.id, data: snapshot, updated_at: new Date().toISOString()});
+    /* save only if nobody else (another phone, or a family member) saved since we loaded; otherwise ask */
+    const res = ledAt
+      ? await sb.from("ledgers").update({data: snapshot, updated_at: now}).eq("user_id", own).eq("updated_at", ledAt).select("updated_at")
+      : await sb.from("ledgers").upsert({user_id: own, data: snapshot, updated_at: now}).select("updated_at");
     if (res.error) ok = false;
+    else if (!res.data || !res.data.length) { ok = false; ledClash = true; }
+    else ledAt = res.data[0].updated_at || now;
   } catch (e) { ok = false; }
   if (ok && savedRev < r) savedRev = r;
   setStatus(ok ? "st_cloud" : "st_err");
   saving = false;
+  if (ledClash) { renderShareBar(); return; }
   if (ok && (again || isDirty())) { again = false; flush(); }
 }
 window.addEventListener("online", () => { if (isDirty()) flush(); });
@@ -3471,22 +3498,26 @@ function renderOrchGate() {
 }
 function dropEmptySeasons() {
   const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
-  if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded) save(); }
+  if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded && !shRO()) save(); }
 }
 function renderAll() { dropEmptySeasons(); if (typeof renderDxOrch === "function") renderDxOrch(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); if ($("tp-home") && !$("tp-home").hidden && typeof renderHome === "function") renderHome(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
-  let data = null, msg = "";
+  let data = null, msg = "", at = null;
   try {
-    const res = await sb.from("ledgers").select("data").eq("user_id", user.id).maybeSingle();
+    const res = await sb.from("ledgers").select("data,updated_at").eq("user_id", ledOwner()).maybeSingle();
     if (res.error) { loadFailed = true; msg = res.error.message || ""; }
-    else if (res.data) data = res.data.data;
+    else if (res.data) { data = res.data.data; at = res.data.updated_at || null; }
   } catch (e) { loadFailed = true; msg = String((e && e.message) || e); }
+  if (shView && !loadFailed && !data) { shNote = tr("sh_empty").replace("{o}", shView.label); shView = null; return loadMine(); }
   let parsed = null;
   if (!loadFailed && data) { parsed = sanitize(data); if (!parsed) { loadFailed = true; msg = "Saved records were not recognised."; } }
   if (loadFailed) { set("loadErrMsg", msg); renderOrchGate(); return; }
   S = parsed || makeSample();
+  ledAt = at; ledClash = false; roCopy = shRO() ? JSON.parse(JSON.stringify(S)) : null;
+  document.documentElement.classList.toggle("shro", shRO()); document.documentElement.classList.toggle("shon", !!shView);
+  if (typeof renderShareBar === "function") renderShareBar();
   loaded = true; rev = 0; savedRev = 0; sel.o = null; sel.y = null; fixSel();
   setStatus("st_cloud"); entryOpen = false; showSub("year"); renderAll(); renderOrchGate();
   if (justSignedIn) { justSignedIn = false; showTool("home", false, true); if (location.hash === "#dashboard") try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
@@ -3516,12 +3547,14 @@ async function applyUser(u) {
   user = u;
   if (langChanged && typeof applyLang === "function") try { applyLang(); } catch (e) {}
   if (typeof setGuest === "function") setGuest(!u);
+  if (!u || changed) { shView = null; shMine = []; shToMe = []; shReady = false; shNote = ""; ledAt = null; ledClash = false; roCopy = null; document.documentElement.classList.remove("shro", "shon"); }
   if (!u) {
+    if (typeof renderShareBar === "function") renderShareBar();
     curSub = "quick"; exO = null; exY = null; exEdit = null; exOpen = new Set(); exoOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null;
     S = makeSample(); loaded = false; loadFailed = false; rev = 0; savedRev = 0; recovering = false; pwOpen = false; addingO = false;
     sel.o = null; sel.y = null; fixSel(); renderAll(); renderOrchGate(); return;
   }
-  if (changed) await loadMine();
+  if (changed) { await loadMine(); if (typeof shLoad === "function") shLoad(); }
   bootDone();
 }
 function bootDone() { document.documentElement.classList.remove("booting"); }
@@ -4053,7 +4086,7 @@ function farmSummaryHtml() {
 function dashOverview() {
   let h = "";
   try { h += dashNewsHtml(); } catch (e) {}
-  if (S.orchards.some(x => x.ex)) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
+  if (S.orchards.some(x => x.ex) && !shView) h += '<div class="banner"><span>' + tr("ex_note") + '</span><button class="btn-s" type="button" data-dact="clearex">' + tr("ex_clear") + "</button></div>";
   h += detailsHtml();
   return h;
 }
@@ -7448,6 +7481,7 @@ Object.assign(T.hi, {lim_next_dx: "{p}: महीने में {n} फ़ो�
 if (T.hn) Object.assign(T.hn, {lim_next_dx: "{p}: mahine mein {n} photo jaanch", lim_next_ch: "{p}: Saathi se roz {n} sawal", lim_h: "Plan ki seema poori", lim_go: "{p} mein upgrade karein", lim_no: "Abhi nahi", lim_ok: "Theek hai", lim_next: "{p}: {o} bagiche, {y} saal tak record", lim_price: "{r} saal bhar ka", lim_top: "Aap hamare sabse bade plan par hain. Aur ke liye humse sampark karein.", lim_o: "Aapke {p} plan mein {n} bagichon tak ka record rakh sakte hain. Aur jodne ke liye Mera account mein upgrade karein.", lim_y: "Aapke {p} plan mein {n} saal tak ka record rakh sakte hain ({a} se). {y} jodne ke liye Mera account mein upgrade karein."});
 function recLim() {
   if (typeof isAdmin === "function" && isAdmin()) return null;
+  if (shView) return null;   /* someone else's records: their plan, not ours */
   const st = typeof myPlanState === "function" ? myPlanState() : {paid: null};
   const k = REC_LIMIT[st.paid] ? st.paid : "free";
   return Object.assign({k}, REC_LIMIT[k]);
@@ -7758,6 +7792,7 @@ function renderAcctTab() {
       msg("pw") + '<div class="dels"><button class="btn-s add" type="submit"' + (acBusy ? " disabled" : "") + ">" + tr("pw_save") + '</button><button class="btn-s" type="button" data-ac="pwclose">' + tr("pw_cancel") + "</button></div></form>" +
       (em ? '<div class="acreset"><p class="fine">' + tr("ac_reset_p").replace("{e}", esc(em)) + '</p><button class="btn-s" type="button" data-ac="reset"' + (acBusy ? " disabled" : "") + ">" + tr("ac_reset") + "</button>" + msg("reset") + "</div>" : "")) +
     "</section>") +   /* mobile accounts log in with a WhatsApp code: no password or PIN to change */
+    shAcctHtml() +
     '<section class="accard"><button class="btn-s danger" type="button" data-ac="out">' + tr("ac_out") + "</button></section>";
 }
 document.addEventListener("click", async e => {
@@ -7802,6 +7837,156 @@ Object.assign(T.hn, { tt_acct:"Mera account", ac_me:"Meri jaankari", ac_email:"E
   ac_rej:"Aapka pichhla payment pakka nahi ho saka. Kripya humse sampark karein.", ac_up:"Plan upgrade karein", ac_plans:"Sabhi plan dekhein", ac_pw:"Password",
   ac_pw_p:"Yahan apna password badlein. Kam se kam 8 akshar rakhein.", ac_pw2:"Naya password phir se likhein", ac_pw_diff:"Dono password ek jaise nahi hain.", ac_pw_ok:"Password badal diya gaya.",
   ac_reset_p:"Password bhool gaye? Hum {e} par reset link bhej sakte hain.", ac_reset:"Reset link email karein", ac_reset_ok:"{e} par reset link bhej diya. Naya password banane ke liye ise isi phone par kholein.", ac_out:"Log out" });
+/* ---------- family sharing: share my orchard records with up to two people, each "only view" or "can edit" (supabase/sharing.sql) ---------- */
+Object.assign(T.en, { sh_h: "Share with family", sh_p: "Let up to 2 family members see your orchard records: orchards, expenses, sales and the work diary. They need their own free Seb Saathi account, signed in with the mobile number you add here.",
+  sh_name: "Their name (optional)", sh_who: "Their mobile number (or email)", sh_view: "Only view", sh_edit: "Can view and edit", sh_add: "Share my records", sh_none: "You have not shared your records with anyone.",
+  sh_mk_view: "Make view only", sh_mk_edit: "Allow editing", sh_rm: "Remove", sh_rm_q: "Stop sharing your records with {w}?", sh_full: "You are sharing with 2 people, the most allowed. Remove one to add someone else.",
+  sh_err_who: "Type a 10-digit mobile number or an email.", sh_err_self: "That is your own number or email.", sh_err_lim: "You can share with at most 2 people.", sh_err_dup: "You already share with this person.", sh_err: "Could not save: {m}",
+  sh_ok_add: "Shared. When {w} logs in to Seb Saathi with this number, they will see your records.", sh_tome_h: "Shared with me", sh_tome_p: "These growers have shared their orchard records with you.",
+  sh_open: "Open their records", sh_back: "Back to my records", sh_now: "Open now", sh_r_view: "view only", sh_r_edit: "can edit",
+  sh_bar_view: "👀 Viewing {o}'s records · view only", sh_bar_edit: "✏️ {o}'s records · you can edit", sh_bar_has: "📂 {o} shared their orchard records with you",
+  sh_ro_no: "View only: you can see these records but not change them.", sh_empty: "{o} has not saved any orchard records yet.", sh_gone: "{o} has stopped sharing their records with you.",
+  sh_clash: "These records were changed on another phone or by a family member after you opened them. Your last change is not saved yet.", sh_clash_load: "Load the latest copy", sh_clash_keep: "Keep my change", sh_clash_note: "Load the latest copy shows their change (yours is dropped). Keep my change saves yours over theirs." });
+Object.assign(T.hi, { sh_h: "परिवार के साथ साझा करें", sh_p: "परिवार के ज़्यादा से ज़्यादा 2 लोगों को अपने बाग़ का रिकॉर्ड दिखाएँ: बाग़, खर्चे, बिक्री और काम की डायरी। उनका अपना मुफ़्त सेब साथी खाता होना चाहिए, उसी मोबाइल नंबर से जो आप यहाँ जोड़ें।",
+  sh_name: "उनका नाम (ज़रूरी नहीं)", sh_who: "उनका मोबाइल नंबर (या ईमेल)", sh_view: "सिर्फ़ देख सकें", sh_edit: "देख और बदल सकें", sh_add: "रिकॉर्ड साझा करें", sh_none: "आपने अभी किसी के साथ रिकॉर्ड साझा नहीं किया।",
+  sh_mk_view: "सिर्फ़ देखना करें", sh_mk_edit: "बदलने की छूट दें", sh_rm: "हटाएँ", sh_rm_q: "{w} के साथ रिकॉर्ड साझा करना बंद करें?", sh_full: "आप 2 लोगों के साथ साझा कर रहे हैं, यही सीमा है। किसी और को जोड़ने के लिए एक को हटाएँ।",
+  sh_err_who: "10 अंकों का मोबाइल नंबर या ईमेल लिखें।", sh_err_self: "यह आपका अपना नंबर या ईमेल है।", sh_err_lim: "आप ज़्यादा से ज़्यादा 2 लोगों के साथ साझा कर सकते हैं।", sh_err_dup: "आप इनके साथ पहले से साझा कर रहे हैं।", sh_err: "सेव नहीं हो सका: {m}",
+  sh_ok_add: "साझा हो गया। जब {w} इस नंबर से सेब साथी में लॉग इन करेंगे, उन्हें आपका रिकॉर्ड दिखेगा।", sh_tome_h: "मेरे साथ साझा", sh_tome_p: "इन बाग़वानों ने अपना बाग़ का रिकॉर्ड आपके साथ साझा किया है।",
+  sh_open: "उनका रिकॉर्ड खोलें", sh_back: "अपने रिकॉर्ड पर लौटें", sh_now: "अभी खोलें", sh_r_view: "सिर्फ़ देखना", sh_r_edit: "बदल सकते हैं",
+  sh_bar_view: "👀 {o} का रिकॉर्ड देख रहे हैं · सिर्फ़ देखना", sh_bar_edit: "✏️ {o} का रिकॉर्ड · आप बदल सकते हैं", sh_bar_has: "📂 {o} ने अपना बाग़ का रिकॉर्ड आपके साथ साझा किया है",
+  sh_ro_no: "सिर्फ़ देखना: आप यह रिकॉर्ड देख सकते हैं, बदल नहीं सकते।", sh_empty: "{o} ने अभी कोई बाग़ का रिकॉर्ड सेव नहीं किया।", sh_gone: "{o} ने आपके साथ रिकॉर्ड साझा करना बंद कर दिया है।",
+  sh_clash: "आपके खोलने के बाद यह रिकॉर्ड किसी और फ़ोन से या परिवार के किसी सदस्य ने बदला है। आपका पिछला बदलाव अभी सेव नहीं हुआ।", sh_clash_load: "नई कॉपी लोड करें", sh_clash_keep: "मेरा बदलाव रखें", sh_clash_note: "नई कॉपी लोड करें से उनका बदलाव दिखेगा (आपका छूट जाएगा)। मेरा बदलाव रखें से आपका बदलाव उनके ऊपर सेव होगा।" });
+Object.assign(T.hn, { sh_h: "Parivar ke saath share karein", sh_p: "Parivar ke zyada se zyada 2 logon ko apne bagiche ka record dikhayein: bagiche, kharche, bikri aur kaam ki diary. Unka apna free Seb Saathi account hona chahiye, usi mobile number se jo aap yahan jodein.",
+  sh_name: "Unka naam (zaroori nahi)", sh_who: "Unka mobile number (ya email)", sh_view: "Sirf dekh sakein", sh_edit: "Dekh aur badal sakein", sh_add: "Record share karein", sh_none: "Aapne abhi kisi ke saath record share nahi kiya.",
+  sh_mk_view: "Sirf dekhna karein", sh_mk_edit: "Badalne ki chhoot dein", sh_rm: "Hatayein", sh_rm_q: "{w} ke saath record share karna band karein?", sh_full: "Aap 2 logon ke saath share kar rahe hain, yahi seema hai. Kisi aur ko jodne ke liye ek ko hatayein.",
+  sh_err_who: "10 ankon ka mobile number ya email likhein.", sh_err_self: "Yeh aapka apna number ya email hai.", sh_err_lim: "Aap zyada se zyada 2 logon ke saath share kar sakte hain.", sh_err_dup: "Aap inke saath pehle se share kar rahe hain.", sh_err: "Save nahi ho saka: {m}",
+  sh_ok_add: "Share ho gaya. Jab {w} is number se Seb Saathi mein login karenge, unhe aapka record dikhega.", sh_tome_h: "Mere saath share", sh_tome_p: "In bagwanon ne apna bagiche ka record aapke saath share kiya hai.",
+  sh_open: "Unka record kholein", sh_back: "Apne record par lautein", sh_now: "Abhi kholein", sh_r_view: "sirf dekhna", sh_r_edit: "badal sakte hain",
+  sh_bar_view: "👀 {o} ka record dekh rahe hain · sirf dekhna", sh_bar_edit: "✏️ {o} ka record · aap badal sakte hain", sh_bar_has: "📂 {o} ne apna bagiche ka record aapke saath share kiya hai",
+  sh_ro_no: "Sirf dekhna: aap yeh record dekh sakte hain, badal nahi sakte.", sh_empty: "{o} ne abhi koi bagiche ka record save nahi kiya.", sh_gone: "{o} ne aapke saath record share karna band kar diya hai.",
+  sh_clash: "Aapke kholne ke baad yeh record kisi aur phone se ya parivar ke kisi sadasya ne badla hai. Aapka pichhla badlav abhi save nahi hua.", sh_clash_load: "Nayi copy load karein", sh_clash_keep: "Mera badlav rakhein", sh_clash_note: "Nayi copy load karne se unka badlav dikhega (aapka chhoot jayega). Mera badlav rakhne se aapka badlav unke upar save hoga." });
+let shMsg = null, shBusy = false, shForm = {name: "", who: "", edit: false};
+/* a mobile number becomes digits with the country code (India if 10 digits); an email is kept in lower case */
+function shKey(v) {
+  v = String(v || "").trim().toLowerCase();
+  if (v.indexOf("@") >= 0) return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) && v.length <= 200 ? v : null;
+  let d = v.replace(/\D/g, "");
+  if (d.length === 11 && d[0] === "0") d = d.slice(1);
+  if (d.length === 10) d = "91" + d;
+  return /^\d{11,15}$/.test(d) ? d : null;
+}
+const shShow = k => /^\d+$/.test(String(k || "")) ? fmtPhone(k) : String(k || "");
+const shOwnerName = s => shShow(s.owner_label || s.owner_email) || "–";
+async function shLoad() {
+  if (!sb || !user) return;
+  let res = null; try { res = await sb.from("ledger_shares").select("id,owner_id,owner_label,owner_email,viewer_email,name,can_edit,created_at").order("created_at"); } catch (x) { res = {error: x}; }
+  if (!user) return;
+  if (res.error) { shReady = false; shMine = []; shToMe = []; }   /* sharing not set up in Supabase yet: keep it out of sight */
+  else {
+    shReady = true; const rows = res.data || [];
+    shMine = rows.filter(x => x.owner_id === user.id); shToMe = rows.filter(x => x.owner_id !== user.id);
+    if (shView) {   /* the owner may have removed us, or changed view/edit */
+      const s = shToMe.find(x => x.id === shView.id);
+      if (!s) { shNote = tr("sh_gone").replace("{o}", shView.label); shView = null; await loadMine(); }
+      else if (!!s.can_edit !== shView.can_edit) { shView.can_edit = !!s.can_edit; await loadMine(); }
+    }
+  }
+  renderShareBar(); if ($("tp-acct") && !$("tp-acct").hidden) renderAcctTab();
+}
+function shAcctHtml() {
+  if (!shReady) return "";
+  const msg = shMsg ? '<p class="' + (shMsg.err ? "autherr" : "sentmsg") + '" role="status">' + esc(shMsg.t) + "</p>" : "";
+  const role = e => '<span class="shrole' + (e ? " ed" : "") + '">' + esc(tr(e ? "sh_r_edit" : "sh_r_view")) + "</span>";
+  let h = '<section class="accard" id="shSec"><h4>' + tr("sh_h") + '</h4><p class="fine">' + tr("sh_p") + "</p>";
+  h += shMine.length ? '<ul class="shlist">' + shMine.map(s => '<li><div class="shwho"><b>' + esc(s.name || shShow(s.viewer_email)) + "</b><span>" + (s.name ? esc(shShow(s.viewer_email)) + " · " : "") + role(s.can_edit) + "</span></div>" +
+      '<div class="dels"><button class="btn-s" type="button" data-sh="role" data-id="' + esc(s.id) + '"' + (shBusy ? " disabled" : "") + ">" + tr(s.can_edit ? "sh_mk_view" : "sh_mk_edit") + "</button>" +
+      '<button class="link del" type="button" data-sh="rm" data-id="' + esc(s.id) + '"' + (shBusy ? " disabled" : "") + ">" + tr("sh_rm") + "</button></div></li>").join("") + "</ul>"
+    : '<p class="fine">' + tr("sh_none") + "</p>";
+  if (shMine.length >= 2) h += '<p class="fine">' + tr("sh_full") + "</p>" + msg;
+  else h += '<form id="shForm" class="shform" novalidate>' +
+    '<div class="field"><label for="shName">' + tr("sh_name") + '</label><input id="shName" type="text" maxlength="60" autocomplete="off" value="' + esc(shForm.name) + '"></div>' +
+    '<div class="field"><label for="shWho">' + tr("sh_who") + '</label><input id="shWho" type="text" inputmode="tel" autocomplete="off" spellcheck="false" value="' + esc(shForm.who) + '"></div>' +
+    '<div class="shpick" role="radiogroup">' + [false, true].map(e => '<label class="chk"><input type="radio" name="shRole" value="' + (e ? "edit" : "view") + '"' + (shForm.edit === e ? " checked" : "") + "><span>" + tr(e ? "sh_edit" : "sh_view") + "</span></label>").join("") + "</div>" +
+    msg + '<div class="dels"><button class="btn-s add" type="submit"' + (shBusy ? " disabled" : "") + ">" + tr("sh_add") + "</button></div></form>";
+  h += "</section>";
+  if (shToMe.length) h += '<section class="accard"><h4>' + tr("sh_tome_h") + '</h4><p class="fine">' + tr("sh_tome_p") + '</p><ul class="shlist">' +
+    shToMe.map(s => { const on = shView && shView.id === s.id; return '<li><div class="shwho"><b>' + esc(shOwnerName(s)) + "</b><span>" + role(s.can_edit) + "</span></div>" +
+      '<div class="dels">' + (on ? '<button class="btn-s" type="button" data-sh="back">' + tr("sh_back") + "</button>" : '<button class="btn-s add" type="button" data-sh="open" data-id="' + esc(s.id) + '">' + tr("sh_open") + "</button>") + "</div></li>"; }).join("") + "</ul></section>";
+  return h;
+}
+function renderShareBar() {
+  const el = $("shareBar"); if (!el) return;
+  let h = "";
+  if (user && shView) h += '<div class="wrap shbar' + (shView.can_edit ? " ed" : "") + '"><span>' + esc(tr(shView.can_edit ? "sh_bar_edit" : "sh_bar_view").replace("{o}", shView.label)) + '</span><button class="btn-s" type="button" data-sh="back">' + tr("sh_back") + "</button></div>";
+  else if (user && shToMe.length) { const s = shToMe[0]; h += '<div class="wrap shbar has"><span>' + esc(tr("sh_bar_has").replace("{o}", shOwnerName(s))) + '</span><button class="btn-s add" type="button" data-sh="open" data-id="' + esc(s.id) + '">' + tr("sh_now") + "</button></div>"; }
+  if (user && shNote) h += '<div class="wrap shbar note"><span>' + esc(shNote) + '</span><button class="link" type="button" data-sh="note" aria-label="OK">✕</button></div>';
+  if (user && ledClash) h += '<div class="wrap shbar clash" role="alert"><span>' + esc(tr("sh_clash")) + '<small>' + esc(tr("sh_clash_note")) + '</small></span><div class="dels"><button class="btn-s add" type="button" data-sh="clload">' + tr("sh_clash_load") + '</button><button class="btn-s" type="button" data-sh="clkeep">' + tr("sh_clash_keep") + "</button></div></div>";
+  el.innerHTML = h; el.hidden = !h;
+}
+/* view only: any change is undone straight away, with a short note (the database refuses it too) */
+function roBlock() {
+  clearTimeout(roTimer);
+  roTimer = setTimeout(() => {
+    if (!roCopy) return;
+    S = JSON.parse(JSON.stringify(roCopy)); fixSel(); renderAll();
+    const t = $("shToast"); if (t) { t.textContent = tr("sh_ro_no"); t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 3500); }
+  }, 0);
+}
+function shResetView() {
+  exO = null; exY = null; exEdit = null; exOpen = new Set(); exoOpen = new Set(); spOpen = new Set(); spoOpen = new Set(); dashEdit = null; dashAdd = false; dashView = null; dashYear = null; profEdit = false; diaryEdit = null; addingO = false;
+  sel.o = null; sel.y = null;
+}
+async function shSwitch(s) {
+  clearTimeout(saveTimer); if (isDirty() && !shRO() && !ledClash) await flush();
+  shNote = ""; shResetView();
+  shView = s ? {id: s.id, owner_id: s.owner_id, label: shOwnerName(s), can_edit: !!s.can_edit} : null;
+  await loadMine(); renderShareBar();
+  showTool("home", false, true); window.scrollTo(0, 0);
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-sh]"); if (!b || !user || !sb) return;
+  const a = b.dataset.sh, s = shMine.find(x => x.id === b.dataset.id);
+  if (a === "open") { const t = shToMe.find(x => x.id === b.dataset.id); if (t) shSwitch(t); return; }
+  if (a === "back") { shSwitch(null); return; }
+  if (a === "note") { shNote = ""; renderShareBar(); return; }
+  if (a === "clload") { rev = savedRev = 0; ledClash = false; shResetView(); await loadMine(); return; }
+  if (a === "clkeep") {
+    let r = null; try { r = await sb.from("ledgers").select("updated_at").eq("user_id", ledOwner()).maybeSingle(); } catch (x) { r = {error: x}; }
+    if (r.error) return;
+    if (!r.data && shView) { shNote = tr("sh_gone").replace("{o}", shView.label); shView = null; ledClash = false; shResetView(); await loadMine(); shLoad(); return; }
+    ledAt = r.data ? r.data.updated_at : null; ledClash = false; renderShareBar(); flush(); return;
+  }
+  if ((a === "role" || a === "rm") && s && !shBusy) {
+    const who = s.name || shShow(s.viewer_email);
+    if (a === "rm" && !confirm(tr("sh_rm_q").replace("{w}", who))) return;
+    shBusy = true; shMsg = null; renderAcctTab();
+    let r = null; try { r = a === "rm" ? await sb.from("ledger_shares").delete().eq("id", s.id) : await sb.from("ledger_shares").update({can_edit: !s.can_edit}).eq("id", s.id); } catch (x) { r = {error: x}; }
+    shBusy = false; if (r.error) shMsg = {t: tr("sh_err").replace("{m}", String(r.error.message || r.error)), err: true};
+    await shLoad(); renderAcctTab();
+  }
+});
+document.addEventListener("input", e => { if (e.target && e.target.id === "shName") shForm.name = e.target.value; if (e.target && e.target.id === "shWho") shForm.who = e.target.value; });
+document.addEventListener("change", e => { if (e.target && e.target.name === "shRole") shForm.edit = e.target.value === "edit"; });
+document.addEventListener("submit", async e => {
+  if (!e.target || e.target.id !== "shForm") return;
+  e.preventDefault();
+  if (!sb || !user || shBusy) return;
+  const key = shKey(shForm.who), name = shForm.name.trim().slice(0, 60);
+  if (!key) { shMsg = {t: tr("sh_err_who"), err: true}; renderAcctTab(); return; }
+  const mine = [String(user.email || "").toLowerCase(), String(user.phone || "").replace(/\D/g, ""), isPinUser(user) ? String(user.email).split("@")[0] : ""];
+  if (mine.indexOf(key) >= 0) { shMsg = {t: tr("sh_err_self"), err: true}; renderAcctTab(); return; }
+  shBusy = true; shMsg = null; renderAcctTab();
+  let r = null; try { r = await sb.from("ledger_shares").insert({viewer_email: key, name: name || null, can_edit: shForm.edit}); } catch (x) { r = {error: x}; }
+  shBusy = false;
+  if (r.error) {
+    const m = String(r.error.message || r.error), c = String(r.error.code || "");
+    shMsg = {t: /share_self/.test(m) ? tr("sh_err_self") : /share_limit/.test(m) ? tr("sh_err_lim") : c === "23505" ? tr("sh_err_dup") : tr("sh_err").replace("{m}", m), err: true};
+  } else { shMsg = {t: tr("sh_ok_add").replace("{w}", name || shShow(key))}; shForm = {name: "", who: "", edit: false}; }
+  await shLoad(); renderAcctTab();
+});
+/* every 2 minutes, and when the phone comes back to the site: pick up shares added, removed or changed */
+setInterval(() => { if (user && shReady && !document.hidden) shLoad(); }, 120000);
+document.addEventListener("visibilitychange", () => { if (user && shReady && !document.hidden) shLoad(); });
 const TT = ["home","orch","rec","calc","diag","spray","news","cal","acct"];  /* Library tab removed from the site; its articles still feed Saathi */
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
@@ -7843,5 +8028,6 @@ applyLang();
 </script>
 <script src="/dx.js?v=8"></script>
 
+<p class="shtoast" id="shToast" role="status" hidden></p>
 </body>
 </html>
