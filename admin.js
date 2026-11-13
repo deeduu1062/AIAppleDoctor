@@ -1196,7 +1196,8 @@ Object.assign(T.en, {
   pf_c_qt: "Questions today", pf_c_dxm: "Photo checks this month", pf_c_orch: "Orchards", pf_c_lim: "Limits",
   pf_lim_hit: "Limit reached", pf_lim_q: "Questions", pf_lim_dx: "Photo checks", pf_lim_o: "Orchards", pf_lim_none: "–",
   pf_only_lim: "Only growers at a limit ({n})", pf_lim_setup: "To see limits here, run supabase/admin_profiles.sql again in Supabase.",
-  pf_of: "{a} of {b}"
+  pf_of: "{a} of {b}",
+  pf_mix_h: "Growers by plan", pf_mix_tot: "{n} growers", pf_mix_paid: "{n} paying ({p}%)", pf_mix_tap: "Tap a plan to show only those growers; tap again to show all."
 });
 Object.assign(T.hi, {
   adm_t_prof: "प्रोफ़ाइल", pf_h: "बाग़वान की प्रोफ़ाइल और गतिविधि", pf_p: "किसी बाग़वान पर टैप करें और उनकी प्रोफ़ाइल व सेब साथी पर किया गया हर काम देखें।",
@@ -1213,11 +1214,13 @@ Object.assign(T.hi, {
   pf_c_qt: "आज के सवाल", pf_c_dxm: "इस महीने फ़ोटो जाँच", pf_c_orch: "बाग़", pf_c_lim: "सीमा",
   pf_lim_hit: "सीमा पूरी", pf_lim_q: "सवाल", pf_lim_dx: "फ़ोटो जाँच", pf_lim_o: "बाग़", pf_lim_none: "–",
   pf_only_lim: "सिर्फ़ सीमा पर पहुँचे बाग़वान ({n})", pf_lim_setup: "यहाँ सीमा देखने के लिए Supabase में supabase/admin_profiles.sql फिर से चलाएँ।",
-  pf_of: "{b} में से {a}"
+  pf_of: "{b} में से {a}",
+  pf_mix_h: "प्लान के हिसाब से बाग़वान", pf_mix_tot: "{n} बाग़वान", pf_mix_paid: "{n} भुगतान वाले ({p}%)", pf_mix_tap: "किसी प्लान पर टैप करें तो सिर्फ़ उसके बाग़वान दिखेंगे; दोबारा टैप करें तो सभी।"
 });
 /* plan limits: keep in step with api/chat.js, api/diagnose.js and REC_LIMIT in index.html */
 const PF_LIM = { free: { q: 5, dx: 3, o: 2 }, basic: { q: 20, dx: 15, o: 5 }, premium: { q: 30, dx: 50, o: 10 } };
-let pfOnlyLim = false;
+let pfOnlyLim = false, pfPlanF = null;   /* pfPlanF: show only one plan (free/basic/premium) */
+const pfKey = u => u.plan === "premium" || u.plan === "basic" ? u.plan : "free";
 const pfIsAdm = u => ADMIN_EMAILS.indexOf(String(u.email || "").toLowerCase()) >= 0;
 function pfHits(u) {   /* which limits this grower has reached right now */
   if (pfIsAdm(u) || u.q_today == null) return [];
@@ -1273,9 +1276,9 @@ function renderProf() {
   if (!PF) { $("pfList").innerHTML = ""; return; }
   const q = $("pfFind").value.trim().toLowerCase();
   const nLim = PF.filter(u => pfHits(u).length).length, setup = !PF.length || PF[0].q_today != null;
-  const rows = PF.filter(u => (!q || (String(u.email || "") + " " + String(u.phone || "")).toLowerCase().indexOf(q) >= 0) && (!pfOnlyLim || pfHits(u).length));
-  const top = setup ? '<label class="chk pfonly"><input type="checkbox" id="pfOnlyLim"' + (pfOnlyLim ? " checked" : "") + "><span>" + tr("pf_only_lim").replace("{n}", nLim) + "</span></label>"
-    : '<p class="fine">' + tr("pf_lim_setup") + "</p>";
+  const rows = PF.filter(u => (!q || (String(u.email || "") + " " + String(u.phone || "")).toLowerCase().indexOf(q) >= 0) && (!pfOnlyLim || pfHits(u).length) && (!pfPlanF || (!pfIsAdm(u) && pfKey(u) === pfPlanF)));
+  const top = pfMix() + (setup ? '<label class="chk pfonly"><input type="checkbox" id="pfOnlyLim"' + (pfOnlyLim ? " checked" : "") + "><span>" + tr("pf_only_lim").replace("{n}", nLim) + "</span></label>"
+    : '<p class="fine">' + tr("pf_lim_setup") + "</p>");
   if (!rows.length) { $("pfList").innerHTML = top + '<p class="empty">' + tr("pf_none") + "</p>"; return; }
   const head = ["pf_c_who", "pf_c_plan", "pf_c_lim", "pf_c_qt", "pf_c_dxm", "pf_c_orch", "pf_c_seen"];
   $("pfList").innerHTML = top + '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
@@ -1287,6 +1290,17 @@ function renderProf() {
         '<td class="n">' + pfCell(u, "q", "q_today") + '</td><td class="n">' + pfCell(u, "dx", "dx_month") + '</td><td class="n">' + pfCell(u, "o", "orchards") + "</td>" +
         "<td>" + adWhen(u.last_seen) + "</td></tr>";
     }).join("") + "</tbody></table></div>";
+}
+/* graphic summary at the top of Profiles: how many growers are on Free, Saathi and Saathi Plus (admin accounts left out) */
+function pfMix() {
+  const g = PF.filter(u => !pfIsAdm(u)), n = g.length, c = { free: 0, basic: 0, premium: 0 };
+  g.forEach(u => c[pfKey(u)]++);
+  const pct = v => n ? Math.round(v * 100 / n) : 0, paid = c.basic + c.premium;
+  const ks = ["free", "basic", "premium"];
+  const bar = n ? '<div class="pfbar" aria-hidden="true">' + ks.filter(k => c[k]).map(k => '<i class="pfc-' + k + '" style="flex:' + c[k] + '"></i>').join("") + "</div>" : "";
+  return '<div class="pfmix" role="group" aria-label="' + esc(tr("pf_mix_h")) + '"><div class="pfmixh"><b>' + tr("pf_mix_h") + "</b><span>" + tr("pf_mix_tot").replace("{n}", fmtN(n)) + " · " + tr("pf_mix_paid").replace("{n}", fmtN(paid)).replace("{p}", pct(paid)) + "</span></div>" + bar +
+    '<div class="pftiles">' + ks.map(k => '<button type="button" class="pfc-' + k + (pfPlanF === k ? " on" : "") + '" data-pfplan="' + k + '" aria-pressed="' + (pfPlanF === k) + '"><span><i></i>' + pfPlan(k) + "</span><b>" + fmtN(c[k]) + "</b><small>" + pct(c[k]) + "%</small></button>").join("") +
+    '</div><p class="fine">' + tr("pf_mix_tap") + "</p></div>";
 }
 function renderProfOne() {
   let back = '<button class="btn-s" type="button" data-pfback="1">' + tr("pf_back") + "</button>";
@@ -1330,6 +1344,7 @@ function renderProfOne() {
 $("pfRefresh").addEventListener("click", loadProf);
 $("pfFind").addEventListener("input", renderProf);
 $("pfList").addEventListener("change", e => { if (e.target.id === "pfOnlyLim") { pfOnlyLim = e.target.checked; renderProf(); } });
+$("pfList").addEventListener("click", e => { const t = e.target.closest("[data-pfplan]"); if (t) { pfPlanF = pfPlanF === t.dataset.pfplan ? null : t.dataset.pfplan; renderProf(); } });
 $("pfList").addEventListener("click", e => { const b = e.target.closest("[data-pf]"); if (b) { pfOpen(b.dataset.pf); window.scrollTo(0, 0); } });
 let pfPinMsg = "";
 Object.assign(T.en, { pf_pin: "Set new PIN", pf_pin_ask: "New 6-digit PIN for this grower (tell them on WhatsApp or by phone):", pf_pin_ok: "New PIN set: {p}", pf_pin_err: "Could not set the PIN: {m}" });

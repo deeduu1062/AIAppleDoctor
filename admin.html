@@ -1447,6 +1447,21 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 .gate .btn-s{margin-top:16px}
 .ovsub{font-family:var(--display);font-size:1.05rem;margin:22px 0 0}
 /* profiles tab */
+.pfmix{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px;margin:4px 0 14px}
+.pfmixh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.pfmixh b{font:600 1.05rem var(--display)}.pfmixh span{font-size:.88rem;color:var(--muted)}
+.pfbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:12px 0;gap:2px;background:var(--surface-2)}
+.pfbar i{display:block;min-width:4px}
+.pfc-free{--pc:#8C9A90}.pfc-basic{--pc:var(--good)}.pfc-premium{--pc:var(--apple)}
+.pfbar i{background:var(--pc)}
+.pftiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pftiles button{border:1px solid var(--line);border-top:4px solid var(--pc);border-radius:10px;background:var(--surface);padding:10px 10px 8px;text-align:left;cursor:pointer;color:var(--fg);font:inherit;min-width:0}
+.pftiles button.on{border-color:var(--pc);box-shadow:0 0 0 2px var(--pc) inset}
+.pftiles span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);line-height:1.2}
+.pftiles span i{width:10px;height:10px;border-radius:3px;background:var(--pc);flex:none}
+.pftiles b{display:block;font:600 1.6rem var(--mono);font-variant-numeric:tabular-nums;margin-top:4px}
+.pftiles small{color:var(--muted);font-size:.85rem}
+.pfmix .fine{margin:8px 0 0}
 .pflink{border:0;background:none;padding:0;font:600 .95rem var(--body);color:var(--fg);text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;overflow-wrap:anywhere}
 .pflink:hover{text-decoration-color:var(--apple)}
 #pfList .tablewrap,#pfOne .tablewrap{margin-top:12px}
