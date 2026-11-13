@@ -1463,6 +1463,19 @@ details.dsec > summary h4{display:inline}
 .tsum .fine{margin:0}
 .dxth{position:relative;display:inline-block}.dxth.bad img{outline:3px solid #E09A1A;outline-offset:-3px}
 .dxth small{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.65);color:#fff;font-size:.72rem;padding:1px 6px;border-radius:6px}
+/* sale types */
+.stpick{border:0;margin:6px 0 4px;padding:0;min-width:0}.stpick legend{font-weight:600;font-size:.95rem;margin-bottom:6px;padding:0}
+#ne_stype{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.stbtn{border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);padding:8px 6px;text-align:center;cursor:pointer;font:inherit;min-width:0}
+.stbtn b{display:block;font-size:1rem}.stbtn small{display:block;font-size:.75rem;color:var(--muted);line-height:1.2;margin-top:2px}
+.stbtn[aria-pressed=true]{border-color:var(--brand);box-shadow:inset 0 0 0 2px var(--brand);background:var(--surface-2)}
+.thekabox{margin:4px 0 8px}.thekabox .erow{display:grid;grid-template-columns:1fr 1fr;gap:8px}#th_sum{font-weight:600;margin:4px 0 0}
+.stchip{display:inline-block;font:600 .72rem var(--body);padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:middle;border:1px solid currentColor;white-space:nowrap}
+.stchip.st-mandi{color:#1E5A2F}.stchip.st-adani{color:#1D4E89}.stchip.st-theka{color:#8A4B08}
+.lotc .stchip{display:block;width:max-content;margin:3px 0 0}
+.lstype{display:flex;flex-direction:column;gap:2px;font-size:.8rem;color:var(--muted)}.lstype select{font:inherit;font-size:.9rem;padding:4px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
+.bytype{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:8px 12px;margin:0 0 8px;border:1px dashed var(--line);border-radius:10px;font-size:.88rem}
+.bytype .stchip{margin-left:0}
 /* family sharing */
 .sharebar{border-top:1px solid var(--line)}
 .shbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding-block:8px;font-size:.92rem;font-weight:600}
@@ -2123,11 +2136,17 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
         <p class="entrymsg" id="entryMsg" role="status"></p>
         <form class="lotbox entryform" id="entryForm" novalidate hidden>
           <h4 id="ne_title"></h4>
+          <fieldset class="stpick"><legend data-i18n="ne_stype"></legend><div id="ne_stype"></div></fieldset>
+          <div id="ne_theka" class="thekabox" hidden>
+            <div class="erow"><div class="field"><label for="th_amt" data-i18n="th_amt"></label><input id="th_amt" type="number" inputmode="decimal" min="0" step="any"></div>
+            <div class="field"><label for="th_boxes" data-i18n="th_boxes"></label><input id="th_boxes" type="number" inputmode="decimal" min="0" step="any"></div></div>
+            <p class="hint" data-i18n="th_note"></p><p class="lottab" id="th_sum" role="status"></p>
+          </div>
           <div class="field possel"><label for="ne_pos" data-i18n="ne_pos"></label><select id="ne_pos"></select></div>
-          <p class="hint" data-i18n="exp_note"></p>
+          <div id="ne_boxpart"><p class="hint" data-i18n="exp_note"></p>
           <div class="lottab" id="ne_sum"></div>
           <div id="ne_rows"></div>
-          <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button>
+          <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button></div>
           <p class="autherr" id="ne_err" role="alert"></p>
           <div class="dels"><button class="btn-s add" type="submit" data-i18n="ne_submit"></button><button class="btn-s" type="button" data-act="cancelentry" data-i18n="ne_cancel"></button></div>
         </form>
@@ -3258,7 +3277,11 @@ const fmtN = n => Math.round(n).toLocaleString("en-IN");
 
 function blankCosts() { const c = {}; COST_KEYS.forEach(k => { c[k] = 0; }); return c; }
 const GRADES = ["A Grade", "B Grade", "Red Gold", "Gift"];
-const GRADE_KEY = {"A Grade":"g_a", "B Grade":"g_b", "Red Gold":"g_rg", "Gift":"g_gift"};
+const GRADE_KEY = {"A Grade":"g_a", "B Grade":"g_b", "Red Gold":"g_rg", "Gift":"g_gift", "Theka":"g_theka"};
+/* how a lot was sold: Mandi, Adani, or Theka (one lump sum for the crop; the buyer pays picking, packing and transport) */
+const SALE_TYPES = ["mandi", "adani", "theka"];
+const isTheka = l => !!(l && l.type === "theka");
+const stChip = l => l && SALE_TYPES.indexOf(l.type) >= 0 ? '<span class="stchip st-' + l.type + '">' + tr("st_" + l.type) + "</span>" : "";
 const pv = (prev, k) => (prev ? (+prev[k] || 0) : 0);
 function blankLine(prev, grade) { return {id:newId(), grade:grade || "", date:"", boxes:0, rate:0, tod:pv(prev, "tod"), grd:pv(prev, "grd"), car:pv(prev, "car"), exp:0, com:pv(prev, "com"), half:false, paid:false, paidOn:""}; }
 function blankLot(name, prev) { return {id:newId(), name:name || "", lines:GRADES.map(g => blankLine(prev, g))}; }
@@ -3284,7 +3307,7 @@ function makeSample() {
 function lineCalc(n) {
   const b = +n.boxes || 0, r = +n.rate || 0;
   const e = (+n.tod || 0) + (+n.grd || 0) + (+n.car || 0) + (+n.exp || 0);
-  const gross = b * r, com = gross * Math.min(Math.max(+n.com || 0, 0), 100) / 100, exp = b * e + com;
+  const gross = +n.lump > 0 ? +n.lump : b * r, com = gross * Math.min(Math.max(+n.com || 0, 0), 100) / 100, exp = b * e + com;
   return {b, eq:n.half ? b / 2 : b, gross, exp, com, epb:b ? exp / b : e, net:gross - exp};
 }
 function lotCalc(l) {
@@ -3710,7 +3733,7 @@ function lotTable(rows, acts) {
 const median = a => { if (!a.length) return 0; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
 function oddWarn(oid, n, skipId) {
   const out = [], b = +n.boxes || 0, r = +n.rate || 0, com = +n.com || 0;
-  const pool = []; S.seasons.forEach(x => x.lots.forEach(l => l.lines.forEach(q => { if (q.id !== skipId && +q.boxes > 0 && +q.rate > 0) pool.push({o: x.oid, g: gradeKey(q.grade), b: +q.boxes, r: +q.rate}); })));
+  const pool = []; S.seasons.forEach(x => x.lots.forEach(l => l.lines.forEach(q => { if (q.id !== skipId && q.grade !== "Theka" && +q.boxes > 0 && +q.rate > 0) pool.push({o: x.oid, g: gradeKey(q.grade), b: +q.boxes, r: +q.rate}); })));
   if (r > 0) {
     const gk = gradeKey(n.grade);
     let same = pool.filter(q => q.o === oid && q.g === gk);
@@ -3740,12 +3763,37 @@ function updDraft() {
   draft.forEach((r, i) => { if (draftFilled(r)) rows.push([i + 1, draftLine(r)]); });
   $("ne_sum").innerHTML = lotTable(rows, {isEd: x => x[0] - 1 === editIdx, attr: (x, k) => 'data-act="' + (k === "edit" ? "nedit" : "nedel") + '" data-i="' + (x[0] - 1) + '"'});
 }
+/* one harvest year, all orchards: profit per box for each way of selling, so Mandi, Adani and Theka can be compared */
+function byTypeHtml(ss) {
+  const t = {}; ss.forEach(se => se.lots.forEach(l => { if (SALE_TYPES.indexOf(l.type) < 0) return; const c = lotCalc(l); const x = t[l.type] = t[l.type] || {b: 0, eq: 0, net: 0}; x.b += c.b; x.eq += c.eq; x.net += c.net; }));
+  const ks = SALE_TYPES.filter(k => t[k] && t[k].b > 0); if (!ks.length) return "";
+  return '<div class="bytype"><b>' + tr("st_by") + "</b>" + ks.map(k => '<span class="st-' + k + '">' + stChip({type: k}) + " " + (k === "theka" ? "≈ " : "") + tr("st_by_l").replace("{b}", fmtN(t[k].b)).replace("{p}", inr(t[k].eq ? t[k].net / t[k].eq : 0)) + "</span>").join("") + "</div>";
+}
+let neType = "mandi";
+function renderSaleType() {
+  const el = $("ne_stype"); if (!el) return;
+  el.innerHTML = SALE_TYPES.map(k => '<button type="button" class="stbtn st-' + k + '" data-stype="' + k + '" aria-pressed="' + (neType === k) + '"><b>' + tr("st_" + k) + "</b><small>" + tr("st_" + k + "_p") + "</small></button>").join("");
+  const th = neType === "theka";
+  $("ne_theka").hidden = !th; $("ne_boxpart").hidden = th;
+  updTheka();
+}
+function updTheka() {
+  const a = numOf($("th_amt").value), b = numOf($("th_boxes").value);
+  set("th_sum", a > 0 && b > 0 ? tr("th_sum").replace("{x}", inr(a / b)) : "");
+}
+$("ne_stype").addEventListener("click", e => {
+  const b = e.target.closest("[data-stype]"); if (!b) return;
+  neType = b.dataset.stype; set("ne_err", ""); renderSaleType();
+  const f = neType === "theka" ? $("th_amt") : $("ne" + editIdx + "_grade"); if (f) f.focus();
+});
+$("ne_theka").addEventListener("input", () => { set("ne_err", ""); updTheka(); });
 function openEntry() {
   const o = curOrchard(); if (!o || !sel.y) return;
   closeEditLine();
+  neType = "mandi"; $("th_amt").value = ""; $("th_boxes").value = "";
   draft = [neRow(lastLineFor(o.id, sel.y))]; editIdx = 0; newPos = null;
   set("ne_err", ""); set("entryMsg", "");
-  entryOpen = true; renderAll();
+  entryOpen = true; renderAll(); renderSaleType();
   $("ne0_grade").focus();
 }
 function onDraft(e) {
@@ -3754,11 +3802,34 @@ function onDraft(e) {
   r[t.dataset.f] = t.value; set("ne_err", ""); updDraft();
 }
 $("entryForm").addEventListener("input", onDraft);
+document.addEventListener("change", e => {
+  const t = e.target; if (!t || !t.dataset || t.dataset.lottype == null) return;
+  const se = lotSeason(t.dataset.lottype), l = se && se.lots.find(x => x.id === t.dataset.lottype); if (!l) return;
+  if (t.value) l.type = t.value; else delete l.type;
+  save(); renderAll();
+});
+Object.assign(T.en, { ne_stype: "How did you sell this lot?", st_mandi: "Mandi", st_adani: "Adani", st_theka: "Theka",
+  st_mandi_p: "Boxes at the mandi", st_adani_p: "Sold to Adani", st_theka_p: "Lump sum for the crop",
+  th_amt: "Theka amount (₹)", th_boxes: "Estimated boxes", th_note: "The buyer pays picking, packing and transport, so a theka has no expenses here. The boxes are your estimate, used only to work out profit per box.",
+  th_err: "Enter the theka amount and the estimated number of boxes.", th_sum: "About {x} a box", g_theka: "Theka (lump sum)", f_stype: "Sold at", st_by: "By way of selling:", st_by_l: "{b} boxes · {p} a box" });
+Object.assign(T.hi, { ne_stype: "यह लॉट कैसे बेचा?", st_mandi: "मंडी", st_adani: "अदानी", st_theka: "ठेका",
+  st_mandi_p: "मंडी में पेटियाँ", st_adani_p: "अदानी को बेचा", st_theka_p: "पूरी फ़सल की एकमुश्त रक़म",
+  th_amt: "ठेके की रक़म (₹)", th_boxes: "अंदाज़न पेटियाँ", th_note: "तुड़ान, पैकिंग और ढुलाई ख़रीदार देता है, इसलिए यहाँ ठेके का कोई ख़र्च नहीं। पेटियाँ आपका अंदाज़ा हैं, सिर्फ़ प्रति पेटी मुनाफ़ा निकालने के लिए।",
+  th_err: "ठेके की रक़म और अंदाज़न पेटियाँ लिखें।", th_sum: "लगभग {x} प्रति पेटी", g_theka: "ठेका (एकमुश्त)", f_stype: "कहाँ बेचा", st_by: "बेचने के तरीक़े से:", st_by_l: "{b} पेटी · {p} प्रति पेटी" });
+Object.assign(T.hn, { ne_stype: "Yeh lot kaise becha?", st_mandi: "Mandi", st_adani: "Adani", st_theka: "Theka",
+  st_mandi_p: "Mandi mein petiyan", st_adani_p: "Adani ko becha", st_theka_p: "Poori fasal ki ekmusht rakam",
+  th_amt: "Theke ki rakam (₹)", th_boxes: "Andaazan petiyan", th_note: "Tudaan, packing aur dhulai khareedar deta hai, isliye yahan theke ka koi kharcha nahi. Petiyan aapka andaaza hain, sirf prati peti munafa nikaalne ke liye.",
+  th_err: "Theke ki rakam aur andaazan petiyan likhein.", th_sum: "Lagbhag {x} prati peti", g_theka: "Theka (ekmusht)", f_stype: "Kahan becha", st_by: "Bechne ke tareeke se:", st_by_l: "{b} peti · {p} prati peti" });
 $("ne_pos").addEventListener("change", e => { newPos = parseInt(e.target.value, 10) || null; });
 $("entryForm").addEventListener("submit", e => {
   e.preventDefault(); set("ne_err", "");
   const o = curOrchard(); if (!o || !sel.y) return;
   const rows = [];
+  if (neType === "theka") {
+    const a = numOf($("th_amt").value), b = numOf($("th_boxes").value);
+    if (!(a > 0) || !(b > 0)) { set("ne_err", tr("th_err")); $(a > 0 ? "th_boxes" : "th_amt").focus(); return; }
+    rows.push(Object.assign(blankLine(), {grade: "Theka", boxes: b, rate: a / b, lump: a, tod: 0, grd: 0, car: 0, exp: 0, com: 0, paid: true}));
+  } else
   for (let i = 0; i < draft.length; i++) {
     const r = draft[i]; if (!draftFilled(r)) continue;
     if (!rowOk(r)) { editIdx = i; renderDraft(); set("ne_err", tr("ne_err").replace("{n}", i + 1)); focusNe(i, !r.grade ? "grade" : !numOf(r.boxes) ? "boxes" : "rate"); return; }
@@ -3769,7 +3840,7 @@ $("entryForm").addEventListener("submit", e => {
   let se = curSeason();
   if (!se) { se = {id:newId(), oid:o.id, year:sel.y, costs:blankCosts(), lots:[]}; S.seasons.push(se); }
   const at = newPos && newPos <= se.lots.length ? newPos - 1 : se.lots.length;
-  se.lots.splice(at, 0, {id:newId(), name:"", lines:rows});
+  se.lots.splice(at, 0, {id:newId(), name:"", type:neType, lines:rows});
   spOpen.add(se.year); spoOpen.add(spoKey(se.oid, se.year));
   entryOpen = false; draft = [];
   save(); renderAll();
@@ -3833,7 +3904,7 @@ function renderEditor() {
         yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0), "", ' data-spye="' + y + '"') + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0), "", ' data-spyp="' + y + '"') + "</span>") +
         '<span class="ychev" aria-hidden="true"></span></button>';
       if (open) {
-        h += '<div class="ybody olist">' + S.orchards.map(oo => {
+        h += '<div class="ybody olist">' + byTypeHtml(ss) + S.orchards.map(oo => {
           const x = seFor(oo.id, y), k = spoKey(oo.id, y), oopen = spoOpen.has(k) || !!(x && editLine && lotSeason(editLine.lot) === x);
           let r2 = '<section class="spo yrow orow' + (oopen ? " open" : "") + '" id="spo-' + esc(oo.id) + "-" + y + '"><button class="yhead" type="button" data-act="spotoggle" data-o="' + esc(oo.id) + '" data-y="' + y + '" aria-expanded="' + oopen + '">' +
             '<span class="oname">' + esc(oo.name || tr("orchard_fallback")) + "</span>" + (hsCur(seT(x).boxes, y) ? hsBadge() : '<span class="yfigs five"' + (x ? ' data-spo5="' + esc(x.id) + '"' : "") + ">" + fig5(seT(x)) + "</span>") + '<span class="ychev" aria-hidden="true"></span></button>';
@@ -3865,6 +3936,12 @@ function renderEditor() {
 }
 function lineHtml(n) {
   const id = "n_" + n.id;
+  if (n.grade === "Theka") {
+    const g = (k, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + wb(tr(lab)) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(v) + '"></div>';
+    return '<div class="linebox"><div class="erow">' + g("lump", "th_amt", n.lump || "") + g("boxes", "th_boxes", n.boxes || "") +
+      '<div class="field"><label for="' + id + '_date">' + tr("f_date") + '</label><input id="' + id + '_date" data-line="' + n.id + '" data-f="date" type="date" value="' + esc(n.date || "") + '"></div></div>' +
+      '<p class="hint">' + tr("th_note") + "</p></div>";
+  }
   const f = (k, type, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + wb(tr(lab)) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="' + type + '"' +
     (type === "number" ? ' inputmode="decimal" min="0" step="any"' : "") + ' value="' + esc(v) + '"></div>';
   const c = (k, lab) => '<label class="chk"><input type="checkbox" data-line="' + n.id + '" data-f="' + k + '"' + (n[k] ? " checked" : "") + "> " + tr(lab) + "</label>";
@@ -3897,18 +3974,20 @@ function orchLotsTable(se, only) {
     /* one Edit lot button per lot; its other options appear only after tapping it */
     const lotEd = lotEditId === l.id || !!(editLine && l.lines.some(n => n.id === editLine.line));
     const lotActs = !lotEd ? '<span class="lacts"><button class="btn-s lotedit" type="button" data-act="lotedit" data-id="' + esc(l.id) + '">✎ ' + tr("lot_edit") + "</button></span>" :
-      '<span class="lacts led"><button class="lbtn ladd" type="button" data-act="addline" data-id="' + esc(l.id) + '">＋ ' + tr("lm_add") + "</button>" +
+      '<span class="lacts led">' + (isTheka(l) ? "" : '<label class="lstype"><span>' + tr("f_stype") + '</span><select data-lottype="' + esc(l.id) + '"><option value="">–</option>' +
+        ["mandi", "adani"].map(k => '<option value="' + k + '"' + (l.type === k ? " selected" : "") + ">" + tr("st_" + k) + "</option>").join("") + "</select></label>" +
+        '<button class="lbtn ladd" type="button" data-act="addline" data-id="' + esc(l.id) + '">＋ ' + tr("lm_add") + "</button>") +
       (nl > 1 ? '<span class="lmove">' + (i > 0 ? '<button class="lbtn" type="button" data-act="lotup" data-id="' + esc(l.id) + '" aria-label="' + esc(tr("lot_up")) + '">↑ ' + tr("lm_up") + "</button>" : "") +
         (i < nl - 1 ? '<button class="lbtn" type="button" data-act="lotdown" data-id="' + esc(l.id) + '" aria-label="' + esc(tr("lot_down")) + '">↓ ' + tr("lm_down") + "</button>" : "") + "</span>" : "") +
       '<button class="lbtn ldel" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">🗑 ' + tr("lot_remove") + "</button>" +
       '<small class="taphint">' + tr("lot_taphint") + "</small>" +
       '<button class="btn-s add lotdone" type="button" data-act="lotdone">✓ ' + tr("ne_done") + "</button></span>";
-    const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + lotActs + "</th>";
+    const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + stChip(l) + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + lotActs + "</th>";
     h += '<tbody class="lotgrp">';
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
     shown.forEach((n, k) => {
       const c = lineCalc(n), ed = !!(editLine && editLine.line === n.id);
-      h += "<tr" + (ed ? ' class="editing"' : lotEd ? ' class="tapedit" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '" tabindex="0"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + fmtN(c.b) + "</td><td>" + inr(c.gross) +
+      h += "<tr" + (ed ? ' class="editing"' : lotEd ? ' class="tapedit" data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '" tabindex="0"' : "") + ">" + (k ? "" : lotCell) + '<td class="eno">' + (k + 1) + '</td><td class="t olg-' + gradeKey(n.grade) + '"><span class="olgr">' + esc(gname(n.grade)) + "</span></td><td>" + (n.grade === "Theka" ? "≈ " : "") + fmtN(c.b) + "</td><td>" + inr(c.gross) +
         "</td><td>" + inr(c.exp) + '</td><td class="' + cls(c.net) + '">' + inr(c.net) + "</td><td>" + inr(c.eq ? c.net / c.eq : 0) + '</td><td class="acts">' +
         (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : lotEd ? '<span class="tapgo" aria-hidden="true">✎</span>' : "") + "</td></tr>";
     });
@@ -4135,7 +4214,7 @@ function oLotsHtml(se) {
   return '<section class="osec olotsec"><h4>' + tr("lots_h") + " (" + lots.length + ")</h4>" + lots.map(l => {
     const i = se.lots.indexOf(l), c = lotCalc(l), lines = l.lines.filter(n => +n.boxes || +n.rate);
     const keepOpen = olOpen.has(l.id) || lotEditId === l.id || !!(editLine && editLine.lot === l.id);
-    return '<details class="olot" data-olid="' + esc(l.id) + '"' + (keepOpen ? " open" : "") + '><summary><span class="olx"><span class="oln"><b>' + lotNo(i) + "</b>" + (autoName(l.name) ? "" : " · " + esc(l.name)) + "</span>" +
+    return '<details class="olot" data-olid="' + esc(l.id) + '"' + (keepOpen ? " open" : "") + '><summary><span class="olx"><span class="oln"><b>' + lotNo(i) + "</b>" + stChip(l) + (autoName(l.name) ? "" : " · " + esc(l.name)) + "</span>" +
       '<span class="olf">' + tr("k_ofb2").replace("{n}", fmtN(c.b)) + ' · <b class="' + (c.net < 0 ? "neg" : "pos") + '">' + inr(c.net) + "</b> · " + tr("ol_pb").replace("{x}", inr(c.nppb)) + "</span></span></summary>" +
       '<span class="olbar" aria-hidden="true">' + lines.map(n => '<i class="gc-' + gradeKey(n.grade) + '" style="flex:' + (+n.boxes) + '"></i>').join("") + "</span>" +
       '<div class="lottab" data-hlot="' + esc(l.id) + '" data-se="' + esc(se.id) + '">' + orchLotsTable(se, l.id) + "</div>" +
@@ -5889,6 +5968,7 @@ function onEdit(e) {
     if (d.f === "half" || d.f === "paid") n[d.f] = t.checked;
     else if (d.f === "grade" || d.f === "date" || d.f === "paidOn") n[d.f] = t.value;
     else n[d.f] = numOf(t.value);
+    if (n.grade === "Theka") n.rate = +n.boxes > 0 ? (+n.lump || 0) / +n.boxes : 0;
     updLineWarn();
   } else if (d.lot) {
     const se = lotSeason(d.lot); const l = se && se.lots.find(x => x.id === d.lot); if (!l) return;
