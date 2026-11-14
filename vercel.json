@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/api/social-post", "destination": "/api/social?fn=post" },
+    { "source": "/api/social-draft", "destination": "/api/social?fn=draft" },
+    { "source": "/api/social-cron", "destination": "/api/social?fn=cron" },
+    { "source": "/api/rzp-order", "destination": "/api/rzp?fn=order" },
+    { "source": "/api/rzp-verify", "destination": "/api/rzp?fn=verify" },
+    { "source": "/api/rzp-webhook", "destination": "/api/rzp?fn=webhook" }
+  ]
+}

@@ -424,7 +424,7 @@ let mkSoc = null, mkPostText = "", mkImg = null, mkPostBusy = "", mkPostRes = nu
 async function mkTok() { try { const r = await sb.auth.getSession(); return r && r.data && r.data.session ? r.data.session.access_token : ""; } catch (e) { return ""; } }
 async function loadSoc() {
   mkSoc = null; renderMk();
-  try { const r = await fetch("/api/social-post", { headers: { Authorization: "Bearer " + await mkTok() } }); mkSoc = await r.json(); }
+  try { const r = await fetch("/api/social?fn=post", { headers: { Authorization: "Bearer " + await mkTok() } }); mkSoc = await r.json(); }
   catch (e) { mkSoc = { setup: true, ok: false, error: String(e.message || e) }; }
   mkSnap(); renderMk();
 }
@@ -488,7 +488,7 @@ async function mkDoPost() {
   try {
     const url = await mkImgUrl();
     mkPostBusy = "mk_post_busy"; renderMk();
-    const r = await fetch("/api/social-post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ text: mkPostText, image_url: url, fb, ig }) });
+    const r = await fetch("/api/social?fn=post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ text: mkPostText, image_url: url, fb, ig }) });
     const j = await r.json(); const R = j.result || {};
     const line = (x, okKey, name) => x ? (x.ok ? "<p>✓ " + tr(okKey) + ' · <a href="' + esc(x.link) + '" target="_blank" rel="noopener">' + tr("mk_post_view") + "</a></p>"
       : '<p class="mkwarn">' + esc(tr("mk_post_fail").replace("{w}", name).replace("{m}", qErrTxt(x.error))) + "</p>") : "";
@@ -619,7 +619,7 @@ function qHtml() {
 async function qDraft(kind) {
   mkQBusy = kind; mkQMsg = ""; renderMk();
   try {
-    const r = await fetch("/api/social-draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ n: mkQN, lang: mkQLang, kind }) });
+    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ n: mkQN, lang: mkQLang, kind }) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) mkQMsg = j.error === "not_setup" ? tr("mk_q_setup") : j.error === "not_setup_v2" ? tr("mk_v2_setup") : j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : tr("mk_q_err").replace("{m}", j.error || r.status);
   } catch (e) { mkQMsg = tr("mk_q_err").replace("{m}", String(e.message || e)); }
@@ -722,7 +722,7 @@ async function viAi() {
   mkViBusy = true; mkViMsg = ""; renderMk();
   try {
     const done = mkViAll().map(v => v.name);
-    const r = await fetch("/api/social-draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ kind: "videos", done }) });
+    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ kind: "videos", done }) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok || !j.ideas) throw new Error(j.error === "not_setup" ? tr("mk_q_setup") : tr("vi_err"));
     const MON = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];

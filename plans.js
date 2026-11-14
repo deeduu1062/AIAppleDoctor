@@ -20,7 +20,7 @@ if (T.hn) Object.assign(T.hn, { pay_rzp: "Abhi {a} bharein", pay_rzp_n: "UPI, ca
 /* Switch: false = growers see only the UPI-by-hand way (link, QR, reference number). Set to true to bring Razorpay back. */
 const RZP_SWITCH = false;
 if (!RZP_SWITCH) rzpOn = false;
-else fetch("/api/rzp-order").then(r => r.ok ? r.json() : {}).then(j => { rzpOn = !!(j && j.enabled); if (document.getElementById("payDlg") && document.getElementById("payDlg").open) renderPay(); }).catch(() => { rzpOn = false; });
+else fetch("/api/rzp?fn=order").then(r => r.ok ? r.json() : {}).then(j => { rzpOn = !!(j && j.enabled); if (document.getElementById("payDlg") && document.getElementById("payDlg").open) renderPay(); }).catch(() => { rzpOn = false; });
 function loadRzp() {
   if (window.Razorpay) return Promise.resolve(true);
   if (!rzpLoad) rzpLoad = new Promise(res => {
@@ -36,7 +36,7 @@ async function rzpPay() {
   try {
     const [ok, tok] = await Promise.all([loadRzp(), rzpTok()]);
     if (!ok || !tok) throw new Error(ok ? "signin" : "load");
-    const r = await fetch("/api/rzp-order", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + tok }, body: JSON.stringify({ plan: payPlan, period: payPer }) });
+    const r = await fetch("/api/rzp?fn=order", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + tok }, body: JSON.stringify({ plan: payPlan, period: payPer }) });
     const o = await r.json().catch(() => ({}));
     if (!r.ok || !o.order_id) throw new Error(o.error || r.status);
     const plan = payPlan, per = payPer;
@@ -48,7 +48,7 @@ async function rzpPay() {
       handler: async resp => {
         rzpPaid = true; payDlgShow(true); renderPay("pay_rzp_wait");
         try {
-          const v = await fetch("/api/rzp-verify", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await rzpTok() }, body: JSON.stringify(resp) });
+          const v = await fetch("/api/rzp?fn=verify", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await rzpTok() }, body: JSON.stringify(resp) });
           const j = await v.json().catch(() => ({}));
           if (v.ok && j.ok) {
             myPay = { plan: j.plan, status: "approved", valid_until: j.valid_until };
