@@ -2,6 +2,8 @@
 // GET  /api/social-post   → which accounts are connected (names), for the admin page
 // POST /api/social-post   { text, image_url, video_url, fb: true|false, ig: true|false } → the new posts' links
 // GET also gives follower numbers (fb_followers, ig_followers) for the Marketing tab scoreboard
+// POST /api/social-post   { metrics: [{ q, fb: {id|vid|link}, ig: {id} }] } → { metrics: { q: { fb: {...}, ig: {...} } } }
+//                         how each post did (reach, likes, comments, shares), for the Marketing tab
 // Header on both: Authorization: Bearer <Supabase access token of an admin>
 //
 // Needs ONE setting in Vercel → Settings → Environment Variables:
@@ -14,7 +16,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
-const { accounts, publish, stats } = require("./_social");
+const { accounts, publish, stats, metrics } = require("./_social");
 
 function send(res, code, obj) {
   res.statusCode = code;
@@ -49,11 +51,17 @@ module.exports = async (req, res) => {
   if (req.method === "GET") return send(res, 200, Object.assign({ setup: true, ok: true }, acc, await stats(acc, pt)));
 
   const b = await readBody(req);
+  if (Array.isArray(b.metrics)) {
+    const items = b.metrics.filter(x => x && /^\d{1,12}$/.test(String(x.q))).map(x => ({ q: String(x.q),
+      fb: x.fb && (x.fb.id || x.fb.vid || x.fb.link) ? { id: String(x.fb.id || "").slice(0, 80), vid: String(x.fb.vid || "").slice(0, 40), link: String(x.fb.link || "").slice(0, 300) } : null,
+      ig: x.ig && x.ig.id ? { id: String(x.ig.id).slice(0, 40) } : null }));
+    return send(res, 200, { metrics: await metrics(items, pt) });
+  }
   const text = String(b.text || "").slice(0, 2200).trim();
   const img = /^https:\/\//.test(String(b.image_url || "")) ? String(b.image_url) : "";
   const video = /^https:\/\//.test(String(b.video_url || "")) ? String(b.video_url) : "";
   const wantFb = b.fb !== false, wantIg = !!b.ig;
   if (!text && !img && !video) return send(res, 400, { error: "empty" });
-  const out = await publish(acc, pt, { text, img, video, fb: wantFb, ig: wantIg });
+  const out = await publish(acc, pt, { text, img, video, fb: wantFb, ig: wantIg, qid: b.qid });
   return send(res, 200, Object.assign({ setup: true, ok: true }, acc, { result: out }));
 };

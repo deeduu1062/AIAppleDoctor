@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
   /* a retry only posts where it failed before; an Instagram video still processing last time carries on with the same upload */
   const prev = post.prev || {}, done = x => !!(x && x.ok);
   const out = await publish(acc, pt, { text: post.text, img: post.image_url, video: post.video_url,
-    fb: !!post.fb && !done(prev.fb), ig: !!post.ig && !done(prev.ig), ig_container: prev.ig && prev.ig.container });
+    fb: !!post.fb && !done(prev.fb), ig: !!post.ig && !done(prev.ig), ig_container: prev.ig && prev.ig.container, qid: post.id });
   if (done(prev.fb) && !out.fb) out.fb = prev.fb;
   if (done(prev.ig) && !out.ig) out.ig = prev.ig;
   /* posted if at least one went out (a retry would post it twice there); the admin page shows any part that failed */

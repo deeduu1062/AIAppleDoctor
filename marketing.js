@@ -265,6 +265,71 @@ Object.assign(T.hi, {
   ask_done_yt: "हो गया। शब्द नीचे Video Studio में हैं, साथ में क्या फ़िल्म करना है। अपनी फ़ोटो या क्लिप जोड़ें, फिर वीडियो बनाएँ।"
 });
 
+/* the 20–30 second Hindi demo: a leaf photo gets its answer, then a lot is added and the profit per box appears */
+const MK_DEMO = {
+  title: "एक फ़ोटो से बीमारी की जाँच, हर पेटी का असली मुनाफ़ा | सेब साथी",
+  durs: [3, 4, 4, 4, 3],
+  scenes: [
+    { label: "सेब साथी", title: "पत्ते पर धब्बे? अंदाज़ा मत लगाइए", sub: "बस फ़ोन से एक फ़ोटो लीजिए" },
+    { label: "1", title: "फ़ोटो लें, जवाब पाएँ", sub: "बीमारी का नाम और आगे क्या करें" },
+    { label: "2", title: "हर लॉट का हिसाब जोड़ें", sub: "पेटियाँ, भाव, तुड़ान, ग्रेडिंग, ढुलाई" },
+    { label: "3", title: "हर पेटी का असली मुनाफ़ा", sub: "सारे खर्चे घटाकर, अपने आप" },
+    { label: "मुफ़्त", title: "हिमाचल, कश्मीर, उत्तराखंड", sub: "के बागवानों के लिए · हिंदी, हिंग्लिश, English" }
+  ],
+  cta: "आज ही मुफ़्त शुरू करें",
+  caption: "पत्ते पर धब्बे दिखें तो अंदाज़ा मत लगाइए, फ़ोटो लीजिए। 🍎\n\nसेब साथी पर एक फ़ोटो से बीमारी की जाँच, और हर लॉट जोड़ते ही हर पेटी का असली मुनाफ़ा, सारे खर्चे घटाकर।\n\nहिमाचल, कश्मीर और उत्तराखंड के बागवानों के लिए, मुफ़्त।\n👉 https://sebsaathi.com\n\n#सेबसाथी #SebSaathi #AppleFarming #Himachal #बागवानी",
+  shoot: [
+    "Phone held upright. Close-up of the phone camera on a spotted apple leaf, tap the shutter. (No sick leaves in winter? Film the screen with a saved leaf photo.)",
+    "Screen recording: Check a disease → pick the photo → the answer appears. Stop when the disease name is on screen.",
+    "Screen recording: Season sales record → add a lot → grade, boxes, rate and expenses typed in → Submit.",
+    "Screen recording: the orchard's Hisaab with the net per box showing. Hold on the number for 2 seconds.",
+    "You in your orchard holding the phone, or a wide shot of the trees."
+  ]
+};
+
+/* Today box, post results, best posts, one video → every platform */
+Object.assign(T.en, {
+  td_h: "Today", td_open: "Open", td_out: "Going out today ({n})", td_wa: "WhatsApp to send by hand today ({n})",
+  td_failed: "Didn't go out, check and try again ({n})", td_wait: "Waiting for you to check ({n})",
+  td_empty: "{n} still need words or a photo before they can be approved.", td_approve: "Approve all ({n})", td_check: "Check them first",
+  td_next: "Nothing due today. Next post: {d}.", td_none: "Nothing planned. Let the AI write this week's posts.", td_week: "✨ Write this week's posts",
+  met_reach: "People reached", met_likes: "Likes and reactions", met_comments: "Comments", met_shares: "Shares", met_saves: "Saves",
+  met_vis: "Website visitors from this post (30 days)", met_sign: "Sign-ups from this post",
+  met_i_reach: "👁", met_i_likes: "❤", met_i_comments: "💬", met_i_shares: "↗", met_i_saves: "🔖", met_i_vis: "🔗", met_i_sign: "✅",
+  met_loading: "Getting results…", src_post: "post",
+  best_h: "Your best posts", best_sub: "AI learns from {n}",
+  best_p: "Ranked by sign-ups first, then website visits, shares, comments and likes. The AI copies what works in these {n} (first line, length, tone) every time it writes for you.",
+  best_none: "No results yet. Once posts get likes, visits or sign-ups, the best ones show here and the AI learns from them.",
+  best_none0: "Nothing posted yet. After your first posts, the best ones show here and the AI learns from them.",
+  ask_ctx: "The AI follows this month's orchard work and the diseases growers are checking most.", ask_ctx_best: "It also copies the style of your {n} best posts.",
+  demo_h: "Ready to film: 20–30 second demo (Hindi)", demo_p: "A leaf photo gets its answer, then a lot is added and the profit per box appears. Tap the button: the words, timings and caption go into the Video Studio below. Film these 5 clips on your phone, add one to each scene, then Make video.",
+  demo_go: "Open in Video Studio", demo_done: "The words are in the Video Studio below. Add your clips to scenes 1–5, then Make video.",
+  ev_go: "📣 Make posts for every platform", ev_busy: "Writing captions…",
+  ev_p: "AI writes a Facebook post, an Instagram Reel caption, a WhatsApp message and a YouTube Short title for this video.",
+  ev_done: "Drafts made: {w}. Check them below.", ev_yt: "The YouTube Short is ready in the Video Studio (YouTube & videos tab) with its title: tap Upload.",
+  ev_yt_no: "For YouTube, connect your channel in the Video Studio (YouTube & videos tab)."
+});
+Object.assign(T.hi, {
+  td_h: "आज", td_open: "खोलें", td_out: "आज जाने वाले ({n})", td_wa: "आज हाथ से भेजने वाले WhatsApp ({n})",
+  td_failed: "नहीं गए, जाँचें और फिर कोशिश करें ({n})", td_wait: "आपकी जाँच के इंतज़ार में ({n})",
+  td_empty: "{n} में मंज़ूरी से पहले शब्द या फ़ोटो चाहिए।", td_approve: "सब मंज़ूर करें ({n})", td_check: "पहले जाँचें",
+  td_next: "आज कुछ नहीं जाना। अगला पोस्ट: {d}।", td_none: "कुछ तय नहीं। AI से इस हफ़्ते के पोस्ट लिखवाएँ।", td_week: "✨ इस हफ़्ते के पोस्ट लिखवाएँ",
+  met_reach: "कितने लोगों तक पहुँचा", met_likes: "लाइक और रिएक्शन", met_comments: "कमेंट", met_shares: "शेयर", met_saves: "सेव",
+  met_vis: "इस पोस्ट से वेबसाइट पर आए (30 दिन)", met_sign: "इस पोस्ट से जुड़े बागवान",
+  met_loading: "नतीजे आ रहे हैं…", src_post: "पोस्ट",
+  best_h: "आपके सबसे अच्छे पोस्ट", best_sub: "AI इन {n} से सीखता है",
+  best_p: "पहले जुड़ने वाले बागवानों से, फिर वेबसाइट विज़िट, शेयर, कमेंट और लाइक से क्रम। AI हर बार इन {n} की अच्छी बातें (पहली लाइन, लंबाई, अंदाज़) अपनाता है।",
+  best_none: "अभी नतीजे नहीं। पोस्ट पर लाइक, विज़िट या जुड़ने वाले आने पर सबसे अच्छे यहाँ दिखेंगे और AI उनसे सीखेगा।",
+  best_none0: "अभी कुछ पोस्ट नहीं हुआ। पहले पोस्ट के बाद सबसे अच्छे यहाँ दिखेंगे और AI उनसे सीखेगा।",
+  ask_ctx: "AI इस महीने के बग़ीचे के काम और बागवान जिन बीमारियों को सबसे ज़्यादा जाँच रहे हैं, उनके हिसाब से लिखता है।", ask_ctx_best: "साथ ही आपके {n} सबसे अच्छे पोस्ट का अंदाज़ अपनाता है।",
+  demo_h: "फ़िल्म करने को तैयार: 20–30 सेकंड का डेमो (हिंदी)", demo_p: "पत्ते की फ़ोटो से जवाब, फिर एक लॉट जोड़ते ही हर पेटी का मुनाफ़ा। बटन दबाएँ: शब्द, समय और कैप्शन नीचे Video Studio में आ जाएँगे। ये 5 क्लिप फ़ोन पर फ़िल्म करें, हर सीन में एक जोड़ें, फिर वीडियो बनाएँ।",
+  demo_go: "Video Studio में खोलें", demo_done: "शब्द नीचे Video Studio में हैं। सीन 1–5 में अपनी क्लिप जोड़ें, फिर वीडियो बनाएँ।",
+  ev_go: "📣 हर प्लेटफ़ॉर्म के लिए पोस्ट बनाएँ", ev_busy: "कैप्शन लिख रहे हैं…",
+  ev_p: "AI इस वीडियो के लिए Facebook पोस्ट, Instagram Reel कैप्शन, WhatsApp संदेश और YouTube Short का टाइटल लिखता है।",
+  ev_done: "ड्राफ़्ट बन गए: {w}। नीचे जाँचें।", ev_yt: "YouTube Short टाइटल के साथ Video Studio (YouTube और वीडियो टैब) में तैयार है: अपलोड दबाएँ।",
+  ev_yt_no: "YouTube के लिए Video Studio (YouTube और वीडियो टैब) में अपना चैनल जोड़ें।"
+});
+
 /* which Costs-tab rows count towards each budget line (matched on service + what for) */
 const MK_BUDGET_RX = [/poster|print|flyer|banner/i, /travel|petrol|diesel|fuel|bus|taxi|meeting/i, /\bads?\b|advert|boost|promot/i, null];
 
@@ -280,7 +345,9 @@ const mkSrcLabel = code => {
   if (c === "none") return tr("src_l_none");
   const i = c.indexOf("-"), head = i > 0 ? c.slice(0, i) : c, place = i > 0 ? c.slice(i + 1).replace(/-/g, " ") : "";
   const d = MK_SRC.find(x => x[0] === head);
-  return (d ? tr(d[1]) : tr("src_l_other") + ": " + head) + (place ? " · " + place : "");
+  const pm = /^p(\d{1,12})$/.exec(place), px = pm && typeof qGet === "function" ? qGet(pm[1]) : null;   /* one post: fb-p12 */
+  const pl = pm ? tr("src_post") + " " + (px ? (px.topic || String(px.text || "").slice(0, 40)) : "#" + pm[1]) : place;
+  return (d ? tr(d[1]) : tr("src_l_other") + ": " + head) + (pl ? " · " + pl : "");
 };
 const mkSrcLink = code => "https://sebsaathi.com/?src=" + code;
 let mkTl = { src: "poster", place: "" }, mkTlCopied = false;
@@ -457,7 +524,7 @@ async function loadSoc() {
   mkSoc = null; renderMk();
   try { const r = await fetch("/api/social?fn=post", { headers: { Authorization: "Bearer " + await mkTok() } }); mkSoc = await r.json(); }
   catch (e) { mkSoc = { setup: true, ok: false, error: String(e.message || e) }; }
-  mkSnap(); renderMk();
+  mkSnap(); renderMk(); loadMet();
 }
 function mkJpeg(file) {   /* JPEG, at most 1440 px wide, cropped to what Instagram accepts (4:5 to 1.91:1) */
   return new Promise((ok, no) => {
@@ -516,24 +583,34 @@ async function mkDoPost() {
   mkPostText = ($("mkpText").value || "").trim();
   if (!mkPostText && !mkImg) { mkPostRes = '<p class="mkwarn">' + tr("mk_post_need") + "</p>"; renderMk(); return; }
   mkPostRes = null;
+  let row = null;
   try {
     const url = await mkImgUrl();
     mkPostBusy = "mk_post_busy"; renderMk();
-    const r = await fetch("/api/social?fn=post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ text: mkPostText, image_url: url, fb, ig }) });
+    /* the row is kept first (as "posting"), so the post's link carries its number and its sign-ups can be counted */
+    if (!mkQErr) { try { const ins = await sb.from("social_queue").insert({ status: "posting", text: mkPostText.slice(0, 2200), image_url: url || null, fb, ig, post_at: new Date().toISOString() }).select().single(); if (!ins.error) row = ins.data; } catch (e) {} }
+    const r = await fetch("/api/social?fn=post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ text: mkPostText, image_url: url, fb, ig, qid: row ? row.id : "" }) });
     const j = await r.json(); const R = j.result || {};
     const line = (x, okKey, name) => x ? (x.ok ? "<p>✓ " + tr(okKey) + ' · <a href="' + esc(x.link) + '" target="_blank" rel="noopener">' + tr("mk_post_view") + "</a></p>"
       : '<p class="mkwarn">' + esc(tr("mk_post_fail").replace("{w}", name).replace("{m}", qErrTxt(x.error))) + "</p>") : "";
     let h = line(R.fb, "mk_post_done_fb", "Facebook") + line(R.ig, "mk_post_done_ig", "Instagram");
     if (!h) h = '<p class="mkwarn">' + esc(j.error || "error") + "</p>";
     mkPostRes = h;
-    if ((R.fb && R.fb.ok) || (R.ig && R.ig.ok)) {
-      /* keep it in the list as posted; without the queue table, in the old "recent posts" list */
-      let kept = false;
-      if (!mkQErr) { try { const ins = await sb.from("social_queue").insert({ status: "posted", text: mkPostText.slice(0, 2200), image_url: url || null, fb, ig, post_at: new Date().toISOString(), result: R }).select().single(); if (!ins.error) { mkQ.push(ins.data); kept = true; } } catch (e) {} }
-      if (!kept) await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: mkPostText.slice(0, 80), fb: R.fb && R.fb.ok ? R.fb.link : "", ig: R.ig && R.ig.ok ? R.ig.link : "" }).slice(0, 500) });
+    const ok = (R.fb && R.fb.ok) || (R.ig && R.ig.ok);
+    if (row) {   /* posted → kept in the list; nothing went out → the row is removed again */
+      try {
+        if (ok) { const u = await sb.from("social_queue").update({ status: "posted", result: R, updated_at: new Date().toISOString() }).eq("id", row.id).select().single(); if (!u.error && mkQ) mkQ.push(u.data); }
+        else await sb.from("social_queue").delete().eq("id", row.id);
+      } catch (e) {}
+    }
+    if (ok) {
+      if (!row) await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: mkPostText.slice(0, 80), fb: R.fb && R.fb.ok ? R.fb.link : "", ig: R.ig && R.ig.ok ? R.ig.link : "" }).slice(0, 500) });
       mkPostText = ""; mkImg = null;
     }
-  } catch (e) { mkPostRes = '<p class="mkwarn">' + esc(String(e.message || e)) + "</p>"; }
+  } catch (e) {
+    if (row) { try { await sb.from("social_queue").delete().eq("id", row.id); } catch (x) {} }
+    mkPostRes = '<p class="mkwarn">' + esc(String(e.message || e)) + "</p>";
+  }
   mkPostBusy = ""; renderMk();
 }
 async function mkDoLater() {
@@ -565,7 +642,56 @@ async function loadQ() {
     if (r.error) throw r.error;
     mkQ = r.data || []; mkQErr = "";
   } catch (e) { mkQ = null; mkQErr = "setup"; }
-  renderMk();
+  renderMk(); loadMet();
+}
+
+/* ---- how each post did: reach, likes, comments, shares from Meta; visitors and sign-ups from its tracked link ---- */
+let mkMet = {}, mkMetBusy = false;
+const qPosted = () => (mkQ || []).filter(x => (qKind(x) === "post" || qKind(x) === "video") && x.status === "posted" && x.result && ((x.result.fb && x.result.fb.ok) || (x.result.ig && x.result.ig.ok)));
+async function loadMet() {
+  if (mkMetBusy || !mkSoc || !mkSoc.ok) return;
+  const items = qPosted().map(x => {
+    const R = x.result, f = R.fb && R.fb.ok ? R.fb : null, g = R.ig && R.ig.ok ? R.ig : null;
+    return { q: String(x.id), fb: f ? { id: f.id || "", vid: f.vid || "", link: f.link || "" } : null, ig: g && g.id ? { id: g.id } : null };
+  }).filter(x => x.fb || x.ig).slice(0, 20);
+  if (!items.length) return;
+  mkMetBusy = true;
+  try {
+    const r = await fetch("/api/social?fn=post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ metrics: items }) });
+    const j = await r.json().catch(() => ({}));
+    if (j.metrics) mkMet = j.metrics;
+  } catch (e) {}
+  mkMetBusy = false; renderMk();
+}
+/* visitors (30 days) and sign-ups (all time) that came through this post's link (?src=fb-p<id>, wa-p<id>) */
+function qSite(x) {
+  const out = { vis: 0, sign: 0 }, codes = ["fb-p" + x.id, "wa-p" + x.id];
+  ((mkSt && mkSt.sources) || []).forEach(z => { if (codes.indexOf(z.src) >= 0) { out.vis += +z.visitors || 0; out.sign += +z.n_all || 0; } });
+  return out;
+}
+function qNums(x) {
+  const M = mkMet[String(x.id)] || {}, f = M.fb || {}, g = M.ig || {}, add = (a, b) => (a == null && b == null) ? null : (+a || 0) + (+b || 0);
+  const S = qSite(x);
+  return { reach: add(f.reach, g.reach), likes: add(f.likes, g.likes), comments: add(f.comments, g.comments), shares: add(f.shares, g.shares), saves: g.saves == null ? null : +g.saves, vis: S.vis, sign: S.sign, has: !!(M.fb || M.ig) };
+}
+/* one number to rank posts: a sign-up is worth far more than a like */
+const qScore = n => n.sign * 25 + n.vis * 4 + (n.shares || 0) * 3 + (n.saves || 0) * 3 + (n.comments || 0) * 2 + (n.likes || 0) + (n.reach || 0) / 100;
+function qMetHtml(x) {
+  if (qKind(x) !== "post" && qKind(x) !== "video" && qKind(x) !== "wa") return "";
+  const n = qNums(x), bit = (k, v) => v == null ? "" : '<span title="' + esc(tr("met_" + k)) + '">' + tr("met_i_" + k) + " " + mkN(v) + "</span>";
+  if (qKind(x) === "wa") return n.vis || n.sign ? '<span class="mkmet">' + bit("vis", n.vis) + bit("sign", n.sign) + "</span>" : "";
+  if (!n.has && !n.vis && !n.sign) return mkMetBusy ? '<span class="mkmet fine">' + tr("met_loading") + "</span>" : "";
+  return '<span class="mkmet">' + bit("reach", n.reach) + bit("likes", n.likes) + bit("comments", n.comments) + bit("shares", n.shares) + bit("saves", n.saves) + bit("vis", n.vis) + bit("sign", n.sign) + "</span>";
+}
+/* the posts that did best, sent with every AI request so it copies what works */
+function mkBest() {
+  return qPosted().map(x => ({ x, s: qScore(qNums(x)) })).filter(o => o.s >= 3 && String(o.x.text || "").trim()).sort((a, b) => b.s - a.s).slice(0, 3).map(o => o.x);
+}
+const mkBestTexts = () => mkBest().map(x => String(x.text || "").slice(0, 900));
+function bestHtml() {
+  const B = mkBest();
+  if (!B.length) return '<p class="fine">' + tr(qPosted().length ? "best_none" : "best_none0") + "</p>";
+  return '<p class="fine">' + esc(tr("best_p").replace("{n}", B.length)) + '</p><ol class="mkwatch">' + B.map(x => "<li>" + esc(x.topic || String(x.text || "").slice(0, 60)) + " " + qMetHtml(x) + "</li>").join("") + "</ol>";
 }
 const qGet = id => (mkQ || []).find(x => String(x.id) === String(id));
 async function qUpd(id, patch) {
@@ -580,6 +706,9 @@ function qApprovePatch(x) {
   if (!x.post_at || Date.parse(x.post_at) < Date.now()) p.post_at = new Date().toISOString();
   return p;
 }
+/* a WhatsApp message's site link is tagged with its own number (?src=wa-p<id>), so its visitors and sign-ups can be counted */
+const qWaText = x => String(x.text || "").replace(/([?&])src=wa\b(?!-)/g, "$1src=wa-p" + x.id)
+  .replace(/(^|[^\/\w.])((?:https?:\/\/)?(?:www\.)?sebsaathi\.com\/?)(?![\w\/?&=-])/g, (m, a, u) => a + "https://sebsaathi.com/?src=wa-p" + x.id);
 const qTag = x => '<span class="mkkind k-' + qKind(x) + '">' + tr("cq_k_" + qKind(x)) + "</span>";
 const qWhere = x => qKind(x) === "yt" ? "YouTube" : qKind(x) === "wa" ? "WhatsApp" : (x.fb ? "Facebook" : "") + (x.fb && x.ig ? " + " : "") + (x.ig ? "Instagram" : "");
 let mkNowId = null;   /* the item being posted now */
@@ -593,7 +722,7 @@ async function qPostNow(id) {
   try {
     await qUpd(id, { text: x.text, status: "posting" });
     const r = await fetch("/api/social?fn=post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() },
-      body: JSON.stringify({ text: x.text, image_url: x.image_url || "", video_url: x.video_url || "", fb: !!x.fb, ig: !!x.ig && !!(x.image_url || x.video_url) }) });
+      body: JSON.stringify({ text: x.text, image_url: x.image_url || "", video_url: x.video_url || "", fb: !!x.fb, ig: !!x.ig && !!(x.image_url || x.video_url), qid: x.id }) });
     const j = await r.json().catch(() => ({})), R = j.result || {};
     const ok = !!((R.fb && R.fb.ok) || (R.ig && R.ig.ok));
     if (!j.result) { await qUpd(id, { status: was }); mkQMsg = tr("mk_q_err").replace("{m}", j.error || r.status); }
@@ -611,11 +740,12 @@ function qDraftHtml(x, hasIg) {
     '<textarea class="mkin mkta" rows="7" data-qf="text" data-id="' + x.id + '" aria-label="' + esc(tr("mk_post_text")) + '">' + esc(x.text) + "</textarea>";
   if (k === "wa") {
     return h + '<p class="fine">' + tr("cq_wa_note") + '</p><div class="mklinks"><button class="btn-s" type="button" data-mkq="wacopy" data-id="' + x.id + '">' + tr(mkCopied["q" + x.id] ? "mk_copied" : "cq_wa_copy") + '</button>' +
-      '<a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(x.text || "") + '">' + tr("cq_wa_send") + '</a>' +
+      '<a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(qWaText(x)) + '">' + tr("cq_wa_send") + '</a>' +
       '<button class="btn-s add" type="button" data-mkq="wasent" data-id="' + x.id + '">' + tr("cq_wa_done") + '</button><button class="btn-s" type="button" data-mkq="del" data-id="' + x.id + '">' + tr(mkQDel === String(x.id) ? "mk_q_del_sure" : "mk_q_del") + "</button></div></div>";
   }
   if (x.photo_idea) h += '<p class="fine">' + esc(tr("mk_q_photo_idea").replace("{t}", x.photo_idea)) + "</p>";
-  if (k === "video") h += '<div class="mkrow"><video class="mkvprev" src="' + esc(x.video_url || "") + '" controls muted playsinline preload="metadata"></video></div>';
+  if (k === "video") h += '<div class="mkrow"><video class="mkvprev" src="' + esc(x.video_url || "") + '" controls muted playsinline preload="metadata"></video></div>' +
+    (x.video_url ? '<div class="mkrow"><button class="btn-s add" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + '</button><span class="fine">' + tr("ev_p") + "</span></div>" : "");
   else h += '<div class="mkrow">' + (x.image_url ? '<img class="mkprev" src="' + esc(x.image_url) + '" alt="">' : "") +
     '<label class="btn-s mkfile">' + tr(x.image_url ? "mk_post_photo_ch" : "mk_post_photo") + '<input type="file" accept="image/*" data-qimg="' + x.id + '" hidden></label>' +
     (x.image_url ? '<button class="btn-s" type="button" data-mkq="rmimg" data-id="' + x.id + '">' + tr("mk_post_rm") + "</button>" : "") + "</div>";
@@ -635,6 +765,7 @@ function askHtml(mode) {
     '<textarea class="mkin mkta" id="mkAsk-' + mode + '" data-ask="' + mode + '" rows="3" maxlength="800" placeholder="' + esc(tr("ask_ph_" + mode)) + '">' + esc(mkAsk[mode]) + "</textarea>" +
     '<div class="mkrow"><select class="mkin mksel" id="mkqLang-' + mode + '" data-asklang="1" aria-label="Language">' + ["hn", "hi", "en"].map(l => '<option value="' + l + '"' + (l === mkQLang ? " selected" : "") + ">" + tr("mk_q_l_" + l) + "</option>").join("") + "</select>" +
     '<button class="btn-s add" type="button" data-askgo="' + mode + '"' + (mkAskBusy ? " disabled" : "") + ">" + tr(busy ? "ask_busy" : "ask_go") + "</button></div>" +
+    '<p class="fine">' + esc(tr("ask_ctx") + (mkBest().length ? " " + tr("ask_ctx_best").replace("{n}", mkBest().length) : "")) + "</p>" +
     (mkAskMsg[mode] ? '<p class="fine" role="status">' + mkAskMsg[mode] + "</p>" : "") + "</div>";
 }
 async function askGo(mode) {
@@ -643,7 +774,7 @@ async function askGo(mode) {
   mkAskBusy = mode; mkAskMsg[mode] = ""; renderMk();
   try {
     const kind = mode === "yt" ? "video" : mode === "wa" ? "wamsg" : "custom";
-    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ kind, ask: want, lang: mkQLang }) });
+    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ kind, ask: want, lang: mkQLang, best: mkBestTexts() }) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error === "not_setup" ? tr("mk_q_setup") : j.error === "not_setup_v2" ? tr("mk_v2_setup") : j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : tr("mk_q_err").replace("{m}", j.error || r.status));
     if (mode === "yt") {
@@ -680,6 +811,7 @@ function qHtml(mode) {
   if (mode === "fb" && mkSoc && !mkSoc.ok) h += '<p class="fine mkwarn">' + tr("mk_q_notoken") + "</p>";
   if (mode === "fb" && mkCompose) h += composeHtml();
   if (mkQMsg) h += '<div class="mkres" role="status"><p class="mkwarn">' + esc(mkQMsg) + "</p></div>";
+  if (mkEvMsg && mode === "fb") h += '<div class="mkres" role="status"><p>' + esc(mkEvMsg) + "</p></div>";
   if (mkQErr) return h + '<p class="fine mkwarn">' + tr("mk_q_setup") + "</p>";
   if (!mkQ) return h + '<p class="fine">' + tr("mk_post_checking") + "</p>";
   const now = Date.now(), K = Q_KINDS[mode] || Q_KINDS.fb, Q = mkQ.filter(x => K.indexOf(qKind(x)) >= 0);
@@ -702,7 +834,8 @@ function qHtml(mode) {
     const R = x.result || {}, part = (o, w) => o ? (o.ok ? ' · <a href="' + esc(o.link) + '" target="_blank" rel="noopener">' + w + "</a>" : ' · <span class="mkwarn">' + esc(tr("mk_q_partial").replace("{w}", w).replace("{m}", qErrTxt(o.error))) + "</span>") : "";
     const failedPart = R.ig && R.ig.ok === false && R.ig.error === "ig_processing";   /* worth trying again; other errors need a change first */
     return "<li>" + qTag(x) + " " + esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) +
-      (qKind(x) === "wa" ? " · " + tr("cq_wa_sent") : "") + part(R.fb, "Facebook") + part(R.ig, "Instagram") + part(R.yt, "YouTube") +
+      (qKind(x) === "wa" ? " · " + tr("cq_wa_sent") : "") + part(R.fb, "Facebook") + part(R.ig, "Instagram") + part(R.yt, "YouTube") + " " + qMetHtml(x) +
+      (qKind(x) === "video" && x.video_url ? ' <button class="btn-s" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + "</button>" : "") +
       ((x.status === "failed" || (failedPart && qKind(x) !== "yt")) ? (x.status === "failed" ? ' · <span class="mkwarn">' + tr("mk_q_failed") + (R.error ? ": " + esc(R.error) : "") + "</span>" : "") + ' <button class="btn-s" type="button" data-mkq="retry" data-id="' + x.id + '">' + tr("mk_q_retry") + "</button>" : "") + "</li>";
   }).join("") + "</ul>";
   /* posts made before the list existed */
@@ -716,7 +849,7 @@ function qHtml(mode) {
 async function qDraft(kind) {
   mkQBusy = kind; mkQMsg = ""; renderMk();
   try {
-    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ n: mkQN, lang: mkQLang, kind }) });
+    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ n: mkQN, lang: mkQLang, kind, best: mkBestTexts() }) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) mkQMsg = j.error === "not_setup" ? tr("mk_q_setup") : j.error === "not_setup_v2" ? tr("mk_v2_setup") : j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : tr("mk_q_err").replace("{m}", j.error || r.status);
   } catch (e) { mkQMsg = tr("mk_q_err").replace("{m}", String(e.message || e)); }
@@ -746,6 +879,104 @@ async function mkQueueYt(title, link, at) {
     if (!r.error && mkQ) { mkQ.push(r.data); renderMk(); return true; }
   } catch (e) {}
   return false;
+}
+
+/* ---- "Today": what goes out today, what waits for you, one button to approve it all ---- */
+const qIstDay = iso => iso ? new Date(Date.parse(iso) + 330 * 60000).toISOString().slice(0, 10) : "";
+const qTab = x => qKind(x) === "wa" ? "wa" : qKind(x) === "yt" ? "yt" : "fb";
+const qHasBody = y => !!(String(y.text || "").trim() || y.image_url || y.video_url);
+function todayHtml() {
+  let h = '<section class="mktoday" aria-labelledby="mkTodayH"><div class="mkph"><b id="mkTodayH">' + tr("td_h") + '</b><span class="fine">' + esc(mkDay(mkIst())) + "</span></div>";
+  if (mkQErr) return h + '<p class="fine mkwarn">' + tr("mk_q_setup") + "</p></section>";
+  if (!mkQ) return h + '<p class="fine">' + tr("mk_post_checking") + "</p></section>";
+  const today = mkIst(), now = Date.now();
+  const out = mkQ.filter(x => (x.status === "scheduled" || x.status === "posting" || (qKind(x) === "yt" && x.status === "posted" && Date.parse(x.post_at) > now)) && qIstDay(x.post_at) <= today)
+    .sort((a, b) => Date.parse(a.post_at) - Date.parse(b.post_at));
+  const wa = mkQ.filter(x => qKind(x) === "wa" && x.status === "draft" && qIstDay(x.post_at) <= today);
+  const wait = mkQ.filter(x => x.status === "draft" && qKind(x) !== "wa");
+  const ready = wait.filter(qHasBody);
+  const failed = mkQ.filter(x => x.status === "failed" && now - Date.parse(x.updated_at || x.post_at) < 3 * 86400000);
+  const line = (x, extra) => "<li>" + qTag(x) + " " + esc(qKind(x) === "wa" ? "" : qShow(x.post_at).replace(/^.*?,\s*/, "") + " · ") + esc(x.topic || String(x.text || "").slice(0, 50)) + (extra || "") +
+    ' <button class="link" type="button" data-mksub="' + qTab(x) + '">' + tr("td_open") + "</button></li>";
+  if (out.length) h += "<p><b>" + esc(tr("td_out").replace("{n}", out.length)) + '</b></p><ul class="mkwatch">' + out.map(x => line(x, qKind(x) === "yt" ? "" : " · " + qWhere(x))).join("") + "</ul>";
+  if (wa.length) h += "<p><b>" + esc(tr("td_wa").replace("{n}", wa.length)) + '</b></p><ul class="mkwatch">' + wa.map(x => line(x)).join("") + "</ul>";
+  if (failed.length) h += '<p class="mkwarn"><b>' + esc(tr("td_failed").replace("{n}", failed.length)) + '</b></p><ul class="mkwatch">' + failed.map(x => line(x)).join("") + "</ul>";
+  if (wait.length) {
+    h += "<p><b>" + esc(tr("td_wait").replace("{n}", wait.length)) + "</b></p>";
+    if (wait.length > ready.length) h += '<p class="fine">' + esc(tr("td_empty").replace("{n}", wait.length - ready.length)) + "</p>";
+    h += '<div class="mklinks">' + (ready.length ? '<button class="btn-s add" type="button" data-mkq="approveall">' + tr("td_approve").replace("{n}", ready.length) + "</button>" : "") +
+      '<button class="btn-s" type="button" data-mksub="fb">' + tr("td_check") + "</button></div>";
+  }
+  if (!out.length && !wa.length && !wait.length && !failed.length) {
+    const next = mkQ.filter(x => x.status === "scheduled" && Date.parse(x.post_at) > now).sort((a, b) => Date.parse(a.post_at) - Date.parse(b.post_at))[0];
+    h += '<p class="fine">' + esc(next ? tr("td_next").replace("{d}", qShow(next.post_at)) : tr("td_none")) + "</p>" +
+      (next ? "" : '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="draft"' + (mkQBusy ? " disabled" : "") + ">" + (mkQBusy === "post" ? tr("mk_q_drafting") : tr("td_week")) + "</button></div>");
+  }
+  return h + "</section>";
+}
+
+/* ---- one video → every platform: Facebook video, Instagram Reel, WhatsApp message, YouTube Short ---- */
+let mkEvBusy = "";
+async function mkEverywhere(id) {
+  const x = qGet(id); if (!x || !x.video_url || mkEvBusy) return;
+  mkEvBusy = String(id); mkQMsg = ""; renderMk();
+  try {
+    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() },
+      body: JSON.stringify({ kind: "repurpose", ask: ((x.topic ? x.topic + "\n" : "") + String(x.text || "")).slice(0, 800) || "Seb Saathi short video", lang: mkQLang, best: mkBestTexts() }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.repurpose) throw new Error(j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : j.error || ("HTTP " + r.status));
+    const R = j.repurpose, hasIg = !!(mkSoc && mkSoc.ok && mkSoc.ig_id);
+    const when = x.post_at && Date.parse(x.post_at) > Date.now() ? x.post_at : (() => { const w = new Date(); w.setUTCDate(w.getUTCDate() + 1); w.setUTCHours(14, 0, 0, 0); return w.toISOString(); })();
+    const topic = String(x.topic || R.yt_title || "").slice(0, 200) || null, made = [];
+    /* Facebook: a new draft (an already posted video stays as it is) */
+    const fbRow = { kind: "video", status: "draft", text: R.fb || x.text || "", topic, video_url: x.video_url, fb: true, ig: false, post_at: when };
+    if (x.status === "draft") { await qUpd(id, { text: fbRow.text, topic, fb: true, ig: false, post_at: when }); }
+    else { const a = await sb.from("social_queue").insert(fbRow).select().single(); if (a.error) throw a.error; mkQ.push(a.data); }
+    made.push("Facebook");
+    if (hasIg && R.ig) {   /* the Reel goes out an hour later, with its own caption */
+      const a = await sb.from("social_queue").insert({ kind: "video", status: "draft", text: R.ig, topic, video_url: x.video_url, fb: false, ig: true, post_at: new Date(Date.parse(when) + 3600000).toISOString() }).select().single();
+      if (a.error) throw a.error; mkQ.push(a.data); made.push("Instagram Reel");
+    }
+    if (R.wa) {
+      const a = await sb.from("social_queue").insert({ kind: "wa", status: "draft", text: R.wa, topic, fb: false, ig: false, post_at: new Date(Date.parse(when) + 7200000).toISOString() }).select().single();
+      if (a.error) throw a.error; mkQ.push(a.data); made.push("WhatsApp");
+    }
+    /* YouTube Short: the same video waits in the Video Studio with its title and description; you tap Upload */
+    let yt = false;
+    if (typeof vsUseVideo === "function") {
+      try {
+        if (typeof YT !== "undefined" && !YT && typeof ytLoad === "function") await ytLoad();
+        const same = typeof VS !== "undefined" && VS.out && VS.out.pub === x.video_url;   /* just made in the Studio: no need to download it again */
+        if (same) yt = vsUseVideo(null, R.yt_title, R.yt_desc, x.video_url);
+        else { const v = await fetch(x.video_url); if (v.ok) yt = vsUseVideo(await v.blob(), R.yt_title, R.yt_desc, x.video_url); }
+      } catch (e) {}
+    }
+    mkQMsg = "";
+    mkEvMsg = "✓ " + tr("ev_done").replace("{w}", made.join(", ")) + (yt ? " " + tr("ev_yt") : " " + tr("ev_yt_no"));
+  } catch (e) { mkEvMsg = ""; mkQMsg = mkV2(e) ? tr("mk_v2_setup") : tr("mk_q_err").replace("{m}", String(e.message || e)); }
+  mkEvBusy = ""; renderMk();
+}
+let mkEvMsg = "";
+
+/* ---- the ready Hindi demo video ---- */
+let mkDemoMsg = "";
+function demoHtml() {
+  const D = MK_DEMO;
+  return '<p class="fine">' + tr("demo_p") + '</p><ol class="mksteps">' + D.scenes.map((x, i) => "<li><b>" + esc(x.title) + "</b> · " + esc(x.sub) + ' <span class="fine">(' + D.durs[i] + " s)</span><br><span class=\"fine\">🎥 " + esc(D.shoot[i]) + "</span></li>").join("") +
+    "<li><b>" + esc(D.cta) + '</b> <span class="fine">(3 s)</span></li></ol><div class="mklinks"><button class="btn-s add" type="button" data-vi="demo">' + tr("demo_go") + "</button></div>" +
+    (mkDemoMsg ? '<p class="fine" role="status">✓ ' + esc(mkDemoMsg) + "</p>" : "");
+}
+function mkDemo() {
+  if (typeof vsPrefillAI !== "function") return;
+  const D = MK_DEMO;
+  vsPrefillAI({ title: D.title, scenes: D.scenes, cta: D.cta, caption: D.caption, shoot: "" }, "hi");
+  VS.scenes.forEach((x, i) => { if (D.durs[i]) x.dur = D.durs[i]; });
+  VS.fmt = "916"; VS.msg = tr("demo_done");
+  if (typeof vsSave === "function") vsSave();
+  if (typeof vsSize === "function") vsSize();
+  renderStudio();
+  mkDemoMsg = tr("demo_done"); renderMk();
+  const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" });
 }
 
 /* ---- pilot growers (admin_pilots) ---- */
@@ -880,7 +1111,7 @@ function setupHtml() {
 }
 
 /* ---- the page ---- */
-const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid"]);   /* which sections are open */
+const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid", "demo"]);   /* which sections are open */
 let mkSub = "fb";   /* which Marketing tab is open; remembered on this device */
 try { const v = localStorage.getItem("mk-sub"); if (/^(fb|yt|wa|more)$/.test(v || "")) mkSub = v; } catch (e) {}
 const mkGo = t => { mkSub = t; try { localStorage.setItem("mk-sub", t); } catch (e) {} renderMk(); };
@@ -937,11 +1168,12 @@ function renderMk() {
     const S = mkSoc || {};
     const line = S.ok ? '<p class="fine">' + mkConnLine(S) + (S.fb_followers != null ? " · " + tr("sc_fb") + " " + mkN(S.fb_followers) : "") + (S.ig_followers != null ? " · " + tr("sc_ig") + " " + mkN(S.ig_followers) : "") + "</p>" : "";
     T1 = line + askHtml("fb") + mkSec("content", tr("ms_fb_h"), mkQ ? tr("cq_sub").replace("{d}", nFb).replace("{s}", mkQ.filter(x => x.status === "scheduled" && x.kind !== "wa").length) : "", qHtml("fb")) +
+      mkSec("best", tr("best_h"), mkBest().length ? tr("best_sub").replace("{n}", mkBest().length) : "", bestHtml()) +
       mkSec("msg", tr("mk_msg_h"), "", msgOf("fb"));
   } else if (mkSub === "yt") {
     const Y = ytSt || {}, ch = Y.channel || (typeof YT !== "undefined" && YT && YT.channel) || null;
     T1 = '<p class="fine">' + (ch ? esc(tr("yt_conn").replace("{c}", ch.title)) + (Y.subscribers != null ? " · " + tr("sc_yt") + " " + mkN(Y.subscribers) : "") : tr("ms_yt_p")) + "</p>" +
-      askHtml("yt") + mkSec("ytlist", tr("ms_yt_h"), "", qHtml("yt"));
+      askHtml("yt") + mkSec("demo", tr("demo_h"), "", demoHtml()) + mkSec("ytlist", tr("ms_yt_h"), "", qHtml("yt"));
     const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
     T2 = mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml());
   } else if (mkSub === "wa") {
@@ -949,7 +1181,7 @@ function renderMk() {
   } else {
     T1 = score + nextH + srcH + pilotH + b;
   }
-  top.innerHTML = h + bar + T1; bot.innerHTML = T2;
+  top.innerHTML = h + todayHtml() + bar + T1; bot.innerHTML = T2;
   const st = $("mkStudio"); if (st) st.hidden = mkSub !== "yt";
   const goal = document.querySelector('#ap-mk [data-i18n="mk_p"]'); if (goal) goal.hidden = mkSub !== "more";
   mkRestore(keep);
@@ -1093,13 +1325,14 @@ W.addEventListener("click", async e => {
     return;
   }
   const vi = e.target.closest("[data-vi]");
-  if (vi) { if (vi.dataset.vi === "ai") viAi(); else viMake(+vi.dataset.i); return; }
+  if (vi) { if (vi.dataset.vi === "ai") viAi(); else if (vi.dataset.vi === "demo") mkDemo(); else viMake(+vi.dataset.i); return; }
   const b = e.target.closest("[data-mkq]"); if (!b) return;
   const a = b.dataset.mkq, id = b.dataset.id, x = qGet(id);
   if (a !== "del") mkQDel = null;
   if (a === "compose") { mkCompose = !mkCompose; mkPostRes = null; renderMk(); if (mkCompose) { const t = $("mkpText"); if (t) t.focus(); } return; }
   if (a === "studio") { mkGo("yt"); const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (a === "now") return qPostNow(id);
+  if (a === "every") return mkEverywhere(id);
   if (a === "draft") return qDraft("post");
   if (a === "wadraft") return qDraft("wa");
   if (a === "approve" && x) {
@@ -1109,7 +1342,7 @@ W.addEventListener("click", async e => {
   if (a === "approveall") return qAct(async () => {
     for (const d of mkQ.filter(y => y.status === "draft" && qKind(y) !== "wa" && (String(y.text || "").trim() || y.image_url || y.video_url))) await qUpd(d.id, Object.assign({ text: d.text }, qApprovePatch(d)));
   });
-  if (a === "wacopy" && x) { if (await mkClip(x.text || "")) { mkCopied["q" + id] = true; renderMk(); setTimeout(() => { delete mkCopied["q" + id]; renderMk(); }, 2000); } return; }
+  if (a === "wacopy" && x) { if (await mkClip(qWaText(x))) { mkCopied["q" + id] = true; renderMk(); setTimeout(() => { delete mkCopied["q" + id]; renderMk(); }, 2000); } return; }
   if (a === "wasent" && x) return qAct(() => qUpd(id, { text: x.text, status: "posted", post_at: new Date().toISOString() }));
   if (a === "del") {
     if (mkQDel !== id) { mkQDel = id; renderMk(); return; }

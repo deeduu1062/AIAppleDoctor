@@ -457,11 +457,30 @@ async function vsQueue() {
   const o = VS.out; if (!o || vsQBusy || typeof mkQueueVideo !== "function") return;
   if (o.ext !== "mp4") { vsQRes = '<p class="autherr">' + tr("vs_q_webm") + "</p>"; renderStudio(); return; }
   vsQBusy = true; vsQRes = ""; renderStudio();
-  try { await mkQueueVideo(o.blob, vsCaption()); vsQRes = "<p>✓ " + tr("vs_q_ok") + "</p>"; }
+  try { const row = await mkQueueVideo(o.blob, vsCaption()); o.pub = row && row.video_url; o.qid = row && row.id; vsQRes = "<p>✓ " + tr("vs_q_ok") + "</p>"; }
   catch (e) { vsQRes = '<p class="autherr">' + esc(tr("vs_q_err").replace("{m}", typeof mkV2 === "function" && mkV2(e) ? tr("mk_v2_setup") : String(e.message || e))) + "</p>"; }
   vsQBusy = false; renderStudio();
 }
-const vsQueueHtml = () => VS.out ? '<div class="vsctl"><button type="button" class="btn-s vsgo" id="vsQueue"' + (vsQBusy ? " disabled" : "") + ">" + tr(vsQBusy ? "vs_q_busy" : "vs_q_add") + "</button></div>" + (vsQRes ? '<div role="status">' + vsQRes + "</div>" : "") : "";
+const vsQueueHtml = () => VS.out ? '<div class="vsctl"><button type="button" class="btn-s vsgo" id="vsQueue"' + (vsQBusy ? " disabled" : "") + ">" + tr(vsQBusy ? "vs_q_busy" : "vs_q_add") + "</button>" +
+  (typeof mkEverywhere === "function" ? '<button type="button" class="btn-s" id="vsEvery"' + (vsQBusy || (typeof mkEvBusy !== "undefined" && mkEvBusy) ? " disabled" : "") + ">" + tr(typeof mkEvBusy !== "undefined" && mkEvBusy ? "ev_busy" : "ev_go") + "</button>" : "") + "</div>" +
+  (vsQRes ? '<div role="status">' + vsQRes + "</div>" : "") + (typeof mkEvMsg !== "undefined" && mkEvMsg && VS.out.qid ? '<p class="fine" role="status">' + esc(mkEvMsg) + "</p>" : "") : "";
+/* "Make posts for every platform": put the video in the list first if needed, then the Marketing tab writes each caption */
+async function vsEvery() {
+  const o = VS.out; if (!o || vsQBusy) return;
+  if (!o.qid) { await vsQueue(); if (!VS.out || !VS.out.qid) return; }
+  await mkEverywhere(VS.out.qid); renderStudio();
+}
+/* the Marketing tab hands a video (from the post list) here, with the AI's YouTube title and description, ready to upload as a Short */
+function vsUseVideo(blob, title, desc, url) {
+  if (blob && !(VS.out && VS.out.pub && VS.out.pub === url)) {
+    if (VS.out) URL.revokeObjectURL(VS.out.url);
+    VS.out = { url: URL.createObjectURL(blob), blob, size: blob.size, ext: /webm/.test(blob.type) ? "webm" : "mp4", secs: Math.round(vsTotal()), pub: url || "" };
+  }
+  if (!VS.out) return false;
+  YTU = { title: (String(title || "").replace(/[<>]/g, "").slice(0, 88) + " #Shorts").trim(), desc: String(desc || vsYtDesc()).replace(/[<>]/g, "").slice(0, 4900), priv: "public", at: "" };
+  ytRes = ""; renderStudio();
+  return !!(YT && YT.connected);
+}
 const vsYtDesc = () => vsCaption().replace("https://sebsaathi.com", "https://sebsaathi.com/?src=yt");
 
 /* ---------- YouTube: connect the channel and upload (api/youtube.js, supabase/youtube.sql) ---------- */
@@ -653,6 +672,7 @@ function vsLoadFile(file, i) {
     else if (b.id === "vsPlay") { if (VS.play) vsStop(false); else vsStart(false); }
     else if (b.id === "vsMake") vsStart(true);
     else if (b.id === "vsQueue") vsQueue();
+    else if (b.id === "vsEvery") vsEvery();
     else if (b.id === "vsMusicRm") { if (VS.music) { VS.music.el.pause(); URL.revokeObjectURL(VS.music.url); } VS.music = null; renderStudio(); }
     else if (b.id === "vsCopy") {
       const done = () => { b.textContent = tr("vs_copied"); setTimeout(() => { b.textContent = tr("vs_copy"); }, 1500); };
@@ -700,3 +720,5 @@ function vsLoadFile(file, i) {
   } catch (e) {}
   renderStudio();   /* the YouTube check starts when the Marketing tab opens for a signed-in admin (admin.js showTab) */
 })();
+/* the Marketing tab may have started before this file loaded: check the YouTube connection now */
+if (typeof mkStarted !== "undefined" && mkStarted && !YT) ytLoad();
