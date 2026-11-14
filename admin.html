@@ -160,6 +160,9 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .sbfilt button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
 .coform{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .coform .wide{grid-column:1/-1}
+.aigalert{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:10px 0;padding:10px 14px;border-radius:12px;font-weight:600;background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.aigalert[hidden]{display:none}
+.aigfree{max-width:20rem;margin:8px 0}
 .cobox{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .cobox h5{margin:0 0 6px}
 .cobox p{margin:4px 0}
@@ -1619,6 +1622,7 @@ details.svdays summary{cursor:pointer}
         <div class="ystats" id="coStats"></div>
         <div id="coLive"></div>
         <div id="coAi"></div>
+        <div id="coPer"></div>
         <div id="coList"></div>
       </section>
     </div>
@@ -1734,7 +1738,8 @@ details.svdays summary{cursor:pointer}
 <p class="fine" style="margin-top:14px"><button class="link" type="button" id="pwReset" data-i18n="adm_pw_reset"></button></p></dialog>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=24"></script>
+<script src="/admin.js?v=25"></script>
+<script src="/aicost.js?v=1"></script>
 <script src="/qr.js?v=1"></script>
 <script src="/marketing.js?v=13"></script>
 <script src="/studio.js?v=6"></script>

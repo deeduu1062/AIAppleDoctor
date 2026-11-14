@@ -11,6 +11,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.RECEIPT_MODEL || process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
+const { logAi } = require("./_aicost");   /* saves each receipt reading's AI cost against the grower (admin → Costs) */
 
 /* keep in step with ADANI_GRADES in index.html */
 const GRADES = {
@@ -71,9 +72,11 @@ module.exports = async (req, res) => {
   const auth = String(req.headers.authorization || "");
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token) return send(res, 401, { error: "signin" });
+  let uid = "";
   try {
     const u = await fetch(SB_URL + "/auth/v1/user", { headers: { apikey: SB_KEY, Authorization: "Bearer " + token } });
     if (!u.ok) return send(res, 401, { error: "signin" });
+    uid = String((await u.json().catch(() => ({}))).id || "");
   } catch (e) { return send(res, 502, { error: "auth_down" }); }
 
   let body = req.body;
@@ -94,6 +97,7 @@ module.exports = async (req, res) => {
     });
     if (!r.ok) { console.error("receipt-ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
     const j = await r.json();
+    await logAi(token, uid, "receipt", j.model || MODEL, j.usage);
     out = parseJson((j.content || []).filter(b => b.type === "text").map(b => b.text).join(""));
   } catch (e) { console.error("receipt-fail", e); return send(res, 502, { error: "ai" }); }
 

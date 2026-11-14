@@ -15,6 +15,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
+const { logAi } = require("./_aicost");   /* saves each check's AI cost against the grower (admin → Costs) */
 const PLAN_LIMIT = { free: 3, basic: 15, premium: 50 };   /* photo checks a month; keep in step with the plans page */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 50;
@@ -294,6 +295,7 @@ module.exports = async (req, res) => {
       });
       if (!r.ok) { console.error("ai-tr", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
       const j = await r.json();
+      await logAi(token, user.id, "translate", j.model || MODEL, j.usage);
       const t = parseJson((j.content || []).filter(b => b.type === "text").map(b => b.text).join("")) || {};
       const why = Array.isArray(t.why) ? t.why : [];
       const out = Object.assign({}, src, {
@@ -356,6 +358,7 @@ module.exports = async (req, res) => {
     });
     if (!r.ok) { console.error("ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
     const j = await r.json();
+    await logAi(token, user.id, "photo", j.model || MODEL, j.usage);
     const text = (j.content || []).filter(b => b.type === "text").map(b => b.text).join("");
     const parsed = parseJson(text);
     if (!parsed) { console.error("ai-json", text.slice(0, 500)); return send(res, 502, { error: "ai" }); }

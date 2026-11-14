@@ -1075,6 +1075,7 @@ async function loadCosts() {
   try { const r = await sb.rpc("admin_usage"); coDb = r.error ? { error: r.error } : r.data; } catch (x) { coDb = { error: x }; }
   coBusy = false; $("coRefresh").disabled = false;
   renderCosts();
+  if (typeof aigLoad === "function") aigLoad();   /* AI cost per grower (aicost.js) */
 }
 function renderLive() {
   const el = $("coLive"); if (!el) return;
@@ -1653,7 +1654,7 @@ function applyLang() {
   set("langBtn", tr("lang_btn"));
   document.title = tr("adm_title");
   renderGate();
-  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk(); if (typeof renderStudio === "function") renderStudio();
+  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk(); if (typeof renderStudio === "function") renderStudio(); if (typeof renderAig === "function") renderAig();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => {
@@ -1703,7 +1704,7 @@ function renderGate() {
 }
 function applyUser(u) {
   const was = isAdmin(); user = u; checked = true; renderGate();
-  if (isAdmin() && !was) { Object.keys(loaded).forEach(k => delete loaded[k]); showTab(tab); }
+  if (isAdmin() && !was) { Object.keys(loaded).forEach(k => delete loaded[k]); showTab(tab); if (typeof aigLoad === "function" && tab !== "cost") aigLoad(); }
 }
 if (sb) {
   sb.auth.onAuthStateChange((ev, session) => setTimeout(() => { applyUser(session ? session.user : null); if (ev === "PASSWORD_RECOVERY") $("pwBtn").click(); }, 0));   /* opened from a reset email: ask for the new password straight away */

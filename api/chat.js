@@ -11,6 +11,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
+const { logAi } = require("./_aicost");   /* saves each answer's AI cost against the grower (admin → Costs) */
 const PLAN_LIMIT = { free: 5, basic: 20, premium: 30 };   /* questions a day; keep in step with the plans page */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 200;
@@ -253,7 +254,8 @@ module.exports = async (req, res) => {
     });
     if (!r.ok) { console.error("ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
     const j = await r.json();
-    reply = (j.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim().slice(0, 6000);
+    await logAi(token, user.id, "chat", j.model || MODEL, j.usage);
+    reply =(j.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim().slice(0, 6000);
     if (!reply) return send(res, 502, { error: "ai" });
   } catch (e) { console.error("ai-fail", e); return send(res, 502, { error: "ai" }); }
 
