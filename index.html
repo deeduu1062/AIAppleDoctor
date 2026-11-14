@@ -134,6 +134,9 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .erow{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(7,minmax(0,1fr));gap:8px;align-items:end}
 .erow .field label{font-size:.8rem;margin-bottom:3px;line-height:1.2}
 .erow.kgrow{grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr))}
+.rcptbox{border:1px dashed var(--line,#ccc);border-radius:12px;padding:10px 12px;margin:6px 0 10px}
+.rcptbox .hint{margin:2px 0 8px}.rcbtns{display:flex;gap:8px;flex-wrap:wrap}.rcbtn{cursor:pointer}
+.rcptbox .lottab{margin:8px 0 0}.rcptbox .lottab .bad{color:#B42318}.rcptbox .lottab .ok{color:#1E5A2F}
 .warn{margin:8px 0 0;display:grid;gap:4px}.warn:empty{display:none}
 .warn span{display:block;padding:6px 10px;border-left:3px solid var(--warn,#C4851C);background:color-mix(in srgb,var(--warn,#C4851C) 12%,transparent);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--fg)}
 .lotbox .field input,.lotbox .field select{min-height:38px;padding:5px 8px;font-size:.95rem}
@@ -2149,6 +2152,12 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
           </div>
           <div class="field possel"><label for="ne_pos" data-i18n="ne_pos"></label><select id="ne_pos"></select></div>
           <div id="ne_boxpart"><p class="hint" id="ne_expnote" data-i18n="exp_note"></p>
+          <div class="rcptbox" id="ne_rcpt" hidden>
+            <b data-i18n="adr_h"></b><p class="hint" data-i18n="adr_p"></p>
+            <div class="rcbtns"><label class="btn-s add rcbtn"><input type="file" accept="image/*" capture="environment" data-rcpt hidden><span data-i18n="adr_cam"></span></label>
+            <label class="btn-s rcbtn"><input type="file" accept="image/*" data-rcpt hidden><span data-i18n="adr_up"></span></label></div>
+            <p class="lottab" id="adr_msg" role="status"></p>
+          </div>
           <div class="lottab" id="ne_sum"></div>
           <div id="ne_rows"></div>
           <button class="btn-s" type="button" data-act="nerow" data-i18n="ne_more"></button></div>
@@ -3717,7 +3726,7 @@ let draft = [];
 const EXPK = ["tod", "grd", "car", "exp", "com"];
 function neRow(prev) { const r = {grade:"", boxes:"", rate:"", kg:"", rkg:"", xtot:""}; EXPK.forEach(k => { r[k] = prev && +prev[k] ? String(+prev[k]) : ""; }); return r; }
 const draftLine = r => neType === "adani"
-  ? Object.assign(blankLine(), {grade:r.grade, kg:numOf(r.kg), rkg:numOf(r.rkg), xtot:numOf(r.xtot), boxes:numOf(r.kg) / KG_BOX, rate:numOf(r.rkg) * KG_BOX, tod:0, grd:0, car:0, exp:0, com:0})
+  ? Object.assign(blankLine(), {grade:r.grade, date:r.date || "", kg:numOf(r.kg), rkg:numOf(r.rkg), xtot:numOf(r.xtot), boxes:numOf(r.kg) / KG_BOX, rate:numOf(r.rkg) * KG_BOX, tod:0, grd:0, car:0, exp:0, com:0})
   : Object.assign(blankLine(), {grade:r.grade, boxes:numOf(r.boxes), rate:numOf(r.rate), tod:numOf(r.tod), grd:numOf(r.grd), car:numOf(r.car), exp:numOf(r.exp), com:numOf(r.com)});
 const draftFilled = r => neType === "adani" ? !!(r.grade || numOf(r.kg) || numOf(r.rkg)) : !!(r.grade || numOf(r.boxes) || numOf(r.rate));
 function rowHtml(r, i) {
@@ -3817,7 +3826,7 @@ function renderSaleType() {
   const el = $("ne_stype"); if (!el) return;
   el.innerHTML = SALE_TYPES.map(k => '<button type="button" class="stbtn st-' + k + '" data-stype="' + k + '" aria-pressed="' + (neType === k) + '"><b>' + tr("st_" + k) + "</b><small>" + tr("st_" + k + "_p") + "</small></button>").join("");
   const th = neType === "theka";
-  $("ne_theka").hidden = !th; $("ne_boxpart").hidden = th; $("ne_expnote").hidden = neType === "adani";
+  $("ne_theka").hidden = !th; $("ne_boxpart").hidden = th; $("ne_expnote").hidden = neType === "adani"; $("ne_rcpt").hidden = neType !== "adani";
   updTheka();
 }
 function updTheka() {
@@ -3835,7 +3844,7 @@ $("ne_theka").addEventListener("input", () => { set("ne_err", ""); updTheka(); }
 function openEntry() {
   const o = curOrchard(); if (!o || !sel.y) return;
   closeEditLine();
-  neType = "mandi"; $("th_amt").value = ""; $("th_boxes").value = "";
+  neType = "mandi"; $("th_amt").value = ""; $("th_boxes").value = ""; rcNo = ""; set("adr_msg", "");
   draft = [neRow(lastLineFor(o.id, sel.y))]; editIdx = 0; newPos = null;
   set("ne_err", ""); set("entryMsg", "");
   entryOpen = true; renderAll(); renderSaleType();
@@ -3868,6 +3877,62 @@ Object.assign(T.hn, { ne_stype: "Yeh lot kaise becha?", st_mandi: "Mandi", st_ad
   th_amt: "Theke ki rakam (₹)", th_boxes: "Andaazan petiyan", th_note: "Tudaan, packing aur dhulai khareedar deta hai, isliye yahan theke ka koi kharcha nahi. Petiyan aapka andaaza hain, sirf prati peti munafa nikaalne ke liye.",
   th_err: "Theke ki rakam aur andaazan petiyan likhein.", th_sum: "Lagbhag {x} prati peti", g_theka: "Theka (ekmusht)", f_stype: "Kahan becha", st_by: "Bechne ke tareeke se:", st_by_l: "{b} peti · {p} prati peti", st_by_kg: "{kg} kilo · {p} prati peti (20 kilo)",
   ad_grade: "Adani grade (raseed jaisa)", ad_col: "Rang {c}", f_kg: "Wazan (kilo)", f_rkg: "Bhaav prati kilo (₹)", f_xtot: "Aapka kharcha (₹ kul)", kg_note: "Adani raseed ki har line bharein: grade, wazan (kilo) aur bhaav prati kilo. Katauti ke baad ka wazan. Kharche mein woh sab jo aapne diya, jaise tudaai, crate aur dhulai. Prati peti munafe ke liye 20 kilo ko ek peti gina hai." });
+/* Adani receipt photo: the AI reads every line and fills the entries; the grower checks them, then submits */
+let rcNo = "";
+function rcShrink(file) {
+  return new Promise((ok, bad) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); bad(new Error("img")); };
+    img.src = url;
+  });
+}
+async function readReceipt(file) {
+  const msg = $("adr_msg");
+  document.querySelectorAll("[data-rcpt]").forEach(x => { x.disabled = true; });
+  msg.textContent = tr("adr_wait");
+  try {
+    let token = "";
+    try { const r = await sb.auth.getSession(); token = r && r.data && r.data.session ? r.data.session.access_token : ""; } catch (e) {}
+    if (!token) { msg.textContent = tr("adr_signin"); return; }
+    const image = await rcShrink(file);
+    const r = await fetch("/api/receipt", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ image }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.receipt) { msg.textContent = tr(j.error === "signin" ? "adr_signin" : j.error === "unreadable" || j.error === "photo" ? "adr_bad" : "adr_err"); return; }
+    const R = j.receipt;
+    rcNo = R.receipt_no || "";
+    draft = R.lines.map(l => Object.assign(neRow(), {grade: l.grade, kg: String(l.kg || ""), rkg: String(l.rate || ""), date: R.date || ""}));
+    editIdx = 0; set("ne_err", ""); renderDraft();
+    const sum = R.lines.reduce((a, l) => a + (+l.kg || 0) * (+l.rate || 0), 0);
+    const odd = R.lines.map((l, i) => l.check ? i + 1 : 0).filter(Boolean);
+    const match = !R.total_value || Math.abs(sum - R.total_value) <= Math.max(2, R.total_value * 0.005);
+    msg.innerHTML = esc(tr("adr_ok").replace("{n}", R.lines.length).replace("{r}", rcNo || "–").replace("{d}", R.date ? fmtDay(R.date, true) : "–")) + "<br>" +
+      (R.total_value ? '<span class="' + (match ? "ok" : "bad") + '">' + esc(tr(match ? "adr_match" : "adr_nomatch").replace("{t}", inr(R.total_value)).replace("{s}", inr(sum))) + "</span><br>" : "") +
+      (odd.length ? '<span class="bad">' + esc(tr("adr_odd").replace("{n}", odd.join(", "))) + "</span><br>" : "") + esc(tr("adr_check"));
+  } catch (e) { msg.textContent = tr("adr_err"); }
+  finally { document.querySelectorAll("[data-rcpt]").forEach(x => { x.disabled = false; x.value = ""; }); }
+}
+document.addEventListener("change", e => { const t = e.target; if (t && t.dataset && t.dataset.rcpt != null && t.files && t.files[0]) readReceipt(t.files[0]); });
+Object.assign(T.en, { adr_h: "Fill from the Adani receipt", adr_p: "Take a photo of the Adani produce receipt, or upload one. Every line is filled in for you to check.",
+  adr_cam: "📷 Take photo", adr_up: "Upload photo", adr_wait: "Reading the receipt… this takes about 20 seconds.", adr_signin: "Log in to read a receipt from a photo.",
+  adr_bad: "This photo could not be read as an Adani receipt. Take a clear photo of the whole slip in good light, or enter the lines by hand.", adr_err: "The receipt could not be read just now. Try again, or enter the lines by hand.",
+  adr_ok: "{n} lines read from receipt {r}, dated {d}.", adr_match: "✓ Lines add up to {s}, same as the receipt total {t}.", adr_nomatch: "Check the lines: they add up to {s}, but the receipt total is {t}.",
+  adr_odd: "Check entry {n}: weight × rate does not match the value on the receipt.", adr_check: "Check each line below, then tap Submit." });
+Object.assign(T.hi, { adr_h: "अदानी रसीद से भरें", adr_p: "अदानी की प्रोड्यूस रसीद की फ़ोटो लें या अपलोड करें। हर लाइन अपने आप भर जाएगी, आप जाँच लें।",
+  adr_cam: "📷 फ़ोटो लें", adr_up: "फ़ोटो अपलोड करें", adr_wait: "रसीद पढ़ी जा रही है… लगभग 20 सेकंड लगेंगे।", adr_signin: "फ़ोटो से रसीद पढ़ने के लिए लॉगिन करें।",
+  adr_bad: "यह फ़ोटो अदानी रसीद की तरह पढ़ी नहीं जा सकी। अच्छी रोशनी में पूरी पर्ची की साफ़ फ़ोटो लें, या लाइनें ख़ुद भरें।", adr_err: "अभी रसीद पढ़ी नहीं जा सकी। दोबारा कोशिश करें, या लाइनें ख़ुद भरें।",
+  adr_ok: "रसीद {r} ({d}) से {n} लाइनें पढ़ी गईं।", adr_match: "✓ लाइनों का जोड़ {s}, रसीद के कुल {t} के बराबर।", adr_nomatch: "लाइनें जाँचें: जोड़ {s} है, पर रसीद का कुल {t} है।",
+  adr_odd: "एंट्री {n} जाँचें: वज़न × भाव रसीद की रक़म से नहीं मिलता।", adr_check: "नीचे हर लाइन जाँचें, फिर जमा करें दबाएँ।" });
+Object.assign(T.hn, { adr_h: "Adani raseed se bharein", adr_p: "Adani ki produce raseed ki photo lein ya upload karein. Har line apne aap bhar jayegi, aap check kar lein.",
+  adr_cam: "📷 Photo lein", adr_up: "Photo upload karein", adr_wait: "Raseed padhi ja rahi hai… lagbhag 20 second lagenge.", adr_signin: "Photo se raseed padhne ke liye login karein.",
+  adr_bad: "Ye photo Adani raseed ki tarah padhi nahi ja saki. Achhi roshni mein poori parchi ki saaf photo lein, ya lines khud bharein.", adr_err: "Abhi raseed padhi nahi ja saki. Dobara koshish karein, ya lines khud bharein.",
+  adr_ok: "Raseed {r} ({d}) se {n} lines padhi gayin.", adr_match: "✓ Lines ka jod {s}, raseed ke kul {t} ke barabar.", adr_nomatch: "Lines check karein: jod {s} hai, par raseed ka kul {t} hai.",
+  adr_odd: "Entry {n} check karein: wazan × bhaav raseed ki rakam se nahi milta.", adr_check: "Neeche har line check karein, phir Submit karein dabayein." });
 $("ne_pos").addEventListener("change", e => { newPos = parseInt(e.target.value, 10) || null; });
 $("entryForm").addEventListener("submit", e => {
   e.preventDefault(); set("ne_err", "");
@@ -3888,7 +3953,7 @@ $("entryForm").addEventListener("submit", e => {
   let se = curSeason();
   if (!se) { se = {id:newId(), oid:o.id, year:sel.y, costs:blankCosts(), lots:[]}; S.seasons.push(se); }
   const at = newPos && newPos <= se.lots.length ? newPos - 1 : se.lots.length;
-  se.lots.splice(at, 0, {id:newId(), name:"", type:neType, lines:rows});
+  se.lots.splice(at, 0, {id:newId(), name:neType === "adani" && rcNo ? "Adani " + rcNo : "", type:neType, lines:rows});
   spOpen.add(se.year); spoOpen.add(spoKey(se.oid, se.year));
   entryOpen = false; draft = [];
   save(); renderAll();
