@@ -5,7 +5,7 @@
    remembered on this device (localStorage) so a half-made video isn't lost. */
 
 Object.assign(T.en, {
-  vs_q_add: "Add to Posts and videos (Facebook + Instagram Reel)", vs_q_busy: "Uploading the video…", vs_q_ok: "Added to the Posts and videos list above. Check it and tap Approve.",
+  vs_q_add: "Add to the Facebook + Instagram tab (as a Reel)", vs_q_busy: "Uploading the video…", vs_q_ok: "Added to the Facebook + Instagram tab. Open it to tap Post now or Approve.",
   vs_q_err: "Could not add it: {m}", vs_q_webm: "Make it again in Chrome or Edge on a computer to get an MP4 first: Facebook and Instagram need MP4.",
   yt_when: "Publish at (India time, optional)", yt_when_p: "Leave empty to publish straight away. With a time, YouTube keeps it private until then and publishes it by itself.",
   yt_sched_ok: "Scheduled on YouTube for {d}.",
@@ -27,7 +27,7 @@ Object.assign(T.en, {
   vs_nosupport: "This browser can't make videos. Use the latest Chrome or Edge on a computer.",
   vs_total: "Length: {s} seconds", vs_hidden: "Recording paused while this tab was hidden, so the video may jump. Make it again with the tab in front.",
   vs_cap: "Post caption", vs_copy: "Copy", vs_copied: "Copied",
-  vs_how: "Add the finished video to Posts and videos (Facebook + Instagram Reel), upload it to YouTube above, and put it on your WhatsApp Status. Photos and clips stay on this device; only a finished video you add or upload leaves it.",
+  vs_how: "Add the finished video to the Facebook + Instagram tab (as a Reel), upload it to YouTube above, and put it on your WhatsApp Status. Photos and clips stay on this device; only a finished video you add or upload leaves it.",
   vs_bad_file: "That file can't be used. Choose a photo (JPG/PNG) or a video clip (MP4/MOV).",
   yt_h: "YouTube", yt_checking: "Checking YouTube…", yt_conn: "Connected: {c}", yt_connect: "Connect YouTube channel", yt_disc: "Disconnect", yt_open: "Open channel",
   yt_disc_q: "Disconnect the YouTube channel from the admin page? You can connect it again any time.",
@@ -53,7 +53,7 @@ Object.assign(T.en, {
   yt_connect_first: "Connect your YouTube channel below to upload straight from here."
 });
 Object.assign(T.hi, {
-  vs_q_add: "पोस्ट और वीडियो में जोड़ें (Facebook + Instagram Reel)", vs_q_busy: "वीडियो अपलोड हो रहा है…", vs_q_ok: "ऊपर पोस्ट और वीडियो की सूची में जुड़ गया। जाँचें और मंज़ूर करें दबाएँ।",
+  vs_q_add: "Facebook + Instagram टैब में जोड़ें (Reel के रूप में)", vs_q_busy: "वीडियो अपलोड हो रहा है…", vs_q_ok: "Facebook + Instagram टैब में जुड़ गया। वहाँ अभी पोस्ट करें या मंज़ूर करें दबाएँ।",
   vs_q_err: "नहीं जुड़ा: {m}", vs_q_webm: "पहले कंप्यूटर पर Chrome या Edge में दोबारा बनाकर MP4 लें: Facebook और Instagram को MP4 चाहिए।",
   yt_when: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", yt_when_p: "ख़ाली छोड़ें तो तुरंत पब्लिश होगा। समय डालें तो YouTube उस समय तक प्राइवेट रखेगा और फिर अपने-आप पब्लिश करेगा।",
   yt_sched_ok: "YouTube पर {d} के लिए शेड्यूल हुआ।",

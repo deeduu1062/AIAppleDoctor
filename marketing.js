@@ -204,7 +204,10 @@ Object.assign(T.en, {
   bu_month: "{a}/month", bu_free: "{n} free months",
   st_h: "Setup (accounts, links and posting)", st_sub: "{d} of {n} accounts linked", st_yt: "YouTube: connect it in the Video Studio box above (YouTube card).",
   st_post_ok: "Posting is connected: Facebook page {f}{i}",
-  mf_more: "Show everything (numbers, sources, pilot growers, plan, setup)", mf_less: "Show only what to post"
+  ms_fb: "Facebook + Instagram", ms_yt: "YouTube & videos", ms_wa: "WhatsApp", ms_more: "More",
+  ms_fb_h: "Posts for Facebook and Instagram", ms_yt_h: "Your YouTube uploads", ms_wa_h: "WhatsApp channel tips",
+  ms_yt_p: "Connect your YouTube channel in the Video Studio below (YouTube card).", yt_list_none: "No YouTube uploads yet. Make a video below and upload it.",
+  cq_wa_none: "No tips waiting. Tap the button above to get this week's tip."
 });
 Object.assign(T.hi, {
   mk_v2_setup: "इसे चालू करने के लिए Supabase में एक बार supabase/marketing_v2.sql चलाएँ।",
@@ -240,7 +243,10 @@ Object.assign(T.hi, {
   bu_month: "{a}/महीना", bu_free: "{n} मुफ़्त महीने",
   st_h: "सेटअप (अकाउंट, लिंक और पोस्टिंग)", st_sub: "{n} में से {d} अकाउंट जुड़े", st_yt: "YouTube: ऊपर Video Studio बॉक्स (YouTube कार्ड) में जोड़ें।",
   st_post_ok: "पोस्टिंग जुड़ी है: Facebook पेज {f}{i}",
-  mf_more: "सब कुछ दिखाएँ (आँकड़े, स्रोत, पायलट बागवान, प्लान, सेटअप)", mf_less: "सिर्फ़ पोस्ट करने वाली चीज़ें दिखाएँ"
+  ms_fb: "Facebook + Instagram", ms_yt: "YouTube और वीडियो", ms_wa: "WhatsApp", ms_more: "और",
+  ms_fb_h: "Facebook और Instagram के पोस्ट", ms_yt_h: "आपके YouTube वीडियो", ms_wa_h: "WhatsApp चैनल टिप",
+  ms_yt_p: "नीचे Video Studio (YouTube कार्ड) में अपना YouTube चैनल जोड़ें।", yt_list_none: "अभी कोई YouTube वीडियो नहीं। नीचे वीडियो बनाकर अपलोड करें।",
+  cq_wa_none: "कोई टिप बाकी नहीं। इस हफ़्ते की टिप के लिए ऊपर का बटन दबाएँ।"
 });
 
 /* which Costs-tab rows count towards each budget line (matched on service + what for) */
@@ -604,27 +610,36 @@ function qDraftHtml(x, hasIg) {
     '<div class="mklinks">' + qNowBtn(x) + '<button class="btn-s" type="button" data-mkq="approve" data-id="' + x.id + '">' + tr("mk_q_approve") + '</button><button class="btn-s" type="button" data-mkq="del" data-id="' + x.id + '">' + tr(mkQDel === String(x.id) ? "mk_q_del_sure" : "mk_q_del") + "</button></div></div>";
   return h;
 }
-function qHtml() {
+/* one list per tab: fb = posts + videos (Facebook/Instagram), wa = WhatsApp tips, yt = YouTube uploads */
+const Q_KINDS = { fb: ["post", "video"], wa: ["wa"], yt: ["yt"] };
+function qHtml(mode) {
+  mode = mode || "fb";
   const S = mkSoc || {}, hasIg = !!(S.ok && S.ig_id), busy = !!mkQBusy;
-  let h = '<div class="mkactions">' +
-    '<button class="btn-s' + (mkCompose ? " on" : "") + '" type="button" data-mkq="compose" aria-expanded="' + mkCompose + '">' + tr(mkCompose ? "cq_close" : "cq_write") + "</button>" +
-    '<button class="btn-s" type="button" data-mkq="draft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "post" ? tr("mk_q_drafting") : tr("cq_ai")) + "</button>" +
-    '<button class="btn-s" type="button" data-mkq="wadraft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "wa" ? tr("mk_q_drafting") : tr("cq_wa")) + "</button>" +
-    '<button class="btn-s" type="button" data-mkq="studio">' + tr("cq_vid") + "</button></div>";
-  h += '<div class="mkrow"><select class="mkin mksel" id="mkqN" aria-label="' + esc(tr("cq_ai")) + '">' + [3, 5, 7].map(n => '<option value="' + n + '"' + (n === mkQN ? " selected" : "") + ">" + tr("mk_q_n").replace("{n}", n) + "</option>").join("") + "</select>" +
+  let h = "";
+  if (mode === "fb") {
+    h += '<div class="mkactions">' +
+      '<button class="btn-s' + (mkCompose ? " on" : "") + '" type="button" data-mkq="compose" aria-expanded="' + mkCompose + '">' + tr(mkCompose ? "cq_close" : "cq_write") + "</button>" +
+      '<button class="btn-s" type="button" data-mkq="draft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "post" ? tr("mk_q_drafting") : tr("cq_ai")) + "</button>" +
+      '<button class="btn-s" type="button" data-mkq="studio">' + tr("cq_vid") + "</button></div>";
+  } else if (mode === "wa") {
+    h += '<div class="mkactions"><button class="btn-s" type="button" data-mkq="wadraft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "wa" ? tr("mk_q_drafting") : tr("cq_wa")) + "</button></div>";
+  }
+  if (mode !== "yt") h += '<div class="mkrow">' + (mode === "fb" ? '<select class="mkin mksel" id="mkqN" aria-label="' + esc(tr("cq_ai")) + '">' + [3, 5, 7].map(n => '<option value="' + n + '"' + (n === mkQN ? " selected" : "") + ">" + tr("mk_q_n").replace("{n}", n) + "</option>").join("") + "</select>" : "") +
     '<select class="mkin mksel" id="mkqLang" aria-label="Language">' + ["hn", "hi", "en"].map(l => '<option value="' + l + '"' + (l === mkQLang ? " selected" : "") + ">" + tr("mk_q_l_" + l) + "</option>").join("") + "</select></div>";
-  if (mkSoc && !mkSoc.ok) h += '<p class="fine mkwarn">' + tr("mk_q_notoken") + "</p>";
-  if (mkCompose) h += composeHtml();
+  if (mode === "fb" && mkSoc && !mkSoc.ok) h += '<p class="fine mkwarn">' + tr("mk_q_notoken") + "</p>";
+  if (mode === "fb" && mkCompose) h += composeHtml();
   if (mkQMsg) h += '<div class="mkres" role="status"><p class="mkwarn">' + esc(mkQMsg) + "</p></div>";
   if (mkQErr) return h + '<p class="fine mkwarn">' + tr("mk_q_setup") + "</p>";
   if (!mkQ) return h + '<p class="fine">' + tr("mk_post_checking") + "</p>";
-  const now = Date.now();
-  const drafts = mkQ.filter(x => x.status === "draft");
-  const sched = mkQ.filter(x => x.status === "scheduled" || x.status === "posting" || (qKind(x) === "yt" && x.status === "posted" && Date.parse(x.post_at) > now));
-  const done = mkQ.filter(x => (x.status === "posted" || x.status === "failed") && !(qKind(x) === "yt" && Date.parse(x.post_at) > now))
+  const now = Date.now(), K = Q_KINDS[mode] || Q_KINDS.fb, Q = mkQ.filter(x => K.indexOf(qKind(x)) >= 0);
+  const drafts = Q.filter(x => x.status === "draft");
+  const sched = Q.filter(x => x.status === "scheduled" || x.status === "posting" || (qKind(x) === "yt" && x.status === "posted" && Date.parse(x.post_at) > now));
+  const done = Q.filter(x => (x.status === "posted" || x.status === "failed") && !(qKind(x) === "yt" && Date.parse(x.post_at) > now))
     .sort((a, b) => Date.parse(b.post_at || b.updated_at) - Date.parse(a.post_at || a.updated_at));
-  h += '<p class="mkqh"><b>' + tr("mk_q_drafts").replace("{n}", drafts.length) + "</b></p>";
-  if (!drafts.length) h += '<p class="fine">' + tr("mk_q_none") + "</p>";
+  if (mode !== "yt") {
+    h += '<p class="mkqh"><b>' + tr("mk_q_drafts").replace("{n}", drafts.length) + "</b></p>";
+    if (!drafts.length) h += '<p class="fine">' + tr(mode === "wa" ? "cq_wa_none" : "mk_q_none") + "</p>";
+  } else if (!sched.length && !done.length) h += '<p class="fine">' + tr("yt_list_none") + "</p>";
   drafts.forEach(x => { h += qDraftHtml(x, hasIg); });
   const appr = drafts.filter(x => qKind(x) !== "wa");
   if (appr.length > 1) h += '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="approveall">' + tr("mk_q_approve_all").replace("{n}", appr.length) + "</button></div>";
@@ -640,7 +655,7 @@ function qHtml() {
       ((x.status === "failed" || (failedPart && qKind(x) !== "yt")) ? (x.status === "failed" ? ' · <span class="mkwarn">' + tr("mk_q_failed") + (R.error ? ": " + esc(R.error) : "") + "</span>" : "") + ' <button class="btn-s" type="button" data-mkq="retry" data-id="' + x.id + '">' + tr("mk_q_retry") + "</button>" : "") + "</li>";
   }).join("") + "</ul>";
   /* posts made before the list existed */
-  const old = Object.keys(MK).filter(k => k.indexOf("post:") === 0).sort().reverse().slice(0, 5);
+  const old = mode === "wa" ? [] : Object.keys(MK).filter(k => k.indexOf("post:") === 0 && (mode === "yt") === /"yt":"http/.test(MK[k].value || "")).sort().reverse().slice(0, 5);
   if (old.length) h += '<details class="mkmore"><summary>' + tr("cq_old") + '</summary><ul class="mkwatch">' + old.map(k => {
     let v = {}; try { v = JSON.parse(MK[k].value || "{}"); } catch (e) {}
     return "<li>" + esc(mkDay(new Date(+k.slice(5)).toISOString().slice(0, 10))) + " · " + esc(v.t || "") + (v.fb ? ' · <a href="' + esc(v.fb) + '" target="_blank" rel="noopener">Facebook</a>' : "") + (v.ig ? ' · <a href="' + esc(v.ig) + '" target="_blank" rel="noopener">Instagram</a>' : "") + (v.yt ? ' · <a href="' + esc(v.yt) + '" target="_blank" rel="noopener">YouTube</a>' : "") + "</li>";
@@ -765,7 +780,7 @@ async function viAi() {
 }
 function viMake(i) {
   const v = mkViAll()[i]; if (!v) return;
-  mkShowStudio = true; renderMk();
+  if (mkSub !== "yt") mkGo("yt");
   if (typeof vsPrefill === "function") vsPrefill(v.name, v.hook, v.show);
   const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" });
 }
@@ -814,9 +829,11 @@ function setupHtml() {
 }
 
 /* ---- the page ---- */
-const mkOpen = new Set(["content", "src", "msg"]);   /* which sections are open */
-let mkFull = false, mkShowStudio = false;   /* full view (numbers, plan, setup) or just what to post; remembered on this device */
-try { mkFull = localStorage.getItem("mk-full") === "1"; } catch (e) {}
+const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid"]);   /* which sections are open */
+let mkSub = "fb";   /* which Marketing tab is open; remembered on this device */
+try { const v = localStorage.getItem("mk-sub"); if (/^(fb|yt|wa|more)$/.test(v || "")) mkSub = v; } catch (e) {}
+const mkGo = t => { mkSub = t; try { localStorage.setItem("mk-sub", t); } catch (e) {} renderMk(); };
+const mkMsgIsFb = m => /facebook/i.test(m[0]);
 const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
 function renderMk() {
   const top = $("mkTop"), bot = $("mkBot"); if (!top || !bot) return;
@@ -829,17 +846,17 @@ function renderMk() {
   const done = all.filter(t => mkDone(t[0])).length, next = all.filter(t => !mkDone(t[0])).slice(0, 3);
   const nextH = '<section class="mknext"><div class="mkph"><b>' + tr("mk_next_h") + '</b><span class="fine">' + tr("mk_done_n").replace("{d}", done).replace("{n}", all.length) + '</span></div><div class="mkbar"><i style="width:' + Math.round(done / all.length * 100) + '%"></i></div>' +
     (next.length ? next.map(t => mkBox(t[0], t[1])).join("") : "<p>" + tr("mk_all_done") + "</p>") + "</section>";
-  const nD = mkQ ? mkQ.filter(x => x.status === "draft").length : 0, nS = mkQ ? mkQ.filter(x => x.status === "scheduled").length : 0;
   const srcH = mkSec("src", tr("src_h"), mkSt && !mkStErr ? tr("src_c_n30") + " (30): " + mkN((mkSt.sources || []).reduce((a, x) => a + (/^(unknown|none)$/.test(x.src) ? 0 : +x.n30 || 0), 0)) : "", srcHtml());
-  const contentH = mkSec("content", tr("cq_h"), mkQ ? tr("cq_sub").replace("{d}", nD).replace("{s}", nS) : "", qHtml());   /* Video Studio sits right under this */
 
   let b = "";
   const P = mkPil || [];
   const pilotH = mkSec("pilot", tr("pi_h"), mkPil ? P.length + " · " + tr("pi_c_up") + " " + P.filter(x => x.user_id).length : "", pilotHtml());
-  const msgH = mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + MK_MSGS.map((m, i) => {
+  const msgOf = mode => MK_MSGS.map((m, i) => [m, i]).filter(x => mkMsgIsFb(x[0]) === (mode === "fb")).map(([m, i]) => {
     const full = m[1] + (m[2] ? "" : "\n" + mkLink());
-    return '<div class="mkmsg"><b>' + esc(m[0]) + "</b><pre>" + esc(full) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="m' + i + '">' + tr(mkCopied["m" + i] ? "mk_copied" : "mk_copy") + '</button><a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(full) + '">' + tr("mk_wa") + '</a><button class="btn-s add" type="button" data-mkuse="m' + i + '">' + tr("mk_use_fb") + "</button></div></div>";
-  }).join(""));
+    return '<div class="mkmsg"><b>' + esc(m[0]) + "</b><pre>" + esc(full) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="m' + i + '">' + tr(mkCopied["m" + i] ? "mk_copied" : "mk_copy") + "</button>" +
+      (mode === "fb" ? '<button class="btn-s add" type="button" data-mkuse="m' + i + '">' + tr("mk_use_fb") + "</button>"
+        : '<a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(full) + '">' + tr("mk_wa") + "</a>") + "</div></div>";
+  }).join("");
   let inv = "";
   if (mkInvErr) inv = '<p class="fine">' + tr("mk_inv_setup") + "</p>";
   else if (mkInv) {
@@ -856,17 +873,34 @@ function renderMk() {
       p.tasks.map(t => mkBox(t[0], t[1])).join("") + '<p class="mktarget">Target: ' + esc(p.target) + "</p></section>";
   });
   b += mkSec("plan", tr("mk_plan_h"), "", plan + "</div>");
-  const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
-  b += mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml());
   b += mkSec("more", tr("mk_more_h"), "", budgetHtml());
   const socDone = MK_SOCIAL.filter(x => MK["link:" + x[0]] && MK["link:" + x[0]].value).length;
   b += mkSec("setup", tr("st_h"), tr("st_sub").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length), setupHtml());
-  /* simple view (default): only what is waiting to post and the ready messages; the rest behind one button */
-  const tog = '<div class="mklinks mktog"><button class="btn-s" type="button" data-mkfull="' + (mkFull ? "0" : "1") + '">' + tr(mkFull ? "mf_less" : "mf_more") + "</button></div>";
-  if (mkFull) { top.innerHTML = h + score + nextH + srcH + contentH; bot.innerHTML = pilotH + msgH + b + tog; }
-  else { top.innerHTML = h + contentH; bot.innerHTML = msgH + tog; }
-  const st = $("mkStudio"); if (st) st.hidden = !(mkFull || mkShowStudio);
-  const goal = document.querySelector('#ap-mk [data-i18n="mk_p"]'); if (goal) goal.hidden = !mkFull;
+  /* tabs inside Marketing: Facebook + Instagram, YouTube & videos, WhatsApp, More (remembered on this device) */
+  const cnt = ks => mkQ ? mkQ.filter(x => x.status === "draft" && ks.indexOf(qKind(x)) >= 0).length : 0;
+  const nFb = cnt(["post", "video"]), nWa = cnt(["wa"]);
+  const subs = [["fb", tr("ms_fb") + (nFb ? " (" + nFb + ")" : "")], ["yt", tr("ms_yt")], ["wa", tr("ms_wa") + (nWa ? " (" + nWa + ")" : "")], ["more", tr("ms_more")]];
+  const bar = '<div class="mksub" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + subs.map(x => '<button type="button" role="tab" class="mksubt" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") + "</div>";
+  let T1 = "", T2 = "";
+  if (mkSub === "fb") {
+    const S = mkSoc || {};
+    const line = S.ok ? '<p class="fine">' + mkConnLine(S) + (S.fb_followers != null ? " · " + tr("sc_fb") + " " + mkN(S.fb_followers) : "") + (S.ig_followers != null ? " · " + tr("sc_ig") + " " + mkN(S.ig_followers) : "") + "</p>" : "";
+    T1 = line + mkSec("content", tr("ms_fb_h"), mkQ ? tr("cq_sub").replace("{d}", nFb).replace("{s}", mkQ.filter(x => x.status === "scheduled" && x.kind !== "wa").length) : "", qHtml("fb")) +
+      mkSec("msg", tr("mk_msg_h"), "", msgOf("fb"));
+  } else if (mkSub === "yt") {
+    const Y = ytSt || {}, ch = Y.channel || (typeof YT !== "undefined" && YT && YT.channel) || null;
+    T1 = '<p class="fine">' + (ch ? esc(tr("yt_conn").replace("{c}", ch.title)) + (Y.subscribers != null ? " · " + tr("sc_yt") + " " + mkN(Y.subscribers) : "") : tr("ms_yt_p")) + "</p>" +
+      mkSec("ytlist", tr("ms_yt_h"), "", qHtml("yt"));
+    const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
+    T2 = mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml());
+  } else if (mkSub === "wa") {
+    T1 = mkSec("watips", tr("ms_wa_h"), "", qHtml("wa")) + mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + msgOf("wa"));
+  } else {
+    T1 = score + nextH + srcH + pilotH + b;
+  }
+  top.innerHTML = h + bar + T1; bot.innerHTML = T2;
+  const st = $("mkStudio"); if (st) st.hidden = mkSub !== "yt";
+  const goal = document.querySelector('#ap-mk [data-i18n="mk_p"]'); if (goal) goal.hidden = mkSub !== "more";
   mkRestore(keep);
 }
 /* typing must survive a re-render (data arrives while you type) */
@@ -973,13 +1007,13 @@ W.addEventListener("click", async e => {
     else if (tl.dataset.tl === "png") mkQrPng(mkSrcLink(code), code);
     return;
   }
-  const fl = e.target.closest("[data-mkfull]");
-  if (fl) { mkFull = fl.dataset.mkfull === "1"; try { localStorage.setItem("mk-full", mkFull ? "1" : "0"); } catch (x) {} renderMk(); if (!mkFull) window.scrollTo({ top: 0 }); return; }
+  const sb2 = e.target.closest("[data-mksub]");
+  if (sb2) { mkGo(sb2.dataset.mksub); return; }
   const use = e.target.closest("[data-mkuse]");
   if (use) {   /* put this message in the post box (Posts and videos), ready to post on Facebook / Instagram or schedule */
     let t = mkText(use.dataset.mkuse);
     if (/[?&]src=wa\b/.test(t)) t = t.replace(/([?&])src=wa\b/g, "$1src=fb");   /* a WhatsApp link posted on Facebook counts as Facebook */
-    mkPostText = t; mkImg = null; mkPostRes = null; mkCompose = true; mkOpen.add("content"); renderMk();
+    mkPostText = t; mkImg = null; mkPostRes = null; mkCompose = true; mkOpen.add("content"); mkSub = "fb"; try { localStorage.setItem("mk-sub", "fb"); } catch (x) {} renderMk();
     const box = $("mkpText"); if (box) { box.scrollIntoView({ block: "center", behavior: "smooth" }); try { box.focus({ preventScroll: true }); } catch (x) {} }
     return;
   }
@@ -1010,7 +1044,7 @@ W.addEventListener("click", async e => {
   const a = b.dataset.mkq, id = b.dataset.id, x = qGet(id);
   if (a !== "del") mkQDel = null;
   if (a === "compose") { mkCompose = !mkCompose; mkPostRes = null; renderMk(); if (mkCompose) { const t = $("mkpText"); if (t) t.focus(); } return; }
-  if (a === "studio") { mkShowStudio = true; renderMk(); const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+  if (a === "studio") { mkGo("yt"); const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (a === "now") return qPostNow(id);
   if (a === "draft") return qDraft("post");
   if (a === "wadraft") return qDraft("wa");
