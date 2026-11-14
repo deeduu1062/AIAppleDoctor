@@ -1,5 +1,7 @@
 // Seb Saathi — the AI drafts the next week of Facebook + Instagram posts (Vercel serverless function)
 // POST /api/social-draft  { n: 3..7, lang: "hn"|"hi"|"en" }   Header: Authorization: Bearer <admin's Supabase token>
+//                         { kind: "wa", lang }        one WhatsApp channel tip for this week (saved as a draft, kind "wa")
+//                         { kind: "videos", done: [] } 12 short-video ideas for the coming month (returned, not saved)
 // Saves the drafts in public.social_queue (status "draft", 7:30 pm India time on spread-out days)
 // so the admin can check them, add photos and tap "Approve all".
 // Uses the same ANTHROPIC_API_KEY as Saathi. Optional Vercel setting: SOCIAL_MODEL.
@@ -47,6 +49,19 @@ For each post also give "photo_idea": one short line describing a photo the admi
 Reply with ONLY a JSON array, no other text:
 [{"topic": "3-6 word topic", "text": "the full post", "photo_idea": "..."}]`;
 
+/* the weekly WhatsApp channel tip: same rules, shorter, sent by hand from the admin page */
+const WA_BRIEF = `You write the weekly WhatsApp channel tip for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand.
+The tip: one practical orchard job for this week of the month given, 40 to 80 words, starting with "🍎 Is hafte bagiche mein:" (or the same idea in the language asked). Short lines, at most 2 emojis, no hashtags. End with one short line pointing to the free photo check or orchard record at sebsaathi.com.
+Safety rules (always): NEVER name a chemical, pesticide, fungicide, fertiliser brand or dose, and never invent a spray; for sprays say to follow the official state spray schedule for the current stage and the product label, or ask the horticulture officer / KVK. Never quote or guess prices, scheme amounts or rules. No made-up statistics, quotes or growers.
+Reply with ONLY a JSON array with one item, no other text: [{"topic": "3-6 word topic", "text": "the full tip"}]`;
+
+/* short-video ideas for the coming month, filmed by the admin in their own orchards */
+const VID_BRIEF = `You plan short phone videos (under 60 seconds) for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand. The founder is an apple grower from Rohru and films the videos in his own orchards.
+What the website does today: orchard record (trees, varieties, soil health), spray and work diary with expenses, season sales record by grade and by sale type (Mandi, Adani per kilo, Theka fixed-rate deal), real profit per box and per orchard, disease check from one photo with the answer shareable on WhatsApp, Saathi the chatbot (also by voice), spray schedule and season calendar, sharing the records with up to 2 family members (view-only or edit), invite friends (3 friends = 1 free month).
+Plan 12 videos for the 4 weeks of the coming month, 3 a week: mix timely orchard work for that month, one or two website features shown on the phone, and one grower question. The hook is the first 3 seconds, spoken in Hinglish (Hindi in English letters, Hindi sentence order), at most 12 words.
+Safety rules: never name a chemical, brand or dose; never quote prices; no made-up growers or testimonials.
+Reply with ONLY a JSON array, no other text: [{"week": 1, "name": "2-4 word Hinglish title", "hook": "the first 3 seconds", "show": "what to film, in English, one line"}]`;
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
   const auth = String(req.headers.authorization || "");
@@ -61,7 +76,8 @@ module.exports = async (req, res) => {
   if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "no_ai_key" });
 
   const b = await readBody(req);
-  const n = Math.max(1, Math.min(7, Math.round(+b.n || 3)));
+  const kind = b.kind === "wa" ? "wa" : b.kind === "videos" ? "videos" : "post";
+  const n = kind === "wa" ? 1 : Math.max(1, Math.min(7, Math.round(+b.n || 3)));
   const lang = b.lang === "hi" ? "hi" : b.lang === "en" ? "en" : "hn";
 
   /* recent topics, so the week does not repeat itself (also checks the table exists) */
@@ -76,15 +92,18 @@ module.exports = async (req, res) => {
   const langLine = lang === "hi" ? "Write every post in simple Hindi (Devanagari script); common farm words in English letters are fine."
     : lang === "en" ? "Write every post in simple English, with one short Hinglish line where it feels natural."
     : "Write every post in Hinglish: Hindi as a Himachali grower speaks it, written in English letters, with Hindi words and Hindi sentence order (e.g. \"Is mahine bagiche mein kya karein?\"). No English sentences; English only for common farm words like spray, scab, mandi.";
-  const ask = "Today is " + now.getUTCDate() + " " + MONTHS[now.getUTCMonth()] + " " + now.getUTCFullYear() + " (India). Write " + n + " posts for the coming 7 days. " + langLine +
-    (recent.length ? "\nRecent topics (do not repeat): " + recent.slice(0, 30).join("; ") : "");
+  const today = "Today is " + now.getUTCDate() + " " + MONTHS[now.getUTCMonth()] + " " + now.getUTCFullYear() + " (India). ";
+  const nextM = MONTHS[(now.getUTCMonth() + (now.getUTCDate() > 20 ? 1 : 0)) % 12];
+  const ask = kind === "videos" ? today + "Plan the videos for " + nextM + "." + (Array.isArray(b.done) && b.done.length ? "\nAlready made (do not repeat): " + b.done.slice(0, 40).map(x => String(x).slice(0, 60)).join("; ") : "")
+    : kind === "wa" ? today + "Write this week's tip. " + langLine + (recent.length ? "\nRecent topics (do not repeat): " + recent.slice(0, 30).join("; ") : "")
+    : today + "Write " + n + " posts for the coming 7 days. " + langLine + (recent.length ? "\nRecent topics (do not repeat): " + recent.slice(0, 30).join("; ") : "");
 
   let posts = [];
   try {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: BRIEF, messages: [{ role: "user", content: ask }] })
+      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: kind === "wa" ? WA_BRIEF : kind === "videos" ? VID_BRIEF : BRIEF, messages: [{ role: "user", content: ask }] })
     });
     if (!r.ok) { console.error("ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
     const j = await r.json();
@@ -94,6 +113,23 @@ module.exports = async (req, res) => {
     if (!Array.isArray(posts)) throw new Error("not a list");
   } catch (e) { console.error("ai-parse", e); return send(res, 502, { error: "ai" }); }
 
+  if (kind === "videos") {   /* ideas only: the admin page keeps them (admin_marketing) */
+    const ideas = posts.map(p => ({ week: Math.max(1, Math.min(4, Math.round(+p.week || 1))), name: String(p.name || "").slice(0, 60), hook: String(p.hook || "").slice(0, 120), show: String(p.show || "").slice(0, 160) }))
+      .filter(x => x.name && x.hook).slice(0, 12);
+    if (!ideas.length) return send(res, 502, { error: "ai" });
+    return send(res, 200, { month: nextM, ideas });
+  }
+  if (kind === "wa") {   /* one tip, dated next Monday 8 am India time (= 02:30 UTC) */
+    const p = posts[0] || {}, add = ((8 - now.getUTCDay()) % 7) || 7;
+    const row = { kind: "wa", status: "draft", text: String(p.text || "").trim().slice(0, 2200), topic: String(p.topic || "").slice(0, 200) || null, fb: false, ig: false,
+      post_at: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + add, 2, 30)).toISOString() };
+    if (!row.text) return send(res, 502, { error: "ai" });
+    try {
+      const r = await fetch(SB_URL + "/rest/v1/social_queue", { method: "POST", headers: sbH(token, { Prefer: "return=representation" }), body: JSON.stringify([row]) });
+      if (!r.ok) { console.error("save", r.status, await r.text()); return send(res, 503, { error: "not_setup_v2" }); }
+      return send(res, 200, { drafts: await r.json() });
+    } catch (e) { return send(res, 502, { error: "db_down" }); }
+  }
   /* spread over the next 7 days, 7:30 pm India time (= 14:00 UTC) */
   const rows = posts.slice(0, n).map((p, i) => {
     const day = 1 + Math.floor(i * 7 / n);

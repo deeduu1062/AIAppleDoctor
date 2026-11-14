@@ -1,6 +1,7 @@
 // Seb Saathi — post to your Facebook Page and Instagram from the admin page (Vercel serverless function)
 // GET  /api/social-post   → which accounts are connected (names), for the admin page
-// POST /api/social-post   { text, image_url, fb: true|false, ig: true|false } → the new posts' links
+// POST /api/social-post   { text, image_url, video_url, fb: true|false, ig: true|false } → the new posts' links
+// GET also gives follower numbers (fb_followers, ig_followers) for the Marketing tab scoreboard
 // Header on both: Authorization: Bearer <Supabase access token of an admin>
 //
 // Needs ONE setting in Vercel → Settings → Environment Variables:
@@ -13,7 +14,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
-const { accounts, publish } = require("./_social");
+const { accounts, publish, stats } = require("./_social");
 
 function send(res, code, obj) {
   res.statusCode = code;
@@ -45,13 +46,14 @@ module.exports = async (req, res) => {
   let acc;
   try { acc = await accounts(pt); }
   catch (e) { return send(res, 200, { setup: true, ok: false, error: String(e.message || e).slice(0, 300) }); }
-  if (req.method === "GET") return send(res, 200, Object.assign({ setup: true, ok: true }, acc));
+  if (req.method === "GET") return send(res, 200, Object.assign({ setup: true, ok: true }, acc, await stats(acc, pt)));
 
   const b = await readBody(req);
   const text = String(b.text || "").slice(0, 2200).trim();
   const img = /^https:\/\//.test(String(b.image_url || "")) ? String(b.image_url) : "";
+  const video = /^https:\/\//.test(String(b.video_url || "")) ? String(b.video_url) : "";
   const wantFb = b.fb !== false, wantIg = !!b.ig;
-  if (!text && !img) return send(res, 400, { error: "empty" });
-  const out = await publish(acc, pt, { text, img, fb: wantFb, ig: wantIg });
+  if (!text && !img && !video) return send(res, 400, { error: "empty" });
+  const out = await publish(acc, pt, { text, img, video, fb: wantFb, ig: wantIg });
   return send(res, 200, Object.assign({ setup: true, ok: true }, acc, { result: out }));
 };

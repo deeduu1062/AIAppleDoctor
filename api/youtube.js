@@ -6,6 +6,7 @@
 // POST /api/youtube { action: "token" }       → { access_token } short-lived (1 hour) upload key; the admin page
 //                                               sends the video straight to YouTube with it (videos are too big for this server)
 // POST /api/youtube { action: "disconnect" }  → forgets the channel
+// POST /api/youtube { action: "stats" }       → { subscribers, views, videos } for the Marketing tab scoreboard
 // POST calls need: Authorization: Bearer <Supabase access token of an admin> (checked with public.is_admin()).
 //
 // Needs in Vercel → Settings → Environment Variables (then Redeploy):
@@ -112,6 +113,15 @@ module.exports = async (req, res) => {
   if (act === "disconnect") {
     if (row) { try { await google("https://oauth2.googleapis.com/revoke", { token: row.refresh_token }); } catch (err) {} await db("DELETE", e.svc); }
     return send(res, 200, { setup: true, connected: false });
+  }
+  if (act === "stats") {   /* subscriber numbers for the Marketing tab scoreboard */
+    if (!row) return send(res, 200, { setup: true, connected: false });
+    try {
+      const t = await freshToken(e, row);
+      const c = await fetch("https://www.googleapis.com/youtube/v3/channels?part=statistics&id=" + encodeURIComponent(row.channel_id), { headers: { Authorization: "Bearer " + t.access_token } }).then(r => r.json());
+      const st = ((c.items || [])[0] || {}).statistics || {};
+      return send(res, 200, { setup: true, connected: true, channel, subscribers: st.hiddenSubscriberCount ? null : (st.subscriberCount != null ? +st.subscriberCount : null), views: st.viewCount != null ? +st.viewCount : null, videos: st.videoCount != null ? +st.videoCount : null });
+    } catch (err) { return send(res, 200, { setup: true, connected: true, channel, error: err.code === "invalid_grant" ? "reconnect" : String(err.message || err).slice(0, 200) }); }
   }
   if (act === "token") {
     if (!row) return send(res, 200, { setup: true, connected: false });

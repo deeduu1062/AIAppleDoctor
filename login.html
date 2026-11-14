@@ -1371,7 +1371,7 @@ let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
 let pendingEmail = "", justSignedIn = false;
 /* who recommended the app (from a shared link), saved on the new account */
-const refData = () => { const d = {lang: lang}; try { const r = localStorage.getItem("ad-ref"); if (r) d.ref = r; } catch (e) {} return d; };  /* the chosen language becomes the account's language */
+const refData = () => { const d = {lang: lang}; try { const r = localStorage.getItem("ad-ref"); if (r) d.ref = r; const s = localStorage.getItem("ss-src"); if (s && /^[a-z0-9-]{1,40}$/.test(s)) d.src = s; } catch (e) {} return d; };  /* the chosen language becomes the account's language */
 function renderAcct() { if (pendingEmail) set("authSentMsg", tr("auth_sent").replace("{e}", pendingEmail)); }
 
 function netMsg(err) {

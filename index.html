@@ -3387,6 +3387,18 @@ if (sb) sb.rpc("public_social_links").then(r => {
 }).catch(() => {});
 
 /* ---------- site visits for the admin Overview (table public.site_visits, see supabase/visits.sql) ---------- */
+/* where this visitor came from: links like sebsaathi.com/?src=poster-rohru (made on the admin Marketing tab).
+   The first source a phone arrives with is kept (ss-src) and saved on the account at sign-up (login.html). */
+const visitSrc = (function () {
+  let s = null;
+  try {
+    const q = new URLSearchParams(location.search), raw = String(q.get("src") || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 40);
+    s = raw || (q.get("invite") ? "invite" : null);
+    if (s) { try { if (!localStorage.getItem("ss-src")) localStorage.setItem("ss-src", s); } catch (e) {} }
+    if (raw) { q.delete("src"); const qs = q.toString(); history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash); }
+  } catch (e) {}
+  return s;
+})();
 let visitLogged = false;
 function logVisit(u) {
   if (visitLogged || !sb) return; visitLogged = true;
@@ -3400,7 +3412,11 @@ function logVisit(u) {
     let ref = null;
     try { if (document.referrer) { const h = new URL(document.referrer).hostname.replace(/^www\./, ""); if (h && h !== location.hostname) ref = h.slice(0, 120); } } catch (e) {}
     const ua = navigator.userAgent || "", device = /iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "mobile" : "desktop";
-    sb.from("site_visits").insert({ visitor: vid, page: "home", ref, device, lang, signed_in: !!u }).then(() => {}, () => {});
+    const row = { visitor: vid, page: "home", ref, device, lang, signed_in: !!u };
+    if (visitSrc) row.src = visitSrc;
+    sb.from("site_visits").insert(row).then(r => {   /* before supabase/marketing_v2.sql has been run there is no src column: log the visit without it */
+      if (r && r.error && row.src) { delete row.src; sb.from("site_visits").insert(row).then(() => {}, () => {}); }
+    }, () => {});
   } catch (e) {}
 }
 

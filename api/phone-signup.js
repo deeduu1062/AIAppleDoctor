@@ -50,6 +50,8 @@ module.exports = async (req, res) => {
   const num = "91" + ten;
   const meta = { lang, via: "mobile_pin", phone: "+" + num };
   if (ref) meta.ref = ref;
+  const src = b.data && typeof b.data.src === "string" && /^[a-z0-9-]{1,40}$/.test(b.data.src) ? b.data.src : "";
+  if (src) meta.src = src;
   const base = { email: num + "@m.sebsaathi.com", password: "sspin-" + pin + "-Ss", email_confirm: true, user_metadata: meta };
 
   try {

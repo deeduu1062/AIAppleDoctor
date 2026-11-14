@@ -5,6 +5,10 @@
    remembered on this device (localStorage) so a half-made video isn't lost. */
 
 Object.assign(T.en, {
+  vs_q_add: "Add to Posts and videos (Facebook + Instagram Reel)", vs_q_busy: "Uploading the video…", vs_q_ok: "Added to the Posts and videos list above. Check it and tap Approve.",
+  vs_q_err: "Could not add it: {m}", vs_q_webm: "Make it again in Chrome or Edge on a computer to get an MP4 first: Facebook and Instagram need MP4.",
+  yt_when: "Publish at (India time, optional)", yt_when_p: "Leave empty to publish straight away. With a time, YouTube keeps it private until then and publishes it by itself.",
+  yt_sched_ok: "Scheduled on YouTube for {d}.",
   vs_h: "Video Studio",
   vs_p: "Make short videos for Reels, YouTube Shorts and WhatsApp Status. Pick a template, add photos or clips from your own orchards, change the words, then make the video and download it.",
   vs_tpl: "Template", vs_t_tip: "Orchard tip", vs_t_feat: "App feature", vs_t_alert: "Disease alert", vs_t_season: "Season jobs",
@@ -23,7 +27,7 @@ Object.assign(T.en, {
   vs_nosupport: "This browser can't make videos. Use the latest Chrome or Edge on a computer.",
   vs_total: "Length: {s} seconds", vs_hidden: "Recording paused while this tab was hidden, so the video may jump. Make it again with the tab in front.",
   vs_cap: "Post caption", vs_copy: "Copy", vs_copied: "Copied",
-  vs_how: "Post the video as a Reel from Meta Business Suite or the Instagram app, as a Short on YouTube, and on your WhatsApp Status. Photos and clips stay on this device; nothing is uploaded.",
+  vs_how: "Add the finished video to Posts and videos (Facebook + Instagram Reel), upload it to YouTube above, and put it on your WhatsApp Status. Photos and clips stay on this device; only a finished video you add or upload leaves it.",
   vs_bad_file: "That file can't be used. Choose a photo (JPG/PNG) or a video clip (MP4/MOV).",
   yt_h: "YouTube", yt_checking: "Checking YouTube…", yt_conn: "Connected: {c}", yt_connect: "Connect YouTube channel", yt_disc: "Disconnect", yt_open: "Open channel",
   yt_disc_q: "Disconnect the YouTube channel from the admin page? You can connect it again any time.",
@@ -49,6 +53,10 @@ Object.assign(T.en, {
   yt_connect_first: "Connect your YouTube channel below to upload straight from here."
 });
 Object.assign(T.hi, {
+  vs_q_add: "पोस्ट और वीडियो में जोड़ें (Facebook + Instagram Reel)", vs_q_busy: "वीडियो अपलोड हो रहा है…", vs_q_ok: "ऊपर पोस्ट और वीडियो की सूची में जुड़ गया। जाँचें और मंज़ूर करें दबाएँ।",
+  vs_q_err: "नहीं जुड़ा: {m}", vs_q_webm: "पहले कंप्यूटर पर Chrome या Edge में दोबारा बनाकर MP4 लें: Facebook और Instagram को MP4 चाहिए।",
+  yt_when: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", yt_when_p: "ख़ाली छोड़ें तो तुरंत पब्लिश होगा। समय डालें तो YouTube उस समय तक प्राइवेट रखेगा और फिर अपने-आप पब्लिश करेगा।",
+  yt_sched_ok: "YouTube पर {d} के लिए शेड्यूल हुआ।",
   vs_h: "वीडियो स्टूडियो",
   vs_p: "Reels, YouTube Shorts और WhatsApp स्टेटस के लिए छोटे वीडियो बनाएँ। टेम्पलेट चुनें, अपने बाग़ की फ़ोटो या क्लिप जोड़ें, शब्द बदलें, फिर वीडियो बनाकर डाउनलोड करें।",
   vs_tpl: "टेम्पलेट", vs_t_tip: "बाग़ टिप", vs_t_feat: "ऐप फ़ीचर", vs_t_alert: "बीमारी अलर्ट", vs_t_season: "मौसम के काम",
@@ -67,7 +75,7 @@ Object.assign(T.hi, {
   vs_nosupport: "यह ब्राउज़र वीडियो नहीं बना सकता। कंप्यूटर पर नया Chrome या Edge इस्तेमाल करें।",
   vs_total: "लंबाई: {s} सेकंड", vs_hidden: "टैब छिपा था, इसलिए वीडियो अटक सकता है। टैब सामने रखकर दोबारा बनाएँ।",
   vs_cap: "पोस्ट का कैप्शन", vs_copy: "कॉपी", vs_copied: "कॉपी हुआ",
-  vs_how: "वीडियो को Meta Business Suite या Instagram ऐप से Reel के रूप में, YouTube पर Short के रूप में और अपने WhatsApp स्टेटस पर डालें। फ़ोटो और क्लिप इसी डिवाइस पर रहती हैं; कुछ भी अपलोड नहीं होता।",
+  vs_how: "बना हुआ वीडियो पोस्ट और वीडियो (Facebook + Instagram Reel) में जोड़ें, ऊपर से YouTube पर अपलोड करें, और WhatsApp स्टेटस पर लगाएँ। फ़ोटो और क्लिप इसी डिवाइस पर रहते हैं; सिर्फ़ वह बना वीडियो बाहर जाता है जिसे आप जोड़ें या अपलोड करें।",
   vs_bad_file: "यह फ़ाइल नहीं चलेगी। फ़ोटो (JPG/PNG) या वीडियो क्लिप (MP4/MOV) चुनें।",
   yt_h: "YouTube", yt_checking: "YouTube जाँच रहे हैं…", yt_conn: "जुड़ा हुआ: {c}", yt_connect: "YouTube चैनल जोड़ें", yt_disc: "हटाएँ", yt_open: "चैनल खोलें",
   yt_disc_q: "YouTube चैनल को एडमिन पेज से हटाएँ? आप कभी भी दोबारा जोड़ सकते हैं।",
@@ -380,7 +388,7 @@ function vsStart(record) {
       const type = mime.split(";")[0], blob = new Blob(chunks, { type });
       if (VS.out) URL.revokeObjectURL(VS.out.url);
       VS.out = { url: URL.createObjectURL(blob), blob, size: blob.size, ext: type.indexOf("mp4") >= 0 ? "mp4" : "webm", secs: Math.round(vsTotal()), hidden: P.hidden };
-      VS.msg = ""; YTU = { title: vsYtTitle(), desc: vsCaption(), priv: (YTU && YTU.priv) || "public" }; renderStudio();
+      VS.msg = ""; vsQRes = ""; YTU = { title: vsYtTitle(), desc: vsYtDesc(), priv: (YTU && YTU.priv) || "public", at: "" }; renderStudio();
     };
   } else vsAudio();
   const P = { t0: performance.now(), rec, cur: -1, hidden: false, last: 0 };
@@ -417,6 +425,29 @@ function vsCaption() {
   return [head, "", ...pts, "", VS.cta, "👉 https://sebsaathi.com", "", b.name + " · " + b.tag, VS_TAGS].join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
+/* ---------- from the Marketing tab: a video idea's words, and handing the finished video to the post list ---------- */
+function vsPrefill(name, hook, show) {
+  VS.vlang = "hl";
+  const old = VS.scenes;
+  VS.scenes = [{ label: String(name || "").slice(0, 40), title: String(hook || ""), sub: "", dur: 2.5 }, { label: "1", title: "", sub: "", dur: 3 }, { label: "2", title: "", sub: "", dur: 3 }]
+    .map((x, i) => Object.assign(x, { media: (old[i] || {}).media || null }));
+  VS.cta = VS_BRAND.hl.cta; VS.sel = 0; VS.err = "";
+  VS.msg = tr("vi_prefill").replace("{v}", name || "").replace("{s}", show || "");
+  vsSave(); renderStudio();
+  const t = $("vs-title-1"); if (t) setTimeout(() => { try { t.focus({ preventScroll: true }); } catch (e) {} }, 400);
+}
+let vsQBusy = false, vsQRes = "";
+async function vsQueue() {
+  const o = VS.out; if (!o || vsQBusy || typeof mkQueueVideo !== "function") return;
+  if (o.ext !== "mp4") { vsQRes = '<p class="autherr">' + tr("vs_q_webm") + "</p>"; renderStudio(); return; }
+  vsQBusy = true; vsQRes = ""; renderStudio();
+  try { await mkQueueVideo(o.blob, vsCaption()); vsQRes = "<p>✓ " + tr("vs_q_ok") + "</p>"; }
+  catch (e) { vsQRes = '<p class="autherr">' + esc(tr("vs_q_err").replace("{m}", typeof mkV2 === "function" && mkV2(e) ? tr("mk_v2_setup") : String(e.message || e))) + "</p>"; }
+  vsQBusy = false; renderStudio();
+}
+const vsQueueHtml = () => VS.out ? '<div class="vsctl"><button type="button" class="btn-s vsgo" id="vsQueue"' + (vsQBusy ? " disabled" : "") + ">" + tr(vsQBusy ? "vs_q_busy" : "vs_q_add") + "</button></div>" + (vsQRes ? '<div role="status">' + vsQRes + "</div>" : "") : "";
+const vsYtDesc = () => vsCaption().replace("https://sebsaathi.com", "https://sebsaathi.com/?src=yt");
+
 /* ---------- YouTube: connect the channel and upload (api/youtube.js, supabase/youtube.sql) ---------- */
 let YT = null, YTU = null, ytBusy = "", ytRes = "", ytNote = "";
 const vsYtTitle = () => (String((VS.scenes[0] || {}).title || VS_BRAND[VS.vlang].name).replace(/[<>]/g, "").slice(0, 88) + " #Shorts").trim();
@@ -451,11 +482,12 @@ function ytCardHtml() {
 function ytOutHtml() {
   if (!VS.out) return "";
   if (!YT || !YT.connected) return '<p class="fine">' + tr("yt_connect_first") + "</p>";
-  const u = YTU || { title: vsYtTitle(), desc: vsCaption(), priv: "public" }; YTU = u;
+  const u = YTU || { title: vsYtTitle(), desc: vsYtDesc(), priv: "public", at: "" }; YTU = u;
   return '<div class="ytup"><p><b>' + tr("yt_up_h") + "</b> · " + esc(YT.channel.title) + "</p>" +
     '<div class="vsf"><label for="ytTitle">' + tr("yt_title") + '</label><input id="ytTitle" maxlength="100" value="' + esc(u.title) + '"></div>' +
     '<div class="vsf"><label for="ytDesc">' + tr("yt_desc") + '</label><textarea id="ytDesc" rows="4" maxlength="4900">' + esc(u.desc) + "</textarea></div>" +
     '<div class="vsf"><label for="ytPriv">' + tr("yt_priv") + '</label><select id="ytPriv" class="ytsel">' + ["public", "unlisted", "private"].map(p => '<option value="' + p + '"' + (p === u.priv ? " selected" : "") + ">" + tr("yt_p_" + p) + "</option>").join("") + "</select></div>" +
+    '<div class="vsf"><label for="ytAt">' + tr("yt_when") + '</label><input id="ytAt" type="datetime-local" value="' + esc(u.at || "") + '"><span class="fine">' + tr("yt_when_p") + "</span></div>" +
     '<div class="vsctl"><button type="button" class="btn-s vsgo" data-yt="upload"' + (ytBusy ? " disabled" : "") + ">" + (ytBusy ? esc(ytBusy) : tr("yt_go")) + "</button></div>" +
     (ytRes ? '<div role="status">' + ytRes + "</div>" : "") + "</div>";
 }
@@ -463,6 +495,8 @@ function ytProgress(t) { ytBusy = t; const b = document.querySelector('[data-yt=
 async function ytUpload() {
   const o = VS.out; if (!o || !o.blob || ytBusy) return;
   const u = YTU, title = String(u.title || "").replace(/[<>]/g, "").trim().slice(0, 100) || vsYtTitle();
+  /* a publish time (India time) → YouTube keeps it private and publishes it then */
+  const at = u.at && Date.parse(u.at + ":00Z") - 330 * 60000 > Date.now() + 60000 ? new Date(Date.parse(u.at + ":00Z") - 330 * 60000).toISOString() : "";
   ytRes = ""; ytProgress(tr("yt_starting"));
   try {
     const k = await ytCall("token");
@@ -472,7 +506,7 @@ async function ytUpload() {
       method: "POST",
       headers: { Authorization: "Bearer " + k.access_token, "Content-Type": "application/json; charset=UTF-8", "X-Upload-Content-Type": type, "X-Upload-Content-Length": String(o.blob.size) },
       body: JSON.stringify({ snippet: { title, description: String(u.desc || "").replace(/[<>]/g, "").slice(0, 4900), categoryId: "27", defaultLanguage: VS.vlang === "en" ? "en" : "hi", defaultAudioLanguage: VS.vlang === "en" ? "en" : "hi", tags: ["Seb Saathi", "सेब साथी", "apple farming", "सेब", "Himachal apple", "Kashmir apple"] },
-        status: { privacyStatus: u.priv || "public", selfDeclaredMadeForKids: false } })
+        status: Object.assign({ privacyStatus: at ? "private" : (u.priv || "public"), selfDeclaredMadeForKids: false }, at ? { publishAt: at } : {}) })
     });
     if (!init.ok) { const j = await init.json().catch(() => ({})); throw new Error((j.error && j.error.message) || ("YouTube " + init.status)); }
     const loc = init.headers.get("Location"); if (!loc) throw new Error("no upload address");
@@ -483,9 +517,12 @@ async function ytUpload() {
       x.onerror = () => bad(new Error("network")); x.send(o.blob);
     });
     const watch = "https://youtube.com/shorts/" + v.id, studio = "https://studio.youtube.com/video/" + v.id + "/edit";
-    const locked = (u.priv || "public") !== "private" && v.status && v.status.privacyStatus === "private";
+    const locked = !at && (u.priv || "public") !== "private" && v.status && v.status.privacyStatus === "private";
     ytRes = "<p>" + tr("yt_done") + ' · <a href="' + watch + '" target="_blank" rel="noopener">' + tr("yt_watch") + '</a> · <a href="' + studio + '" target="_blank" rel="noopener">' + tr("yt_studio") + "</a></p>" + (locked ? '<p class="autherr">' + tr("yt_locked") + "</p>" : "");
-    if (typeof mkSave === "function") { try { await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: ("YouTube: " + title).slice(0, 80), fb: "", ig: "", yt: watch }).slice(0, 500) }); } catch (e) {} }
+    if (at) ytRes += "<p>" + esc(tr("yt_sched_ok").replace("{d}", typeof qShow === "function" ? qShow(at) : at)) + "</p>";
+    let kept = false;
+    if (typeof mkQueueYt === "function") { try { kept = await mkQueueYt(title, watch, at || new Date().toISOString()); } catch (e) {} }
+    if (!kept && typeof mkSave === "function") { try { await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: ("YouTube: " + title).slice(0, 80), fb: "", ig: "", yt: watch }).slice(0, 500) }); } catch (e) {} }
   } catch (e) { ytRes = '<p class="autherr">' + esc(tr("yt_err").replace("{m}", String(e.message || e))) + "</p>"; }
   ytBusy = ""; renderStudio();
 }
@@ -521,7 +558,7 @@ function renderStudio() {
     '<p class="fine" id="vsMsg" role="status">' + esc(VS.msg) + "</p>" +
     (VS.err ? '<p class="autherr" role="alert">' + esc(VS.err) + "</p>" : "") +
     (o && !busy ? '<div class="vsout"><p>' + tr("vs_done").replace("{t}", o.secs).replace("{size}", vsKb(o.size)) + '</p><a class="btn-s vsgo" href="' + o.url + '" download="seb-saathi-' + VS.tpl + "-" + new Date().toISOString().slice(0, 10) + "." + o.ext + '">' + tr("vs_dl") + " (" + o.ext.toUpperCase() + ")</a>" +
-      (o.ext !== "mp4" ? '<p class="autherr">' + tr("vs_webm") + "</p>" : "") + (o.hidden ? '<p class="autherr">' + tr("vs_hidden") + "</p>" : "") + ytOutHtml() + "</div>" : "") +
+      (o.ext !== "mp4" ? '<p class="autherr">' + tr("vs_webm") + "</p>" : "") + (o.hidden ? '<p class="autherr">' + tr("vs_hidden") + "</p>" : "") + vsQueueHtml() + ytOutHtml() + "</div>" : "") +
     "</div>" +
     '<div class="vsform"' + (busy ? ' inert' : "") + '>' +
     '<div class="vsgrp"><span class="vsl">' + tr("vs_tpl") + '</span><div class="vschips">' + ["tip", "feat", "alert", "season"].map(k => vsChip("tpl", k, VS.tpl, tr("vs_t_" + k))).join("") + "</div></div>" +
@@ -572,7 +609,7 @@ function vsLoadFile(file, i) {
 }
 
 (function vsMount() {
-  const ap = $("ap-mk"); if (!ap || $("vsBody")) return;
+  const ap = $("mkStudio") || $("ap-mk"); if (!ap || $("vsBody")) return;
   const sec = document.createElement("section");
   sec.className = "fbadm solo vsbox"; sec.setAttribute("aria-labelledby", "vsH");
   sec.innerHTML = '<div class="admbar"><h4 id="vsH" data-i18n="vs_h" style="margin:0"></h4></div><p class="fine" data-i18n="vs_p"></p><div id="vsBody"></div>';
@@ -599,6 +636,7 @@ function vsLoadFile(file, i) {
     else if (b.id === "vsReset") { if (confirm(tr("vs_reset_q"))) { vsFromTpl(); VS.sel = 0; vsSave(); renderStudio(); } }
     else if (b.id === "vsPlay") { if (VS.play) vsStop(false); else vsStart(false); }
     else if (b.id === "vsMake") vsStart(true);
+    else if (b.id === "vsQueue") vsQueue();
     else if (b.id === "vsMusicRm") { if (VS.music) { VS.music.el.pause(); URL.revokeObjectURL(VS.music.url); } VS.music = null; renderStudio(); }
     else if (b.id === "vsCopy") {
       const done = () => { b.textContent = tr("vs_copied"); setTimeout(() => { b.textContent = tr("vs_copy"); }, 1500); };
@@ -613,6 +651,7 @@ function vsLoadFile(file, i) {
     else if (t.id === "vs-cta") { VS.cta = t.value; vsSelect(VS.scenes.length); vsLight(); }
     else if (t.id === "ytTitle" && YTU) YTU.title = t.value;
     else if (t.id === "ytDesc" && YTU) YTU.desc = t.value;
+    else if (t.id === "ytAt" && YTU) YTU.at = t.value;
     else if (t.id === "vsVol") { VS.vol = +t.value; if (vsGain) vsGain.gain.value = VS.vol; else if (VS.music) VS.music.el.volume = VS.vol; vsSave(); }
   });
   body.addEventListener("change", e => {
