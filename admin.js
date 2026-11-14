@@ -1132,10 +1132,18 @@ document.addEventListener("submit", async e => {
   const amt = Math.round((+g("amount_inr") || 0) * 100) / 100;
   const row = { spent_on: g("spent_on"), item: g("item"), amount_inr: amt, note: g("note") || null, updated_at: new Date().toISOString() };
   if (!row.item || !/^\d{4}-\d{2}-\d{2}$/.test(row.spent_on) || !(amt >= 0)) return;
+  if (!sb || !isAdmin()) return;
   const btn = f.querySelector('[type="submit"]'); if (btn) btn.disabled = true;
   const id = f.dataset.exform;
   const r = id ? await sb.from("admin_expenses").update(row).eq("id", id).select().single() : await sb.from("admin_expenses").insert(row).select().single();
-  if (r.error) { if (btn) btn.disabled = false; set("coErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
+  if (r.error) {
+    if (btn) btn.disabled = false;
+    const m = String(r.error.message || r.error.code || ""), code = String(r.error.code || "");
+    const msg = code === "42P01" || code === "PGRST205" || /could not find the table|does not exist|schema cache/i.test(m) ? tr("ex_setup")
+      : code === "42501" || /row-level security|permission denied/i.test(m) ? tr("ex_deny") : tr("pa_err").replace("{m}", m);
+    let p = f.querySelector(".exerr"); if (!p) { p = document.createElement("p"); p.className = "autherr exerr wide"; p.setAttribute("role", "alert"); f.appendChild(p); }
+    p.textContent = msg; return;
+  }
   if (id) EX = EX.map(x => x.id === id ? r.data : x); else EX.unshift(r.data);
   EX.sort((a, b) => String(b.spent_on).localeCompare(String(a.spent_on)));
   exSel = String(r.data.spent_on).slice(0, 7); exEdit = null; set("coErr", ""); renderCosts();
@@ -1145,12 +1153,14 @@ if ($("coMoreBtn")) $("coMoreBtn").addEventListener("click", () => { const m = $
 Object.assign(T.en, { ex_add: "+ Add expense", ex_h: "My expenses", ex_p: "What Seb Saathi really cost you. Add each bill or payment when you make it; the figures at the top use these.",
   ex_c_date: "Date", ex_c_item: "What for", ex_c_amt: "Amount (₹)", ex_c_note: "Note", ex_item_ph: "e.g. Vercel, Anthropic (AI)", ex_note_ph: "Invoice number, card, anything to remember",
   ex_month: "Month", ex_now: "this month", ex_total: "Total {t}", ex_none_now: "No expenses added this month yet. Tap + Add expense.", ex_none: "No expenses in this month.",
+  ex_deny: "Not allowed to save. Run supabase/admins.sql and then supabase/admin_expenses.sql again in Supabase → SQL Editor, sign out and in, then try again.",
   ex_hist: "Month by month", ex_setup: "Not set up yet. In Supabase → SQL Editor, run supabase/admin_expenses.sql once, then press Refresh.",
   ex_s_month: "Expenses this month", ex_s_left: "Left over this month", ex_s_year: "Expenses this year",
   co_more: "Price list and estimates", co_more_p: "Planning figures only (plan prices and upper AI estimates). They are not used in the totals at the top.", co_list_h: "Price list" });
 Object.assign(T.hi, { ex_add: "+ ख़र्च जोड़ें", ex_h: "मेरे ख़र्च", ex_p: "सेब साथी पर असल में कितना ख़र्च हुआ। हर बिल या भुगतान करते ही जोड़ें; ऊपर के आँकड़े इन्हीं से बनते हैं।",
   ex_c_date: "तारीख़", ex_c_item: "किस लिए", ex_c_amt: "रक़म (₹)", ex_c_note: "नोट", ex_item_ph: "जैसे Vercel, Anthropic (AI)", ex_note_ph: "इनवॉइस नंबर, कार्ड, कुछ भी याद रखने लायक",
   ex_month: "महीना", ex_now: "यह महीना", ex_total: "कुल {t}", ex_none_now: "इस महीने अभी कोई ख़र्च नहीं जोड़ा। + ख़र्च जोड़ें दबाएँ।", ex_none: "इस महीने कोई ख़र्च नहीं।",
+  ex_deny: "सेव करने की अनुमति नहीं। Supabase → SQL Editor में supabase/admins.sql और फिर supabase/admin_expenses.sql दोबारा चलाएँ, साइन आउट करके फिर साइन इन करें।",
   ex_hist: "महीने-दर-महीने", ex_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_expenses.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
   ex_s_month: "इस महीने का ख़र्च", ex_s_left: "इस महीने बचत", ex_s_year: "इस साल का ख़र्च",
   co_more: "दाम सूची और अनुमान", co_more_p: "सिर्फ़ योजना के आँकड़े (प्लान के दाम और AI के ऊपरी अनुमान)। ऊपर के कुल में ये नहीं जुड़ते।", co_list_h: "दाम सूची" });
