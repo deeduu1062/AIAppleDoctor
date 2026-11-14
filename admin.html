@@ -163,6 +163,10 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .aigalert{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:10px 0;padding:10px 14px;border-radius:12px;font-weight:600;background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
 .aigalert[hidden]{display:none}
 .aigfree{max-width:20rem;margin:8px 0}
+#coStats .plh{grid-column:1/-1;margin:8px 0 0}
+#coPL .ledger td.n,#coPL .ledger th.n{font-family:var(--mono);text-align:right;white-space:nowrap}
+#coPL .plneg{color:var(--bad)}#coPL .plpos{color:var(--good)}
+#coPL tr.pltot th,#coPL tr.pltot td{border-top:2px solid var(--line);font-weight:700}
 .exbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:6px 0 10px}
 .exbar select{min-width:11rem}
 .exitems{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;color:var(--muted);margin:4px 0 8px}
@@ -1625,6 +1629,7 @@ details.svdays summary{cursor:pointer}
         <p class="fine" data-i18n="co_p"></p>
         <p class="autherr" id="coErr" role="alert"></p>
         <div class="ystats" id="coStats"></div>
+        <div id="coPL"></div>
         <div id="coExp"></div>
         <div id="coPer"></div>
         <p><button class="btn-s" type="button" id="coMoreBtn" aria-expanded="false" aria-controls="coMore" data-i18n="co_more"></button></p>
@@ -1749,7 +1754,7 @@ details.svdays summary{cursor:pointer}
 <p class="fine" style="margin-top:14px"><button class="link" type="button" id="pwReset" data-i18n="adm_pw_reset"></button></p></dialog>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=27"></script>
+<script src="/admin.js?v=28"></script>
 <script src="/aicost.js?v=1"></script>
 <script src="/qr.js?v=1"></script>
 <script src="/marketing.js?v=13"></script>

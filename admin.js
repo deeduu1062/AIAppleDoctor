@@ -1056,7 +1056,7 @@ const coMonthly = x => x.amount_inr == null ? 0 : x.per === "year" ? x.amount_in
 
 /* ---------- Costs tab: "My expenses" — what Seb Saathi really cost, entered by hand each month (admin_expenses table) ---------- */
 let EX = null, exErr = "", exSel = null, exEdit = null;
-const EX_ITEMS = ["Vercel", "Supabase", "Anthropic (AI)", "GoDaddy (domain)", "Twilio (WhatsApp/SMS)", "Resend (email)", "Facebook/Instagram ads", "Printing / leaflets", "Travel", "Phone / internet", "Other"];
+const EX_ITEMS = ["Vercel", "Supabase", "AI for marketing (Anthropic)","GoDaddy (domain)", "Twilio (WhatsApp/SMS)", "Resend (email)", "Facebook/Instagram ads", "Printing / leaflets", "Travel", "Phone / internet", "Other"];
 const exToday = () => new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);   /* India date */
 const exNowKey = () => exToday().slice(0, 7);
 const exRup = n => "₹" + (Math.round((+n || 0) * 100) / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 });
@@ -1105,11 +1105,29 @@ function renderExp() {
         "<tr><td>" + paDay(x.spent_on) + "</td><td><b>" + esc(x.item) + '</b></td><td class="n">' + exRup(x.amount_inr) + '</td><td class="wrapn">' + esc(x.note || "") +
         '</td><td><button class="btn-s" type="button" data-exact="edit" data-id="' + esc(x.id) + '">' + tr("co_edit") + "</button></td></tr>").join("") + "</tbody></table></div>";
   } else h += "<p>" + tr(exSel === now ? "ex_none_now" : "ex_none") + "</p>";
-  /* month by month, last 12 months that have expenses */
-  const hist = months.filter(k => exMonthTotal(k) > 0).slice(0, 12);
-  if (hist.length > 1) h += '<details class="exhist"><summary>' + tr("ex_hist") + '</summary><div class="tablewrap"><table class="ledger"><tbody>' +
-    hist.map(k => "<tr><td>" + esc(exMonthName(k)) + '</td><td class="n">' + exRup(exMonthTotal(k)) + "</td></tr>").join("") + "</tbody></table></div></details>";
   el.innerHTML = h + "</div>";
+}
+/* ---------- Profit and loss: money in (approved payments, by the month they were made) minus your expenses minus AI cost ---------- */
+let AIU = null;
+const plKey = t => new Date(new Date(t).getTime() + 330 * 60000).toISOString().slice(0, 7);   /* India month of a time */
+function plMonths() {
+  const m = {}, get = k => m[k] || (m[k] = { inc: 0, exp: 0, ai: 0 });
+  (coPay || []).filter(x => x.status === "approved" && x.created_at).forEach(x => { get(plKey(x.created_at)).inc += +x.amount || 0; });
+  (EX || []).forEach(x => { get(String(x.spent_on).slice(0, 7)).exp += +x.amount_inr || 0; });
+  (AIU || []).forEach(x => { get(plKey(x.created_at)).ai += (+x.cost_usd || 0) * USD_INR; });
+  get(exNowKey());
+  return m;
+}
+function renderPL(m) {
+  const el = $("coPL"); if (!el) return;
+  const ks = Object.keys(m).sort().reverse(), sgn = n => (n < -0.005 ? "−" : "") + exRup(Math.abs(n));
+  const t = ks.reduce((s, k) => ({ inc: s.inc + m[k].inc, exp: s.exp + m[k].exp, ai: s.ai + m[k].ai }), { inc: 0, exp: 0, ai: 0 });
+  const row = (lab, x, b) => { const p = x.inc - x.exp - x.ai; return "<tr" + (b ? ' class="pltot"' : "") + "><th scope=\"row\">" + lab + '</th><td class="n">' + exRup(x.inc) + '</td><td class="n">' + exRup(x.exp) +
+    '</td><td class="n">' + exRup(x.ai) + '</td><td class="n ' + (p < -0.005 ? "plneg" : "plpos") + '"><b>' + sgn(p) + "</b></td></tr>"; };
+  el.innerHTML = '<div class="cobox"><h5>' + tr("pl_h") + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ex_month") + "</th>" +
+    ["pl_inc", "pl_exp", "pl_ai", "pl_pl"].map(k => '<th scope="col" class="n">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    ks.map(k => row(esc(exMonthName(k)), m[k])).join("") + row(tr("pl_total"), t, true) + "</tbody></table></div>" +
+    '<p class="fine">' + tr("pl_note").replace("{r}", USD_INR) + (AIU ? "" : " " + tr("pl_ai_setup")) + "</p></div>";
 }
 function exOpenNew() { exEdit = "new"; exSel = exNowKey(); renderExp(); const i = document.querySelector('[data-exform=""] [name="item"]'); if (i) i.focus(); }
 document.addEventListener("click", async e => {
@@ -1156,6 +1174,10 @@ Object.assign(T.en, { ex_add: "+ Add expense", ex_h: "My expenses", ex_p: "What 
   ex_deny: "Not allowed to save. Run supabase/admins.sql and then supabase/admin_expenses.sql again in Supabase → SQL Editor, sign out and in, then try again.",
   ex_hist: "Month by month", ex_setup: "Not set up yet. In Supabase → SQL Editor, run supabase/admin_expenses.sql once, then press Refresh.",
   ex_s_month: "Expenses this month", ex_s_left: "Left over this month", ex_s_year: "Expenses this year",
+  pl_now: "{m}", pl_all: "All time", pl_inc: "Income", pl_exp: "Expenses", pl_ai: "AI cost", pl_pl: "Profit / loss", pl_total: "Total",
+  pl_h: "Profit and loss, month by month",
+  pl_note: "Income = approved grower payments, in the month they paid (a yearly plan counts in full that month). Expenses = what you added below. AI cost = growers' Saathi questions, photo checks and receipt readings, counted automatically (at about ₹{r} to the dollar). So don't add your Anthropic bill for these as an expense; only add AI you use for marketing.",
+  pl_ai_setup: "AI cost shows once supabase/ai_usage.sql has been run in Supabase.",
   co_more: "Price list and estimates", co_more_p: "Planning figures only (plan prices and upper AI estimates). They are not used in the totals at the top.", co_list_h: "Price list" });
 Object.assign(T.hi, { ex_add: "+ ख़र्च जोड़ें", ex_h: "मेरे ख़र्च", ex_p: "सेब साथी पर असल में कितना ख़र्च हुआ। हर बिल या भुगतान करते ही जोड़ें; ऊपर के आँकड़े इन्हीं से बनते हैं।",
   ex_c_date: "तारीख़", ex_c_item: "किस लिए", ex_c_amt: "रक़म (₹)", ex_c_note: "नोट", ex_item_ph: "जैसे Vercel, Anthropic (AI)", ex_note_ph: "इनवॉइस नंबर, कार्ड, कुछ भी याद रखने लायक",
@@ -1163,6 +1185,10 @@ Object.assign(T.hi, { ex_add: "+ ख़र्च जोड़ें", ex_h: "म
   ex_deny: "सेव करने की अनुमति नहीं। Supabase → SQL Editor में supabase/admins.sql और फिर supabase/admin_expenses.sql दोबारा चलाएँ, साइन आउट करके फिर साइन इन करें।",
   ex_hist: "महीने-दर-महीने", ex_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_expenses.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
   ex_s_month: "इस महीने का ख़र्च", ex_s_left: "इस महीने बचत", ex_s_year: "इस साल का ख़र्च",
+  pl_now: "{m}", pl_all: "अब तक कुल", pl_inc: "आमदनी", pl_exp: "ख़र्च", pl_ai: "AI ख़र्च", pl_pl: "मुनाफ़ा / घाटा", pl_total: "कुल",
+  pl_h: "महीने-दर-महीने मुनाफ़ा और घाटा",
+  pl_note: "आमदनी = बाग़वानों के मंज़ूर भुगतान, जिस महीने भरे (साल का प्लान उसी महीने पूरा गिना जाता है)। ख़र्च = जो आपने नीचे जोड़ा। AI ख़र्च = बाग़वानों के साथी सवाल, फ़ोटो जाँच और रसीद पढ़ना, अपने आप गिना जाता है (लगभग ₹{r} प्रति डॉलर), इसलिए इसे Anthropic बिल के रूप में ख़र्च में न जोड़ें; सिर्फ़ मार्केटिंग वाला AI जोड़ें।",
+  pl_ai_setup: "AI ख़र्च तब दिखेगा जब Supabase में supabase/ai_usage.sql चला दिया जाएगा।",
   co_more: "दाम सूची और अनुमान", co_more_p: "सिर्फ़ योजना के आँकड़े (प्लान के दाम और AI के ऊपरी अनुमान)। ऊपर के कुल में ये नहीं जुड़ते।", co_list_h: "दाम सूची" });
 async function loadCosts() {
   if (!isAdmin() || !sb || coBusy) return;
@@ -1178,6 +1204,16 @@ async function loadCosts() {
   try { coAi.qs = await ovCount("chat_messages", q => q.eq("role", "user").gte("created_at", ms)); } catch (x) {}
   try { const r = await sb.from("payments").select("plan,period,amount,status,valid_until,created_at,user_id,email").limit(10000); coPay = r.error ? null : (r.data || []); } catch (x) { coPay = null; }
   await loadExp();
+  AIU = null;
+  try {   /* Supabase sends at most 1,000 rows at a time, so read in pages */
+    const all = [];
+    for (let i = 0; i < 200; i++) {
+      const r = await sb.from("ai_usage").select("created_at,cost_usd").order("created_at", { ascending: false }).range(i * 1000, i * 1000 + 999);
+      if (r.error) throw r.error;
+      all.push(...(r.data || [])); if (!r.data || r.data.length < 1000) break;
+    }
+    AIU = all;
+  } catch (x) { AIU = null; }
   coLive = null; coDb = null;
   try {
     const s = await sb.auth.getSession(), tok = s && s.data && s.data.session ? s.data.session.access_token : "";
@@ -1231,12 +1267,18 @@ function renderCosts() {
   const cash = ok.filter(x => String(x.created_at).slice(0, 7) === ym).reduce((s, x) => s + (+x.amount || 0), 0);
   const net = income - fixed - ai;
   const st = (k, v, cls) => "<div" + (cls ? ' class="' + cls + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b></div>";
-  /* top figures use only real money: expenses you entered this month, and what growers pay */
-  const exM = exMonthTotal(exNowKey()), left = income - exM;
-  $("coStats").innerHTML = st("ex_s_month", EX ? exRup(exM) : "–", "main") + st("co_s_income", paRup(Math.round(income)), "pos") +
-    st("ex_s_left", EX ? (left < 0 ? "−" : "") + exRup(Math.abs(left)) : "–", left < 0 ? "neg" : "pos") + st("co_s_cash", paRup(cash)) +
-    st("ex_s_year", EX ? exRup(exYearTotal(exNowKey().slice(0, 4))) : "–");
-  void net;
+  /* top figures use only real money: payments received, expenses you entered, and the AI cost saved for each use */
+  void net; void cash;
+  const PL = plMonths(), now = exNowKey(), z = { inc: 0, exp: 0, ai: 0 };
+  const cur = PL[now] || z, all = Object.keys(PL).reduce((s, k) => ({ inc: s.inc + PL[k].inc, exp: s.exp + PL[k].exp, ai: s.ai + PL[k].ai }), { inc: 0, exp: 0, ai: 0 });
+  const pl = x => x.inc - x.exp - x.ai, sgn = n => (n < -0.005 ? "−" : "") + exRup(Math.abs(n));
+  const plSt = (k, n) => st(k, sgn(n), n < -0.005 ? "neg" : "pos");
+  $("coStats").innerHTML = '<h5 class="plh">' + tr("pl_now").replace("{m}", esc(exMonthName(now))) + "</h5>" +
+    st("pl_inc", exRup(cur.inc), "pos") + st("pl_exp", EX ? exRup(cur.exp) : "–") + st("pl_ai", AIU ? exRup(cur.ai) : "–") + plSt("pl_pl", pl(cur)) +
+    '<h5 class="plh">' + tr("pl_all") + "</h5>" +
+    st("pl_inc", exRup(all.inc), "pos") + st("pl_exp", EX ? exRup(all.exp) : "–") + st("pl_ai", AIU ? exRup(all.ai) : "–") + plSt("pl_pl", pl(all)) +
+    st("co_s_income", paRup(Math.round(income)));
+  renderPL(PL);
   renderExp();
   const avg = Object.keys(live).length ? income / Object.keys(live).length : 299 / 12;
   renderLive();
