@@ -203,7 +203,8 @@ Object.assign(T.en, {
   bu_spent: "Spent so far", bu_total: "Spent: {a} of about ₹60,000", bu_hint: "Add marketing spends in the Costs tab (for example service \"Posters\", what for \"Marketing\"), and they show here.",
   bu_month: "{a}/month", bu_free: "{n} free months",
   st_h: "Setup (accounts, links and posting)", st_sub: "{d} of {n} accounts linked", st_yt: "YouTube: connect it in the Video Studio box above (YouTube card).",
-  st_post_ok: "Posting is connected: Facebook page {f}{i}"
+  st_post_ok: "Posting is connected: Facebook page {f}{i}",
+  mf_more: "Show everything (numbers, sources, pilot growers, plan, setup)", mf_less: "Show only what to post"
 });
 Object.assign(T.hi, {
   mk_v2_setup: "इसे चालू करने के लिए Supabase में एक बार supabase/marketing_v2.sql चलाएँ।",
@@ -238,7 +239,8 @@ Object.assign(T.hi, {
   bu_spent: "अब तक ख़र्च", bu_total: "ख़र्च: लगभग ₹60,000 में से {a}", bu_hint: "मार्केटिंग के ख़र्च Costs टैब में जोड़ें (जैसे सेवा \"Posters\", किसलिए \"Marketing\"), वे यहाँ दिखेंगे।",
   bu_month: "{a}/महीना", bu_free: "{n} मुफ़्त महीने",
   st_h: "सेटअप (अकाउंट, लिंक और पोस्टिंग)", st_sub: "{n} में से {d} अकाउंट जुड़े", st_yt: "YouTube: ऊपर Video Studio बॉक्स (YouTube कार्ड) में जोड़ें।",
-  st_post_ok: "पोस्टिंग जुड़ी है: Facebook पेज {f}{i}"
+  st_post_ok: "पोस्टिंग जुड़ी है: Facebook पेज {f}{i}",
+  mf_more: "सब कुछ दिखाएँ (आँकड़े, स्रोत, पायलट बागवान, प्लान, सेटअप)", mf_less: "सिर्फ़ पोस्ट करने वाली चीज़ें दिखाएँ"
 });
 
 /* which Costs-tab rows count towards each budget line (matched on service + what for) */
@@ -763,6 +765,7 @@ async function viAi() {
 }
 function viMake(i) {
   const v = mkViAll()[i]; if (!v) return;
+  mkShowStudio = true; renderMk();
   if (typeof vsPrefill === "function") vsPrefill(v.name, v.hook, v.show);
   const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" });
 }
@@ -811,28 +814,29 @@ function setupHtml() {
 }
 
 /* ---- the page ---- */
-const mkOpen = new Set(["content", "src"]);   /* which sections are open */
+const mkOpen = new Set(["content", "src", "msg"]);   /* which sections are open */
+let mkFull = false, mkShowStudio = false;   /* full view (numbers, plan, setup) or just what to post; remembered on this device */
+try { mkFull = localStorage.getItem("mk-full") === "1"; } catch (e) {}
 const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
 function renderMk() {
   const top = $("mkTop"), bot = $("mkBot"); if (!top || !bot) return;
   const keep = mkKeep();
   let h = "";
   if (mkLocal) h += '<p class="fine mkwarn">' + tr("mk_local") + "</p>";
-  h += scoreHtml();
+  const score = scoreHtml();
   /* next steps: the first 3 unticked tasks of the plan */
   const all = []; MK_PHASES.forEach(p => p.tasks.forEach(t => all.push([t[0], t[1], p.name])));
   const done = all.filter(t => mkDone(t[0])).length, next = all.filter(t => !mkDone(t[0])).slice(0, 3);
-  h += '<section class="mknext"><div class="mkph"><b>' + tr("mk_next_h") + '</b><span class="fine">' + tr("mk_done_n").replace("{d}", done).replace("{n}", all.length) + '</span></div><div class="mkbar"><i style="width:' + Math.round(done / all.length * 100) + '%"></i></div>' +
+  const nextH = '<section class="mknext"><div class="mkph"><b>' + tr("mk_next_h") + '</b><span class="fine">' + tr("mk_done_n").replace("{d}", done).replace("{n}", all.length) + '</span></div><div class="mkbar"><i style="width:' + Math.round(done / all.length * 100) + '%"></i></div>' +
     (next.length ? next.map(t => mkBox(t[0], t[1])).join("") : "<p>" + tr("mk_all_done") + "</p>") + "</section>";
   const nD = mkQ ? mkQ.filter(x => x.status === "draft").length : 0, nS = mkQ ? mkQ.filter(x => x.status === "scheduled").length : 0;
-  h += mkSec("src", tr("src_h"), mkSt && !mkStErr ? tr("src_c_n30") + " (30): " + mkN((mkSt.sources || []).reduce((a, x) => a + (/^(unknown|none)$/.test(x.src) ? 0 : +x.n30 || 0), 0)) : "", srcHtml());
-  h += mkSec("content", tr("cq_h"), mkQ ? tr("cq_sub").replace("{d}", nD).replace("{s}", nS) : "", qHtml());   /* Video Studio sits right under this */
-  top.innerHTML = h;
+  const srcH = mkSec("src", tr("src_h"), mkSt && !mkStErr ? tr("src_c_n30") + " (30): " + mkN((mkSt.sources || []).reduce((a, x) => a + (/^(unknown|none)$/.test(x.src) ? 0 : +x.n30 || 0), 0)) : "", srcHtml());
+  const contentH = mkSec("content", tr("cq_h"), mkQ ? tr("cq_sub").replace("{d}", nD).replace("{s}", nS) : "", qHtml());   /* Video Studio sits right under this */
 
   let b = "";
   const P = mkPil || [];
-  b += mkSec("pilot", tr("pi_h"), mkPil ? P.length + " · " + tr("pi_c_up") + " " + P.filter(x => x.user_id).length : "", pilotHtml());
-  b += mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + MK_MSGS.map((m, i) => {
+  const pilotH = mkSec("pilot", tr("pi_h"), mkPil ? P.length + " · " + tr("pi_c_up") + " " + P.filter(x => x.user_id).length : "", pilotHtml());
+  const msgH = mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + MK_MSGS.map((m, i) => {
     const full = m[1] + (m[2] ? "" : "\n" + mkLink());
     return '<div class="mkmsg"><b>' + esc(m[0]) + "</b><pre>" + esc(full) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="m' + i + '">' + tr(mkCopied["m" + i] ? "mk_copied" : "mk_copy") + '</button><a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(full) + '">' + tr("mk_wa") + '</a><button class="btn-s add" type="button" data-mkuse="m' + i + '">' + tr("mk_use_fb") + "</button></div></div>";
   }).join(""));
@@ -857,7 +861,12 @@ function renderMk() {
   b += mkSec("more", tr("mk_more_h"), "", budgetHtml());
   const socDone = MK_SOCIAL.filter(x => MK["link:" + x[0]] && MK["link:" + x[0]].value).length;
   b += mkSec("setup", tr("st_h"), tr("st_sub").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length), setupHtml());
-  bot.innerHTML = b;
+  /* simple view (default): only what is waiting to post and the ready messages; the rest behind one button */
+  const tog = '<div class="mklinks mktog"><button class="btn-s" type="button" data-mkfull="' + (mkFull ? "0" : "1") + '">' + tr(mkFull ? "mf_less" : "mf_more") + "</button></div>";
+  if (mkFull) { top.innerHTML = h + score + nextH + srcH + contentH; bot.innerHTML = pilotH + msgH + b + tog; }
+  else { top.innerHTML = h + contentH; bot.innerHTML = msgH + tog; }
+  const st = $("mkStudio"); if (st) st.hidden = !(mkFull || mkShowStudio);
+  const goal = document.querySelector('#ap-mk [data-i18n="mk_p"]'); if (goal) goal.hidden = !mkFull;
   mkRestore(keep);
 }
 /* typing must survive a re-render (data arrives while you type) */
@@ -964,6 +973,8 @@ W.addEventListener("click", async e => {
     else if (tl.dataset.tl === "png") mkQrPng(mkSrcLink(code), code);
     return;
   }
+  const fl = e.target.closest("[data-mkfull]");
+  if (fl) { mkFull = fl.dataset.mkfull === "1"; try { localStorage.setItem("mk-full", mkFull ? "1" : "0"); } catch (x) {} renderMk(); if (!mkFull) window.scrollTo({ top: 0 }); return; }
   const use = e.target.closest("[data-mkuse]");
   if (use) {   /* put this message in the post box (Posts and videos), ready to post on Facebook / Instagram or schedule */
     let t = mkText(use.dataset.mkuse);
@@ -999,7 +1010,7 @@ W.addEventListener("click", async e => {
   const a = b.dataset.mkq, id = b.dataset.id, x = qGet(id);
   if (a !== "del") mkQDel = null;
   if (a === "compose") { mkCompose = !mkCompose; mkPostRes = null; renderMk(); if (mkCompose) { const t = $("mkpText"); if (t) t.focus(); } return; }
-  if (a === "studio") { const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+  if (a === "studio") { mkShowStudio = true; renderMk(); const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (a === "now") return qPostNow(id);
   if (a === "draft") return qDraft("post");
   if (a === "wadraft") return qDraft("wa");
