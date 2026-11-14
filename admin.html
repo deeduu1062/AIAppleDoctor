@@ -163,6 +163,11 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .aigalert{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:10px 0;padding:10px 14px;border-radius:12px;font-weight:600;background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
 .aigalert[hidden]{display:none}
 .aigfree{max-width:20rem;margin:8px 0}
+.exbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:6px 0 10px}
+.exbar select{min-width:11rem}
+.exitems{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;color:var(--muted);margin:4px 0 8px}
+.exitems b{color:var(--fg);font-family:var(--mono)}
+#coExp .ledger td.n{font-family:var(--mono);text-align:right;white-space:nowrap}
 .cobox{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .cobox h5{margin:0 0 6px}
 .cobox p{margin:4px 0}
@@ -1616,14 +1621,20 @@ details.svdays summary{cursor:pointer}
     </div>
     <div class="adm" id="ap-cost" role="tabpanel" aria-labelledby="at-cost" hidden>
       <section class="fbadm solo" aria-labelledby="coH">
-        <div class="admbar"><h4 id="coH" data-i18n="co_h" style="margin:0"></h4><button class="btn-s" type="button" id="coRefresh" data-i18n="ad_refresh"></button><button class="btn-s add" type="button" id="coAdd" data-i18n="co_add"></button></div>
+        <div class="admbar"><h4 id="coH" data-i18n="co_h" style="margin:0"></h4><button class="btn-s" type="button" id="coRefresh" data-i18n="ad_refresh"></button><button class="btn-s add" type="button" id="exAdd" data-i18n="ex_add"></button></div>
         <p class="fine" data-i18n="co_p"></p>
         <p class="autherr" id="coErr" role="alert"></p>
         <div class="ystats" id="coStats"></div>
-        <div id="coLive"></div>
-        <div id="coAi"></div>
+        <div id="coExp"></div>
         <div id="coPer"></div>
-        <div id="coList"></div>
+        <p><button class="btn-s" type="button" id="coMoreBtn" aria-expanded="false" aria-controls="coMore" data-i18n="co_more"></button></p>
+        <div id="coMore" hidden>
+          <p class="fine" data-i18n="co_more_p"></p>
+          <div id="coLive"></div>
+          <div id="coAi"></div>
+          <div class="admbar"><h5 data-i18n="co_list_h" style="margin:0"></h5><button class="btn-s" type="button" id="coAdd" data-i18n="co_add"></button></div>
+          <div id="coList"></div>
+        </div>
       </section>
     </div>
     <div class="adm" id="ap-pay" role="tabpanel" aria-labelledby="at-pay" hidden>
@@ -1738,7 +1749,7 @@ details.svdays summary{cursor:pointer}
 <p class="fine" style="margin-top:14px"><button class="link" type="button" id="pwReset" data-i18n="adm_pw_reset"></button></p></dialog>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=25"></script>
+<script src="/admin.js?v=26"></script>
 <script src="/aicost.js?v=1"></script>
 <script src="/qr.js?v=1"></script>
 <script src="/marketing.js?v=13"></script>

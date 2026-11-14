@@ -1053,6 +1053,107 @@ const AI_PHOTO_INR = 1.9, AI_Q_INR = 0.35;
 let CO = null, coBusy = false, coEdit = null, coAi = null, coPay = null, coLive = null, coDb = null;
 const USD_INR = 85;   /* rough rupees per dollar for showing AI spend */
 const coMonthly = x => x.amount_inr == null ? 0 : x.per === "year" ? x.amount_inr / 12 : x.per === "once" ? 0 : x.amount_inr;
+
+/* ---------- Costs tab: "My expenses" — what Seb Saathi really cost, entered by hand each month (admin_expenses table) ---------- */
+let EX = null, exErr = "", exSel = null, exEdit = null;
+const EX_ITEMS = ["Vercel", "Supabase", "Anthropic (AI)", "GoDaddy (domain)", "Twilio (WhatsApp/SMS)", "Resend (email)", "Facebook/Instagram ads", "Printing / leaflets", "Travel", "Phone / internet", "Other"];
+const exToday = () => new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);   /* India date */
+const exNowKey = () => exToday().slice(0, 7);
+const exRup = n => "₹" + (Math.round((+n || 0) * 100) / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+const exMonthTotal = k => (EX || []).filter(x => String(x.spent_on).slice(0, 7) === k).reduce((s, x) => s + (+x.amount_inr || 0), 0);
+const exYearTotal = y => (EX || []).filter(x => String(x.spent_on).slice(0, 4) === y).reduce((s, x) => s + (+x.amount_inr || 0), 0);
+const exMonthName = k => { const [y, m] = k.split("-").map(Number); return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { month: "long", year: "numeric", timeZone: "UTC" }); };
+async function loadExp() {
+  exErr = "";
+  try {
+    const r = await sb.from("admin_expenses").select("*").order("spent_on", { ascending: false }).order("created_at", { ascending: false }).limit(5000);
+    if (r.error) throw r.error;
+    EX = r.data || [];
+  } catch (x) {
+    EX = null; const m = String(x.message || x);
+    exErr = String(x.code || "") === "42P01" || /does not exist|could not find the table|schema cache/i.test(m) ? tr("ex_setup") : tr("pa_err").replace("{m}", m);
+  }
+}
+function renderExp() {
+  const el = $("coExp"); if (!el) return;
+  let h = '<div class="cobox" id="exBox"><h5>' + tr("ex_h") + '</h5><p class="fine">' + tr("ex_p") + "</p>";
+  if (exErr) { el.innerHTML = h + "<p>" + esc(exErr) + "</p></div>"; return; }
+  if (!EX) { el.innerHTML = h + '<p class="fine">' + tr("li_loading") + "</p></div>"; return; }
+  const now = exNowKey();
+  const months = Array.from(new Set([now].concat(EX.map(x => String(x.spent_on).slice(0, 7))))).sort().reverse();
+  if (!exSel || months.indexOf(exSel) < 0) exSel = now;
+  const form = x => '<form class="coform" data-exform="' + esc(x.id || "") + '">' +
+    '<div class="field"><label>' + tr("ex_c_date") + '</label><input name="spent_on" type="date" required value="' + esc(x.spent_on || exToday()) + '"></div>' +
+    '<div class="field"><label>' + tr("ex_c_item") + '</label><input name="item" maxlength="80" required list="exItems" value="' + esc(x.item || "") + '" placeholder="' + esc(tr("ex_item_ph")) + '"></div>' +
+    '<div class="field"><label>' + tr("ex_c_amt") + '</label><input name="amount_inr" type="number" min="0" step="0.01" inputmode="decimal" required value="' + esc(x.amount_inr == null ? "" : x.amount_inr) + '"></div>' +
+    '<div class="field wide"><label>' + tr("ex_c_note") + '</label><input name="note" maxlength="500" value="' + esc(x.note || "") + '" placeholder="' + esc(tr("ex_note_ph")) + '"></div>' +
+    '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("co_save") + '</button><button class="btn-s" type="button" data-exact="cancel">' + tr("co_cancel") + "</button>" +
+    (x.id ? '<button class="btn-s danger" type="button" data-exact="del" data-id="' + esc(x.id) + '">' + tr("co_del") + "</button>" : "") + "</div></form>";
+  h += '<datalist id="exItems">' + EX_ITEMS.map(i => '<option value="' + esc(i) + '">').join("") + "</datalist>";
+  if (exEdit === "new") h += form({});
+  const rows = EX.filter(x => String(x.spent_on).slice(0, 7) === exSel), tot = rows.reduce((s, x) => s + (+x.amount_inr || 0), 0);
+  h += '<div class="exbar"><label for="exMonth" class="fine">' + tr("ex_month") + '</label><select id="exMonth">' +
+    months.map(k => '<option value="' + k + '"' + (k === exSel ? " selected" : "") + ">" + esc(exMonthName(k)) + (k === now ? " · " + tr("ex_now") : "") + "</option>").join("") +
+    "</select><b>" + tr("ex_total").replace("{t}", exRup(tot)) + "</b></div>";
+  if (rows.length) {
+    const by = {}; rows.forEach(x => { by[x.item] = (by[x.item] || 0) + (+x.amount_inr || 0); });
+    const ks = Object.keys(by).sort((a, b) => by[b] - by[a]);
+    if (ks.length > 1) h += '<div class="exitems">' + ks.map(k => "<span>" + esc(k) + ": <b>" + exRup(by[k]) + "</b></span>").join("") + "</div>";
+    h += '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ex_c_date") + '</th><th scope="col">' + tr("ex_c_item") + '</th><th scope="col" class="n">' + tr("ex_c_amt") +
+      '</th><th scope="col">' + tr("ex_c_note") + "</th><th></th></tr></thead><tbody>" +
+      rows.map(x => exEdit === x.id ? '<tr><td colspan="5">' + form(x) + "</td></tr>" :
+        "<tr><td>" + paDay(x.spent_on) + "</td><td><b>" + esc(x.item) + '</b></td><td class="n">' + exRup(x.amount_inr) + '</td><td class="wrapn">' + esc(x.note || "") +
+        '</td><td><button class="btn-s" type="button" data-exact="edit" data-id="' + esc(x.id) + '">' + tr("co_edit") + "</button></td></tr>").join("") + "</tbody></table></div>";
+  } else h += "<p>" + tr(exSel === now ? "ex_none_now" : "ex_none") + "</p>";
+  /* month by month, last 12 months that have expenses */
+  const hist = months.filter(k => exMonthTotal(k) > 0).slice(0, 12);
+  if (hist.length > 1) h += '<details class="exhist"><summary>' + tr("ex_hist") + '</summary><div class="tablewrap"><table class="ledger"><tbody>' +
+    hist.map(k => "<tr><td>" + esc(exMonthName(k)) + '</td><td class="n">' + exRup(exMonthTotal(k)) + "</td></tr>").join("") + "</tbody></table></div></details>";
+  el.innerHTML = h + "</div>";
+}
+function exOpenNew() { exEdit = "new"; exSel = exNowKey(); renderExp(); const i = document.querySelector('[data-exform=""] [name="item"]'); if (i) i.focus(); }
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-exact]"); if (!b) return;
+  const a = b.dataset.exact;
+  if (a === "edit") { exEdit = b.dataset.id; renderExp(); return; }
+  if (a === "cancel") { exEdit = null; renderExp(); return; }
+  if (a === "del") {
+    if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = tr("co_del_sure"); return; }
+    const r = await sb.from("admin_expenses").delete().eq("id", b.dataset.id);
+    if (r.error) { set("coErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
+    EX = EX.filter(x => x.id !== b.dataset.id); exEdit = null; renderCosts();
+  }
+});
+document.addEventListener("change", e => { if (e.target && e.target.id === "exMonth") { exSel = e.target.value; exEdit = null; renderExp(); } });
+document.addEventListener("submit", async e => {
+  const f = e.target.closest && e.target.closest("[data-exform]"); if (!f) return;
+  e.preventDefault();
+  const g = n => f.elements[n].value.trim();
+  const amt = Math.round((+g("amount_inr") || 0) * 100) / 100;
+  const row = { spent_on: g("spent_on"), item: g("item"), amount_inr: amt, note: g("note") || null, updated_at: new Date().toISOString() };
+  if (!row.item || !/^\d{4}-\d{2}-\d{2}$/.test(row.spent_on) || !(amt >= 0)) return;
+  const btn = f.querySelector('[type="submit"]'); if (btn) btn.disabled = true;
+  const id = f.dataset.exform;
+  const r = id ? await sb.from("admin_expenses").update(row).eq("id", id).select().single() : await sb.from("admin_expenses").insert(row).select().single();
+  if (r.error) { if (btn) btn.disabled = false; set("coErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
+  if (id) EX = EX.map(x => x.id === id ? r.data : x); else EX.unshift(r.data);
+  EX.sort((a, b) => String(b.spent_on).localeCompare(String(a.spent_on)));
+  exSel = String(r.data.spent_on).slice(0, 7); exEdit = null; set("coErr", ""); renderCosts();
+});
+if ($("exAdd")) $("exAdd").addEventListener("click", () => { if (!EX && !exErr) return; exOpenNew(); const x = $("exBox"); if (x) x.scrollIntoView({ behavior: "smooth", block: "start" }); });
+if ($("coMoreBtn")) $("coMoreBtn").addEventListener("click", () => { const m = $("coMore"), open = m.hidden; m.hidden = !open; $("coMoreBtn").setAttribute("aria-expanded", open ? "true" : "false"); });
+Object.assign(T.en, { ex_add: "+ Add expense", ex_h: "My expenses", ex_p: "What Seb Saathi really cost you. Add each bill or payment when you make it; the figures at the top use these.",
+  ex_c_date: "Date", ex_c_item: "What for", ex_c_amt: "Amount (₹)", ex_c_note: "Note", ex_item_ph: "e.g. Vercel, Anthropic (AI)", ex_note_ph: "Invoice number, card, anything to remember",
+  ex_month: "Month", ex_now: "this month", ex_total: "Total {t}", ex_none_now: "No expenses added this month yet. Tap + Add expense.", ex_none: "No expenses in this month.",
+  ex_hist: "Month by month", ex_setup: "Not set up yet. In Supabase → SQL Editor, run supabase/admin_expenses.sql once, then press Refresh.",
+  ex_s_month: "Expenses this month", ex_s_left: "Left over this month", ex_s_year: "Expenses this year",
+  co_more: "Price list and estimates", co_more_p: "Planning figures only (plan prices and upper AI estimates). They are not used in the totals at the top.", co_list_h: "Price list" });
+Object.assign(T.hi, { ex_add: "+ ख़र्च जोड़ें", ex_h: "मेरे ख़र्च", ex_p: "सेब साथी पर असल में कितना ख़र्च हुआ। हर बिल या भुगतान करते ही जोड़ें; ऊपर के आँकड़े इन्हीं से बनते हैं।",
+  ex_c_date: "तारीख़", ex_c_item: "किस लिए", ex_c_amt: "रक़म (₹)", ex_c_note: "नोट", ex_item_ph: "जैसे Vercel, Anthropic (AI)", ex_note_ph: "इनवॉइस नंबर, कार्ड, कुछ भी याद रखने लायक",
+  ex_month: "महीना", ex_now: "यह महीना", ex_total: "कुल {t}", ex_none_now: "इस महीने अभी कोई ख़र्च नहीं जोड़ा। + ख़र्च जोड़ें दबाएँ।", ex_none: "इस महीने कोई ख़र्च नहीं।",
+  ex_hist: "महीने-दर-महीने", ex_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_expenses.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
+  ex_s_month: "इस महीने का ख़र्च", ex_s_left: "इस महीने बचत", ex_s_year: "इस साल का ख़र्च",
+  co_more: "दाम सूची और अनुमान", co_more_p: "सिर्फ़ योजना के आँकड़े (प्लान के दाम और AI के ऊपरी अनुमान)। ऊपर के कुल में ये नहीं जुड़ते।", co_list_h: "दाम सूची" });
 async function loadCosts() {
   if (!isAdmin() || !sb || coBusy) return;
   coBusy = true; set("coErr", ""); $("coRefresh").disabled = true;
@@ -1066,6 +1167,7 @@ async function loadCosts() {
   try { coAi.photos = await ovCount("diagnoses", q => q.gte("created_at", ms)); } catch (x) {}
   try { coAi.qs = await ovCount("chat_messages", q => q.eq("role", "user").gte("created_at", ms)); } catch (x) {}
   try { const r = await sb.from("payments").select("plan,period,amount,status,valid_until,created_at,user_id,email").limit(10000); coPay = r.error ? null : (r.data || []); } catch (x) { coPay = null; }
+  await loadExp();
   coLive = null; coDb = null;
   try {
     const s = await sb.auth.getSession(), tok = s && s.data && s.data.session ? s.data.session.access_token : "";
@@ -1119,8 +1221,13 @@ function renderCosts() {
   const cash = ok.filter(x => String(x.created_at).slice(0, 7) === ym).reduce((s, x) => s + (+x.amount || 0), 0);
   const net = income - fixed - ai;
   const st = (k, v, cls) => "<div" + (cls ? ' class="' + cls + '"' : "") + "><span>" + tr(k) + "</span><b>" + v + "</b></div>";
-  $("coStats").innerHTML = st("co_s_fixed", paRup(Math.round(fixed)), "main") + (L ? st("co_s_ai_real", paRup(Math.round(ai))) : st("co_s_ai", "≤ " + paRup(Math.round(ai)))) +
-    st("co_s_income", paRup(Math.round(income)), "pos") + st("co_s_net", (net < 0 ? "−" : "") + paRup(Math.abs(Math.round(net))), net < 0 ? "neg" : "pos") + st("co_s_cash", paRup(cash));
+  /* top figures use only real money: expenses you entered this month, and what growers pay */
+  const exM = exMonthTotal(exNowKey()), left = income - exM;
+  $("coStats").innerHTML = st("ex_s_month", EX ? exRup(exM) : "–", "main") + st("co_s_income", paRup(Math.round(income)), "pos") +
+    st("ex_s_left", EX ? (left < 0 ? "−" : "") + exRup(Math.abs(left)) : "–", left < 0 ? "neg" : "pos") + st("co_s_cash", paRup(cash)) +
+    st("ex_s_year", EX ? exRup(exYearTotal(exNowKey().slice(0, 4))) : "–");
+  void net;
+  renderExp();
   const avg = Object.keys(live).length ? income / Object.keys(live).length : 299 / 12;
   renderLive();
   $("coAi").innerHTML = '<div class="cobox"><h5>' + tr("co_ai_h") + "</h5>" +
@@ -1196,7 +1303,7 @@ Object.assign(T.hi, { co_s_ai_real: "इस महीने AI (असली)", 
   li_db_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_usage.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
   li_db_note: "पिछले 30 दिनों में {n} बाग़वानों ने लॉग इन किया। 70% पर पट्टी नारंगी और 90% पर लाल होती है: तब Supabase Pro पर जाएँ।" });
 Object.assign(T.en, { adm_t_cost: "Costs", co_h: "Running costs", co_add: "+ Add cost",
-  co_p: "Everything Seb Saathi costs to run, and how it compares with what subscriptions bring in. Edit any row when a plan or price changes.",
+  co_p: "What you really spend on Seb Saathi each month, against what growers pay.",
   co_err_setup: "The costs list is not set up yet. In Supabase → SQL Editor, run supabase/admin_costs.sql once, then press Refresh.",
   co_s_fixed: "Fixed costs a month", co_s_ai: "AI this month (most)", co_s_income: "Subscription income a month", co_s_net: "Left over a month", co_s_cash: "Payments received this month",
   co_ai_h: "AI usage this month", co_ai_photo: "{n} photo checks × up to {x} = up to {t}", co_ai_q: "{n} Saathi questions × up to {x} = up to {t}",
@@ -1211,7 +1318,7 @@ Object.assign(T.en, { adm_t_cost: "Costs", co_h: "Running costs", co_add: "+ Add
   sb_days: "{n} days", sb_ago: "ended {n} days ago", sb_npay: "{n} payments", sb_pend_n: "{n} payment waiting",
   sb_note: "One row per grower, from their approved payments. Change the end date to extend or shorten a plan; it updates their latest approved payment." });
 Object.assign(T.hi, { adm_t_cost: "ख़र्च", co_h: "चलाने का ख़र्च", co_add: "+ ख़र्च जोड़ें",
-  co_p: "सेब साथी चलाने का पूरा ख़र्च, और सब्सक्रिप्शन से आने वाली आमदनी से तुलना। कोई प्लान या दाम बदले तो पंक्ति बदलें।",
+  co_p: "हर महीने सेब साथी पर आपका असली ख़र्च, बाग़वानों के भुगतान के मुक़ाबले।",
   co_err_setup: "ख़र्च की सूची अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_costs.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
   co_s_fixed: "महीने का तय ख़र्च", co_s_ai: "इस महीने AI (ज़्यादा से ज़्यादा)", co_s_income: "महीने की सब्सक्रिप्शन आमदनी", co_s_net: "महीने में बचत", co_s_cash: "इस महीने मिले भुगतान",
   co_ai_h: "इस महीने AI का उपयोग", co_ai_photo: "{n} फ़ोटो जाँच × ज़्यादा से ज़्यादा {x} = {t} तक", co_ai_q: "{n} साथी सवाल × ज़्यादा से ज़्यादा {x} = {t} तक",
@@ -1654,7 +1761,7 @@ function applyLang() {
   set("langBtn", tr("lang_btn"));
   document.title = tr("adm_title");
   renderGate();
-  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk(); if (typeof renderStudio === "function") renderStudio(); if (typeof renderAig === "function") renderAig();
+  if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk(); if (typeof renderStudio === "function") renderStudio(); if (typeof renderAig === "function") renderAig(); if (CO || EX || exErr) renderCosts();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => {
