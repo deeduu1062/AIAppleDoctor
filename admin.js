@@ -1128,7 +1128,7 @@ document.addEventListener("change", e => { if (e.target && e.target.id === "exMo
 document.addEventListener("submit", async e => {
   const f = e.target.closest && e.target.closest("[data-exform]"); if (!f) return;
   e.preventDefault();
-  const g = n => f.elements[n].value.trim();
+  const g = n => { const i = f.querySelector('[name="' + n + '"]'); return i ? String(i.value || "").trim() : ""; };   /* not f.elements[n]: elements.item is a built-in function */
   const amt = Math.round((+g("amount_inr") || 0) * 100) / 100;
   const row = { spent_on: g("spent_on"), item: g("item"), amount_inr: amt, note: g("note") || null, updated_at: new Date().toISOString() };
   if (!row.item || !/^\d{4}-\d{2}-\d{2}$/.test(row.spent_on) || !(amt >= 0)) return;
