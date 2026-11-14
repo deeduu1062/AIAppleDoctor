@@ -558,6 +558,28 @@ function qApprovePatch(x) {
 }
 const qTag = x => '<span class="mkkind k-' + qKind(x) + '">' + tr("cq_k_" + qKind(x)) + "</span>";
 const qWhere = x => qKind(x) === "yt" ? "YouTube" : qKind(x) === "wa" ? "WhatsApp" : (x.fb ? "Facebook" : "") + (x.fb && x.ig ? " + " : "") + (x.ig ? "Instagram" : "");
+let mkNowId = null;   /* the item being posted now */
+const qNowBtn = x => mkSoc && mkSoc.ok ? '<button class="btn-s add" type="button" data-mkq="now" data-id="' + x.id + '"' + (mkNowId ? " disabled" : "") + ">" + tr(mkNowId === String(x.id) ? "mk_post_busy" : "cq_now") + "</button>" : "";
+/* post one item from the list straight away; it is marked "posting" first so the timer can't post it too */
+async function qPostNow(id) {
+  const x = qGet(id); if (!x || mkNowId) return;
+  if (!String(x.text || "").trim() && !x.image_url && !x.video_url) { mkQMsg = tr("mk_q_empty"); renderMk(); return; }
+  const was = x.status;
+  mkNowId = String(id); mkQMsg = ""; renderMk();
+  try {
+    await qUpd(id, { text: x.text, status: "posting" });
+    const r = await fetch("/api/social?fn=post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() },
+      body: JSON.stringify({ text: x.text, image_url: x.image_url || "", video_url: x.video_url || "", fb: !!x.fb, ig: !!x.ig && !!(x.image_url || x.video_url) }) });
+    const j = await r.json().catch(() => ({})), R = j.result || {};
+    const ok = !!((R.fb && R.fb.ok) || (R.ig && R.ig.ok));
+    if (!j.result) { await qUpd(id, { status: was }); mkQMsg = tr("mk_q_err").replace("{m}", j.error || r.status); }
+    else await qUpd(id, { status: ok ? "posted" : "failed", post_at: new Date().toISOString(), result: R });
+  } catch (e) {
+    try { await qUpd(id, { status: was }); } catch (x2) {}
+    mkQMsg = mkV2(e) ? tr("mk_v2_setup") : tr("mk_q_err").replace("{m}", String(e.message || e));
+  }
+  mkNowId = null; renderMk();
+}
 function qDraftHtml(x, hasIg) {
   const k = qKind(x);
   let h = '<div class="mkq">' + '<div class="mkrow">' + qTag(x) + (x.topic ? "<b>" + esc(x.topic) + "</b>" : "") + "</div>" +
@@ -577,7 +599,7 @@ function qDraftHtml(x, hasIg) {
   h += '<div class="mkrow"><label class="chk"><input type="checkbox" data-qf="fb" data-id="' + x.id + '"' + (x.fb ? " checked" : "") + "><span>" + tr("mk_post_fb") + '</span></label>' +
     '<label class="chk"><input type="checkbox" data-qf="ig" data-id="' + x.id + '"' + (x.ig && media ? " checked" : "") + (hasIg && media ? "" : " disabled") + "><span>" + tr(k === "video" ? "cq_ig_vid" : "mk_post_igc") + "</span></label></div>" +
     (!media ? '<p class="fine">' + tr("mk_q_ig_need") + "</p>" : "") +
-    '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="approve" data-id="' + x.id + '">' + tr("mk_q_approve") + '</button><button class="btn-s" type="button" data-mkq="del" data-id="' + x.id + '">' + tr(mkQDel === String(x.id) ? "mk_q_del_sure" : "mk_q_del") + "</button></div></div>";
+    '<div class="mklinks">' + qNowBtn(x) + '<button class="btn-s" type="button" data-mkq="approve" data-id="' + x.id + '">' + tr("mk_q_approve") + '</button><button class="btn-s" type="button" data-mkq="del" data-id="' + x.id + '">' + tr(mkQDel === String(x.id) ? "mk_q_del_sure" : "mk_q_del") + "</button></div></div>";
   return h;
 }
 function qHtml() {
@@ -607,7 +629,7 @@ function qHtml() {
   if (sched.length) h += "<p><b>" + tr("mk_q_sched").replace("{n}", sched.length) + '</b></p><ul class="mkwatch">' + sched.map(x =>
     "<li>" + qTag(x) + " " + esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) + (qKind(x) === "yt" ? "" : " · " + qWhere(x)) +
     (qKind(x) === "yt" ? " · " + tr("cq_yt_self") + (x.result && x.result.yt && x.result.yt.link ? ' · <a href="' + esc(x.result.yt.link) + '" target="_blank" rel="noopener">' + tr("mk_post_view") + "</a>" : "")
-      : x.status === "scheduled" ? ' <button class="btn-s" type="button" data-mkq="unsched" data-id="' + x.id + '">' + tr("mk_q_unsched") + "</button>" : " · " + tr("mk_post_busy")) + "</li>").join("") + "</ul>";
+      : x.status === "scheduled" ? " " + qNowBtn(x) + ' <button class="btn-s" type="button" data-mkq="unsched" data-id="' + x.id + '">' + tr("mk_q_unsched") + "</button>" : " · " + tr("mk_post_busy")) + "</li>").join("") + "</ul>";
   if (done.length) h += "<p><b>" + tr("mk_q_done") + '</b></p><ul class="mkwatch">' + done.slice(0, 12).map(x => {
     const R = x.result || {}, part = (o, w) => o ? (o.ok ? ' · <a href="' + esc(o.link) + '" target="_blank" rel="noopener">' + w + "</a>" : ' · <span class="mkwarn">' + esc(tr("mk_q_partial").replace("{w}", w).replace("{m}", qErrTxt(o.error))) + "</span>") : "";
     const failedPart = R.ig && R.ig.ok === false && R.ig.error === "ig_processing";   /* worth trying again; other errors need a change first */
@@ -978,6 +1000,7 @@ W.addEventListener("click", async e => {
   if (a !== "del") mkQDel = null;
   if (a === "compose") { mkCompose = !mkCompose; mkPostRes = null; renderMk(); if (mkCompose) { const t = $("mkpText"); if (t) t.focus(); } return; }
   if (a === "studio") { const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+  if (a === "now") return qPostNow(id);
   if (a === "draft") return qDraft("post");
   if (a === "wadraft") return qDraft("wa");
   if (a === "approve" && x) {
