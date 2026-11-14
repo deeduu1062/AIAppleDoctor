@@ -5,6 +5,7 @@
    remembered on this device (localStorage) so a half-made video isn't lost. */
 
 Object.assign(T.en, {
+  vs_ai_shoot: "AI words are in. What to film: {s}",
   vs_q_add: "Add to the Facebook + Instagram tab (as a Reel)", vs_q_busy: "Uploading the video…", vs_q_ok: "Added to the Facebook + Instagram tab. Open it to tap Post now or Approve.",
   vs_q_err: "Could not add it: {m}", vs_q_webm: "Make it again in Chrome or Edge on a computer to get an MP4 first: Facebook and Instagram need MP4.",
   yt_when: "Publish at (India time, optional)", yt_when_p: "Leave empty to publish straight away. With a time, YouTube keeps it private until then and publishes it by itself.",
@@ -53,6 +54,7 @@ Object.assign(T.en, {
   yt_connect_first: "Connect your YouTube channel below to upload straight from here."
 });
 Object.assign(T.hi, {
+  vs_ai_shoot: "AI के शब्द आ गए। क्या फ़िल्म करें: {s}",
   vs_q_add: "Facebook + Instagram टैब में जोड़ें (Reel के रूप में)", vs_q_busy: "वीडियो अपलोड हो रहा है…", vs_q_ok: "Facebook + Instagram टैब में जुड़ गया। वहाँ अभी पोस्ट करें या मंज़ूर करें दबाएँ।",
   vs_q_err: "नहीं जुड़ा: {m}", vs_q_webm: "पहले कंप्यूटर पर Chrome या Edge में दोबारा बनाकर MP4 लें: Facebook और Instagram को MP4 चाहिए।",
   yt_when: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", yt_when_p: "ख़ाली छोड़ें तो तुरंत पब्लिश होगा। समय डालें तो YouTube उस समय तक प्राइवेट रखेगा और फिर अपने-आप पब्लिश करेगा।",
@@ -179,6 +181,7 @@ const VS_FMT = { "916": [1080, 1920], "11": [1080, 1080], "45": [1080, 1350] };
 const VS = { tpl: "tip", vlang: "hi", fmt: "916", cta: "", scenes: [], music: null, vol: 0.6, sel: 0, out: null, msg: "", err: "" };
 const vsMonth = () => VS_MONTH[VS.vlang][new Date().getMonth()];
 function vsFromTpl() {
+  VS.ai = null;
   VS.scenes = VS_TPL[VS.tpl][VS.vlang].map((s, i) => ({ label: s[0].replace("{m}", vsMonth()), title: s[1], sub: s[2], dur: i ? 3 : 2.5, media: (VS.scenes[i] || {}).media || null }));
   VS.cta = VS_BRAND[VS.vlang].cta;
 }
@@ -420,6 +423,7 @@ function vsStart(record) {
 /* ---------- caption ---------- */
 function vsCaption() {
   const s = VS.scenes, b = VS_BRAND[VS.vlang];
+  if (VS.ai && VS.ai.caption) return (VS.ai.caption + (/sebsaathi\.com/.test(VS.ai.caption) ? "" : "\n\n👉 https://sebsaathi.com")).trim();
   const head = s[0] ? (s[0].title + (s[0].sub ? " — " + s[0].sub : "")) : "";
   const pts = s.slice(1).map(x => (/^\d{1,2}$/.test(x.label.trim()) ? x.label.trim() + ". " : x.label.trim() ? x.label.trim() + ": " : "• ") + x.title + (x.sub ? " (" + x.sub + ")" : ""));
   return [head, "", ...pts, "", VS.cta, "👉 https://sebsaathi.com", "", b.name + " · " + b.tag, VS_TAGS].join("\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -427,6 +431,7 @@ function vsCaption() {
 
 /* ---------- from the Marketing tab: a video idea's words, and handing the finished video to the post list ---------- */
 function vsPrefill(name, hook, show) {
+  VS.ai = null;
   VS.vlang = "hl";
   const old = VS.scenes;
   VS.scenes = [{ label: String(name || "").slice(0, 40), title: String(hook || ""), sub: "", dur: 2.5 }, { label: "1", title: "", sub: "", dur: 3 }, { label: "2", title: "", sub: "", dur: 3 }]
@@ -435,6 +440,17 @@ function vsPrefill(name, hook, show) {
   VS.msg = tr("vi_prefill").replace("{v}", name || "").replace("{s}", show || "");
   vsSave(); renderStudio();
   const t = $("vs-title-1"); if (t) setTimeout(() => { try { t.focus({ preventScroll: true }); } catch (e) {} }, 400);
+}
+/* words written by the AI on the Marketing tab ("Ask the AI for a video") */
+function vsPrefillAI(v, lg) {
+  if (!v || !Array.isArray(v.scenes) || !v.scenes.length) return;
+  VS.vlang = lg === "hi" ? "hi" : lg === "en" ? "en" : "hl";
+  const old = VS.scenes;
+  VS.scenes = v.scenes.slice(0, 8).map((x, i) => ({ label: String(x.label || ""), title: String(x.title || ""), sub: String(x.sub || ""), dur: i ? 3 : 2.5, media: (old[i] || {}).media || null }));
+  VS.cta = String(v.cta || VS_BRAND[VS.vlang].cta); VS.sel = 0; VS.err = "";
+  VS.ai = { title: String(v.title || ""), caption: String(v.caption || "") };
+  VS.msg = v.shoot ? tr("vs_ai_shoot").replace("{s}", v.shoot) : "";
+  vsSave(); renderStudio();
 }
 let vsQBusy = false, vsQRes = "";
 async function vsQueue() {
@@ -450,7 +466,7 @@ const vsYtDesc = () => vsCaption().replace("https://sebsaathi.com", "https://seb
 
 /* ---------- YouTube: connect the channel and upload (api/youtube.js, supabase/youtube.sql) ---------- */
 let YT = null, YTU = null, ytBusy = "", ytRes = "", ytNote = "";
-const vsYtTitle = () => (String((VS.scenes[0] || {}).title || VS_BRAND[VS.vlang].name).replace(/[<>]/g, "").slice(0, 88) + " #Shorts").trim();
+const vsYtTitle = () => (String((VS.ai && VS.ai.title) || (VS.scenes[0] || {}).title || VS_BRAND[VS.vlang].name).replace(/[<>]/g, "").slice(0, 88) + " #Shorts").trim();
 async function ytCall(action) {
   const r = await fetch("/api/youtube", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ action }) });
   const j = await r.json().catch(() => ({}));

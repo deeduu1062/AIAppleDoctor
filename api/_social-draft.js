@@ -2,6 +2,9 @@
 // POST /api/social-draft  { n: 3..7, lang: "hn"|"hi"|"en" }   Header: Authorization: Bearer <admin's Supabase token>
 //                         { kind: "wa", lang }        one WhatsApp channel tip for this week (saved as a draft, kind "wa")
 //                         { kind: "videos", done: [] } 12 short-video ideas for the coming month (returned, not saved)
+//                         { kind: "custom", ask, lang } one post written to what the admin asked (saved as a draft)
+//                         { kind: "wamsg", ask, lang }  one WhatsApp message as asked (saved as a draft, kind "wa")
+//                         { kind: "video", ask, lang }  words for the Video Studio: title, scenes, end card, what to film, caption
 // Saves the drafts in public.social_queue (status "draft", 7:30 pm India time on spread-out days)
 // so the admin can check them, add photos and tap "Approve all".
 // Uses the same ANTHROPIC_API_KEY as Saathi. Optional Vercel setting: SOCIAL_MODEL.
@@ -62,6 +65,19 @@ Plan 12 videos for the 4 weeks of the coming month, 3 a week: mix timely orchard
 Safety rules: never name a chemical, brand or dose; never quote prices; no made-up growers or testimonials.
 Reply with ONLY a JSON array, no other text: [{"week": 1, "name": "2-4 word Hinglish title", "hook": "the first 3 seconds", "show": "what to film, in English, one line"}]`;
 
+/* "Ask the AI" boxes on the Marketing tab: the admin says what they want */
+const WAMSG_BRIEF = `You write WhatsApp messages for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand, made by an apple grower from Rohru. The admin tells you what message they want and who it is for.
+The message: warm, personal, short (30 to 110 words), short lines, at most 3 emojis, no hashtags. WhatsApp formatting (*bold*) is fine. If it fits, end with the link https://sebsaathi.com/?src=wa
+Safety rules (always): never name a chemical, pesticide, fungicide, fertiliser brand or dose; never quote or guess prices, scheme amounts or rules; no made-up statistics, quotes or growers; never promise results.
+Reply with ONLY a JSON array with one item, no other text: [{"topic": "3-6 word topic", "text": "the full message"}]`;
+
+const VIDEO_BRIEF = `You write short phone videos (under 60 seconds) for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand. The founder is an apple grower from Rohru and films in his own orchards. The admin tells you what video they want.
+The video is made in a simple editor: 3 to 6 scenes, each shown for 2 to 4 seconds with a photo or clip behind the words. Each scene has a small tag (1-3 words, or a step number like "1"), main words (at most 9 words, big on screen) and a second line (at most 10 words). The first scene is the hook. Then an end card with a short call to action.
+What the website does today: orchard record, spray and work diary with expenses, season sales record (Mandi, Adani per kilo, Theka), real profit per box, disease check from one photo, Saathi chatbot (also by voice), spray schedule and season calendar, family sharing, invite friends.
+Safety rules: never name a chemical, brand or dose (for sprays say follow the state spray schedule and the label); never quote prices; no made-up growers or testimonials; never promise results.
+Reply with ONLY a JSON array with one item, no other text:
+[{"title": "YouTube title, at most 70 characters", "scenes": [{"label": "...", "title": "...", "sub": "..."}], "cta": "end card call to action, at most 8 words", "shoot": "what to film for each scene, in English, one or two lines", "caption": "post caption for Reels/YouTube, 40-90 words, ending with 4-6 hashtags"}]`;
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
   const auth = String(req.headers.authorization || "");
@@ -76,8 +92,10 @@ module.exports = async (req, res) => {
   if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "no_ai_key" });
 
   const b = await readBody(req);
-  const kind = b.kind === "wa" ? "wa" : b.kind === "videos" ? "videos" : "post";
-  const n = kind === "wa" ? 1 : Math.max(1, Math.min(7, Math.round(+b.n || 3)));
+  const kind = ["wa", "videos", "custom", "wamsg", "video"].indexOf(b.kind) >= 0 ? b.kind : "post";
+  const want = String(b.ask || "").replace(/\s+/g, " ").trim().slice(0, 800);
+  if ((kind === "custom" || kind === "wamsg" || kind === "video") && !want) return send(res, 400, { error: "empty" });
+  const n = kind === "post" || kind === "videos" ? Math.max(1, Math.min(7, Math.round(+b.n || 3))) : 1;
   const lang = b.lang === "hi" ? "hi" : b.lang === "en" ? "en" : "hn";
 
   /* recent topics, so the week does not repeat itself (also checks the table exists) */
@@ -94,7 +112,11 @@ module.exports = async (req, res) => {
     : "Write every post in Hinglish: Hindi as a Himachali grower speaks it, written in English letters, with Hindi words and Hindi sentence order (e.g. \"Is mahine bagiche mein kya karein?\"). No English sentences; English only for common farm words like spray, scab, mandi.";
   const today = "Today is " + now.getUTCDate() + " " + MONTHS[now.getUTCMonth()] + " " + now.getUTCFullYear() + " (India). ";
   const nextM = MONTHS[(now.getUTCMonth() + (now.getUTCDate() > 20 ? 1 : 0)) % 12];
-  const ask = kind === "videos" ? today + "Plan the videos for " + nextM + "." + (Array.isArray(b.done) && b.done.length ? "\nAlready made (do not repeat): " + b.done.slice(0, 40).map(x => String(x).slice(0, 60)).join("; ") : "")
+  const vl = lang === "hi" ? "Write every on-screen word and the caption in simple Hindi (Devanagari script)." : lang === "en" ? "Write the on-screen words and caption in simple English." : "Write the on-screen words and caption in Hinglish (Hindi in English letters, Hindi sentence order).";
+  const ask = kind === "custom" ? today + "Write ONE post. What the admin wants: " + want + "\n" + langLine
+    : kind === "wamsg" ? today + "What the admin wants: " + want + "\n" + langLine
+    : kind === "video" ? today + "What the admin wants: " + want + "\n" + vl
+    : kind === "videos" ? today + "Plan the videos for " + nextM + "." + (Array.isArray(b.done) && b.done.length ? "\nAlready made (do not repeat): " + b.done.slice(0, 40).map(x => String(x).slice(0, 60)).join("; ") : "")
     : kind === "wa" ? today + "Write this week's tip. " + langLine + (recent.length ? "\nRecent topics (do not repeat): " + recent.slice(0, 30).join("; ") : "")
     : today + "Write " + n + " posts for the coming 7 days. " + langLine + (recent.length ? "\nRecent topics (do not repeat): " + recent.slice(0, 30).join("; ") : "");
 
@@ -103,7 +125,7 @@ module.exports = async (req, res) => {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: kind === "wa" ? WA_BRIEF : kind === "videos" ? VID_BRIEF : BRIEF, messages: [{ role: "user", content: ask }] })
+      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: kind === "wa" ? WA_BRIEF : kind === "videos" ? VID_BRIEF : kind === "wamsg" ? WAMSG_BRIEF : kind === "video" ? VIDEO_BRIEF : BRIEF, messages: [{ role: "user", content: ask }] })
     });
     if (!r.ok) { console.error("ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
     const j = await r.json();
@@ -113,16 +135,22 @@ module.exports = async (req, res) => {
     if (!Array.isArray(posts)) throw new Error("not a list");
   } catch (e) { console.error("ai-parse", e); return send(res, 502, { error: "ai" }); }
 
+  if (kind === "video") {   /* words for the Video Studio: returned, not saved */
+    const v = posts[0] || {};
+    const scenes = (Array.isArray(v.scenes) ? v.scenes : []).slice(0, 8).map(x => ({ label: String(x.label || "").slice(0, 30), title: String(x.title || "").slice(0, 90), sub: String(x.sub || "").slice(0, 90) })).filter(x => x.title);
+    if (!scenes.length) return send(res, 502, { error: "ai" });
+    return send(res, 200, { video: { title: String(v.title || "").slice(0, 90), scenes, cta: String(v.cta || "").slice(0, 80), shoot: String(v.shoot || "").slice(0, 400), caption: String(v.caption || "").slice(0, 2000) } });
+  }
   if (kind === "videos") {   /* ideas only: the admin page keeps them (admin_marketing) */
     const ideas = posts.map(p => ({ week: Math.max(1, Math.min(4, Math.round(+p.week || 1))), name: String(p.name || "").slice(0, 60), hook: String(p.hook || "").slice(0, 120), show: String(p.show || "").slice(0, 160) }))
       .filter(x => x.name && x.hook).slice(0, 12);
     if (!ideas.length) return send(res, 502, { error: "ai" });
     return send(res, 200, { month: nextM, ideas });
   }
-  if (kind === "wa") {   /* one tip, dated next Monday 8 am India time (= 02:30 UTC) */
+  if (kind === "wa" || kind === "wamsg") {   /* one tip/message, dated next Monday 8 am India time (= 02:30 UTC) */
     const p = posts[0] || {}, add = ((8 - now.getUTCDay()) % 7) || 7;
     const row = { kind: "wa", status: "draft", text: String(p.text || "").trim().slice(0, 2200), topic: String(p.topic || "").slice(0, 200) || null, fb: false, ig: false,
-      post_at: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + add, 2, 30)).toISOString() };
+      post_at: kind === "wamsg" ? new Date().toISOString() : new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + add, 2, 30)).toISOString() };
     if (!row.text) return send(res, 502, { error: "ai" });
     try {
       const r = await fetch(SB_URL + "/rest/v1/social_queue", { method: "POST", headers: sbH(token, { Prefer: "return=representation" }), body: JSON.stringify([row]) });
