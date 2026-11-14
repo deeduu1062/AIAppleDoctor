@@ -133,6 +133,7 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
 .entryform > .btn-s{margin-top:12px}
 .erow{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(7,minmax(0,1fr));gap:8px;align-items:end}
 .erow .field label{font-size:.8rem;margin-bottom:3px;line-height:1.2}
+.erow.kgrow{grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr))}
 .warn{margin:8px 0 0;display:grid;gap:4px}.warn:empty{display:none}
 .warn span{display:block;padding:6px 10px;border-left:3px solid var(--warn,#C4851C);background:color-mix(in srgb,var(--warn,#C4851C) 12%,transparent);border-radius:0 6px 6px 0;font-size:.88rem;color:var(--fg)}
 .lotbox .field input,.lotbox .field select{min-height:38px;padding:5px 8px;font-size:.95rem}
@@ -260,12 +261,16 @@ html[lang="hi"] legend{text-transform:none;letter-spacing:.02em;font-size:.95rem
   .erow>.field:nth-child(-n+6){grid-column:span 4}
   .erow>.field:nth-child(n+7){grid-column:span 6}
   .erow .field label{font-size:.74rem}
+  .erow.kgrow{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .erow.kgrow>.field:first-child{grid-column:1/-1}
 }
 @container (max-width:680px){
   .erow{grid-template-columns:repeat(12,minmax(0,1fr))}
   .erow>.field:nth-child(-n+6){grid-column:span 4}
   .erow>.field:nth-child(n+7){grid-column:span 6}
   .erow .field label{font-size:.74rem}
+  .erow.kgrow{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .erow.kgrow>.field:first-child{grid-column:1/-1}
 }
 .entrymsg{margin-top:10px;color:var(--good);font-weight:600;min-height:0}
 .addrow{display:flex;gap:8px;align-items:flex-end;margin-top:12px}
@@ -3284,6 +3289,19 @@ const isTheka = l => !!(l && l.type === "theka");
 /* Adani buys by the kilo: those entries keep kg and rate per kg; for per-box figures 20 kg counts as one box */
 const KG_BOX = 20;
 const isKg = n => !!(n && n.kg != null);
+/* Adani grades exactly as printed on the Adani produce receipt: colour band, then size */
+const ADANI_GRADES = [
+  [">80%", ["EL", "L+M", "S", "ES", "EES", "P2"]],
+  ["60-80%", ["EL", "L+M", "S", "ES", "EES", "P2"]],
+  ["<60%", ["EL2ES", "EES+P2"]],
+  ["0-100%", ["EEL", "US", "ROL"]]];
+const ADANI_ALL = [].concat.apply([], ADANI_GRADES.map(g => g[1].map(z => g[0] + " " + z)));
+function adaniSel(attrs, cur) {
+  const o = v => '<option value="' + esc(v) + '"' + (v === cur ? " selected" : "") + ">" + esc(GRADE_KEY[v] ? tr(GRADE_KEY[v]) : v) + "</option>";
+  return '<select ' + attrs + '><option value="">' + tr("f_type_ph") + "</option>" +
+    (cur && ADANI_ALL.indexOf(cur) < 0 ? o(cur) : "") +
+    ADANI_GRADES.map(g => '<optgroup label="' + esc(tr("ad_col").replace("{c}", g[0])) + '">' + g[1].map(z => o(g[0] + " " + z)).join("") + "</optgroup>").join("") + "</select>";
+}
 const stChip = l => l && SALE_TYPES.indexOf(l.type) >= 0 ? '<span class="stchip st-' + l.type + '">' + tr("st_" + l.type) + "</span>" : "";
 const pv = (prev, k) => (prev ? (+prev[k] || 0) : 0);
 function blankLine(prev, grade) { return {id:newId(), grade:grade || "", date:"", boxes:0, rate:0, tod:pv(prev, "tod"), grd:pv(prev, "grd"), car:pv(prev, "car"), exp:0, com:pv(prev, "com"), half:false, paid:false, paidOn:""}; }
@@ -3708,7 +3726,7 @@ function rowHtml(r, i) {
   const typeSel = '<div class="field"><label for="' + id + 'grade">' + tr("f_type") + '</label><select id="' + id + 'grade" data-ne="' + i + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
     GRADES.map(g => '<option value="' + esc(g) + '"' + (g === r.grade ? " selected" : "") + ">" + esc(tr(GRADE_KEY[g])) + "</option>").join("") + "</select></div>";
   if (neType === "adani") return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b></div>" +
-    '<div class="erow">' + typeSel + f("kg", "f_kg") + f("rkg", "f_rkg") + f("xtot", "f_xtot") + '</div><p class="hint">' + tr("kg_note") + '</p><p class="warn" id="ne_warn" role="status"></p></div>';
+    '<div class="erow kgrow"><div class="field"><label for="' + id + 'grade">' + tr("ad_grade") + "</label>" + adaniSel('id="' + id + 'grade" data-ne="' + i + '" data-f="grade"', r.grade) + "</div>" + f("kg", "f_kg") + f("rkg", "f_rkg") + f("xtot", "f_xtot") + '</div><p class="hint">' + tr("kg_note") + '</p><p class="warn" id="ne_warn" role="status"></p></div>';
   return '<div class="linebox"><div class="rowhead"><b>' + tr("ne_row").replace("{n}", i + 1) + "</b></div>" +
     '<div class="erow">' + typeSel + f("boxes", "f_boxes") + f("rate", "f_price") + f("tod", "f_tod") + f("grd", "f_grd") + f("car", "f_car") + f("exp", "f_oth") + f("com", "f_com") + "</div>" +
     '<p class="warn" id="ne_warn" role="status"></p></div>';
@@ -3808,7 +3826,9 @@ function updTheka() {
 }
 $("ne_stype").addEventListener("click", e => {
   const b = e.target.closest("[data-stype]"); if (!b) return;
-  neType = b.dataset.stype; set("ne_err", ""); renderSaleType(); renderDraft();
+  neType = b.dataset.stype; set("ne_err", "");
+  draft.forEach(r => { if ((neType === "adani" ? ADANI_ALL : GRADES).indexOf(r.grade) < 0) r.grade = ""; });
+  renderSaleType(); renderDraft();
   const f = neType === "theka" ? $("th_amt") : $("ne" + editIdx + "_grade"); if (f) f.focus();
 });
 $("ne_theka").addEventListener("input", () => { set("ne_err", ""); updTheka(); });
@@ -3837,17 +3857,17 @@ Object.assign(T.en, { ne_stype: "How did you sell this lot?", st_mandi: "Mandi",
   st_mandi_p: "Boxes at the mandi", st_adani_p: "By the kilo", st_theka_p: "Lump sum for the crop",
   th_amt: "Theka amount (₹)", th_boxes: "Estimated boxes", th_note: "The buyer pays picking, packing and transport, so a theka has no expenses here. The boxes are your estimate, used only to work out profit per box.",
   th_err: "Enter the theka amount and the estimated number of boxes.", th_sum: "About {x} a box", g_theka: "Theka (lump sum)", f_stype: "Sold at", st_by: "By way of selling:", st_by_l: "{b} boxes · {p} a box", st_by_kg: "{kg} kg · {p} a box (20 kg)",
-  f_kg: "Weight (kg)", f_rkg: "Rate per kg (₹)", f_xtot: "Your expenses (₹ total)", kg_note: "Weight after any deduction. Expenses are everything you paid for this, such as picking, crates and transport. For profit per box, 20 kg counts as one box." });
+  ad_grade: "Adani grade (as on receipt)", ad_col: "Colour {c}", f_kg: "Weight (kg)", f_rkg: "Rate per kg (₹)", f_xtot: "Your expenses (₹ total)", kg_note: "Enter each line of the Adani receipt: grade, weight (kg) and rate per kg. Weight after any deduction. Expenses are everything you paid for this, such as picking, crates and transport. For profit per box, 20 kg counts as one box." });
 Object.assign(T.hi, { ne_stype: "यह लॉट कैसे बेचा?", st_mandi: "मंडी", st_adani: "अदानी", st_theka: "ठेका",
   st_mandi_p: "मंडी में पेटियाँ", st_adani_p: "किलो के भाव", st_theka_p: "पूरी फ़सल की एकमुश्त रक़म",
   th_amt: "ठेके की रक़म (₹)", th_boxes: "अंदाज़न पेटियाँ", th_note: "तुड़ान, पैकिंग और ढुलाई ख़रीदार देता है, इसलिए यहाँ ठेके का कोई ख़र्च नहीं। पेटियाँ आपका अंदाज़ा हैं, सिर्फ़ प्रति पेटी मुनाफ़ा निकालने के लिए।",
   th_err: "ठेके की रक़म और अंदाज़न पेटियाँ लिखें।", th_sum: "लगभग {x} प्रति पेटी", g_theka: "ठेका (एकमुश्त)", f_stype: "कहाँ बेचा", st_by: "बेचने के तरीक़े से:", st_by_l: "{b} पेटी · {p} प्रति पेटी", st_by_kg: "{kg} किलो · {p} प्रति पेटी (20 किलो)",
-  f_kg: "वज़न (किलो)", f_rkg: "भाव प्रति किलो (₹)", f_xtot: "आपका ख़र्च (₹ कुल)", kg_note: "कटौती के बाद का वज़न। ख़र्च में वह सब जो आपने दिया, जैसे तुड़ाई, क्रेट और ढुलाई। प्रति पेटी मुनाफ़े के लिए 20 किलो को एक पेटी गिना है।" });
+  ad_grade: "अदानी ग्रेड (रसीद जैसा)", ad_col: "रंग {c}", f_kg: "वज़न (किलो)", f_rkg: "भाव प्रति किलो (₹)", f_xtot: "आपका ख़र्च (₹ कुल)", kg_note: "अदानी रसीद की हर लाइन भरें: ग्रेड, वज़न (किलो) और भाव प्रति किलो। कटौती के बाद का वज़न। ख़र्च में वह सब जो आपने दिया, जैसे तुड़ाई, क्रेट और ढुलाई। प्रति पेटी मुनाफ़े के लिए 20 किलो को एक पेटी गिना है।" });
 Object.assign(T.hn, { ne_stype: "Yeh lot kaise becha?", st_mandi: "Mandi", st_adani: "Adani", st_theka: "Theka",
   st_mandi_p: "Mandi mein petiyan", st_adani_p: "Kilo ke bhaav", st_theka_p: "Poori fasal ki ekmusht rakam",
   th_amt: "Theke ki rakam (₹)", th_boxes: "Andaazan petiyan", th_note: "Tudaan, packing aur dhulai khareedar deta hai, isliye yahan theke ka koi kharcha nahi. Petiyan aapka andaaza hain, sirf prati peti munafa nikaalne ke liye.",
   th_err: "Theke ki rakam aur andaazan petiyan likhein.", th_sum: "Lagbhag {x} prati peti", g_theka: "Theka (ekmusht)", f_stype: "Kahan becha", st_by: "Bechne ke tareeke se:", st_by_l: "{b} peti · {p} prati peti", st_by_kg: "{kg} kilo · {p} prati peti (20 kilo)",
-  f_kg: "Wazan (kilo)", f_rkg: "Bhaav prati kilo (₹)", f_xtot: "Aapka kharcha (₹ kul)", kg_note: "Katauti ke baad ka wazan. Kharche mein woh sab jo aapne diya, jaise tudaai, crate aur dhulai. Prati peti munafe ke liye 20 kilo ko ek peti gina hai." });
+  ad_grade: "Adani grade (raseed jaisa)", ad_col: "Rang {c}", f_kg: "Wazan (kilo)", f_rkg: "Bhaav prati kilo (₹)", f_xtot: "Aapka kharcha (₹ kul)", kg_note: "Adani raseed ki har line bharein: grade, wazan (kilo) aur bhaav prati kilo. Katauti ke baad ka wazan. Kharche mein woh sab jo aapne diya, jaise tudaai, crate aur dhulai. Prati peti munafe ke liye 20 kilo ko ek peti gina hai." });
 $("ne_pos").addEventListener("change", e => { newPos = parseInt(e.target.value, 10) || null; });
 $("entryForm").addEventListener("submit", e => {
   e.preventDefault(); set("ne_err", "");
@@ -3966,9 +3986,7 @@ function lineHtml(n) {
   const id = "n_" + n.id;
   if (isKg(n)) {
     const g = (k, lab, v) => '<div class="field"><label for="' + id + "_" + k + '">' + wb(tr(lab)) + '</label><input id="' + id + "_" + k + '" data-line="' + n.id + '" data-f="' + k + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(v) + '"></div>';
-    const opts = GRADES.slice(); if (n.grade && opts.indexOf(n.grade) < 0) opts.push(n.grade);
-    return '<div class="linebox"><div class="erow"><div class="field"><label for="' + id + '_grade">' + tr("f_type") + '</label><select id="' + id + '_grade" data-line="' + n.id + '" data-f="grade"><option value="">' + tr("f_type_ph") + "</option>" +
-      opts.map(q => '<option value="' + esc(q) + '"' + (q === n.grade ? " selected" : "") + ">" + esc(GRADE_KEY[q] ? tr(GRADE_KEY[q]) : q) + "</option>").join("") + "</select></div>" +
+    return '<div class="linebox"><div class="erow kgrow"><div class="field"><label for="' + id + '_grade">' + tr("ad_grade") + "</label>" + adaniSel('id="' + id + '_grade" data-line="' + n.id + '" data-f="grade"', n.grade) + "</div>" +
       g("kg", "f_kg", n.kg || "") + g("rkg", "f_rkg", n.rkg || "") + g("xtot", "f_xtot", n.xtot || "") +
       '<div class="field"><label for="' + id + '_date">' + tr("f_date") + '</label><input id="' + id + '_date" data-line="' + n.id + '" data-f="date" type="date" value="' + esc(n.date || "") + '"></div></div>' +
       '<p class="hint">' + tr("kg_note") + "</p></div>";
