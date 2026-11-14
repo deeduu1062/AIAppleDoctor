@@ -16,7 +16,7 @@ Object.assign(T.en, {
   mk_vid_h: "Video ideas", mk_vid_p: "3 a week, under 60 seconds, filmed in your own orchards. End each one: \"Seb Saathi free hai. Link description mein.\"",
   mk_c_week: "Week", mk_c_video: "Video", mk_c_hook: "First 3 seconds", mk_c_show: "What to show", mk_c_posted: "Posted",
   mk_msg_h: "Ready-to-send messages", mk_msg_p: "Your invite link is added at the end when you copy or send.",
-  mk_copy: "Copy", mk_copied: "Copied", mk_wa: "WhatsApp",
+  mk_copy: "Copy", mk_copied: "Copied", mk_wa: "WhatsApp", mk_use_fb: "Post on Facebook / Instagram",
   mk_soc_h: "Social media setup", mk_soc_p: "Same name and handle everywhere: Seb Saathi, @sebsaathi. Each account needs your phone for a code, so you create it; then paste its link here. Saved links open from this tab and replace \"coming soon\" on the website.",
   mk_c_platform: "Platform", mk_c_link: "Your page link (shows on the website once saved)",
   mk_meta: "Meta Business Suite (Facebook + Instagram)", mk_yts: "YouTube Studio", mk_soc_live: "Live ✓", mk_soc_todo: "Not set up yet",
@@ -56,7 +56,7 @@ Object.assign(T.hi, {
   mk_vid_h: "वीडियो आइडिया", mk_vid_p: "हफ़्ते में 3, 60 सेकंड से कम, अपने बाग़ में बनाए। हर वीडियो के अंत में: \"Seb Saathi free hai. Link description mein.\"",
   mk_c_week: "हफ़्ता", mk_c_video: "वीडियो", mk_c_hook: "पहले 3 सेकंड", mk_c_show: "क्या दिखाएँ", mk_c_posted: "डाला",
   mk_msg_h: "भेजने के लिए तैयार संदेश", mk_msg_p: "कॉपी करने या भेजने पर आपका न्योता लिंक अंत में जुड़ जाता है।",
-  mk_copy: "कॉपी", mk_copied: "कॉपी हुआ", mk_wa: "WhatsApp",
+  mk_copy: "कॉपी", mk_copied: "कॉपी हुआ", mk_wa: "WhatsApp", mk_use_fb: "Facebook / Instagram पर पोस्ट करें",
   mk_soc_h: "सोशल मीडिया सेटअप", mk_soc_p: "हर जगह एक ही नाम और हैंडल: Seb Saathi, @sebsaathi। हर अकाउंट के लिए आपके फ़ोन पर कोड आता है, इसलिए अकाउंट आप बनाएँ; फिर उसका लिंक यहाँ डालें। सेव किए लिंक यहीं से खुलते हैं और वेबसाइट पर \"जल्द आ रहा है\" की जगह दिखते हैं।",
   mk_c_platform: "प्लेटफ़ॉर्म", mk_c_link: "आपके पेज का लिंक (सेव करते ही वेबसाइट पर दिखेगा)",
   mk_meta: "Meta Business Suite (Facebook + Instagram)", mk_yts: "YouTube Studio", mk_soc_live: "चालू ✓", mk_soc_todo: "अभी नहीं बना",
@@ -128,11 +128,18 @@ const MK_VIDEOS = [
   [4, "Theka ya Mandi?", "Theke par diya bagicha, munafa kitna hua?", "Season sales record: a Theka sale next to a Mandi sale, per-box profit"]
 ];
 
+/* [title, text, has its own link] — messages without their own link get the invite link added */
 const MK_MSGS = [
+  ["Introduction: Facebook post (Hinglish)", "🍎 Namaste bagwan bhaiyon! Main hoon Rohru ka ek seb bagwan, aur aaj aapke liye kuch laaya hoon: Seb Saathi (सेब साथी).\n\nSaalon tak main apne bagichon ka hisaab diary aur Excel mein rakhta tha. Kaunsa bagicha sach mein kama raha hai, har peti par asli munafa kitna bacha, ye kabhi saaf pata nahi chalta tha. Isliye maine apne liye ye app banaya, aur ab aap sab ke liye free khol diya hai.\n\nSeb Saathi mein aap:\n✅ Har bagiche ka record rakh sakte hain: ped, kismein, mitti ki sehat\n✅ Har lot ki bikri likh sakte hain: Mandi, Adani ya Theka\n✅ Har peti ka asli munafa dekh sakte hain, saare kharche ghata kar\n✅ Patte ya phal ki ek photo se bimari ki jaanch kar sakte hain\n✅ Saathi se Hindi ya Hinglish mein sawal pooch sakte hain, bol kar bhi\n✅ Spray schedule aur season calendar dekh sakte hain\n\nHimachal, Kashmir aur Uttarakhand ke bagwanon ke liye. Phone ke browser mein chalta hai, app download karne ki zaroorat nahi.\n\nFree shuru karein 👉 https://sebsaathi.com/?src=fb\n\nApne bagwan dost ko tag kijiye, aur bataiye aapko sabse zyada kis cheez mein madad chahiye. 🙏\n\n#SebSaathi #सेबसाथी #AppleFarming #Himachal #Kashmir #Uttarakhand #Bagwani", true],
+  ["Introduction: WhatsApp groups (Hinglish)", "🍎 *Bagwan bhaiyon ke liye: Seb Saathi (सेब साथी)*\n\nNamaste ji 🙏 Main Rohru ka bagwan hoon. Apne bagichon ke liye ek app banaya hai, ab sab ke liye free hai:\n\n• Har bagiche ka record ek jagah\n• Har peti par asli munafa, kharche ghata kar\n• Ek photo se bimari ki jaanch\n• Saathi se Hindi/Hinglish mein sawal\n• Spray schedule aur season calendar\n\nDownload ki zaroorat nahi, phone mein khul jaata hai 👇\nhttps://sebsaathi.com/?src=wa\n\nKoi sawal ho to isi number par message kijiye.", true],
+  ["Introduction: WhatsApp personal (Hinglish)", "Namaste ji 🙏 Maine apne bagichon ke liye ek app banaya hai: Seb Saathi. Ismein har bagiche ka record, har lot ka asli munafa, aur photo se bimari ki jaanch hai. Bilkul free hai.\n\nAap ek baar dekh kar bataiye kaisa laga? Aapki salah se main ise aur behtar banaunga.\n\n👉 https://sebsaathi.com/?src=wa", true],
+  ["Introduction: Facebook post (Hindi)", "🍎 नमस्ते बागवान भाइयों! मैं रोहड़ू का एक सेब बागवान हूँ, और आज आपके लिए कुछ लाया हूँ: सेब साथी।\n\nसालों तक मैं अपने बगीचों का हिसाब डायरी और Excel में रखता था। कौन-सा बगीचा सच में कमा रहा है, हर पेटी पर असली मुनाफ़ा कितना बचा, यह कभी साफ़ पता नहीं चलता था। इसलिए मैंने अपने लिए यह ऐप बनाया, और अब आप सबके लिए मुफ़्त खोल दिया है।\n\nसेब साथी में आप:\n✅ हर बगीचे का रिकॉर्ड रख सकते हैं: पेड़, किस्में, मिट्टी की सेहत\n✅ हर लॉट की बिक्री लिख सकते हैं: मंडी, अदानी या ठेका\n✅ सारे ख़र्चे घटाकर हर पेटी का असली मुनाफ़ा देख सकते हैं\n✅ पत्ते या फल की एक फ़ोटो से बीमारी की जाँच कर सकते हैं\n✅ साथी से हिंदी में सवाल पूछ सकते हैं, बोलकर भी\n✅ स्प्रे शेड्यूल और सीज़न कैलेंडर देख सकते हैं\n\nहिमाचल, कश्मीर और उत्तराखंड के बागवानों के लिए। फ़ोन के ब्राउज़र में चलता है, ऐप डाउनलोड करने की ज़रूरत नहीं।\n\nमुफ़्त शुरू करें 👉 https://sebsaathi.com/?src=fb\n\nअपने बागवान दोस्त को टैग कीजिए, और बताइए कि आपको सबसे ज़्यादा किस चीज़ में मदद चाहिए। 🙏\n\n#सेबसाथी #SebSaathi #सेब #बागवानी #Himachal #Kashmir #Uttarakhand", true],
+  ["Introduction: WhatsApp groups (Hindi)", "🍎 *बागवान भाइयों के लिए: सेब साथी*\n\nनमस्ते जी 🙏 मैं रोहड़ू का बागवान हूँ। अपने बगीचों के लिए एक ऐप बनाया है, अब सबके लिए मुफ़्त है:\n\n• हर बगीचे का रिकॉर्ड एक जगह\n• ख़र्चे घटाकर हर पेटी पर असली मुनाफ़ा\n• एक फ़ोटो से बीमारी की जाँच\n• साथी से हिंदी में सवाल\n• स्प्रे शेड्यूल और सीज़न कैलेंडर\n\nडाउनलोड की ज़रूरत नहीं, फ़ोन में खुल जाता है 👇\nhttps://sebsaathi.com/?src=wa\n\nकोई सवाल हो तो इसी नंबर पर मैसेज कीजिए।", true],
+  ["Introduction: WhatsApp personal (Hindi)", "नमस्ते जी 🙏 मैंने अपने बगीचों के लिए एक ऐप बनाया है: सेब साथी। इसमें हर बगीचे का रिकॉर्ड, हर लॉट का असली मुनाफ़ा, और फ़ोटो से बीमारी की जाँच है। बिल्कुल मुफ़्त है।\n\nआप एक बार देखकर बताइए कैसा लगा? आपकी सलाह से मैं इसे और बेहतर बनाऊँगा।\n\n👉 https://sebsaathi.com/?src=wa", true],
   ["To pilot growers (send personally)", "Namaste ji 🙏 Maine apne bagichon ke liye ek app banaya hai: Seb Saathi. Ismein har bagiche ka record, har lot ka asli munafa, aur photo se bimari ki jaanch hai. Free hai. Kya aap 15 minute de sakte hain? Main khud aakar pichhle season ka hisaab daal dunga."],
   ["For village and grower WhatsApp groups", "🍎 Bagwan bhaiyon ke liye: Seb Saathi\n• Har bagiche ka record ek jagah\n• Har peti par asli munafa\n• Photo bhejo, bimari ka jawab 30 second mein\nHindi, Hinglish aur English mein. Free shuruaat:"],
   ["Weekly tip (WhatsApp channel)", "🍎 Is hafte bagiche mein: patte girne ke baad canker wali tehniyan kaatkar jalayein, aur kate hisse par paste lagayein. Shaq ho to photo Seb Saathi par jaanchein:"],
-  ["Reminder to pilot growers after a week", "Ji, Seb Saathi kaisa laga? Koi dikkat ho to bataiye, main theek kar dunga. Apne 2-3 dost bagwanon ko bhi bhej dijiye. 3 dost judenge to aapko 1 mahina Saathi plan free milega."]
+  ["Reminder to pilot growers after a week", "Ji, Seb Saathi kaisa laga? Koi dikkat ho to bataiye, main theek kar dunga. Apne 2-3 dost bagwanon ko bhi bhej dijiye. 3 dost judenge to aapko 1 mahina Saathi plan free milega.", true]
 ];
 
 /* id, name, where to create it, where to manage it, the start every page link must have, steps */
@@ -804,8 +811,8 @@ function renderMk() {
   const P = mkPil || [];
   b += mkSec("pilot", tr("pi_h"), mkPil ? P.length + " · " + tr("pi_c_up") + " " + P.filter(x => x.user_id).length : "", pilotHtml());
   b += mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + MK_MSGS.map((m, i) => {
-    const full = m[1] + (i === 3 ? "" : "\n" + mkLink());
-    return '<div class="mkmsg"><b>' + esc(m[0]) + "</b><pre>" + esc(full) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="m' + i + '">' + tr(mkCopied["m" + i] ? "mk_copied" : "mk_copy") + '</button><a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(full) + '">' + tr("mk_wa") + "</a></div></div>";
+    const full = m[1] + (m[2] ? "" : "\n" + mkLink());
+    return '<div class="mkmsg"><b>' + esc(m[0]) + "</b><pre>" + esc(full) + '</pre><div class="mklinks"><button class="btn-s" type="button" data-mkcopy="m' + i + '">' + tr(mkCopied["m" + i] ? "mk_copied" : "mk_copy") + '</button><a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(full) + '">' + tr("mk_wa") + '</a><button class="btn-s add" type="button" data-mkuse="m' + i + '">' + tr("mk_use_fb") + "</button></div></div>";
   }).join(""));
   let inv = "";
   if (mkInvErr) inv = '<p class="fine">' + tr("mk_inv_setup") + "</p>";
@@ -857,7 +864,7 @@ function mkText(id) {
   if (id === "bs") return MK_BIO_S;
   if (id === "bl") return MK_BIO_L;
   const i = +id.slice(1), m = MK_MSGS[i];
-  return m ? m[1] + (i === 3 ? "" : "\n" + mkLink()) : "";
+  return m ? m[1] + (m[2] ? "" : "\n" + mkLink()) : "";
 }
 async function mkClip(t) { try { await navigator.clipboard.writeText(t); return true; } catch (e) { return false; } }
 W.addEventListener("input", e => {
@@ -933,6 +940,14 @@ W.addEventListener("click", async e => {
     const code = mkTlCode(); if (!code) return;
     if (tl.dataset.tl === "copy") { if (await mkClip(mkSrcLink(code))) { mkTlCopied = true; tl.textContent = tr("tl_copied"); setTimeout(() => { mkTlCopied = false; const b = document.querySelector('[data-tl="copy"]'); if (b) b.textContent = tr("tl_copy"); }, 2000); } }
     else if (tl.dataset.tl === "png") mkQrPng(mkSrcLink(code), code);
+    return;
+  }
+  const use = e.target.closest("[data-mkuse]");
+  if (use) {   /* put this message in the post box (Posts and videos), ready to post on Facebook / Instagram or schedule */
+    let t = mkText(use.dataset.mkuse);
+    if (/[?&]src=wa\b/.test(t)) t = t.replace(/([?&])src=wa\b/g, "$1src=fb");   /* a WhatsApp link posted on Facebook counts as Facebook */
+    mkPostText = t; mkImg = null; mkPostRes = null; mkCompose = true; mkOpen.add("content"); renderMk();
+    const box = $("mkpText"); if (box) { box.scrollIntoView({ block: "center", behavior: "smooth" }); try { box.focus({ preventScroll: true }); } catch (x) {} }
     return;
   }
   const pb = e.target.closest("[data-mkpost]");
