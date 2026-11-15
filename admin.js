@@ -1270,7 +1270,8 @@ function renderLive() {
       (/trial/i.test(W.type) ? '<p class="fine">' + tr("li_tw_trialnote") + "</p>" : "");
   }
   tw += "</div>";
-  el.innerHTML = ai + tw + db;
+  el.innerHTML = ai + db;
+  const twEl = $("coTw"); if (twEl) twEl.innerHTML = tw;   /* Twilio stays visible, outside "Price list and estimates" */
 }
 function renderCosts() {
   if (!$("coList")) return;
