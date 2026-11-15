@@ -1274,10 +1274,11 @@ function renderCosts() {
   const pl = x => x.inc - x.exp - x.ai, sgn = n => (n < -0.005 ? "−" : "") + exRup(Math.abs(n));
   const plSt = (k, n) => st(k, sgn(n), n < -0.005 ? "neg" : "pos");
   $("coStats").innerHTML = '<h5 class="plh">' + tr("pl_now").replace("{m}", esc(exMonthName(now))) + "</h5>" +
-    st("pl_inc", exRup(cur.inc), "pos") + st("pl_exp", EX ? exRup(cur.exp) : "–") + st("pl_ai", AIU ? exRup(cur.ai) : "–") + plSt("pl_pl", pl(cur)) +
+    st("pl_inc", exRup(cur.inc), "pos") + st("pl_exp", EX ? exRup(cur.exp) : "–") + st("pl_ai", AIU ? exRup(cur.ai) : "–", "aitile") + plSt("pl_pl", pl(cur)) +
     '<h5 class="plh">' + tr("pl_all") + "</h5>" +
     st("pl_inc", exRup(all.inc), "pos") + st("pl_exp", EX ? exRup(all.exp) : "–") + st("pl_ai", AIU ? exRup(all.ai) : "–") + plSt("pl_pl", pl(all)) +
     st("co_s_income", paRup(Math.round(income)));
+  if (typeof aigTile === "function") aigTile();   /* growers line under AI cost (aicost.js) */
   renderPL(PL);
   renderExp();
   const avg = Object.keys(live).length ? income / Object.keys(live).length : 299 / 12;

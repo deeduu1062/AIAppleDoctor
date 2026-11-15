@@ -13,6 +13,7 @@ Object.assign(T.en, {
   aig_free: "Free allowance per Free grower (₹ a month)",
   aig_sum: "{n} growers used AI this month, costing {t} in all. {o} cost more than they pay, {w} are close.",
   aig_none: "No grower has used AI this month yet.",
+  aig_tile: "{n} growers used AI · {o} cost more than they pay · {w} close", aig_tile1: "1 grower used AI · {o} cost more than they pay · {w} close", aig_tile0: "No grower has used AI yet",
   aig_c_who: "Grower", aig_c_plan: "Plan", aig_c_pays: "Pays a month", aig_c_cost: "AI cost", aig_c_uses: "Uses", aig_c_st: "Status",
   aig_uses: "{q} questions · {p} photo checks", aig_split: "Saathi {c} · photos {p}", aig_other: " · other {o}",
   aig_over: "Over", aig_near: "Close", aig_ok: "OK", aig_est: "est.", aig_admin: "Admin (not counted)",
@@ -29,6 +30,7 @@ Object.assign(T.hi, {
   aig_free: "हर Free बाग़वान की मुफ़्त सीमा (₹ महीना)",
   aig_sum: "इस महीने {n} बाग़वानों ने AI इस्तेमाल किया, कुल ख़र्च {t}। {o} का ख़र्च उनके भुगतान से ज़्यादा है, {w} क़रीब हैं।",
   aig_none: "इस महीने अभी किसी बाग़वान ने AI इस्तेमाल नहीं किया।",
+  aig_tile: "{n} बाग़वानों ने AI इस्तेमाल किया · {o} का ख़र्च भुगतान से ज़्यादा · {w} क़रीब", aig_tile1: "1 बाग़वान ने AI इस्तेमाल किया · {o} का ख़र्च भुगतान से ज़्यादा · {w} क़रीब", aig_tile0: "अभी किसी बाग़वान ने AI इस्तेमाल नहीं किया",
   aig_c_who: "बाग़वान", aig_c_plan: "प्लान", aig_c_pays: "महीने का भुगतान", aig_c_cost: "AI ख़र्च", aig_c_uses: "इस्तेमाल", aig_c_st: "स्थिति",
   aig_uses: "{q} सवाल · {p} फ़ोटो जाँच", aig_split: "साथी {c} · फ़ोटो {p}", aig_other: " · बाक़ी {o}",
   aig_over: "ज़्यादा", aig_near: "क़रीब", aig_ok: "ठीक", aig_est: "अनुमान", aig_admin: "Admin (गिना नहीं)",
@@ -78,6 +80,14 @@ async function aigLoad() {
   aigBusy = false;
   renderAig();
 }
+/* the growers line under "AI cost" in the Costs tab's this-month figures */
+function aigTile() {
+  const t = document.querySelector("#coStats .aitile"); if (!t || !AIG) return;
+  const rows = aigRows(), g = rows.filter(r => !r.adm);
+  const o = fmtN(rows.filter(r => r.st === "over").length), w = fmtN(rows.filter(r => r.st === "near").length);
+  let s = t.querySelector(".sub"); if (!s) { s = document.createElement("span"); s.className = "sub"; t.appendChild(s); }
+  s.textContent = !g.length ? tr("aig_tile0") : tr(g.length === 1 ? "aig_tile1" : "aig_tile").replace("{n}", fmtN(g.length)).replace("{o}", o).replace("{w}", w);
+}
 function renderAig() {
   const rows = aigRows(), over = rows.filter(r => r.st === "over"), near = rows.filter(r => r.st === "near");
   /* Costs tab button and Overview warning */
@@ -89,6 +99,7 @@ function renderAig() {
     al.hidden = !over.length;
     al.innerHTML = over.length ? "<span>" + esc(over.length === 1 ? tr("aig_alert1") : tr("aig_alert").replace("{n}", over.length)) + '</span> <button class="btn-s" type="button" data-aig="see">' + tr("aig_see") + "</button>" : "";
   }
+  aigTile();
   /* Costs tab box */
   const el = $("coPer"); if (!el) return;
   let h = '<div class="cobox" id="aigBox"><h5>' + tr("aig_h") + "</h5><p class=\"fine\">" + tr("aig_p") + "</p>";
@@ -97,8 +108,6 @@ function renderAig() {
   h += '<div class="field aigfree"><label for="aigFree">' + tr("aig_free") + '</label><input id="aigFree" type="number" min="0" step="1" inputmode="numeric" value="' + aigFree() + '"></div>';
   const growers = rows.filter(r => !r.adm);
   if (!growers.length && !rows.length) { el.innerHTML = h + "<p>" + tr("aig_none") + "</p></div>"; return; }
-  const total = growers.reduce((s, r) => s + r.cost, 0);
-  h += "<p><b>" + tr("aig_sum").replace("{n}", fmtN(growers.length)).replace("{t}", paRup(Math.round(total))).replace("{o}", fmtN(over.length)).replace("{w}", fmtN(near.length)) + "</b></p>";
   const r2 = n => n < 10 ? "₹" + n.toFixed(2) : paRup(Math.round(n));
   const chip = r => r.st === "admin" ? '<span class="sbchip sb-pending">' + tr("aig_admin") + "</span>"
     : '<span class="sbchip ' + (r.st === "over" ? "sb-expired" : r.st === "near" ? "sb-soon" : "sb-active") + '">' + tr("aig_" + r.st) + "</span>" +
