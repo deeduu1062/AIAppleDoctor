@@ -1515,16 +1515,14 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 #adStats div{padding:7px 10px;border-radius:8px}
 #adStats span{font-size:.76rem}
 #adStats b,#adStats .main b{font-size:1rem;margin-top:2px}
-/* Grower records list: each grower becomes a small card on phones, no scrolling sideways */
-@media (max-width:640px){
-  .adwrap{overflow:visible}
-  .adt thead{display:none}
-  .adt,.adt tbody,.adt tr,.adt th,.adt td{display:block;width:auto}
-  .adt tr{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:8px 0;background:var(--surface)}
-  .adt th[scope="row"]{padding:0 0 6px;border:0;text-align:left;overflow-wrap:anywhere}
-  .adt td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:3px 0;border:0;text-align:right!important}
-  .adt td[data-l]::before{content:attr(data-l);color:var(--muted);font:500 .85rem var(--body);text-align:left}
-}
+/* Grower records list: compact table so more fits on a phone */
+.adt th,.adt td{padding:5px 7px!important;font-size:.8rem!important;line-height:1.25;vertical-align:middle}
+.adt thead th{font-size:.72rem!important;white-space:normal}
+.adt td{white-space:nowrap}
+.adt th[scope="row"]{max-width:11rem}
+.adt th[scope="row"] .pflink{display:block;max-width:11rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem}
+.adt .tag{font-size:.7rem;padding:1px 6px}
+@media (max-width:640px){.adt th[scope="row"],.adt th[scope="row"] .pflink{max-width:8.5rem}}
 .admmain{padding-top:10px;padding-bottom:60px}
 .fbadm.solo{margin-top:16px;padding-top:0;border-top:0}
 .gate{max-width:460px;margin:40px auto;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
