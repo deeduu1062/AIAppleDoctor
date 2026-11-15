@@ -5,7 +5,7 @@
    remembered on this device (localStorage) so a half-made video isn't lost. */
 
 Object.assign(T.en, {
-  vs_ai_shoot: "AI words are in. What to film: {s}",
+  vs_ai_shoot: "AI words are in. What to film: {s}", vs_voice_on: "Voice-over",
   vs_q_add: "Add to the Facebook + Instagram tab (as a Reel)", vs_q_busy: "Uploading the video…", vs_q_ok: "Added to the Facebook + Instagram tab. Open it to tap Post now or Approve.",
   vs_q_err: "Could not add it: {m}", vs_q_webm: "Make it again in Chrome or Edge on a computer to get an MP4 first: Facebook and Instagram need MP4.",
   yt_when: "Publish at (India time, optional)", yt_when_p: "Leave empty to publish straight away. With a time, YouTube keeps it private until then and publishes it by itself.",
@@ -181,23 +181,24 @@ const VS_FMT = { "916": [1080, 1920], "11": [1080, 1080], "45": [1080, 1350] };
 const VS = { tpl: "tip", vlang: "hi", fmt: "916", cta: "", scenes: [], music: null, vol: 0.6, sel: 0, out: null, msg: "", err: "" };
 const vsMonth = () => VS_MONTH[VS.vlang][new Date().getMonth()];
 function vsFromTpl() {
-  VS.ai = null;
+  VS.ai = null; VS.endVoice = null;
   VS.scenes = VS_TPL[VS.tpl][VS.vlang].map((s, i) => ({ label: s[0].replace("{m}", vsMonth()), title: s[1], sub: s[2], dur: i ? 3 : 2.5, media: (VS.scenes[i] || {}).media || null }));
   VS.cta = VS_BRAND[VS.vlang].cta;
 }
 function vsSave() {
   try { localStorage.setItem("vs-draft", JSON.stringify({ tpl: VS.tpl, vlang: VS.vlang, fmt: VS.fmt, cta: VS.cta, vol: VS.vol,
-    scenes: VS.scenes.map(s => ({ label: s.label, title: s.title, sub: s.sub, dur: s.dur })) })); } catch (e) {}
+    scenes: VS.scenes.map(s => ({ label: s.label, title: s.title, sub: s.sub, dur: s.dur, art: s.art || "" })) })); } catch (e) {}
 }
 (function vsLoad() {
   let d = null; try { d = JSON.parse(localStorage.getItem("vs-draft") || "null"); } catch (e) {}
   if (d && VS_TPL[d.tpl] && VS_BRAND[d.vlang] && Array.isArray(d.scenes) && d.scenes.length) {
     Object.assign(VS, { tpl: d.tpl, vlang: d.vlang, fmt: VS_FMT[d.fmt] ? d.fmt : "916", cta: String(d.cta || VS_BRAND[d.vlang].cta), vol: +d.vol >= 0 ? +d.vol : 0.6 });
-    VS.scenes = d.scenes.slice(0, 8).map(s => ({ label: String(s.label || ""), title: String(s.title || ""), sub: String(s.sub || ""), dur: Math.min(8, Math.max(1.5, +s.dur || 3)), media: null }));
+    VS.scenes = d.scenes.slice(0, 8).map(s => ({ label: String(s.label || ""), title: String(s.title || ""), sub: String(s.sub || ""), dur: Math.min(10, Math.max(1.5, +s.dur || 3)), art: String(s.art || ""), media: null }));
   } else vsFromTpl();
 })();
-const VS_END = 3.2, VS_X = 0.35; /* end-card seconds, crossfade seconds */
-const vsTotal = () => VS.scenes.reduce((s, x) => s + x.dur, 0) + VS_END;
+const VS_END = 3.2, VS_X = 0.35; /* end-card seconds (longer when its voice-over is longer), crossfade seconds */
+const vsEndDur = () => Math.max(VS_END, VS.endVoice ? Math.round((VS.endVoice.duration + 1.0) * 10) / 10 : 0);
+const vsTotal = () => VS.scenes.reduce((s, x) => s + x.dur, 0) + vsEndDur();
 
 /* ---------- drawing ---------- */
 const vsMark = new Image(); vsMark.src = "/icons/mark.svg";
@@ -240,7 +241,9 @@ function vsScene(ctx, W, H, sc, i, local, th) {
   const k = W / 1080, tall = H / W > 1.5, hi = VS.vlang === "hi";
   const p = vsClamp(local / sc.dur);
   const media = sc.media && vsMedia(ctx, W, H, sc.media, p, i);
+  const art = !media && sc.art && typeof vsArt === "function";
   if (!media) vsBg(ctx, W, H, th, local + i);
+  if (art) vsArt(ctx, W, H, sc.art, local, th);   /* built-in drawn picture (vsart.js) */
   const maxW = W - 150 * k;
   /* measure */
   let tpx = (tall ? 104 : 88) * k, lines;
@@ -250,7 +253,7 @@ function vsScene(ctx, W, H, sc, i, local, th) {
   const isNum = /^\d{1,2}$/.test(sc.label.trim());
   const labH = sc.label.trim() ? (isNum ? 112 * k : lpx * 1.9) + 26 * k : 0;
   const blockH = labH + lines.length * lh + (subs.length ? 36 * k + subs.length * slh : 0);
-  let y = (media ? H * (tall ? 0.70 : 0.66) : H * 0.52) - blockH / 2;
+  let y = (media || art ? H * (tall ? 0.70 : 0.68) : H * 0.52) - blockH / 2;
   y = Math.min(y, H - blockH - (tall ? 190 : 90) * k);
   const x = 75 * k;
   const pop = (d) => vsEase((local - d) / 0.55);
@@ -352,12 +355,31 @@ function vsSize() {
 }
 
 /* ---------- playing and recording ---------- */
-let vsAC = null, vsGain = null, vsDest = null, vsSrcFor = null;
+let vsAC = null, vsGain = null, vsDest = null, vsSrcFor = null, vsVGain = null;
+const vsHasVoice = () => !!(VS.endVoice || VS.scenes.some(s => s.voice));
+const vsDuck = () => vsHasVoice() ? 0.28 : 1;   /* music goes quiet under a voice-over */
+function vsEnsureAC() {
+  if (!vsAC) {
+    vsAC = new (window.AudioContext || window.webkitAudioContext)(); vsGain = vsAC.createGain(); vsDest = vsAC.createMediaStreamDestination(); vsGain.connect(vsAC.destination); vsGain.connect(vsDest);
+    vsVGain = vsAC.createGain(); vsVGain.gain.value = 1; vsVGain.connect(vsAC.destination); vsVGain.connect(vsDest);
+  }
+  if (vsAC.state === "suspended") vsAC.resume();
+  return vsAC;
+}
+/* voice-over lines (made by the one-tap video, autovid.js), each starting a moment after its scene starts */
+function vsVoiceGo() {
+  const out = []; if (!vsAC || !vsHasVoice()) return out;
+  const t0 = vsAC.currentTime + 0.05; let s = 0;
+  const go = (buf, at) => { const src = vsAC.createBufferSource(); src.buffer = buf; src.connect(vsVGain); src.start(t0 + at); out.push(src); };
+  VS.scenes.forEach(sc => { if (sc.voice) go(sc.voice, s + 0.3); s += sc.dur; });
+  if (VS.endVoice) go(VS.endVoice, s + 0.5);
+  return out;
+}
 function vsAudio() {
-  if (!VS.music) return null;
+  if (!VS.music && !vsHasVoice()) return null;
   try {
-    if (!vsAC) { vsAC = new (window.AudioContext || window.webkitAudioContext)(); vsGain = vsAC.createGain(); vsDest = vsAC.createMediaStreamDestination(); vsGain.connect(vsAC.destination); vsGain.connect(vsDest); }
-    if (vsSrcFor !== VS.music.el) { vsAC.createMediaElementSource(VS.music.el).connect(vsGain); vsSrcFor = VS.music.el; }
+    vsEnsureAC();
+    if (VS.music && vsSrcFor !== VS.music.el) { vsAC.createMediaElementSource(VS.music.el).connect(vsGain); vsSrcFor = VS.music.el; }
     if (vsAC.state === "suspended") vsAC.resume();
     return vsDest;
   } catch (e) { return null; }
@@ -370,6 +392,7 @@ function vsMime() {
 function vsStop(keep) {
   const P = VS.play; if (!P) return;
   VS.play = null; cancelAnimationFrame(P.raf); clearTimeout(P.to);
+  (P.vo || []).forEach(x => { try { x.stop(); } catch (e) {} });
   VS.scenes.forEach(s => { if (s.media && s.media.type === "vid") s.media.el.pause(); });
   if (VS.music) VS.music.el.pause();
   if (P.rec && P.rec.state !== "inactive") { if (keep) P.rec.stop(); else { P.rec.onstop = null; P.rec.stop(); } }
@@ -396,8 +419,9 @@ function vsStart(record) {
   } else vsAudio();
   const P = { t0: performance.now(), rec, cur: -1, hidden: false, last: 0 };
   VS.play = P; VS.err = "";
-  if (VS.music) { const m = VS.music.el; m.currentTime = 0; m.loop = true; if (vsGain) vsGain.gain.value = VS.vol; else m.volume = VS.vol; m.play().catch(() => {}); }
+  if (VS.music) { const m = VS.music.el; m.currentTime = 0; m.loop = true; if (vsGain) vsGain.gain.value = VS.vol * vsDuck(); else m.volume = VS.vol; m.play().catch(() => {}); }
   if (rec) rec.start(250);
+  P.vo = vsVoiceGo();
   const total = vsTotal();
   const tick = () => {
     if (VS.play !== P) return;
@@ -409,7 +433,7 @@ function vsStart(record) {
       const sc = VS.scenes[a.i]; if (sc && sc.media && sc.media.type === "vid") { const v = sc.media.el; v.currentTime = 0; v.play().catch(() => {}); }
       P.cur = a.i;
     }
-    if (VS.music && vsGain && t > total - 1.2) vsGain.gain.value = VS.vol * vsClamp((total - t) / 1.2);
+    if (VS.music && vsGain && t > total - 1.2) vsGain.gain.value = VS.vol * vsDuck() * vsClamp((total - t) / 1.2);
     vsDraw(Math.min(t, total));
     if (rec && t - P.last > 0.5) { P.last = t; set("vsMsg", tr("vs_making").replace("{s}", Math.min(Math.round(t), Math.round(total))).replace("{t}", Math.round(total))); }
     if (t >= total) { setTimeout(() => vsStop(true), rec ? 200 : 600); if (!rec) setTimeout(vsStill, 650); return; }
@@ -569,9 +593,9 @@ function renderStudio() {
   const box = $("vsBody"); if (!box) return;
   const busy = !!VS.play, rec = busy && VS.play.rec;
   const focus = document.activeElement && box.contains(document.activeElement) ? document.activeElement.id : "";
-  const durs = [1.5, 2, 2.5, 3, 4, 5, 6, 8];
+  const durs0 = [1.5, 2, 2.5, 3, 4, 5, 6, 8];
   const scenes = VS.scenes.map((s, i) => {
-    const m = s.media;
+    const m = s.media, durs = durs0.indexOf(s.dur) < 0 ? durs0.concat(s.dur).sort((a, b) => a - b) : durs0;
     return '<div class="vsscene' + (VS.sel === i ? " on" : "") + '" data-vsi="' + i + '">' +
       '<div class="vshd"><b>' + tr("vs_scene").replace("{n}", i + 1) + '</b>' +
       '<label class="vsdur">' + tr("vs_dur") + ' <select id="vs-dur-' + i + '" data-vsf="dur">' + durs.map(d => '<option value="' + d + '"' + (d === s.dur ? " selected" : "") + ">" + d + "</option>").join("") + "</select></label>" +
@@ -580,7 +604,8 @@ function renderStudio() {
       '<div class="vsrow"><div class="vsf vslab"><label for="vs-label-' + i + '">' + tr("vs_label") + '</label><input id="vs-label-' + i + '" data-vsf="label" maxlength="30" value="' + esc(s.label) + '"></div>' +
       '<div class="vsf"><label for="vs-sub-' + i + '">' + tr("vs_sub") + '</label><input id="vs-sub-' + i + '" data-vsf="sub" maxlength="90" value="' + esc(s.sub) + '"></div></div>' +
       '<div class="vsf"><label for="vs-title-' + i + '">' + tr("vs_title") + '</label><textarea id="vs-title-' + i + '" data-vsf="title" rows="2" maxlength="90">' + esc(s.title) + "</textarea></div>" +
-      '<div class="vsmedia">' + (m ? '<span class="vsthumb">' + (m.type === "img" ? "🖼 " : "🎬 ") + esc(m.name) + "</span>" : '<span class="fine" style="margin:0">' + tr("vs_nomedia") + "</span>") +
+      '<div class="vsmedia">' + (m ? '<span class="vsthumb">' + (m.type === "img" ? "🖼 " : "🎬 ") + esc(m.name) + "</span>" : typeof vsArtSelect === "function" ? vsArtSelect(s, i) : '<span class="fine" style="margin:0">' + tr("vs_nomedia") + "</span>") +
+      (s.voice ? '<span class="vsthumb">🔊 ' + tr("vs_voice_on") + '</span><button type="button" class="btn-s vsmini" data-vsvrm="' + i + '">' + tr("vs_media_rm") + "</button>" : "") +
       '<label class="btn-s vsfile">' + tr(m ? "vs_media_ch" : "vs_media") + '<input type="file" accept="image/*,video/*" data-vsmedia="' + i + '" hidden></label>' +
       (m ? '<button type="button" class="btn-s vsmini" data-vsrm="' + i + '">' + tr("vs_media_rm") + "</button>" : "") + "</div></div>";
   }).join("");
@@ -666,6 +691,7 @@ function vsLoadFile(file, i) {
     } else if (d.vsfmt) { VS.fmt = d.vsfmt; vsSave(); renderStudio(); }
     else if (d.vsup) { const i = +d.vsup, s = VS.scenes; [s[i - 1], s[i]] = [s[i], s[i - 1]]; VS.sel = i - 1; vsSave(); renderStudio(); }
     else if (d.vsdel) { const i = +d.vsdel, m = VS.scenes[i].media; if (m) URL.revokeObjectURL(m.url); VS.scenes.splice(i, 1); VS.sel = Math.min(VS.sel, VS.scenes.length - 1); vsSave(); renderStudio(); }
+    else if (d.vsvrm != null) { VS.scenes[+d.vsvrm].voice = null; renderStudio(); }
     else if (d.vsrm) { const s = VS.scenes[+d.vsrm]; if (s.media) URL.revokeObjectURL(s.media.url); s.media = null; renderStudio(); }
     else if (b.id === "vsAdd") { VS.scenes.push({ label: String(VS.scenes.length), title: "", sub: "", dur: 3, media: null }); VS.sel = VS.scenes.length - 1; vsSave(); renderStudio(); const t = $("vs-title-" + VS.sel); if (t) t.focus(); }
     else if (b.id === "vsReset") { if (confirm(tr("vs_reset_q"))) { vsFromTpl(); VS.sel = 0; vsSave(); renderStudio(); } }
@@ -694,6 +720,7 @@ function vsLoadFile(file, i) {
     const t = e.target;
     if (t.id === "ytPriv" && YTU) { YTU.priv = t.value; return; }
     if (t.dataset.vsf === "dur") { const i = vsSceneOf(t); VS.scenes[i].dur = +t.value; vsSave(); renderStudio(); }
+    else if (t.dataset.vsf === "art") { const i = vsSceneOf(t); VS.scenes[i].art = t.value; vsSave(); vsSelect(i); vsStill(); }
     else if (t.dataset.vsmedia != null && t.files && t.files[0]) vsLoadFile(t.files[0], +t.dataset.vsmedia);
     else if (t.id === "vsMusic" && t.files && t.files[0]) {
       const f = t.files[0]; if (!/^audio\//.test(f.type)) { VS.err = tr("vs_bad_file"); renderStudio(); return; }

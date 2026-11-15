@@ -99,6 +99,21 @@ Safety rules: never name a chemical, brand or dose (for sprays say follow the st
 Reply with ONLY a JSON array with one item, no other text:
 [{"title": "YouTube title, at most 70 characters", "scenes": [{"label": "...", "title": "...", "sub": "..."}], "cta": "end card call to action, at most 8 words", "shoot": "what to film for each scene, in English, one or two lines", "caption": "post caption for Reels/YouTube, 40-90 words, ending with 4-6 hashtags"}]`;
 
+/* one-tap video (admin → YouTube & videos → One-tap video): words, a spoken voice-over line and a built-in picture for every scene */
+const ART_KEYS = ["apple", "leaf", "leaf_spots", "tree", "spray", "phone", "calendar", "money", "rain", "mountain", "camera", "crate", "chart", "bug", "shears", "family", "check", "soil", "snow", "flower"];
+const AUTOVID_BRIEF = `You write a complete short phone video (25 to 45 seconds) for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand, made by an apple grower from Rohru. The video is made automatically: each scene shows a simple drawn picture, big words on screen, and a voice reads one line. The admin tells you the topic.
+Make 4 to 6 scenes. The first scene is a strong hook (a question or a problem growers feel). Then clear, practical steps or points. Each scene has:
+- "label": small tag, 1-3 words, or a step number like "1"
+- "title": main words on screen, at most 8 words
+- "sub": second line on screen, at most 10 words (can be empty)
+- "say": what the voice says for this scene, one or two short spoken sentences, 8 to 22 words, warm and natural like a fellow grower talking, adding a little more than the screen words
+- "art": the picture, exactly one of: ${ART_KEYS.join(", ")}  (leaf_spots = diseased leaf, spray = sprayer, phone = the Seb Saathi app, crate = apple box, money = rupees/profit, chart = profit or records, shears = pruning, soil = soil and manure, snow = winter/chilling, flower = flowering)
+Then "cta" (end card call to action, at most 8 words) and "cta_say" (the voice for the end card, at most 14 words, mentioning sebsaathi.com).
+What the website does today: orchard record, spray and work diary with expenses, season sales record (Mandi, Adani per kilo, Theka), real profit per box, disease check from one photo, Saathi chatbot (also by voice), spray schedule and season calendar, family sharing, invite friends.
+Safety rules: never name a chemical, brand or dose (for sprays say follow the state spray schedule and the label); never quote prices; no made-up growers, numbers or testimonials; never promise results.
+Reply with ONLY a JSON array with one item, no other text:
+[{"title": "YouTube title, at most 70 characters", "scenes": [{"label": "...", "title": "...", "sub": "...", "say": "...", "art": "..."}], "cta": "...", "cta_say": "...", "caption": "post caption for Reels/YouTube, 40-90 words, ending with 4-6 hashtags"}]`;
+
 /* one finished video → a caption for each place it will go */
 const REPURPOSE_BRIEF = `You prepare one finished short phone video from "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand, made by an apple grower from Rohru, to go out in four places. You are given what the video shows (its caption or words).
 Write:
@@ -137,9 +152,9 @@ module.exports = async (req, res) => {
   if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "no_ai_key" });
 
   const b = await readBody(req);
-  const kind = ["wa", "videos", "custom", "wamsg", "video", "repurpose"].indexOf(b.kind) >= 0 ? b.kind : "post";
+  const kind = ["wa", "videos", "custom", "wamsg", "video", "repurpose", "autovideo"].indexOf(b.kind) >= 0 ? b.kind : "post";
   const want = String(b.ask || "").replace(/\s+/g, " ").trim().slice(0, 800);
-  if ((kind === "custom" || kind === "wamsg" || kind === "video" || kind === "repurpose") && !want) return send(res, 400, { error: "empty" });
+  if ((kind === "custom" || kind === "wamsg" || kind === "video" || kind === "repurpose" || kind === "autovideo") && !want) return send(res, 400, { error: "empty" });
   const n = kind === "post" || kind === "videos" ? Math.max(1, Math.min(7, Math.round(+b.n || 3))) : 1;
   const lang = b.lang === "hi" ? "hi" : b.lang === "en" ? "en" : "hn";
 
@@ -167,6 +182,7 @@ module.exports = async (req, res) => {
   const ask = kind === "custom" ? today + "Write ONE post. What the admin wants: " + want + "\n" + langLine + ctx
     : kind === "wamsg" ? today + "What the admin wants: " + want + "\n" + langLine + ctx
     : kind === "video" ? today + "What the admin wants: " + want + "\n" + vl + ctx
+    : kind === "autovideo" ? today + "Topic: " + want + "\n" + vl + " " + (lang === "en" ? "Write every \"say\" and \"cta_say\" line in simple spoken English (Indian English is fine)." : "Write every \"say\" and \"cta_say\" line in simple spoken Hindi in Devanagari script (it is read aloud by a Hindi voice), as a Himachali grower speaks; common farm words like spray, scab, mandi can stay as they are said.") + ctx
     : kind === "repurpose" ? today + "What the video shows:\n" + want + "\n" + langLine.replace(/every post/g, "everything") + bestLine
     : kind === "videos" ? today + "Plan the videos for " + nextM + ". What orchards need then: " + SEASON[nextI] + (Array.isArray(b.done) && b.done.length ? "\nAlready made (do not repeat): " + b.done.slice(0, 40).map(x => String(x).slice(0, 60)).join("; ") : "")
     : kind === "wa" ? today + "Write this week's tip. " + langLine + ctx + (recent.length ? "\nRecent topics (do not repeat): " + recent.slice(0, 30).join("; ") : "")
@@ -177,7 +193,7 @@ module.exports = async (req, res) => {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: kind === "repurpose" ? REPURPOSE_BRIEF : kind === "wa" ? WA_BRIEF : kind === "videos" ? VID_BRIEF : kind === "wamsg" ? WAMSG_BRIEF : kind === "video" ? VIDEO_BRIEF : BRIEF, messages: [{ role: "user", content: ask }] })
+      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: kind === "repurpose" ? REPURPOSE_BRIEF : kind === "wa" ? WA_BRIEF : kind === "videos" ? VID_BRIEF : kind === "wamsg" ? WAMSG_BRIEF : kind === "video" ? VIDEO_BRIEF : kind === "autovideo" ? AUTOVID_BRIEF : BRIEF, messages: [{ role: "user", content: ask }] })
     });
     if (!r.ok) { console.error("ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
     const j = await r.json();
@@ -192,6 +208,12 @@ module.exports = async (req, res) => {
     const out = { fb: t(v.fb, 2200), ig: t(v.ig, 2200), yt_title: t(v.yt_title, 90).replace(/#shorts/ig, "").trim(), yt_desc: t(v.yt_desc, 4800), wa: t(v.wa, 2200) };
     if (!out.fb && !out.ig) return send(res, 502, { error: "ai" });
     return send(res, 200, { repurpose: out });
+  }
+  if (kind === "autovideo") {   /* one-tap video: words, voice lines and pictures; returned, not saved */
+    const v = posts[0] || {}, t = (x, m) => String(x || "").replace(/\s+/g, " ").trim().slice(0, m);
+    const scenes = (Array.isArray(v.scenes) ? v.scenes : []).slice(0, 6).map(x => ({ label: t(x.label, 30), title: t(x.title, 90), sub: t(x.sub, 90), say: t(x.say, 260), art: ART_KEYS.indexOf(String(x.art || "")) >= 0 ? String(x.art) : "apple" })).filter(x => x.title);
+    if (!scenes.length) return send(res, 502, { error: "ai" });
+    return send(res, 200, { video: { title: t(v.title, 90), scenes, cta: t(v.cta, 80), cta_say: t(v.cta_say, 200), caption: String(v.caption || "").slice(0, 2000) } });
   }
   if (kind === "video") {   /* words for the Video Studio: returned, not saved */
     const v = posts[0] || {};
