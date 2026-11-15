@@ -1002,6 +1002,7 @@ button.hmcard{cursor:pointer}
 .lpdcard{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:20px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
 .lpdpic{margin:0}.lpdpic img{width:100%;height:auto;display:block;border-radius:14px}.lpdpic figcaption{text-align:center;margin-top:6px}
 .lpdres h3{margin:6px 0 4px}.lpdres p{margin:0 0 8px}.lpdres ul{margin:0 0 12px;padding-left:20px}.lpdres li{margin:0 0 4px}.lpdsev{color:#9A6400;background:color-mix(in srgb,#E0A21A 20%,transparent)}
+.lpvideo{display:block;width:100%;max-width:340px;height:auto;aspect-ratio:9/16;margin:14px auto 0;border-radius:18px;background:#F1F5EE;border:1px solid var(--line);box-shadow:0 10px 30px rgba(20,40,28,.12)}
 @media (max-width:640px){.lpdcard{grid-template-columns:1fr}.lpdpic img{max-width:260px;margin:0 auto}}
 .mgcard{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:auto 1fr;column-gap:12px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--fg);transition:border-color .15s,transform .15s}
 .mgcard:hover{border-color:var(--apple)}
@@ -2390,6 +2391,13 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 </section>
 
 <div class="lponly" id="landing" hidden>
+<section class="section lpvid" aria-labelledby="lpvH">
+  <div class="wrap">
+    <h2 id="lpvH" data-i18n="lpv_h"></h2>
+    <p class="lede" data-i18n="lpv_p"></p>
+    <video class="lpvideo" src="/img/bimari-jaanch-guide.mp4" poster="/img/bimari-jaanch-guide-poster.jpg" width="360" height="640" controls playsinline muted preload="none"></video>
+  </div>
+</section>
 <section class="section lpdemo" aria-labelledby="lpdH">
   <div class="wrap">
     <h2 id="lpdH" data-i18n="lpd_h"></h2>
@@ -6844,6 +6852,7 @@ Object.assign(T.hi, {
   lp_q5:"क्या ऐप डाउनलोड करना ज़रूरी है?", lp_a5:"नहीं। यह फ़ोन के ब्राउज़र में चलता है। आप इसे होम स्क्रीन पर भी जोड़ सकते हैं ताकि यह ऐप की तरह खुले।"
 });
 Object.assign(T.en, {
+  lpv_h: "How to check a disease", lpv_p: "A 40-second video: four easy steps, from photo to answer.",
   lpd_h: "See a photo check", lpd_p: "Take a photo of a leaf, fruit or bark. Saathi tells you what it most likely is, how sure it is, and what to do next.",
   lpd_alt: "Apple fruit with dark, corky scab spots", lpd_cap: "Example photo", lpd_tag: "Example result",
   lpd_name: "Apple scab", lpd_conf: "Quite sure", lpd_sev: "Spreading",
@@ -6852,6 +6861,7 @@ Object.assign(T.en, {
   lpd_go: "Check your own photo", lpd_note: "An example. A real check also looks at your orchard's weather, recent sprays and stage."
 });
 Object.assign(T.hi, {
+  lpv_h: "बीमारी कैसे जाँचें", lpv_p: "40 सेकंड का वीडियो: फ़ोटो से जवाब तक, 4 आसान कदम।",
   lpd_h: "फ़ोटो जाँच देखें", lpd_p: "पत्ते, फल या छाल की फ़ोटो लें। साथी बताएगा कि सबसे ज़्यादा क्या होने की संभावना है, कितना पक्का है, और आगे क्या करें।",
   lpd_alt: "सेब का फल जिस पर गहरे, खुरदुरे स्कैब के धब्बे हैं", lpd_cap: "उदाहरण फ़ोटो", lpd_tag: "उदाहरण नतीजा",
   lpd_name: "सेब का स्कैब (धब्बा रोग)", lpd_conf: "काफ़ी पक्का", lpd_sev: "फैल रहा है",
@@ -6860,6 +6870,7 @@ Object.assign(T.hi, {
   lpd_go: "अपनी फ़ोटो जाँचें", lpd_note: "यह एक उदाहरण है। असली जाँच आपके बाग़ का मौसम, हाल के स्प्रे और अवस्था भी देखती है।"
 });
 Object.assign(T.hn, {
+  lpv_h: "Bimari kaise jaanchein", lpv_p: "40 second ka video: photo se jawab tak, 4 aasaan kadam.",
   lpd_h: "Photo jaanch dekhein", lpd_p: "Patte, phal ya chhaal ki photo lein. Saathi batayega ki sabse zyada kya hone ki sambhavna hai, kitna pakka hai, aur aage kya karein.",
   lpd_alt: "Seb ka phal jis par gehre, khurdure scab ke daag hain", lpd_cap: "Example photo", lpd_tag: "Example nateeja",
   lpd_name: "Apple scab (seb ka dhabba rog)", lpd_conf: "Kaafi pakka", lpd_sev: "Phail raha hai",

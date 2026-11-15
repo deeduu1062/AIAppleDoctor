@@ -5,7 +5,7 @@
    table exists they are kept on this device only. Invite numbers need supabase/referrals.sql. */
 
 Object.assign(T.en, {
-  adm_t_mk: "Marketing",
+  adm_t_mk: "Social handler",
   mk_h: "Marketing plan 2026–27", mk_p: "Goal: 1,000 active growers by end of June 2027. Tick tasks as you finish them.",
   mk_links_h: "Files", mk_doc: "Plan doc (edit and share)", mk_design: "Poster and social media images",
   mk_inv_h: "Invites", mk_inv_p: "Growers whose friends joined with their invite link. Every 3 friends = 1 free month.",
@@ -45,7 +45,7 @@ Object.assign(T.en, {
   mk_local: "Ticks are saved on this device only. Run supabase/marketing.sql in Supabase to keep them everywhere."
 });
 Object.assign(T.hi, {
-  adm_t_mk: "मार्केटिंग",
+  adm_t_mk: "सोशल हैंडलर",
   mk_h: "मार्केटिंग प्लान 2026–27", mk_p: "लक्ष्य: जून 2027 के अंत तक 1,000 सक्रिय बागवान। काम पूरा होते ही टिक करें।",
   mk_links_h: "फ़ाइलें", mk_doc: "प्लान डॉक (बदलें और शेयर करें)", mk_design: "पोस्टर और सोशल मीडिया तस्वीरें",
   mk_inv_h: "न्योते", mk_inv_p: "जिन बागवानों के न्योता लिंक से दोस्त जुड़े। हर 3 दोस्त = 1 महीना मुफ़्त।",
