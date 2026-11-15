@@ -1011,7 +1011,7 @@ button.hmcard{cursor:pointer}
 .lpcar-dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:#c9d6c6;cursor:pointer}
 .lpcar-dots button.on{background:#B8321F;width:24px;border-radius:5px}
 .lpvids figcaption{margin-top:8px;font-weight:700;font-size:.95rem}
-.lpvideo{display:block;width:100%;max-width:200px;height:auto;aspect-ratio:9/16;margin:0 auto;border-radius:18px;background:#F1F5EE;border:1px solid var(--line);box-shadow:0 10px 30px rgba(20,40,28,.12)}
+.lpvideo{cursor:pointer;object-fit:cover;display:block;width:100%;max-width:200px;height:auto;aspect-ratio:9/16;margin:0 auto;border-radius:18px;background:#F1F5EE;border:1px solid var(--line);box-shadow:0 10px 30px rgba(20,40,28,.12)}
 @media (max-width:640px){.lpdcard{grid-template-columns:1fr}.lpdpic img{max-width:260px;margin:0 auto}}
 .mgcard{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:auto 1fr;column-gap:12px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--fg);transition:border-color .15s,transform .15s}
 .mgcard:hover{border-color:var(--apple)}
@@ -2407,8 +2407,8 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <div class="lpcar">
     <button type="button" class="lpcar-arr" data-d="-1" aria-label="Previous">‹</button>
     <div class="lpvids" id="lpVids">
-      <figure><video class="lpvideo" src="/img/bimari-jaanch-guide.mp4" poster="/img/bimari-jaanch-guide-poster.jpg" width="360" height="640" controls playsinline muted preload="none"></video><figcaption data-i18n="lpv_1"></figcaption></figure>
-      <figure><video class="lpvideo" src="/img/bagicha-record-guide.mp4" poster="/img/bagicha-record-guide-poster.jpg" width="360" height="640" controls playsinline muted preload="none"></video><figcaption data-i18n="lpv_2"></figcaption></figure>
+      <figure><video class="lpvideo" src="/img/bimari-jaanch-guide.mp4" poster="/img/bimari-jaanch-guide-poster.jpg" width="360" height="640" playsinline muted preload="none"></video><figcaption data-i18n="lpv_1"></figcaption></figure>
+      <figure><video class="lpvideo" src="/img/bagicha-record-guide.mp4" poster="/img/bagicha-record-guide-poster.jpg" width="360" height="640" playsinline muted preload="none"></video><figcaption data-i18n="lpv_2"></figcaption></figure>
     </div>
     <button type="button" class="lpcar-arr" data-d="1" aria-label="Next">›</button>
     </div>
@@ -2418,6 +2418,8 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
       const t = document.getElementById("lpVids"), dots = [...document.querySelectorAll("#lpDots button")], figs = [...t.children];
       const go = i => { i = Math.max(0, Math.min(figs.length - 1, i)); t.scrollTo({ left: figs[i].offsetLeft - t.offsetLeft, behavior: "smooth" }); };
       const cur = () => Math.round(t.scrollLeft / t.clientWidth);
+      /* the cover has its own play button: controls appear only once a video is tapped */
+      t.querySelectorAll("video").forEach(v => v.addEventListener("click", () => { if (!v.controls) { v.controls = true; v.play(); } }));
       document.querySelectorAll(".lpcar-arr").forEach(b => b.onclick = () => go(cur() + +b.dataset.d));
       dots.forEach((d, i) => d.onclick = () => go(i));
       t.addEventListener("scroll", () => {
