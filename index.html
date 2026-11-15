@@ -2407,8 +2407,8 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <div class="lpcar">
     <button type="button" class="lpcar-arr" data-d="-1" aria-label="Previous">‹</button>
     <div class="lpvids" id="lpVids">
-      <figure><video class="lpvideo" src="/img/bimari-jaanch-guide.mp4" poster="/img/bimari-jaanch-guide-poster.jpg" width="360" height="640" playsinline muted preload="none"></video><figcaption data-i18n="lpv_1"></figcaption></figure>
-      <figure><video class="lpvideo" src="/img/bagicha-record-guide.mp4" poster="/img/bagicha-record-guide-poster.jpg" width="360" height="640" playsinline muted preload="none"></video><figcaption data-i18n="lpv_2"></figcaption></figure>
+      <figure><video class="lpvideo" data-hi="/img/bimari-jaanch-guide" data-en="/img/disease-check-guide-en" src="/img/bimari-jaanch-guide.mp4" poster="/img/bimari-jaanch-guide-poster.jpg" width="360" height="640" playsinline muted preload="none"></video><figcaption data-i18n="lpv_1"></figcaption></figure>
+      <figure><video class="lpvideo" data-hi="/img/bagicha-record-guide" data-en="/img/orchard-record-guide-en" src="/img/bagicha-record-guide.mp4" poster="/img/bagicha-record-guide-poster.jpg" width="360" height="640" playsinline muted preload="none"></video><figcaption data-i18n="lpv_2"></figcaption></figure>
     </div>
     <button type="button" class="lpcar-arr" data-d="1" aria-label="Next">›</button>
     </div>
@@ -2418,6 +2418,13 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
       const t = document.getElementById("lpVids"), dots = [...document.querySelectorAll("#lpDots button")], figs = [...t.children];
       const go = i => { i = Math.max(0, Math.min(figs.length - 1, i)); t.scrollTo({ left: figs[i].offsetLeft - t.offsetLeft, behavior: "smooth" }); };
       const cur = () => Math.round(t.scrollLeft / t.clientWidth);
+      /* English videos when English is chosen; Hindi videos for Hindi and Hinglish */
+      window.lpVidLang = l => t.querySelectorAll("video").forEach(v => {
+        const base = v.dataset[l === "en" ? "en" : "hi"], src = base + ".mp4";
+        if (!base || v.getAttribute("src") === src) return;
+        v.pause(); v.controls = false; v.src = src; v.poster = base + "-poster.jpg";
+      });
+      if (typeof lang === "string") lpVidLang(lang);
       /* the cover has its own play button: controls appear only once a video is tapped */
       t.querySelectorAll("video").forEach(v => v.addEventListener("click", () => { if (!v.controls) { v.controls = true; v.play(); } }));
       document.querySelectorAll(".lpcar-arr").forEach(b => b.onclick = () => go(cur() + +b.dataset.d));
@@ -3169,6 +3176,7 @@ function renderSocial() {
 }
 function applyLang() {
   document.documentElement.lang = lang === "hn" ? "hi-Latn" : lang;
+  if (window.lpVidLang) lpVidLang(lang);
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = tr(el.getAttribute("data-i18n")); });
   document.querySelectorAll("[data-saathi]").forEach(el => {
     const t = el.textContent, m = t.match(/Saathi|साथी/);
