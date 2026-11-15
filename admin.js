@@ -1252,7 +1252,25 @@ function renderLive() {
       bar(tr("li_files"), +D.storage_bytes || 0, 1024 * 1048576, mb(+D.storage_bytes || 0) + " / 1 GB") +
       '<p class="fine">' + tr("li_db_note").replace("{n}", fmtN(+D.users_30d || 0)) + "</p>";
   }
-  el.innerHTML = ai + db;
+  /* Twilio (WhatsApp/SMS login codes) — live from Twilio */
+  const W = coLive && coLive.twilio, cur = W && W.currency === "USD" ? "$" : (W && W.currency ? W.currency + " " : "$");
+  const money = n => cur + (+n || 0).toFixed(2) + (W && W.currency === "USD" ? " ≈ " + paRup(Math.round((+n || 0) * USD_INR)) : "");
+  let tw = '<div class="cobox"><h5>' + tr("li_tw_h") + (W && W.setup && !W.error ? '<span class="live">' + tr("li_live") + "</span>" : "") + "</h5>";
+  if (!coLive) tw += '<p class="fine">' + tr("li_loading") + "</p>";
+  else if (coLive.error) tw += '<p class="fine">' + esc(tr("li_ai_err").replace("{m}", coLive.error)) + "</p>";
+  else if (!W || !W.setup) tw += "<p>" + tr("li_tw_setup") + "</p>";
+  else if (W.error) tw += '<p class="autherr">' + esc(tr("li_ai_err").replace("{m}", W.error)) + "</p>";
+  else {
+    const low = W.balance != null && W.balance < 5;
+    tw += "<p><b>" + tr("li_tw_bal") + ": " + (W.balance != null ? '<span style="color:' + (low ? "#B8321F" : "inherit") + '">' + money(W.balance) + "</span>" : "–") + "</b>" +
+      (/trial/i.test(W.type) ? ' <span class="chip" style="background:#fdecc8;color:#7a5200">' + tr("li_tw_trial") + "</span>" : "") + "</p>" +
+      "<p><b>" + tr("li_month") + ": " + money(W.month) + "</b> · " + tr("li_today") + ": " + money(W.today) + "</p>" +
+      ((W.items || []).length ? '<div class="models">' + W.items.map(x => "<span>" + esc(x.desc || x.cat) + ": " + fmtN(x.count) + " · " + cur + x.price.toFixed(2) + "</span>").join("") + "</div>" : '<p class="fine">' + tr("li_tw_none") + "</p>") +
+      (low ? '<p class="autherr">' + tr("li_tw_low") + "</p>" : "") +
+      (/trial/i.test(W.type) ? '<p class="fine">' + tr("li_tw_trialnote") + "</p>" : "");
+  }
+  tw += "</div>";
+  el.innerHTML = ai + tw + db;
 }
 function renderCosts() {
   if (!$("coList")) return;
@@ -1347,14 +1365,22 @@ Object.assign(T.en, { co_s_ai_real: "AI this month (actual)", li_live: "LIVE", l
   li_ai_err: "Could not read AI spend: {m}", li_ai_note: "From Anthropic's cost report (daily figures, can lag a few hours). Rupees at about ₹{r} to the dollar.",
   li_db_h: "Supabase usage (Free plan limits)", li_db_size: "Database size", li_users: "Growers signed up", li_files: "Photos and files",
   li_db_setup: "Not set up yet. In Supabase → SQL Editor, run supabase/admin_usage.sql once, then press Refresh.",
-  li_db_note: "{n} growers signed in during the last 30 days. Bars turn orange at 70% and red at 90%: that is the time to move to Supabase Pro." });
+  li_db_note: "{n} growers signed in during the last 30 days. Bars turn orange at 70% and red at 90%: that is the time to move to Supabase Pro.",
+  li_tw_h: "Twilio (WhatsApp/SMS login codes)", li_tw_bal: "Balance left", li_tw_trial: "Trial account",
+  li_tw_setup: "Not connected yet. In console.twilio.com copy the Account SID and Auth Token, then in Vercel → Settings → Environment Variables add them as TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and redeploy.",
+  li_tw_none: "No messages sent this month yet.", li_tw_low: "Balance is low: top up in Twilio so growers can still log in.",
+  li_tw_trialnote: "On a trial account, codes only reach numbers you have verified in Twilio. Upgrade before real growers sign up." });
 Object.assign(T.hi, { co_s_ai_real: "इस महीने AI (असली)", li_live: "LIVE", li_loading: "लोड हो रहा है…",
   li_ai_h: "AI ख़र्च (Anthropic)", li_month: "इस महीने", li_today: "आज",
   li_ai_setup: "अभी जुड़ा नहीं है। console.anthropic.com → Settings → Admin keys में Admin key बनाएँ, फिर Vercel → Settings → Environment Variables में ANTHROPIC_ADMIN_KEY नाम से जोड़ें और redeploy करें। तब तक नीचे का अनुमान दिखेगा।",
   li_ai_err: "AI ख़र्च नहीं पढ़ सके: {m}", li_ai_note: "Anthropic की cost report से (रोज़ के आँकड़े, कुछ घंटे देर से)। रुपये लगभग ₹{r} प्रति डॉलर।",
   li_db_h: "Supabase उपयोग (Free प्लान की सीमा)", li_db_size: "डेटाबेस का आकार", li_users: "जुड़े बाग़वान", li_files: "फ़ोटो और फ़ाइलें",
   li_db_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_usage.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
-  li_db_note: "पिछले 30 दिनों में {n} बाग़वानों ने लॉग इन किया। 70% पर पट्टी नारंगी और 90% पर लाल होती है: तब Supabase Pro पर जाएँ।" });
+  li_db_note: "पिछले 30 दिनों में {n} बाग़वानों ने लॉग इन किया। 70% पर पट्टी नारंगी और 90% पर लाल होती है: तब Supabase Pro पर जाएँ।",
+  li_tw_h: "Twilio (WhatsApp/SMS लॉगिन कोड)", li_tw_bal: "बचा बैलेंस", li_tw_trial: "Trial खाता",
+  li_tw_setup: "अभी जुड़ा नहीं है। console.twilio.com से Account SID और Auth Token कॉपी करें, फिर Vercel → Settings → Environment Variables में TWILIO_ACCOUNT_SID और TWILIO_AUTH_TOKEN नाम से जोड़ें और redeploy करें।",
+  li_tw_none: "इस महीने अभी कोई मैसेज नहीं गया।", li_tw_low: "बैलेंस कम है: Twilio में रिचार्ज करें ताकि बाग़वान लॉग इन कर सकें।",
+  li_tw_trialnote: "Trial खाते में कोड सिर्फ़ Twilio में verify किए नंबरों पर जाते हैं। असली बाग़वानों से पहले upgrade करें।" });
 Object.assign(T.en, { adm_t_cost: "Costs", co_h: "Running costs", co_add: "+ Add cost",
   co_p: "What you really spend on Seb Saathi each month, against what growers pay.",
   co_err_setup: "The costs list is not set up yet. In Supabase → SQL Editor, run supabase/admin_costs.sql once, then press Refresh.",

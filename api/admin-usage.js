@@ -44,6 +44,30 @@ async function aiSpend(key) {
   return { setup: true, month_usd: +month.toFixed(4), today_usd: +day.toFixed(4), by_model: byModel, last_day: lastDay, since: start.toISOString().slice(0, 10) };
 }
 
+// Twilio: balance, account type and this month's spend. Needs in Vercel → Environment Variables:
+//   TWILIO_ACCOUNT_SID (starts with AC...) and TWILIO_AUTH_TOKEN, both from console.twilio.com → Account Info.
+async function twilioUse(sid, tok) {
+  const base = "https://api.twilio.com/2010-04-01/Accounts/" + encodeURIComponent(sid);
+  const h = { Authorization: "Basic " + Buffer.from(sid + ":" + tok).toString("base64") };
+  const get = async p => { const r = await fetch(base + p, { headers: h }); if (!r.ok) { const t = await r.text().catch(() => ""); throw new Error("Twilio " + r.status + (t ? ": " + t.slice(0, 140) : "")); } return r.json(); };
+  const [acc, bal, mon, day] = await Promise.all([
+    get(".json"), get("/Balance.json"),
+    get("/Usage/Records/ThisMonth.json?PageSize=1000"), get("/Usage/Records/Today.json?Category=totalprice")
+  ]);
+  const recs = mon.usage_records || [], tot = recs.find(x => x.category === "totalprice");
+  // the main lines: skip roll-up totals and anything with no use
+  const ROLLUP = /^(totalprice|sms|mms|calls|phonenumbers|recordings|transcriptions|channels|verify)$/;
+  const items = recs.filter(x => !ROLLUP.test(x.category) && (+x.price > 0 || +x.count > 0))
+    .map(x => ({ cat: x.category, desc: x.description, count: +x.count || 0, unit: x.count_unit || "", price: +x.price || 0 }))
+    .sort((a, b) => b.price - a.price || b.count - a.count).slice(0, 8);
+  const dt = (day.usage_records || [])[0];
+  return {
+    setup: true, type: acc.type || "", status: acc.status || "",
+    balance: bal.balance != null ? +bal.balance : null, currency: bal.currency || (tot && tot.price_unit) || "USD",
+    month: tot ? +tot.price || 0 : 0, today: dt ? +dt.price || 0 : 0, items
+  };
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "GET") return send(res, 405, { error: "method" });
   const auth = String(req.headers.authorization || "");
@@ -59,5 +83,8 @@ module.exports = async (req, res) => {
   const key = process.env.ANTHROPIC_ADMIN_KEY;
   let ai = { setup: false };
   if (key) { try { ai = await aiSpend(key); } catch (e) { ai = { setup: true, error: String(e && e.message || e) }; } }
-  return send(res, 200, { ai, at: new Date().toISOString() });
+  const tsid = process.env.TWILIO_ACCOUNT_SID, ttok = process.env.TWILIO_AUTH_TOKEN;
+  let twilio = { setup: false };
+  if (tsid && ttok) { try { twilio = await twilioUse(tsid, ttok); } catch (e) { twilio = { setup: true, error: String(e && e.message || e) }; } }
+  return send(res, 200, { ai, twilio, at: new Date().toISOString() });
 };
