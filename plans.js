@@ -291,6 +291,41 @@ document.addEventListener("submit", async e => {
   }
 });
 
+/* Plan prices and limits set on the admin page (Payments → Plans & prices; supabase/money.sql).
+   Until they load, or if they are not set up, the numbers written above and in index.html stay. */
+const PL_LINES = { free: { reg: 0, dx: 1, q: 2 }, basic: { reg: 1, dx: 2, q: 3 }, premium: { reg: 1, dx: 3, q: 4 } };   /* which line of pl_f_* says what */
+let plOrig = null;
+function applyPlanSettings(d) {
+  if (!d || typeof d !== "object") return;
+  const ok = v => Number.isInteger(v) && v >= 0;
+  ["basic", "premium"].forEach(p => { const x = d.prices && d.prices[p]; if (x && ok(x.month) && ok(x.year) && x.month > 0 && x.year > 0) { PRICES[p].month = x.month; PRICES[p].year = x.year; } });
+  const L = d.limits || {};
+  ["free", "basic", "premium"].forEach(p => {
+    const x = L[p]; if (!x) return;
+    if (typeof REC_LIMIT !== "undefined" && REC_LIMIT[p]) { if (ok(x.o)) REC_LIMIT[p].o = x.o; if (ok(x.y)) REC_LIMIT[p].y = x.y; }
+    if (typeof USE_LIMIT !== "undefined" && USE_LIMIT[p]) { if (ok(x.dx)) USE_LIMIT[p].dx = x.dx; if (ok(x.q)) USE_LIMIT[p].q = x.q; }
+  });
+  /* the feature lines on the plan cards: swap in the new numbers, in every language */
+  if (!plOrig) { plOrig = {}; Object.keys(T).forEach(lg => { plOrig[lg] = {}; ["free", "basic", "premium"].forEach(p => { const a = T[lg]["pl_f_" + p]; if (Array.isArray(a)) plOrig[lg][p] = a.slice(); }); }); }
+  Object.keys(plOrig).forEach(lg => ["free", "basic", "premium"].forEach(p => {
+    const a = plOrig[lg][p], x = L[p], at = PL_LINES[p]; if (!a || !x) return;
+    const out = a.slice(), put = (i, vals) => {
+      const s = out[i]; if (typeof s !== "string") return;
+      const nums = s.match(/\d+/g); if (!nums || nums.length !== vals.length || vals.some(v => !ok(v))) return;
+      let k = 0; out[i] = s.replace(/\d+/g, () => String(vals[k++]));
+    };
+    put(at.reg, [x.o, x.y]); put(at.dx, [x.dx]); put(at.q, [x.q]);
+    T[lg]["pl_f_" + p] = out;
+  }));
+  renderPlans();
+  if (typeof renderAcctTab === "function") try { renderAcctTab(); } catch (x) {}
+}
+async function loadPlanSettings() {
+  if (typeof sb === "undefined" || !sb) return;
+  try { const r = await sb.from("plan_settings").select("data").eq("id", 1).maybeSingle(); if (r && !r.error && r.data) applyPlanSettings(r.data.data); } catch (e) {}
+}
+
 if (typeof sb !== "undefined" && sb) sb.auth.onAuthStateChange(() => setTimeout(loadMyPay, 50));
 renderPlans();
 loadMyPay();
+loadPlanSettings();

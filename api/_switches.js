@@ -10,4 +10,18 @@ async function freePaused(sbUrl, headers, kind) {
     return (await r.json()) === true;
   } catch (e) { return false; }
 }
-module.exports = { freePaused };
+// Plan limits set on the admin page (Payments → Plans & prices; supabase/money.sql).
+// planLimit(sbUrl, headers, "free" | "basic" | "premium", "dx" | "q", fallback) → the number to use. Kept for a minute.
+let setCache = null, setAt = 0;
+async function planLimit(sbUrl, headers, plan, key, fallback) {
+  try {
+    if (!setCache || Date.now() - setAt > 60000) {
+      const r = await fetch(sbUrl + "/rest/v1/plan_settings?select=data&id=eq.1", { headers });
+      const rows = r.ok ? await r.json() : null;
+      setCache = rows && rows[0] && rows[0].data ? rows[0].data : {}; setAt = Date.now();
+    }
+    const v = setCache.limits && setCache.limits[plan] ? setCache.limits[plan][key] : undefined;
+    return Number.isInteger(v) && v >= 0 ? v : fallback;
+  } catch (e) { return fallback; }
+}
+module.exports = { freePaused, planLimit };

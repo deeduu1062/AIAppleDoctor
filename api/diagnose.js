@@ -15,7 +15,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
-const { freePaused } = require("./_switches");
+const { freePaused, planLimit } = require("./_switches");
 const { logAi } = require("./_aicost");   /* saves each check's AI cost against the grower (admin → Costs) */
 const PLAN_LIMIT = { free: 3, basic: 15, premium: 50 };   /* photo checks a month; keep in step with the plans page */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
@@ -323,7 +323,7 @@ module.exports = async (req, res) => {
   // 3. Limit by plan (this grower's checks this month, India time); admin keeps a daily limit for testing
   const isAdmin = ADMIN_EMAILS.includes(String(user.email || "").toLowerCase());
   const plan = isAdmin ? "admin" : await planOf(token, user.id);
-  const limit = isAdmin ? ADMIN_LIMIT : PLAN_LIMIT[plan], per = isAdmin ? "day" : "month";
+  const limit = isAdmin ? ADMIN_LIMIT : await planLimit(SB_URL, sbHeaders(token), plan, "dx", PLAN_LIMIT[plan]), per = isAdmin ? "day" : "month";   /* admin → Payments → Plans & prices */
   if (plan === "free" && await freePaused(SB_URL, sbHeaders(token), "dx")) return send(res, 503, { error: "paused", plan });   /* admin → Site health → AI safety switch */
   try {
     const since = isAdmin ? istDayStart() : istMonthStart();
