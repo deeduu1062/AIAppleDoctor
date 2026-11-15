@@ -8,14 +8,14 @@ const T = {
 "ad_refresh": "Refresh",
 "ad_at": "Updated {t}",
 "ad_loading": "Loading…",
-"ad_find": "Find by email",
+"ad_find": "Find by email or mobile number",
 "ad_total": "Accounts",
 "ad_a7": "Logged in, last 7 days",
 "ad_a30": "Logged in, last 30 days",
 "ad_new7": "New this week",
 "ad_rec": "Keeping records",
 "ad_unconf": "Email not confirmed",
-"ad_email": "Email",
+"ad_email": "Email / mobile",
 "ad_joined": "Joined",
 "ad_last": "Last login",
 "ad_orch": "Orchards",
@@ -321,14 +321,14 @@ const T = {
 "ad_refresh": "ताज़ा करें",
 "ad_at": "{t} पर ताज़ा किया",
 "ad_loading": "लोड हो रहा है…",
-"ad_find": "ईमेल से ढूँढें",
+"ad_find": "ईमेल या मोबाइल नंबर से ढूँढें",
 "ad_total": "खाते",
 "ad_a7": "पिछले 7 दिन में लॉग इन",
 "ad_a30": "पिछले 30 दिन में लॉग इन",
 "ad_new7": "इस हफ़्ते नए",
 "ad_rec": "रिकॉर्ड रख रहे हैं",
 "ad_unconf": "ईमेल की पुष्टि नहीं हुई",
-"ad_email": "ईमेल",
+"ad_email": "ईमेल / मोबाइल",
 "ad_joined": "जुड़े",
 "ad_last": "आख़िरी लॉग इन",
 "ad_orch": "बाग़",
@@ -511,16 +511,22 @@ function renderAdmin() {
   const st = (k, v, main) => "<div" + (main ? ' class="main"' : "") + "><span>" + tr(k) + "</span><b>" + fmtN(+v || 0) + "</b></div>";
   $("adStats").innerHTML = st("ad_total", AD.total, true) + st("ad_a7", AD.active7) + st("ad_a30", AD.active30) + st("ad_new7", AD.new7) +
     st("ad_rec", AD.withRecords) + st("ad_unconf", (+AD.total || 0) - (+AD.confirmed || 0));
-  const q = $("adFind").value.trim().toLowerCase();
-  const rows = (AD.users || []).filter(u => !q || String(u.email || "").toLowerCase().indexOf(q) >= 0);
+  /* find by email or mobile number: growers who log in with their mobile have it as phone, or inside a ...@m.sebsaathi.com login */
+  const mob = u => { const p = String(u.phone || "").replace(/\D/g, ""); if (p) return p; const m = /^(\d{6,15})@m\.sebsaathi\.com$/i.exec(String(u.email || "")); return m ? m[1] : ""; };
+  const who = u => { const m = mob(u); return m && (!u.email || /@m\.sebsaathi\.com$/i.test(u.email)) ? "📱 +" + m : (u.email || (m ? "📱 +" + m : "–")); };
+  const raw = $("adFind").value.trim().toLowerCase(), qd = raw.replace(/\D/g, "");
+  const rows = (AD.users || []).filter(u => !raw || String(u.email || "").toLowerCase().indexOf(raw) >= 0 || (qd.length >= 3 && mob(u).indexOf(qd) >= 0));
   if (!rows.length) { $("adTable").innerHTML = '<p class="empty">' + tr("ad_none") + "</p>"; return; }
   const mine = (user && user.email || "").toLowerCase();
   const head = ["ad_email", "ad_joined", "ad_last", "ad_orch", "ad_years", "ad_lots", "ad_saved", "ad_status"];
-  $("adTable").innerHTML = '<div class="tablewrap"><table class="ledger"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
-    rows.map(u => '<tr><th scope="row">' + (u.email ? '<button class="pflink" type="button" data-pfmail="' + esc(u.email) + '">' + esc(u.email) + "</button>" : "–") + (String(u.email || "").toLowerCase() === mine ? ' <span class="tag me">' + tr("ad_me") + "</span>" : "") + "</th>" +
-      "<td>" + adWhen(u.created_at) + "</td><td>" + adWhen(u.last_sign_in_at) + '</td><td class="n">' + fmtN(+u.orchards || 0) + '</td><td class="n">' + fmtN(+u.years || 0) +
-      '</td><td class="n">' + fmtN(+u.lots || 0) + "</td><td>" + (u.saved_at ? adWhen(u.saved_at) : "–") + "</td>" +
-      '<td><span class="tag' + (u.confirmed ? " ok" : "") + '">' + tr(u.confirmed ? "ad_ok" : "ad_no") + "</span></td></tr>").join("") +
+  const L = k => ' data-l="' + esc(tr(k)) + '"';   /* column name, shown beside each value when rows become cards on phones */
+  $("adTable").innerHTML = '<div class="tablewrap adwrap"><table class="ledger adt"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map(u => '<tr><th scope="row">' + (u.email ? '<button class="pflink" type="button" data-pfmail="' + esc(u.email) + '">' + esc(who(u)) + "</button>" : esc(who(u))) +
+      (u.email && mob(u) && !/@m\.sebsaathi\.com$/i.test(u.email) ? '<br><span class="fine">📱 +' + esc(mob(u)) + "</span>" : "") +
+      (String(u.email || "").toLowerCase() === mine ? ' <span class="tag me">' + tr("ad_me") + "</span>" : "") + "</th>" +
+      "<td" + L("ad_joined") + ">" + adWhen(u.created_at) + "</td><td" + L("ad_last") + ">" + adWhen(u.last_sign_in_at) + '</td><td class="n"' + L("ad_orch") + ">" + fmtN(+u.orchards || 0) + '</td><td class="n"' + L("ad_years") + ">" + fmtN(+u.years || 0) +
+      '</td><td class="n"' + L("ad_lots") + ">" + fmtN(+u.lots || 0) + "</td><td" + L("ad_saved") + ">" + (u.saved_at ? adWhen(u.saved_at) : "–") + "</td>" +
+      "<td" + L("ad_status") + '><span class="tag' + (u.confirmed ? " ok" : "") + '">' + tr(u.confirmed ? "ad_ok" : "ad_no") + "</span></td></tr>").join("") +
     "</tbody></table></div>";
 }
 $("adRefresh").addEventListener("click", () => { loadAdmin(); loadFeedback(); loadLibAdmin(); if (typeof loadPayAdmin === "function") loadPayAdmin(); });
