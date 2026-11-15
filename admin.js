@@ -206,7 +206,7 @@ const T = {
 "adm_title": "Seb Saathi Admin",
 "adm_site": "Back to site",
 "adm_t_pay": "Payments",
-"adm_t_users": "Growers",
+"adm_t_users": "Grower records",
 "adm_t_fb": "Feedback",
 "adm_t_lib": "Library",
 "adm_out": "Log out",
@@ -423,7 +423,7 @@ const T = {
 "adm_title": "सेब साथी एडमिन",
 "adm_site": "साइट पर वापस",
 "adm_t_pay": "भुगतान",
-"adm_t_users": "बाग़वान",
+"adm_t_users": "बाग़वान रिकॉर्ड",
 "adm_t_fb": "सुझाव",
 "adm_t_lib": "लाइब्रेरी",
 "adm_out": "लॉग आउट",
@@ -1893,9 +1893,9 @@ async function exportTraining() {
 $("dqExport").addEventListener("click", exportTraining);
 
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["ov", "pay", "cost", "users", "prof", "dx", "fb", "mk"]; /* library editor tab removed from the menu; its code is kept but not shown */
+const TABS = ["ov", "pay", "cost", "users", "prof", "fb", "mk"]; /* library editor tab removed from the menu; its code is kept but not shown. Photo checks now sit inside Grower records ("users") */
 let tab = "ov";
-try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; } catch (e) {}
+try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; else if (h === "dx") tab = "users"; } catch (e) {}
 const loaded = {};
 function showTab(t) {
   tab = t;
@@ -1903,7 +1903,7 @@ function showTab(t) {
   try { history.replaceState(null, "", "#" + t); } catch (e) {}
   if (!isAdmin() || loaded[t]) return;
   loaded[t] = true;
-  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") loadAdmin(); else if (t === "prof") loadProf(); else if (t === "dx") loadDq(); else if (t === "fb") loadFeedback(); else if (t === "mk" && typeof loadMk === "function") { loadMk(); if (typeof ytLoad === "function") ytLoad(); }
+  if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") { loadAdmin(); loadDq(); } else if (t === "prof") loadProf(); else if (t === "fb") loadFeedback(); else if (t === "mk" && typeof loadMk === "function") { loadMk(); if (typeof ytLoad === "function") ytLoad(); }
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {

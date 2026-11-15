@@ -1509,6 +1509,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 .admtabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding-bottom:10px;border-bottom:1px solid var(--line);margin-top:6px}
 .admtabs .tab{min-width:0;padding:8px 6px;font-size:.92rem;line-height:1.2;text-align:center;white-space:normal;overflow-wrap:anywhere}
 @media (max-width:380px){.admtabs .tab{font-size:.82rem;padding:8px 4px}}
+.dqsec{margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
 .admmain{padding-top:10px;padding-bottom:60px}
 .fbadm.solo{margin-top:16px;padding-top:0;border-top:0}
 .gate{max-width:460px;margin:40px auto;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
@@ -1625,7 +1626,6 @@ details.svdays summary{cursor:pointer}
       <button class="tab" role="tab" type="button" id="at-cost" aria-controls="ap-cost" data-i18n="adm_t_cost"></button>
       <button class="tab" role="tab" type="button" id="at-users" aria-controls="ap-users" data-i18n="adm_t_users"></button>
       <button class="tab" role="tab" type="button" id="at-prof" aria-controls="ap-prof" data-i18n="adm_t_prof"></button>
-      <button class="tab" role="tab" type="button" id="at-dx" aria-controls="ap-dx" data-i18n="adm_t_dx"></button>
       <button class="tab" role="tab" type="button" id="at-fb" aria-controls="ap-fb" data-i18n="adm_t_fb"></button>
       <button class="tab" role="tab" type="button" id="at-mk" aria-controls="ap-mk" data-i18n="adm_t_mk"></button>
     </div>
@@ -1696,7 +1696,17 @@ details.svdays summary{cursor:pointer}
         <div id="adTable"></div>
         <p class="fine" data-i18n="ad_note"></p>
       </div>
-      
+      <!-- photo checks live here now, under the growers they belong to (was its own tab) -->
+      <section class="fbadm solo dqsec" aria-labelledby="dqH">
+        <div class="admbar"><h4 id="dqH" data-i18n="dq_h" style="margin:0"></h4><button class="btn-s" type="button" id="dqRefresh" data-i18n="ad_refresh"></button><span class="fine" id="dqAt" role="status" style="margin:0"></span></div>
+        <p class="fine" data-i18n="dq_p"></p>
+        <p class="autherr" id="dqErr" role="alert"></p>
+        <div id="dqStats"></div>
+        <div class="admbar"><button class="btn-s add" type="button" id="dqExport" data-i18n="dqx_btn"></button><span class="fine" id="dqxSt" role="status" style="margin:0"></span></div>
+        <p class="fine" data-i18n="dqx_p"></p>
+        <div class="admbar"><div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-dq="open" aria-selected="true"></button><button class="tab" role="tab" type="button" data-dq="done" aria-selected="false"></button><button class="tab" role="tab" type="button" data-dq="all" aria-selected="false"></button></div></div>
+        <div id="dqList"></div>
+      </section>
     </div>
     <div class="adm" id="ap-prof" role="tabpanel" aria-labelledby="at-prof" hidden>
       <section class="fbadm solo" aria-labelledby="pfH">
@@ -1708,18 +1718,6 @@ details.svdays summary{cursor:pointer}
           <div id="pfList"></div>
         </div>
         <div id="pfOne" hidden></div>
-      </section>
-    </div>
-    <div class="adm" id="ap-dx" role="tabpanel" aria-labelledby="at-dx" hidden>
-      <section class="fbadm solo" aria-labelledby="dqH">
-        <div class="admbar"><h4 id="dqH" data-i18n="dq_h" style="margin:0"></h4><button class="btn-s" type="button" id="dqRefresh" data-i18n="ad_refresh"></button><span class="fine" id="dqAt" role="status" style="margin:0"></span></div>
-        <p class="fine" data-i18n="dq_p"></p>
-        <p class="autherr" id="dqErr" role="alert"></p>
-        <div id="dqStats"></div>
-        <div class="admbar"><button class="btn-s add" type="button" id="dqExport" data-i18n="dqx_btn"></button><span class="fine" id="dqxSt" role="status" style="margin:0"></span></div>
-        <p class="fine" data-i18n="dqx_p"></p>
-        <div class="admbar"><div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-dq="open" aria-selected="true"></button><button class="tab" role="tab" type="button" data-dq="done" aria-selected="false"></button><button class="tab" role="tab" type="button" data-dq="all" aria-selected="false"></button></div></div>
-        <div id="dqList"></div>
       </section>
     </div>
     <div class="adm" id="ap-fb" role="tabpanel" aria-labelledby="at-fb" hidden>
@@ -1780,7 +1778,7 @@ details.svdays summary{cursor:pointer}
 <p class="fine" style="margin-top:14px"><button class="link" type="button" id="pwReset" data-i18n="adm_pw_reset"></button></p></dialog>
 <dialog class="instdlg" id="prevDlg" aria-label="Preview"><div id="prevBody"></div><div class="dels"><button class="btn-s" type="button" id="prevX" data-i18n="adm_prev_close"></button></div></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script src="/admin.js?v=29"></script>
+<script src="/admin.js?v=30"></script>
 <script src="/aicost.js?v=2"></script>
 <script src="/qr.js?v=1"></script>
 <script src="/marketing.js?v=13"></script>
