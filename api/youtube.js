@@ -123,6 +123,30 @@ module.exports = async (req, res) => {
       return send(res, 200, { setup: true, connected: true, channel, subscribers: st.hiddenSubscriberCount ? null : (st.subscriberCount != null ? +st.subscriberCount : null), views: st.viewCount != null ? +st.viewCount : null, videos: st.videoCount != null ? +st.videoCount : null });
     } catch (err) { return send(res, 200, { setup: true, connected: true, channel, error: err.code === "invalid_grant" ? "reconnect" : String(err.message || err).slice(0, 200) }); }
   }
+  if (act === "studio") {   /* YouTube Studio panel (Social handler → YouTube & videos): channel numbers and the latest uploads */
+    if (!row) return send(res, 200, { setup: true, connected: false });
+    try {
+      const t = await freshToken(e, row), H = { headers: { Authorization: "Bearer " + t.access_token } };
+      const c = await fetch("https://www.googleapis.com/youtube/v3/channels?part=statistics,contentDetails,snippet&id=" + encodeURIComponent(row.channel_id), H).then(r => r.json());
+      const it = (c.items || [])[0] || {}, st = it.statistics || {}, up = ((it.contentDetails || {}).relatedPlaylists || {}).uploads;
+      let videos = [];
+      if (up) {
+        const pl = await fetch("https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=12&playlistId=" + encodeURIComponent(up), H).then(r => r.json());
+        const ids = (pl.items || []).map(x => x.contentDetails && x.contentDetails.videoId).filter(Boolean);
+        if (ids.length) {
+          const v = await fetch("https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,status,contentDetails&id=" + ids.join(","), H).then(r => r.json());
+          videos = (v.items || []).map(x => ({
+            id: x.id, title: (x.snippet || {}).title || "", published: (x.snippet || {}).publishedAt || "",
+            thumb: (((x.snippet || {}).thumbnails || {}).medium || ((x.snippet || {}).thumbnails || {}).default || {}).url || "",
+            privacy: (x.status || {}).privacyStatus || "", upload: (x.status || {}).uploadStatus || "", duration: (x.contentDetails || {}).duration || "",
+            views: +((x.statistics || {}).viewCount || 0), likes: +((x.statistics || {}).likeCount || 0), comments: +((x.statistics || {}).commentCount || 0)
+          })).sort((a, b) => String(b.published).localeCompare(String(a.published)));
+        }
+      }
+      return send(res, 200, { setup: true, connected: true, channel, thumb: (((it.snippet || {}).thumbnails || {}).default || {}).url || "",
+        subscribers: st.hiddenSubscriberCount ? null : (st.subscriberCount != null ? +st.subscriberCount : null), views: st.viewCount != null ? +st.viewCount : null, count: st.videoCount != null ? +st.videoCount : null, videos });
+    } catch (err) { return send(res, 200, { setup: true, connected: true, channel, error: err.code === "invalid_grant" ? "reconnect" : String(err.message || err).slice(0, 200) }); }
+  }
   if (act === "token") {
     if (!row) return send(res, 200, { setup: true, connected: false });
     try { const t = await freshToken(e, row); return send(res, 200, { setup: true, connected: true, channel, access_token: t.access_token, expires_in: t.expires_in }); }

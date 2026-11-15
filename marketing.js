@@ -1173,6 +1173,7 @@ function renderMk() {
   } else if (mkSub === "yt") {
     const Y = ytSt || {}, ch = Y.channel || (typeof YT !== "undefined" && YT && YT.channel) || null;
     T1 = '<p class="fine">' + (ch ? esc(tr("yt_conn").replace("{c}", ch.title)) + (Y.subscribers != null ? " · " + tr("sc_yt") + " " + mkN(Y.subscribers) : "") : tr("ms_yt_p")) + "</p>" +
+      (typeof ysHtml === "function" ? ysHtml() : "") +   /* YouTube Studio panel (ytstudio.js) */
       askHtml("yt") + mkSec("demo", tr("demo_h"), "", demoHtml()) + mkSec("ytlist", tr("ms_yt_h"), "", qHtml("yt"));
     const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
     T2 = mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml());
