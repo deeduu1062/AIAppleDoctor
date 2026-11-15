@@ -1002,8 +1002,14 @@ button.hmcard{cursor:pointer}
 .lpdcard{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:20px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
 .lpdpic{margin:0}.lpdpic img{width:100%;height:auto;display:block;border-radius:14px}.lpdpic figcaption{text-align:center;margin-top:6px}
 .lpdres h3{margin:6px 0 4px}.lpdres p{margin:0 0 8px}.lpdres ul{margin:0 0 12px;padding-left:20px}.lpdres li{margin:0 0 4px}.lpdsev{color:#9A6400;background:color-mix(in srgb,#E0A21A 20%,transparent)}
-.lpvids{display:flex;flex-wrap:nowrap;justify-content:center;gap:16px;margin-top:14px}
-.lpvids figure{margin:0;flex:0 1 200px;max-width:200px;text-align:center}
+.lpcar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px}
+.lpvids{display:flex;width:220px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.lpvids::-webkit-scrollbar{display:none}
+.lpvids figure{margin:0;flex:0 0 100%;scroll-snap-align:center;text-align:center;padding:4px 10px 6px}
+.lpcar-arr{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink,#15251B);font-size:30px;line-height:1;cursor:pointer;box-shadow:0 4px 12px rgba(20,40,28,.1)}
+.lpcar-dots{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.lpcar-dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:#c9d6c6;cursor:pointer}
+.lpcar-dots button.on{background:#B8321F;width:24px;border-radius:5px}
 .lpvids figcaption{margin-top:8px;font-weight:700;font-size:.95rem}
 .lpvideo{display:block;width:100%;max-width:200px;height:auto;aspect-ratio:9/16;margin:0 auto;border-radius:18px;background:#F1F5EE;border:1px solid var(--line);box-shadow:0 10px 30px rgba(20,40,28,.12)}
 @media (max-width:640px){.lpdcard{grid-template-columns:1fr}.lpdpic img{max-width:260px;margin:0 auto}}
@@ -2398,10 +2404,29 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
   <div class="wrap">
     <h2 id="lpvH" data-i18n="lpv_h"></h2>
     <p class="lede" data-i18n="lpv_p"></p>
-    <div class="lpvids">
+    <div class="lpcar">
+    <button type="button" class="lpcar-arr" data-d="-1" aria-label="Previous">‹</button>
+    <div class="lpvids" id="lpVids">
       <figure><video class="lpvideo" src="/img/bimari-jaanch-guide.mp4" poster="/img/bimari-jaanch-guide-poster.jpg" width="360" height="640" controls playsinline muted preload="none"></video><figcaption data-i18n="lpv_1"></figcaption></figure>
       <figure><video class="lpvideo" src="/img/bagicha-record-guide.mp4" poster="/img/bagicha-record-guide-poster.jpg" width="360" height="640" controls playsinline muted preload="none"></video><figcaption data-i18n="lpv_2"></figcaption></figure>
     </div>
+    <button type="button" class="lpcar-arr" data-d="1" aria-label="Next">›</button>
+    </div>
+    <div class="lpcar-dots" id="lpDots"><button type="button" class="on" aria-label="1"></button><button type="button" aria-label="2"></button></div>
+    <script>
+    (function () {
+      const t = document.getElementById("lpVids"), dots = [...document.querySelectorAll("#lpDots button")], figs = [...t.children];
+      const go = i => { i = Math.max(0, Math.min(figs.length - 1, i)); t.scrollTo({ left: figs[i].offsetLeft - t.offsetLeft, behavior: "smooth" }); };
+      const cur = () => Math.round(t.scrollLeft / t.clientWidth);
+      document.querySelectorAll(".lpcar-arr").forEach(b => b.onclick = () => go(cur() + +b.dataset.d));
+      dots.forEach((d, i) => d.onclick = () => go(i));
+      t.addEventListener("scroll", () => {
+        const c = cur();
+        dots.forEach((d, i) => d.classList.toggle("on", i === c));
+        figs.forEach((f, i) => { if (i !== c) { const v = f.querySelector("video"); if (v && !v.paused) v.pause(); } });
+      }, { passive: true });
+    })();
+    </script>
   </div>
 </section>
 <section class="section lpmanage">
