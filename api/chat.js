@@ -11,6 +11,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
+const { freePaused } = require("./_switches");
 const { logAi } = require("./_aicost");   /* saves each answer's AI cost against the grower (admin → Costs) */
 const PLAN_LIMIT = { free: 5, basic: 20, premium: 30 };   /* questions a day; keep in step with the plans page */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
@@ -231,6 +232,7 @@ module.exports = async (req, res) => {
   const isAdmin = ADMIN_EMAILS.includes(String(user.email || "").toLowerCase());
   const plan = isAdmin ? "admin" : await planOf(token, user.id);
   const limit = isAdmin ? ADMIN_LIMIT : PLAN_LIMIT[plan];
+  if (plan === "free" && await freePaused(SB_URL, sbHeaders(token), "chat")) return send(res, 503, { error: "paused", plan });   /* admin → Site health → AI safety switch */
   let used = 0;
   try {
     const c = await fetch(SB_URL + "/rest/v1/chat_messages?select=id&role=eq.user&user_id=eq." + encodeURIComponent(user.id) + "&created_at=gte." + encodeURIComponent(istDayStart()), { headers: sbHeaders(token) });

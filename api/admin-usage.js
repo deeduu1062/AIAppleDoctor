@@ -97,8 +97,62 @@ async function twilioUse(sid, tok, keySid) {
   };
 }
 
+// Login health (admin → Site health): code messages sent in the last 7 days, Verify attempts, and WhatsApp template approvals.
+// Uses the same Twilio variables as above. GET /api/admin-usage?fn=login
+async function twilioLogin(sid, tok, keySid) {
+  const h = { Authorization: "Basic " + Buffer.from((keySid || sid) + ":" + tok).toString("base64") };
+  const get = async (what, url) => {
+    const r = await fetch(url, { headers: h });
+    if (!r.ok) { const t = await r.text().catch(() => ""); const e = new Error("Twilio " + r.status + (t ? ": " + t.slice(0, 200) : "")); e.what = what; e.why = twilioWhy(r.status, t); throw e; }
+    return r.json();
+  };
+  const since = new Date(Date.now() - 7 * 864e5);
+  const parts = await Promise.allSettled([
+    get("messages", "https://api.twilio.com/2010-04-01/Accounts/" + encodeURIComponent(sid) + "/Messages.json?PageSize=1000&DateSent%3E=" + since.toISOString().slice(0, 10)),
+    get("verify", "https://verify.twilio.com/v2/Attempts?PageSize=1000&DateCreatedAfter=" + encodeURIComponent(since.toISOString())),
+    get("templates", "https://content.twilio.com/v1/ContentAndApprovals?PageSize=100")
+  ]);
+  const val = i => parts[i].status === "fulfilled" ? parts[i].value : null;
+  const errors = parts.filter(p => p.status === "rejected").map(p => ({ what: p.reason && p.reason.what || "other", why: p.reason && p.reason.why || "other", raw: String(p.reason && p.reason.message || p.reason) }));
+  let msgs = null, verify = null, templates = null;
+  const m = val(0);
+  if (m) {
+    msgs = { total: 0, whatsapp: 0, sms: 0, ok: 0, failed: 0, waiting: 0, price: 0, unit: "USD", codes: {}, days: {} };
+    for (const x of m.messages || []) {
+      if (x.direction && !/^outbound/.test(x.direction)) continue;
+      msgs.total++;
+      if (/^whatsapp:/i.test(String(x.from || ""))) msgs.whatsapp++; else msgs.sms++;
+      const st = String(x.status || "");
+      if (st === "delivered" || st === "read" || st === "sent") msgs.ok++;
+      else if (st === "failed" || st === "undelivered") { msgs.failed++; const c = String(x.error_code || "?"); msgs.codes[c] = (msgs.codes[c] || 0) + 1; }
+      else msgs.waiting++;
+      if (x.price) msgs.price += Math.abs(+x.price || 0);
+      if (x.price_unit) msgs.unit = x.price_unit;
+      const d = String(x.date_sent || x.date_created || "");
+      const k = d ? new Date(d).toISOString().slice(0, 10) : "";
+      if (k) { const o = msgs.days[k] = msgs.days[k] || { n: 0, f: 0 }; o.n++; if (st === "failed" || st === "undelivered") o.f++; }
+    }
+    msgs.price = +msgs.price.toFixed(4);
+  }
+  const v = val(1);
+  if (v) {
+    verify = { total: 0, converted: 0, channels: {} };
+    for (const a of v.attempts || []) {
+      verify.total++; if (a.conversion_status === "converted") verify.converted++;
+      const c = a.channel || "other"; verify.channels[c] = (verify.channels[c] || 0) + 1;
+    }
+  }
+  const t = val(2);
+  if (t) templates = (t.contents || []).map(c => {
+    const a = c.approval_requests || {};
+    return { name: c.friendly_name || "", sid: c.sid || "", status: a.status || "unsubmitted", category: a.category || "", reason: a.rejection_reason || "", updated: c.date_updated || "" };
+  });
+  return { setup: true, msgs, verify, templates, errors };
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "GET") return send(res, 405, { error: "method" });
+  const fn = String((req.query && req.query.fn) || "");
   const auth = String(req.headers.authorization || "");
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token) return send(res, 401, { error: "signin" });
@@ -108,6 +162,14 @@ module.exports = async (req, res) => {
     const user = await u.json();
     if (!ADMIN_EMAILS.includes(String(user.email || "").toLowerCase())) return send(res, 403, { error: "admin" });
   } catch (e) { return send(res, 502, { error: "auth_down" }); }
+
+  if (fn === "login") {
+    const sid = process.env.TWILIO_ACCOUNT_SID, k = process.env.TWILIO_API_KEY, s = process.env.TWILIO_API_SECRET;
+    const viaKey = !!(k && s), tk = viaKey ? s : process.env.TWILIO_AUTH_TOKEN;
+    if (!sid || !tk) return send(res, 200, { twilio: { setup: false }, at: new Date().toISOString() });
+    try { return send(res, 200, { twilio: await twilioLogin(sid, tk, viaKey ? k : ""), at: new Date().toISOString() }); }
+    catch (e) { return send(res, 200, { twilio: { setup: true, error: String(e && e.message || e) }, at: new Date().toISOString() }); }
+  }
 
   const key = process.env.ANTHROPIC_ADMIN_KEY;
   let ai = { setup: false };
