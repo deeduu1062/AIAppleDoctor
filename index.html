@@ -1002,10 +1002,10 @@ button.hmcard{cursor:pointer}
 .lpdcard{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:20px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
 .lpdpic{margin:0}.lpdpic img{width:100%;height:auto;display:block;border-radius:14px}.lpdpic figcaption{text-align:center;margin-top:6px}
 .lpdres h3{margin:6px 0 4px}.lpdres p{margin:0 0 8px}.lpdres ul{margin:0 0 12px;padding-left:20px}.lpdres li{margin:0 0 4px}.lpdsev{color:#9A6400;background:color-mix(in srgb,#E0A21A 20%,transparent)}
-.lpvids{display:flex;flex-wrap:wrap;justify-content:center;gap:22px;margin-top:14px}
-.lpvids figure{margin:0;flex:1 1 280px;max-width:340px;text-align:center}
-.lpvids figcaption{margin-top:10px;font-weight:700;font-size:1.05rem}
-.lpvideo{display:block;width:100%;max-width:340px;height:auto;aspect-ratio:9/16;margin:0 auto;border-radius:18px;background:#F1F5EE;border:1px solid var(--line);box-shadow:0 10px 30px rgba(20,40,28,.12)}
+.lpvids{display:flex;flex-wrap:nowrap;justify-content:center;gap:16px;margin-top:14px}
+.lpvids figure{margin:0;flex:0 1 200px;max-width:200px;text-align:center}
+.lpvids figcaption{margin-top:8px;font-weight:700;font-size:.95rem}
+.lpvideo{display:block;width:100%;max-width:200px;height:auto;aspect-ratio:9/16;margin:0 auto;border-radius:18px;background:#F1F5EE;border:1px solid var(--line);box-shadow:0 10px 30px rgba(20,40,28,.12)}
 @media (max-width:640px){.lpdcard{grid-template-columns:1fr}.lpdpic img{max-width:260px;margin:0 auto}}
 .mgcard{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:auto 1fr;column-gap:12px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--fg);transition:border-color .15s,transform .15s}
 .mgcard:hover{border-color:var(--apple)}
@@ -2401,28 +2401,6 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <div class="lpvids">
       <figure><video class="lpvideo" src="/img/bimari-jaanch-guide.mp4" poster="/img/bimari-jaanch-guide-poster.jpg" width="360" height="640" controls playsinline muted preload="none"></video><figcaption data-i18n="lpv_1"></figcaption></figure>
       <figure><video class="lpvideo" src="/img/bagicha-record-guide.mp4" poster="/img/bagicha-record-guide-poster.jpg" width="360" height="640" controls playsinline muted preload="none"></video><figcaption data-i18n="lpv_2"></figcaption></figure>
-    </div>
-  </div>
-</section>
-<section class="section lpdemo" aria-labelledby="lpdH">
-  <div class="wrap">
-    <h2 id="lpdH" data-i18n="lpd_h"></h2>
-    <p class="lede" data-i18n="lpd_p" data-saathi></p>
-    <div class="lpdcard">
-      <figure class="lpdpic">
-        <img src="/img/example-scab-fruit.jpg" width="369" height="395" alt="" data-i18n-alt="lpd_alt" id="lpdImg" loading="lazy">
-        <figcaption class="fine" data-i18n="lpd_cap"></figcaption>
-      </figure>
-      <div class="lpdres">
-        <p><span class="lptag" data-i18n="lpd_tag"></span></p>
-        <h3 data-i18n="lpd_name"></h3>
-        <p class="lpdchips"><em class="chip" data-i18n="lpd_conf"></em> <em class="chip lpdsev" data-i18n="lpd_sev"></em></p>
-        <p data-i18n="lpd_why"></p>
-        <p class="subhead" data-i18n="lpd_next"></p>
-        <ul><li data-i18n="lpd_s1"></li><li data-i18n="lpd_s2"></li><li data-i18n="lpd_s3"></li></ul>
-        <button class="btn primary" type="button" data-lgo="diag" data-i18n="lpd_go"></button>
-        <p class="fine" data-i18n="lpd_note"></p>
-      </div>
     </div>
   </div>
 </section>
