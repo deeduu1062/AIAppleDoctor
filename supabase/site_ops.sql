@@ -41,7 +41,7 @@ begin
   if to_regclass('public.ai_usage') is not null then
     execute 'select coalesce(sum(cost_usd), 0) from public.ai_usage where created_at >= $1' into v using since;
   end if;
-  return round(v * coalesce(rate, 85), 2);
+  return round(numeric_mul(v, coalesce(rate, 85)), 2);
 end $$;
 revoke all on function public.ai_month_inr() from public, anon;
 grant execute on function public.ai_month_inr() to authenticated;
@@ -51,8 +51,8 @@ create or replace function public.free_ai_paused(kind text) returns boolean
 language plpgsql stable security definer set search_path = public as $$
 declare s public.site_switches;
 begin
-  select * into s from public.site_switches where id = 1;
-  if not found then return false; end if;
+  s := (select t from public.site_switches t where t.id = 1);
+  if s is null then return false; end if;
   if kind = 'dx' and s.free_dx_paused then return true; end if;
   if kind = 'chat' and s.free_chat_paused then return true; end if;
   if s.auto_pause and s.ai_cap_inr > 0 and public.ai_month_inr() >= s.ai_cap_inr then return true; end if;
@@ -68,22 +68,22 @@ declare d14 timestamptz := now() - interval '14 days'; d7 timestamptz := now() -
 begin
   if not public.is_admin() then raise exception 'not allowed' using errcode = '42501'; end if;
   return json_build_object(
-    'signups_1',  (select count(*) from auth.users where created_at >= d1),
-    'signups_7',  (select count(*) from auth.users where created_at >= d7),
-    'signins_1',  (select count(*) from auth.users where last_sign_in_at >= d1),
-    'signins_7',  (select count(*) from auth.users where last_sign_in_at >= d7),
-    'phone_7',    (select count(*) from auth.users where created_at >= d7 and phone is not null and phone <> ''),
-    'email_7',    (select count(*) from auth.users where created_at >= d7 and email is not null and email <> ''),
+    'signups_1',  (select count(1) from auth.users where created_at >= d1),
+    'signups_7',  (select count(1) from auth.users where created_at >= d7),
+    'signins_1',  (select count(1) from auth.users where last_sign_in_at >= d1),
+    'signins_7',  (select count(1) from auth.users where last_sign_in_at >= d7),
+    'phone_7',    (select count(1) from auth.users where created_at >= d7 and phone is not null and phone <> ''),
+    'email_7',    (select count(1) from auth.users where created_at >= d7 and email is not null and email <> ''),
     -- started with a mobile number but never finished the code: the best sign that codes are not arriving
-    'stuck_7',    (select count(*) from auth.users where created_at >= d7 and phone is not null and phone <> '' and phone_confirmed_at is null),
+    'stuck_7',    (select count(1) from auth.users where created_at >= d7 and phone is not null and phone <> '' and phone_confirmed_at is null),
     'stuck_list', (select coalesce(json_agg(x order by x.created_at desc), '[]'::json) from (
                      select phone, created_at from auth.users
                       where created_at >= d14 and phone is not null and phone <> '' and phone_confirmed_at is null
                       order by created_at desc limit 30) x),
     'days',       (select coalesce(json_agg(x order by x.day), '[]'::json) from (
                      select (created_at at time zone 'Asia/Kolkata')::date as day,
-                            count(*) as signups,
-                            count(*) filter (where phone is not null and phone <> '' and phone_confirmed_at is null) as stuck
+                            count(1) as signups,
+                            count(1) filter (where phone is not null and phone <> '' and phone_confirmed_at is null) as stuck
                        from auth.users where created_at >= d14 group by 1) x)
   );
 end $$;

@@ -1899,8 +1899,8 @@ async function exportTraining() {
 $("dqExport").addEventListener("click", exportTraining);
 
 /* ---------- page: tabs, language, sign-in gate ---------- */
-const TABS = ["ov", "pay", "cost", "users", "prof", "fb", "mk", "gr", "aq", "op"];   /* gr = Growth (growers.js), aq = AI quality (quality.js), op = Site health (ops.js) */ /* library editor tab removed from the menu; its code is kept but not shown. Photo checks now sit inside Grower records ("users") */
-let tab = "ov";
+const TABS = ["td", "ov", "pay", "cost", "users", "prof", "fb", "mk", "gr", "aq", "op", "bc"];   /* td = Today (today.js), bc = Broadcast (broadcast.js) */   /* gr = Growth (growers.js), aq = AI quality (quality.js), op = Site health (ops.js) */ /* library editor tab removed from the menu; its code is kept but not shown. Photo checks now sit inside Grower records ("users") */
+let tab = "td";
 try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) tab = h; else if (h === "dx") tab = "users"; } catch (e) {}
 const loaded = {};
 function showTab(t) {
@@ -1911,6 +1911,7 @@ function showTab(t) {
   loaded[t] = true;
   if (t === "ov") loadOverview(); else if (t === "cost") loadCosts(); else if (t === "pay") loadPayAdmin(); else if (t === "users") { loadAdmin(); loadDq(); } else if (t === "prof") loadProf(); else if (t === "fb") loadFeedback(); else if (t === "mk" && typeof loadMk === "function") { loadMk(); if (typeof ytLoad === "function") ytLoad(); }
   else if (t === "gr" && typeof loadGr === "function") loadGr(); else if (t === "aq" && typeof loadAq === "function") loadAq(); else if (t === "op" && typeof loadOp === "function") loadOp();
+  else if (t === "td" && typeof loadTd === "function") loadTd(); else if (t === "bc" && typeof loadBc === "function") loadBc();
 }
 TABS.forEach(n => $("at-" + n).addEventListener("click", () => showTab(n)));
 function applyLang() {
@@ -1921,6 +1922,7 @@ function applyLang() {
   renderGate();
   if (AD) renderAdmin(); renderFeedback(); renderPayAdmin(); if (LA) renderLA(); renderOverview(); renderProf(); renderDq(); if (typeof renderMk === "function") renderMk(); if (typeof renderStudio === "function") renderStudio(); if (typeof renderAig === "function") renderAig(); if (CO || EX || exErr) renderCosts();
   if (typeof renderGr === "function") renderGr(); if (typeof renderAq === "function") renderAq(); if (typeof renderOp === "function") renderOp();
+  if (typeof renderTd === "function") renderTd(); if (typeof renderBc === "function") renderBc();
 }
 $("langBtn").addEventListener("click", () => { lang = lang === "en" ? "hi" : "en"; try { localStorage.setItem("ad-lang", lang); } catch (e) {} applyLang(); });
 $("signOut").addEventListener("click", async () => {

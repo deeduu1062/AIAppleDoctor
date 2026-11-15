@@ -25,10 +25,10 @@ begin
              %s as ch_at,
              (select max(p.valid_until) from public.payments p where p.user_id = u.id and p.status = 'approved' and p.source <> 'referral') as paid_until,
              exists (select 1 from public.payments p where p.user_id = u.id and p.status = 'approved' and p.source <> 'referral') as ever_paid,
-             (select count(*) from public.payments p where p.user_id = u.id and p.source = 'referral') as rewards
+             (select count(1) from public.payments p where p.user_id = u.id and p.source = 'referral') as rewards
         from auth.users u
     ) x $q$,
-    case when has_led then $s$(select coalesce((select count(*) from jsonb_array_elements(coalesce(l.data -> 'orchards', '[]'::jsonb)) o
+    case when has_led then $s$(select coalesce((select count(1) from jsonb_array_elements(coalesce(l.data -> 'orchards', '[]'::jsonb)) o
                               where coalesce(o ->> 'ex', 'false') <> 'true'), 0) from public.ledgers l where l.user_id::text = u.id::text limit 1)$s$ else 'null::bigint' end,
     case when has_led then $s$exists (select 1 from public.ledgers l, jsonb_array_elements(coalesce(l.data -> 'seasons', '[]'::jsonb)) s
                               where l.user_id::text = u.id::text and jsonb_typeof(s -> 'lots') = 'array' and jsonb_array_length(s -> 'lots') > 0)$s$ else 'false' end,
