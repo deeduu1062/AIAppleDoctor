@@ -22,7 +22,8 @@ Object.assign(T.en, {
   aig_note: "Real cost from each AI reply's token count, at Anthropic's price list; rupees at about ₹{r} to the dollar. \"est.\" means nothing saved yet for that grower this month, so the upper estimate is shown.",
   aig_setup: "Not set up yet. In Supabase → SQL Editor, run supabase/ai_usage.sql once, then press Refresh.",
   aig_alert: "⚠ {n} growers' AI use this month cost more than their plan brings in.", aig_alert1: "⚠ 1 grower's AI use this month costs more than their plan brings in.",
-  aig_see: "See who", aig_open: "Open profile"
+  aig_see: "See who", aig_open: "Open profile",
+  aig_tot: "All {n} growers", aig_tot_over: "AI costs {x} more than plans bring in", aig_tot_ok: "{x} left after AI"
 });
 Object.assign(T.hi, {
   aig_h: "हर बाग़वान का AI ख़र्च (इस महीने)",
@@ -39,7 +40,8 @@ Object.assign(T.hi, {
   aig_note: "हर AI जवाब के टोकन से असली ख़र्च, Anthropic की दर पर; रुपये लगभग ₹{r} प्रति डॉलर। \"अनुमान\" का मतलब इस महीने उस बाग़वान का कुछ सेव नहीं हुआ, इसलिए ऊपरी अनुमान दिखाया है।",
   aig_setup: "अभी सेट नहीं है। Supabase → SQL Editor में supabase/ai_usage.sql एक बार चलाएँ, फिर Refresh दबाएँ।",
   aig_alert: "⚠ इस महीने {n} बाग़वानों का AI ख़र्च उनके प्लान की रक़म से ज़्यादा है।", aig_alert1: "⚠ इस महीने 1 बाग़वान का AI ख़र्च उसके प्लान की रक़म से ज़्यादा है।",
-  aig_see: "कौन हैं, देखें", aig_open: "प्रोफ़ाइल खोलें"
+  aig_see: "कौन हैं, देखें", aig_open: "प्रोफ़ाइल खोलें",
+  aig_tot: "सभी {n} बाग़वान", aig_tot_over: "AI ख़र्च प्लान की रक़म से {x} ज़्यादा", aig_tot_ok: "AI के बाद {x} बचे"
 });
 
 /* each grower's current plan and what it brings in a month, from approved payments still running */
@@ -113,17 +115,25 @@ function renderAig() {
     : '<span class="sbchip ' + (r.st === "over" ? "sb-expired" : r.st === "near" ? "sb-soon" : "sb-active") + '">' + tr("aig_" + r.st) + "</span>" +
       (r.st === "over" ? '<br><span class="fine">' + tr(r.pays ? "aig_over_by" : "aig_free_over").replace("{x}", r2(r.cost - r.cap)) + "</span>" : "");
   const show = aigAll ? rows : rows.slice(0, 25);
-  h += '<div class="tablewrap"><table class="ledger"><thead><tr>' +
+  const L = k => ' data-l="' + esc(tr(k)) + '"';   /* column name, shown beside each value when the table turns into cards on phones */
+  const short = s => { const t = String(s); const i = t.indexOf("@"); return i > 0 && t.length > 22 ? t.slice(0, Math.min(i, 14)) + (i > 14 ? "…" : "") + t.slice(i) : t; };
+  const tPay = growers.reduce((s, r) => s + (r.pays || 0), 0), tCost = growers.reduce((s, r) => s + r.cost, 0);
+  h += '<div class="tablewrap aigwrap"><table class="ledger aigt"><thead><tr>' +
     ["aig_c_who", "aig_c_plan", "aig_c_pays", "aig_c_cost", "aig_c_uses", "aig_c_st"].map(k => '<th scope="col"' + (k === "aig_c_pays" || k === "aig_c_cost" ? ' class="n"' : "") + ">" + tr(k) + "</th>").join("") +
     "</tr></thead><tbody>" + show.map(r =>
-      '<tr><th scope="row"><button class="pflink" type="button" data-aig="open" data-id="' + esc(r.user_id) + '" title="' + esc(tr("aig_open")) + '">' + esc(pfName(r)) + "</button></th>" +
-      "<td>" + pfPlan(r.plan) + "</td>" +
-      '<td class="n">' + (r.pays ? paRup(Math.round(r.pays)) : "₹0") + "</td>" +
-      '<td class="n"><b>' + r2(r.cost) + "</b>" + (r.est ? ' <span class="fine">' + tr("aig_est") + "</span>" :
+      '<tr class="aig-' + r.st + '"><th scope="row"><button class="pflink" type="button" data-aig="open" data-id="' + esc(r.user_id) + '" title="' + esc(pfName(r)) + '">' + esc(short(pfName(r))) + "</button></th>" +
+      "<td" + L("aig_c_plan") + ">" + pfPlan(r.plan) + "</td>" +
+      '<td class="n"' + L("aig_c_pays") + ">" + (r.pays ? paRup(Math.round(r.pays)) : "₹0") + "</td>" +
+      '<td class="n"' + L("aig_c_cost") + "><b>" + r2(r.cost) + "</b>" + (r.est ? ' <span class="fine">' + tr("aig_est") + "</span>" :
         '<br><span class="fine">' + tr("aig_split").replace("{c}", r2((+r.chat_usd || 0) * USD_INR)).replace("{p}", r2((+r.photo_usd || 0) * USD_INR)) +
         (+r.other_usd > 0 ? tr("aig_other").replace("{o}", r2(+r.other_usd * USD_INR)) : "") + "</span>") + "</td>" +
-      '<td class="fine">' + tr("aig_uses").replace("{q}", fmtN(+r.questions || 0)).replace("{p}", fmtN(+r.photos || 0)) + "</td>" +
-      "<td>" + chip(r) + "</td></tr>").join("") + "</tbody></table></div>";
+      '<td class="fine"' + L("aig_c_uses") + ">" + tr("aig_uses").replace("{q}", fmtN(+r.questions || 0)).replace("{p}", fmtN(+r.photos || 0)) + "</td>" +
+      "<td" + L("aig_c_st") + ">" + chip(r) + "</td></tr>").join("") + "</tbody>" +
+    (growers.length ? '<tfoot><tr class="aigtot"><th scope="row">' + tr("aig_tot").replace("{n}", fmtN(growers.length)) + "</th><td></td>" +
+      '<td class="n"' + L("aig_c_pays") + "><b>" + paRup(Math.round(tPay)) + '</b></td><td class="n"' + L("aig_c_cost") + "><b>" + r2(tCost) + "</b></td>" +
+      '<td colspan="2"' + L("aig_c_st") + ">" + (tCost > tPay + 0.005 ? '<span class="sbchip sb-expired">' + tr("aig_tot_over").replace("{x}", r2(tCost - tPay)) + "</span>"
+        : '<span class="sbchip sb-active">' + tr("aig_tot_ok").replace("{x}", r2(tPay - tCost)) + "</span>") + "</td></tr></tfoot>" : "") +
+    "</table></div>";
   if (rows.length > 25) h += '<p><button class="btn-s" type="button" data-aig="all">' + (aigAll ? tr("aig_less") : tr("aig_all").replace("{n}", rows.length)) + "</button></p>";
   h += '<p class="fine">' + tr("aig_note").replace("{r}", USD_INR) + "</p></div>";
   el.innerHTML = h;

@@ -1052,10 +1052,12 @@ document.addEventListener("change", async e => {
 const AI_PHOTO_INR = 1.9, AI_Q_INR = 0.35;
 let CO = null, coBusy = false, coEdit = null, coAi = null, coPay = null, coLive = null, coDb = null;
 const USD_INR = 85;   /* rough rupees per dollar for showing AI spend */
+const PLUS_MONTH = 149, PLUS_YEAR = 999;   /* Saathi Plus price, same as PRICES.premium in plans.js — change both together */
+let coAt = null;   /* when the Costs figures were last loaded */
 const coMonthly = x => x.amount_inr == null ? 0 : x.per === "year" ? x.amount_inr / 12 : x.per === "once" ? 0 : x.amount_inr;
 
 /* ---------- Costs tab: "My expenses" — what Seb Saathi really cost, entered by hand each month (admin_expenses table) ---------- */
-let EX = null, exErr = "", exSel = null, exEdit = null;
+let EX = null, exErr = "", exSel = null, exEdit = null, exCopy = false;
 const EX_ITEMS = ["Vercel", "Supabase", "AI for marketing (Anthropic)","GoDaddy (domain)", "Twilio (WhatsApp/SMS)", "Resend (email)", "Facebook/Instagram ads", "Printing / leaflets", "Travel", "Phone / internet", "Other"];
 const exToday = () => new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);   /* India date */
 const exNowKey = () => exToday().slice(0, 7);
@@ -1095,6 +1097,19 @@ function renderExp() {
   h += '<div class="exbar"><label for="exMonth" class="fine">' + tr("ex_month") + '</label><select id="exMonth">' +
     months.map(k => '<option value="' + k + '"' + (k === exSel ? " selected" : "") + ">" + esc(exMonthName(k)) + (k === now ? " · " + tr("ex_now") : "") + "</option>").join("") +
     "</select><b>" + tr("ex_total").replace("{t}", exRup(tot)) + "</b></div>";
+  /* regular bills: copy last month's items into this month in two taps */
+  if (exSel === now) {
+    const [cy, cm] = now.split("-").map(Number), pk = cm === 1 ? (cy - 1) + "-12" : cy + "-" + String(cm - 1).padStart(2, "0");
+    const have = new Set(rows.map(x => String(x.item).toLowerCase()));
+    const prevRows = EX.filter(x => String(x.spent_on).slice(0, 7) === pk && !have.has(String(x.item).toLowerCase()));
+    if (EX.some(x => String(x.spent_on).slice(0, 7) === pk)) {
+      if (!exCopy) h += '<p><button class="btn-s" type="button" data-exact="copy">' + tr("ex_copy") + "</button></p>";
+      else h += '<div class="excopy"><b>' + esc(tr("ex_copy_h").replace("{m}", exMonthName(pk))) + "</b>" +
+        (prevRows.length ? '<p class="fine">' + tr("ex_copy_p") + "</p>" + prevRows.map(x => '<label><input type="checkbox" data-excopy="' + esc(x.id) + '" checked> ' + esc(x.item) + " · " + exRup(x.amount_inr) + "</label>").join("") +
+          '<div class="dels"><button class="btn-s add" type="button" data-exact="copyadd">' + tr("ex_copy_add") + '</button><button class="btn-s" type="button" data-exact="copyx">' + tr("co_cancel") + "</button></div>"
+          : '<p class="fine">' + tr("ex_copy_none") + '</p><button class="btn-s" type="button" data-exact="copyx">' + tr("co_cancel") + "</button>") + "</div>";
+    }
+  }
   if (rows.length) {
     const by = {}; rows.forEach(x => { by[x.item] = (by[x.item] || 0) + (+x.amount_inr || 0); });
     const ks = Object.keys(by).sort((a, b) => by[b] - by[a]);
@@ -1135,6 +1150,19 @@ document.addEventListener("click", async e => {
   const a = b.dataset.exact;
   if (a === "edit") { exEdit = b.dataset.id; renderExp(); return; }
   if (a === "cancel") { exEdit = null; renderExp(); return; }
+  if (a === "copy") { exCopy = true; renderExp(); return; }
+  if (a === "copyx") { exCopy = false; renderExp(); return; }
+  if (a === "copyadd") {
+    const ids = Array.from(document.querySelectorAll("[data-excopy]:checked")).map(i => i.dataset.excopy);
+    const src = (EX || []).filter(x => ids.indexOf(x.id) >= 0); if (!src.length || !sb || !isAdmin()) return;
+    const td = exToday(), ym = td.slice(0, 7), [y, m] = ym.split("-").map(Number), last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const day = x => { const d = Math.min(+String(x.spent_on).slice(8, 10) || 1, last), s = ym + "-" + String(d).padStart(2, "0"); return s > td ? td : s; };
+    b.disabled = true;
+    const r = await sb.from("admin_expenses").insert(src.map(x => ({ spent_on: day(x), item: x.item, amount_inr: +x.amount_inr || 0, note: x.note || null, updated_at: new Date().toISOString() }))).select();
+    if (r.error) { b.disabled = false; set("coErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
+    EX = (r.data || []).concat(EX).sort((p, q) => String(q.spent_on).localeCompare(String(p.spent_on)));
+    exCopy = false; exSel = exNowKey(); set("coErr", ""); renderCosts(); return;
+  }
   if (a === "del") {
     if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = tr("co_del_sure"); return; }
     const r = await sb.from("admin_expenses").delete().eq("id", b.dataset.id);
@@ -1176,6 +1204,11 @@ Object.assign(T.en, { ex_add: "+ Add expense", ex_h: "My expenses", ex_p: "What 
   ex_s_month: "Expenses this month", ex_s_left: "Left over this month", ex_s_year: "Expenses this year",
   pl_now: "{m}", pl_all: "All time", pl_inc: "Income", pl_exp: "Expenses", pl_ai: "AI cost", pl_pl: "Profit / loss", pl_total: "Total",
   pl_h: "Profit and loss, month by month",
+  pl_vs: "Change since {m}", pl_growers: "Growers", pl_growers_sub: "{p} paying · {f} free",
+  pl_be: "Saathi Plus growers to break even", pl_be_sub: "at {m} a month (or {y} on the yearly {yp} plan) to cover this month's expenses and AI.", pl_be_have: "You have {n} paying now.",
+  pl_be_none: "No costs this month yet.", pl_updated: "Updated {t}",
+  ex_copy: "Copy regular bills from last month", ex_copy_h: "Bills from {m}", ex_copy_p: "Tick the ones you paid again this month. They are added with this month's date; change the amount after if it was different.",
+  ex_copy_add: "Add ticked", ex_copy_none: "Everything from last month is already added.",
   pl_note: "Income = approved grower payments, in the month they paid (a yearly plan counts in full that month). Expenses = what you added below. AI cost = growers' Saathi questions, photo checks and receipt readings, counted automatically (at about ₹{r} to the dollar). So don't add your Anthropic bill for these as an expense; only add AI you use for marketing.",
   pl_ai_setup: "AI cost shows once supabase/ai_usage.sql has been run in Supabase.",
   co_more: "Price list and estimates", co_more_p: "Planning figures only (plan prices and upper AI estimates). They are not used in the totals at the top.", co_list_h: "Price list" });
@@ -1187,6 +1220,11 @@ Object.assign(T.hi, { ex_add: "+ ख़र्च जोड़ें", ex_h: "म
   ex_s_month: "इस महीने का ख़र्च", ex_s_left: "इस महीने बचत", ex_s_year: "इस साल का ख़र्च",
   pl_now: "{m}", pl_all: "अब तक कुल", pl_inc: "आमदनी", pl_exp: "ख़र्च", pl_ai: "AI ख़र्च", pl_pl: "मुनाफ़ा / घाटा", pl_total: "कुल",
   pl_h: "महीने-दर-महीने मुनाफ़ा और घाटा",
+  pl_vs: "{m} से बदलाव", pl_growers: "बाग़वान", pl_growers_sub: "{p} भुगतान वाले · {f} मुफ़्त",
+  pl_be: "बराबरी के लिए Saathi Plus बाग़वान", pl_be_sub: "{m} महीना पर (या साल वाले {yp} प्लान पर {y}), ताकि इस महीने का ख़र्च और AI निकल जाए।", pl_be_have: "अभी {n} भुगतान वाले हैं।",
+  pl_be_none: "इस महीने अभी कोई ख़र्च नहीं।", pl_updated: "अपडेट {t}",
+  ex_copy: "पिछले महीने के नियमित बिल कॉपी करें", ex_copy_h: "{m} के बिल", ex_copy_p: "जो इस महीने फिर भरे, उन पर टिक करें। ये इस महीने की तारीख़ से जुड़ेंगे; रक़म अलग थी तो बाद में बदल दें।",
+  ex_copy_add: "टिक वाले जोड़ें", ex_copy_none: "पिछले महीने का सब कुछ पहले से जुड़ा है।",
   pl_note: "आमदनी = बाग़वानों के मंज़ूर भुगतान, जिस महीने भरे (साल का प्लान उसी महीने पूरा गिना जाता है)। ख़र्च = जो आपने नीचे जोड़ा। AI ख़र्च = बाग़वानों के साथी सवाल, फ़ोटो जाँच और रसीद पढ़ना, अपने आप गिना जाता है (लगभग ₹{r} प्रति डॉलर), इसलिए इसे Anthropic बिल के रूप में ख़र्च में न जोड़ें; सिर्फ़ मार्केटिंग वाला AI जोड़ें।",
   pl_ai_setup: "AI ख़र्च तब दिखेगा जब Supabase में supabase/ai_usage.sql चला दिया जाएगा।",
   co_more: "दाम सूची और अनुमान", co_more_p: "सिर्फ़ योजना के आँकड़े (प्लान के दाम और AI के ऊपरी अनुमान)। ऊपर के कुल में ये नहीं जुड़ते।", co_list_h: "दाम सूची" });
@@ -1221,7 +1259,7 @@ async function loadCosts() {
     coLive = r.ok ? await r.json() : { error: "HTTP " + r.status };
   } catch (x) { coLive = { error: String(x.message || x) }; }
   try { const r = await sb.rpc("admin_usage"); coDb = r.error ? { error: r.error } : r.data; } catch (x) { coDb = { error: x }; }
-  coBusy = false; $("coRefresh").disabled = false;
+  coBusy = false; $("coRefresh").disabled = false; coAt = new Date();
   renderCosts();
   if (typeof aigLoad === "function") aigLoad();   /* AI cost per grower (aicost.js) */
 }
@@ -1257,17 +1295,22 @@ function renderLive() {
   const money = n => cur + (+n || 0).toFixed(2) + (W && W.currency === "USD" ? " ≈ " + paRup(Math.round((+n || 0) * USD_INR)) : "");
   let tw = '<div class="cobox"><h5>' + tr("li_tw_h") + (W && W.setup && !W.error ? '<span class="live">' + tr("li_live") + "</span>" : "") + "</h5>";
   if (!coLive) tw += '<p class="fine">' + tr("li_loading") + "</p>";
-  else if (coLive.error) tw += '<p class="fine">' + esc(tr("li_ai_err").replace("{m}", coLive.error)) + "</p>";
+  else if (coLive.error) tw += '<p class="fine">' + esc(tr("li_tw_err").replace("{m}", coLive.error)) + "</p>";
   else if (!W || !W.setup) tw += "<p>" + tr("li_tw_setup") + "</p>";
-  else if (W.error) tw += '<p class="autherr">' + esc(tr("li_ai_err").replace("{m}", W.error)) + "</p>";
   else {
-    const low = W.balance != null && W.balance < 5;
-    tw += "<p><b>" + tr("li_tw_bal") + ": " + (W.balance != null ? '<span style="color:' + (low ? "#B8321F" : "inherit") + '">' + money(W.balance) + "</span>" : "–") + "</b>" +
-      (/trial/i.test(W.type) ? ' <span class="chip" style="background:#fdecc8;color:#7a5200">' + tr("li_tw_trial") + "</span>" : "") + "</p>" +
-      "<p><b>" + tr("li_month") + ": " + money(W.month) + "</b> · " + tr("li_today") + ": " + money(W.today) + "</p>" +
-      ((W.items || []).length ? '<div class="models">' + W.items.map(x => "<span>" + esc(x.desc || x.cat) + ": " + fmtN(x.count) + " · " + cur + x.price.toFixed(2) + "</span>").join("") + "</div>" : '<p class="fine">' + tr("li_tw_none") + "</p>") +
-      (low ? '<p class="autherr">' + tr("li_tw_low") + "</p>" : "") +
-      (/trial/i.test(W.type) ? '<p class="fine">' + tr("li_tw_trialnote") + "</p>" : "");
+    if (!W.error) {
+      const low = W.balance != null && W.balance < 5;
+      tw += "<p><b>" + tr("li_tw_bal") + ": " + (W.balance != null ? '<span style="color:' + (low ? "#B8321F" : "inherit") + '">' + money(W.balance) + "</span>" : "–") + "</b>" +
+        (/trial/i.test(W.type) ? ' <span class="chip" style="background:#fdecc8;color:#7a5200">' + tr("li_tw_trial") + "</span>" : "") + "</p>";
+      if (W.month != null) tw += "<p><b>" + tr("li_month") + ": " + money(W.month) + "</b> · " + tr("li_today") + ": " + (W.today != null ? money(W.today) : "–") + "</p>" +
+        ((W.items || []).length ? '<div class="models">' + W.items.map(x => "<span>" + esc(x.desc || x.cat) + ": " + fmtN(x.count) + " · " + cur + x.price.toFixed(2) + "</span>").join("") + "</div>" : '<p class="fine">' + tr("li_tw_none") + "</p>");
+      if (low) tw += '<p class="autherr">' + tr("li_tw_low") + "</p>";
+      if (/trial/i.test(W.type)) tw += '<p class="fine">' + tr("li_tw_trialnote") + "</p>";
+    }
+    /* problems in plain words, with Twilio's own message behind "Details" */
+    const errs = (W.errors && W.errors.length) ? W.errors : W.error ? [{ what: "other", why: /\b20003\b/.test(W.error) ? "auth" : /\b(8011|401|403)\b/.test(W.error) ? "perm" : "other", raw: W.error }] : [];
+    if (errs.length) tw += errs.map(x => '<p class="autherr">' + esc(tr("li_tw_why_" + x.why).replace("{w}", tr("li_tw_what_" + x.what))) + "</p>").join("") +
+      '<details class="rawerr"><summary>' + tr("li_details") + "</summary><pre>" + esc(errs.map(x => x.raw).join("\n")) + "</pre></details>";
   }
   tw += "</div>";
   el.innerHTML = ai + db;
@@ -1291,12 +1334,26 @@ function renderCosts() {
   const PL = plMonths(), now = exNowKey(), z = { inc: 0, exp: 0, ai: 0 };
   const cur = PL[now] || z, all = Object.keys(PL).reduce((s, k) => ({ inc: s.inc + PL[k].inc, exp: s.exp + PL[k].exp, ai: s.ai + PL[k].ai }), { inc: 0, exp: 0, ai: 0 });
   const pl = x => x.inc - x.exp - x.ai, sgn = n => (n < -0.005 ? "−" : "") + exRup(Math.abs(n));
-  const plSt = (k, n) => st(k, sgn(n), n < -0.005 ? "neg" : "pos");
+  const plSt = (k, n, d) => st(k, sgn(n) + (d || ""), n < -0.005 ? "neg" : "pos");
+  /* ↑ / ↓ against last month; for costs "up" is bad, for income and profit "up" is good */
+  const [py, pm] = now.split("-").map(Number), prevK = pm === 1 ? (py - 1) + "-12" : py + "-" + String(pm - 1).padStart(2, "0"), prev = PL[prevK];
+  const dl = (a, b, upGood) => { if (!prev || Math.abs(a - b) < 0.5) return ""; const up = a > b; return ' <small class="dl ' + (up === upGood ? "good" : "bad") + '" title="' + esc(tr("pl_vs").replace("{m}", exMonthName(prevK))) + '">' + (up ? "↑" : "↓") + exRup(Math.abs(a - b)) + "</small>"; };
+  /* growers: paying (approved plan still running) and free (everyone else who signed up) */
+  const paying = Object.keys(live).length, users = coDb && !coDb.error && coDb.users != null ? +coDb.users : null;
+  const gTile = '<div class="gtile"><span>' + tr("pl_growers") + "</span><b>" + (users != null ? fmtN(users) : "–") + '</b><span class="sub">' +
+    tr("pl_growers_sub").replace("{p}", fmtN(paying)).replace("{f}", users != null ? fmtN(Math.max(0, users - paying)) : "–") + "</span></div>";
+  /* break-even: how many Saathi Plus growers would cover this month's expenses and AI cost */
+  const need = cur.exp + cur.ai, beM = Math.ceil(need / PLUS_MONTH), beY = Math.ceil(need / (PLUS_YEAR / 12));
+  const beTile = '<div class="betile"><span>' + tr("pl_be") + "</span><b>" + (need > 0 ? fmtN(beM) : "0") + '</b><span class="sub">' +
+    (need > 0 ? tr("pl_be_sub").replace("{m}", paRup(PLUS_MONTH)).replace("{y}", fmtN(beY)).replace("{yp}", paRup(PLUS_YEAR)) + (paying ? " " + tr("pl_be_have").replace("{n}", fmtN(paying)) : "") : tr("pl_be_none")) + "</span></div>";
   $("coStats").innerHTML = '<h5 class="plh">' + tr("pl_now").replace("{m}", esc(exMonthName(now))) + "</h5>" +
-    st("pl_inc", exRup(cur.inc), "pos") + st("pl_exp", EX ? exRup(cur.exp) : "–") + st("pl_ai", AIU ? exRup(cur.ai) : "–", "aitile") + plSt("pl_pl", pl(cur)) +
+    st("pl_inc", exRup(cur.inc) + dl(cur.inc, prev ? prev.inc : 0, true), "pos") + st("pl_exp", EX ? exRup(cur.exp) + dl(cur.exp, prev ? prev.exp : 0, false) : "–") +
+    st("pl_ai", AIU ? exRup(cur.ai) + dl(cur.ai, prev ? prev.ai : 0, false) : "–", "aitile") + plSt("pl_pl", pl(cur), prev ? dl(pl(cur), pl(prev), true) : "") +
+    gTile + beTile +
     '<h5 class="plh">' + tr("pl_all") + "</h5>" +
     st("pl_inc", exRup(all.inc), "pos") + st("pl_exp", EX ? exRup(all.exp) : "–") + st("pl_ai", AIU ? exRup(all.ai) : "–") + plSt("pl_pl", pl(all)) +
-    st("co_s_income", paRup(Math.round(income)));
+    st("co_s_income", paRup(Math.round(income))) +
+    (coAt ? '<p class="fine coat">' + tr("pl_updated").replace("{t}", coAt.toLocaleString(lang === "hi" ? "hi-IN" : "en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })) + "</p>" : "");
   if (typeof aigTile === "function") aigTile();   /* growers line under AI cost (aicost.js) */
   renderPL(PL);
   renderExp();
@@ -1370,7 +1427,14 @@ Object.assign(T.en, { co_s_ai_real: "AI this month (actual)", li_live: "LIVE", l
   li_tw_h: "Twilio (WhatsApp/SMS login codes)", li_tw_bal: "Balance left", li_tw_trial: "Trial account",
   li_tw_setup: "Not connected yet. In console.twilio.com copy the Account SID and Auth Token, then in Vercel → Settings → Environment Variables add them as TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and redeploy.",
   li_tw_none: "No messages sent this month yet.", li_tw_low: "Balance is low: top up in Twilio so growers can still log in.",
-  li_tw_trialnote: "On a trial account, codes only reach numbers you have verified in Twilio. Upgrade before real growers sign up." });
+  li_tw_trialnote: "On a trial account, codes only reach numbers you have verified in Twilio. Upgrade before real growers sign up.",
+  li_tw_err: "Could not read Twilio: {m}", li_details: "Details",
+  li_tw_what_account: "account details", li_tw_what_balance: "balance", li_tw_what_usage: "usage and spend", li_tw_what_other: "this",
+  li_tw_why_auth: "Twilio did not accept the login. Check TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN in Vercel (no spaces), then redeploy.",
+  li_tw_why_perm: "The Twilio key isn't allowed to read {w}. Use the main Auth Token, or a Standard API key (TWILIO_API_KEY + TWILIO_API_SECRET in Vercel), or give the restricted key read access to Usage and Balance. Login codes still work.",
+  li_tw_why_sid: "Twilio can't find that account. TWILIO_ACCOUNT_SID should start with AC.",
+  li_tw_why_busy: "Twilio is busy. Press Refresh in a minute.",
+  li_tw_why_other: "Twilio didn't answer for {w}. Press Refresh; if it keeps happening, open Details." });
 Object.assign(T.hi, { co_s_ai_real: "इस महीने AI (असली)", li_live: "LIVE", li_loading: "लोड हो रहा है…",
   li_ai_h: "AI ख़र्च (Anthropic)", li_month: "इस महीने", li_today: "आज",
   li_ai_setup: "अभी जुड़ा नहीं है। console.anthropic.com → Settings → Admin keys में Admin key बनाएँ, फिर Vercel → Settings → Environment Variables में ANTHROPIC_ADMIN_KEY नाम से जोड़ें और redeploy करें। तब तक नीचे का अनुमान दिखेगा।",
@@ -1381,7 +1445,14 @@ Object.assign(T.hi, { co_s_ai_real: "इस महीने AI (असली)", 
   li_tw_h: "Twilio (WhatsApp/SMS लॉगिन कोड)", li_tw_bal: "बचा बैलेंस", li_tw_trial: "Trial खाता",
   li_tw_setup: "अभी जुड़ा नहीं है। console.twilio.com से Account SID और Auth Token कॉपी करें, फिर Vercel → Settings → Environment Variables में TWILIO_ACCOUNT_SID और TWILIO_AUTH_TOKEN नाम से जोड़ें और redeploy करें।",
   li_tw_none: "इस महीने अभी कोई मैसेज नहीं गया।", li_tw_low: "बैलेंस कम है: Twilio में रिचार्ज करें ताकि बाग़वान लॉग इन कर सकें।",
-  li_tw_trialnote: "Trial खाते में कोड सिर्फ़ Twilio में verify किए नंबरों पर जाते हैं। असली बाग़वानों से पहले upgrade करें।" });
+  li_tw_trialnote: "Trial खाते में कोड सिर्फ़ Twilio में verify किए नंबरों पर जाते हैं। असली बाग़वानों से पहले upgrade करें।",
+  li_tw_err: "Twilio नहीं पढ़ पाए: {m}", li_details: "पूरी जानकारी",
+  li_tw_what_account: "खाते की जानकारी", li_tw_what_balance: "बैलेंस", li_tw_what_usage: "इस्तेमाल और ख़र्च", li_tw_what_other: "यह",
+  li_tw_why_auth: "Twilio ने लॉगिन नहीं माना। Vercel में TWILIO_ACCOUNT_SID और TWILIO_AUTH_TOKEN जाँचें (कोई space न हो), फिर redeploy करें।",
+  li_tw_why_perm: "Twilio key को {w} पढ़ने की अनुमति नहीं है। मुख्य Auth Token लगाएँ, या Standard API key (Vercel में TWILIO_API_KEY + TWILIO_API_SECRET), या restricted key को Usage और Balance पढ़ने की अनुमति दें। लॉगिन कोड फिर भी चलते रहेंगे।",
+  li_tw_why_sid: "Twilio को यह खाता नहीं मिला। TWILIO_ACCOUNT_SID AC से शुरू होना चाहिए।",
+  li_tw_why_busy: "Twilio अभी व्यस्त है। एक मिनट बाद Refresh दबाएँ।",
+  li_tw_why_other: "Twilio ने {w} का जवाब नहीं दिया। Refresh दबाएँ; बार-बार हो तो पूरी जानकारी खोलें।" });
 Object.assign(T.en, { adm_t_cost: "Costs", co_h: "Running costs", co_add: "+ Add cost",
   co_p: "What you really spend on Seb Saathi each month, against what growers pay.",
   co_err_setup: "The costs list is not set up yet. In Supabase → SQL Editor, run supabase/admin_costs.sql once, then press Refresh.",
