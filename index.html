@@ -2434,6 +2434,18 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
         dots.forEach((d, i) => d.classList.toggle("on", i === c));
         figs.forEach((f, i) => { if (i !== c) { const v = f.querySelector("video"); if (v && !v.paused) v.pause(); } });
       }, { passive: true });
+      /* moves on by itself every 4 seconds while on screen; stops for good once someone touches it or plays a video */
+      let held = false, seen = false;
+      const hold = () => { held = true; };
+      ["pointerdown", "touchstart", "wheel", "keydown"].forEach(e => t.parentNode.addEventListener(e, hold, { passive: true }));
+      document.getElementById("lpDots").addEventListener("pointerdown", hold);
+      t.querySelectorAll("video").forEach(v => v.addEventListener("play", hold));
+      if ("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; }, { threshold: .5 }).observe(t);
+      else seen = true;
+      setInterval(() => {
+        if (held || !seen || document.hidden || !t.offsetParent) return;
+        go((cur() + 1) % figs.length);
+      }, 4000);
     })();
     </script>
   </div>
