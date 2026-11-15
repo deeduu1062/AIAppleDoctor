@@ -206,7 +206,7 @@ Object.assign(T.en, {
   st_post_ok: "Posting is connected: Facebook page {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube & videos", ms_wa: "WhatsApp", ms_more: "More",
   ms_fb_h: "Posts for Facebook and Instagram", ms_yt_h: "Your YouTube uploads", ms_wa_h: "WhatsApp channel tips",
-  ms_yt_p: "Connect your YouTube channel in the Video Studio below (YouTube card).", yt_list_none: "No YouTube uploads yet. Make a video below and upload it.",
+  ms_yt_p: "Connect your YouTube channel in the Video Studio above (YouTube card).", yt_list_none: "No YouTube uploads yet. Make a video in the Video Studio above and upload it.",
   cq_wa_none: "No tips waiting. Tap the button above to get this week's tip.",
   ask_h_fb: "✨ Ask the AI for a post", ask_h_yt: "✨ Ask the AI for a video", ask_h_wa: "✨ Ask the AI for a WhatsApp message",
   ask_ph_fb: "Say what you want. For example: a post about protecting young trees from frost this week, ending with a question for growers",
@@ -215,7 +215,7 @@ Object.assign(T.en, {
   ask_go: "Write it", ask_busy: "Writing…", ask_empty: "First write what you want.",
   ask_done: "Done. It's in Drafts to check below: read it, add a photo if you like, then Post now or Approve.",
   ask_done_wa: "Done. It's in Drafts to check below: read it, then Copy or Send on WhatsApp.",
-  ask_done_yt: "Done. The words are in the Video Studio below, with what to film. Add your photos or clips, then Make video."
+  ask_done_yt: "Done. The words are in the Video Studio above, with what to film. Add your photos or clips, then Make video."
 });
 Object.assign(T.hi, {
   mk_v2_setup: "इसे चालू करने के लिए Supabase में एक बार supabase/marketing_v2.sql चलाएँ।",
@@ -253,7 +253,7 @@ Object.assign(T.hi, {
   st_post_ok: "पोस्टिंग जुड़ी है: Facebook पेज {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube और वीडियो", ms_wa: "WhatsApp", ms_more: "और",
   ms_fb_h: "Facebook और Instagram के पोस्ट", ms_yt_h: "आपके YouTube वीडियो", ms_wa_h: "WhatsApp चैनल टिप",
-  ms_yt_p: "नीचे Video Studio (YouTube कार्ड) में अपना YouTube चैनल जोड़ें।", yt_list_none: "अभी कोई YouTube वीडियो नहीं। नीचे वीडियो बनाकर अपलोड करें।",
+  ms_yt_p: "ऊपर Video Studio (YouTube कार्ड) में अपना YouTube चैनल जोड़ें।", yt_list_none: "अभी कोई YouTube वीडियो नहीं। ऊपर Video Studio में वीडियो बनाकर अपलोड करें।",
   cq_wa_none: "कोई टिप बाकी नहीं। इस हफ़्ते की टिप के लिए ऊपर का बटन दबाएँ।",
   ask_h_fb: "✨ AI से पोस्ट लिखवाएँ", ask_h_yt: "✨ AI से वीडियो बनवाएँ", ask_h_wa: "✨ AI से WhatsApp संदेश लिखवाएँ",
   ask_ph_fb: "बताइए आपको क्या चाहिए। जैसे: इस हफ़्ते छोटे पेड़ों को पाले से बचाने पर एक पोस्ट, अंत में बागवानों से एक सवाल",
@@ -262,7 +262,7 @@ Object.assign(T.hi, {
   ask_go: "लिखें", ask_busy: "लिख रहे हैं…", ask_empty: "पहले लिखिए कि आपको क्या चाहिए।",
   ask_done: "हो गया। नीचे \"जाँचने के लिए ड्राफ़्ट\" में है: पढ़ें, चाहें तो फ़ोटो जोड़ें, फिर अभी पोस्ट करें या मंज़ूर करें।",
   ask_done_wa: "हो गया। नीचे \"जाँचने के लिए ड्राफ़्ट\" में है: पढ़ें, फिर कॉपी करें या WhatsApp पर भेजें।",
-  ask_done_yt: "हो गया। शब्द नीचे Video Studio में हैं, साथ में क्या फ़िल्म करना है। अपनी फ़ोटो या क्लिप जोड़ें, फिर वीडियो बनाएँ।"
+  ask_done_yt: "हो गया। शब्द ऊपर Video Studio में हैं, साथ में क्या फ़िल्म करना है। अपनी फ़ोटो या क्लिप जोड़ें, फिर वीडियो बनाएँ।"
 });
 
 /* the 20–30 second Hindi demo: a leaf photo gets its answer, then a lot is added and the profit per box appears */
@@ -302,8 +302,8 @@ Object.assign(T.en, {
   best_none: "No results yet. Once posts get likes, visits or sign-ups, the best ones show here and the AI learns from them.",
   best_none0: "Nothing posted yet. After your first posts, the best ones show here and the AI learns from them.",
   ask_ctx: "The AI follows this month's orchard work and the diseases growers are checking most.", ask_ctx_best: "It also copies the style of your {n} best posts.",
-  demo_h: "Ready to film: 20–30 second demo (Hindi)", demo_p: "A leaf photo gets its answer, then a lot is added and the profit per box appears. Tap the button: the words, timings and caption go into the Video Studio below. Film these 5 clips on your phone, add one to each scene, then Make video.",
-  demo_go: "Open in Video Studio", demo_done: "The words are in the Video Studio below. Add your clips to scenes 1–5, then Make video.",
+  demo_h: "Ready to film: 20–30 second demo (Hindi)", demo_p: "A leaf photo gets its answer, then a lot is added and the profit per box appears. Tap the button: the words, timings and caption go into the Video Studio above. Film these 5 clips on your phone, add one to each scene, then Make video.",
+  demo_go: "Open in Video Studio", demo_done: "The words are in the Video Studio above. Add your clips to scenes 1–5, then Make video.",
   ev_go: "📣 Make posts for every platform", ev_busy: "Writing captions…",
   ev_p: "AI writes a Facebook post, an Instagram Reel caption, a WhatsApp message and a YouTube Short title for this video.",
   ev_done: "Drafts made: {w}. Check them below.", ev_yt: "The YouTube Short is ready in the Video Studio (YouTube & videos tab) with its title: tap Upload.",
@@ -322,8 +322,8 @@ Object.assign(T.hi, {
   best_none: "अभी नतीजे नहीं। पोस्ट पर लाइक, विज़िट या जुड़ने वाले आने पर सबसे अच्छे यहाँ दिखेंगे और AI उनसे सीखेगा।",
   best_none0: "अभी कुछ पोस्ट नहीं हुआ। पहले पोस्ट के बाद सबसे अच्छे यहाँ दिखेंगे और AI उनसे सीखेगा।",
   ask_ctx: "AI इस महीने के बग़ीचे के काम और बागवान जिन बीमारियों को सबसे ज़्यादा जाँच रहे हैं, उनके हिसाब से लिखता है।", ask_ctx_best: "साथ ही आपके {n} सबसे अच्छे पोस्ट का अंदाज़ अपनाता है।",
-  demo_h: "फ़िल्म करने को तैयार: 20–30 सेकंड का डेमो (हिंदी)", demo_p: "पत्ते की फ़ोटो से जवाब, फिर एक लॉट जोड़ते ही हर पेटी का मुनाफ़ा। बटन दबाएँ: शब्द, समय और कैप्शन नीचे Video Studio में आ जाएँगे। ये 5 क्लिप फ़ोन पर फ़िल्म करें, हर सीन में एक जोड़ें, फिर वीडियो बनाएँ।",
-  demo_go: "Video Studio में खोलें", demo_done: "शब्द नीचे Video Studio में हैं। सीन 1–5 में अपनी क्लिप जोड़ें, फिर वीडियो बनाएँ।",
+  demo_h: "फ़िल्म करने को तैयार: 20–30 सेकंड का डेमो (हिंदी)", demo_p: "पत्ते की फ़ोटो से जवाब, फिर एक लॉट जोड़ते ही हर पेटी का मुनाफ़ा। बटन दबाएँ: शब्द, समय और कैप्शन ऊपर Video Studio में आ जाएँगे। ये 5 क्लिप फ़ोन पर फ़िल्म करें, हर सीन में एक जोड़ें, फिर वीडियो बनाएँ।",
+  demo_go: "Video Studio में खोलें", demo_done: "शब्द ऊपर Video Studio में हैं। सीन 1–5 में अपनी क्लिप जोड़ें, फिर वीडियो बनाएँ।",
   ev_go: "📣 हर प्लेटफ़ॉर्म के लिए पोस्ट बनाएँ", ev_busy: "कैप्शन लिख रहे हैं…",
   ev_p: "AI इस वीडियो के लिए Facebook पोस्ट, Instagram Reel कैप्शन, WhatsApp संदेश और YouTube Short का टाइटल लिखता है।",
   ev_done: "ड्राफ़्ट बन गए: {w}। नीचे जाँचें।", ev_yt: "YouTube Short टाइटल के साथ Video Studio (YouTube और वीडियो टैब) में तैयार है: अपलोड दबाएँ।",
@@ -1182,7 +1182,9 @@ function renderMk() {
   } else {
     T1 = score + nextH + srcH + pilotH + b;
   }
-  top.innerHTML = h + todayHtml() + bar + T1; bot.innerHTML = T2;
+  /* YouTube & videos: the Video Studio (#mkStudio) sits right under the tab buttons, the rest of the tab below it */
+  if (mkSub === "yt") { top.innerHTML = h + todayHtml() + bar; bot.innerHTML = T1 + T2; }
+  else { top.innerHTML = h + todayHtml() + bar + T1; bot.innerHTML = T2; }
   const st = $("mkStudio"); if (st) st.hidden = mkSub !== "yt";
   const goal = document.querySelector('#ap-mk [data-i18n="mk_p"]'); if (goal) goal.hidden = mkSub !== "more";
   mkRestore(keep);

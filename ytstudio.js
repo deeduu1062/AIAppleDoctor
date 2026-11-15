@@ -5,22 +5,22 @@
 Object.assign(T.en, {
   ys_h: "YouTube Studio", ys_p: "Your channel at a glance. Each button opens that page of YouTube Studio (on a phone, the YT Studio app if you have it).",
   ys_none: "Your YouTube channel is not connected yet. Connect it once — you pick the Seb Saathi channel on Google's page — then manage it from here.",
-  ys_connect: "▶ Connect YouTube channel", ys_wait: "Opening Google…", ys_setup: "YouTube connection is not set up yet. Follow the steps in the YouTube box of the Video Studio below (Google keys in Vercel), then connect here.",
+  ys_connect: "▶ Connect YouTube channel", ys_wait: "Opening Google…", ys_setup: "YouTube connection is not set up yet. Follow the steps in the YouTube box of the Video Studio above (Google keys in Vercel), then connect here.",
   ys_reconnect: "Google asked to connect again (the access was removed or expired).", ys_refresh: "Refresh", ys_switch: "Change channel", ys_disc: "Disconnect", ys_disc_q: "Disconnect the YouTube channel from Seb Saathi? You can connect it again any time.",
   ys_loading: "Loading your channel…", ys_subs: "Subscribers", ys_views: "Total views", ys_vids: "Videos",
   ys_go_dash: "Dashboard", ys_go_upload: "⬆ Upload", ys_go_content: "Content", ys_go_an: "Analytics", ys_go_cm: "Comments", ys_go_cust: "Customise channel", ys_go_earn: "Earn", ys_go_watch: "View channel",
-  ys_latest: "Latest videos", ys_novid: "No videos yet. Make one in the Video Studio below, or upload in YouTube Studio.",
+  ys_latest: "Latest videos", ys_novid: "No videos yet. Make one in the Video Studio above, or upload in YouTube Studio.",
   ys_edit: "Edit in Studio", ys_an: "Analytics", ys_watch: "Watch", ys_v: "{v} views · {l} likes · {c} comments",
   ys_pub: "Public", ys_unl: "Unlisted", ys_priv: "Private", ys_proc: "Processing", ys_err: "Could not load YouTube: {m}"
 });
 Object.assign(T.hi, {
   ys_h: "YouTube Studio", ys_p: "आपका चैनल एक नज़र में। हर बटन YouTube Studio का वह पेज खोलता है (फ़ोन पर YT Studio ऐप, अगर है)।",
   ys_none: "आपका YouTube चैनल अभी जुड़ा नहीं है। एक बार जोड़ें — Google के पेज पर सेब साथी चैनल चुनें — फिर यहीं से संभालें।",
-  ys_connect: "▶ YouTube चैनल जोड़ें", ys_wait: "Google खुल रहा है…", ys_setup: "YouTube जोड़ना अभी सेट नहीं है। नीचे Video Studio के YouTube बॉक्स के क़दम पूरे करें, फिर यहाँ जोड़ें।",
+  ys_connect: "▶ YouTube चैनल जोड़ें", ys_wait: "Google खुल रहा है…", ys_setup: "YouTube जोड़ना अभी सेट नहीं है। ऊपर Video Studio के YouTube बॉक्स के क़दम पूरे करें, फिर यहाँ जोड़ें।",
   ys_reconnect: "Google फिर से जोड़ने को कह रहा है।", ys_refresh: "रीफ़्रेश", ys_switch: "चैनल बदलें", ys_disc: "हटाएँ", ys_disc_q: "YouTube चैनल को सेब साथी से हटाएँ? आप कभी भी फिर जोड़ सकते हैं।",
   ys_loading: "चैनल लोड हो रहा है…", ys_subs: "सब्सक्राइबर", ys_views: "कुल व्यू", ys_vids: "वीडियो",
   ys_go_dash: "डैशबोर्ड", ys_go_upload: "⬆ अपलोड", ys_go_content: "कंटेंट", ys_go_an: "एनालिटिक्स", ys_go_cm: "कमेंट", ys_go_cust: "चैनल सजाएँ", ys_go_earn: "कमाई", ys_go_watch: "चैनल देखें",
-  ys_latest: "ताज़ा वीडियो", ys_novid: "अभी कोई वीडियो नहीं। नीचे Video Studio में बनाएँ, या YouTube Studio में अपलोड करें।",
+  ys_latest: "ताज़ा वीडियो", ys_novid: "अभी कोई वीडियो नहीं। ऊपर Video Studio में बनाएँ, या YouTube Studio में अपलोड करें।",
   ys_edit: "Studio में बदलें", ys_an: "एनालिटिक्स", ys_watch: "देखें", ys_v: "{v} व्यू · {l} लाइक · {c} कमेंट",
   ys_pub: "सार्वजनिक", ys_unl: "बिना सूची", ys_priv: "निजी", ys_proc: "तैयार हो रहा", ys_err: "YouTube लोड नहीं हुआ: {m}"
 });
