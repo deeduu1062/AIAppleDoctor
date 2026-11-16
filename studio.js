@@ -554,6 +554,10 @@ function ytProgress(t) { ytBusy = t; const b = document.querySelector('[data-yt=
 async function ytUpload() {
   const o = VS.out; if (!o || !o.blob || ytBusy) return;
   const u = YTU, title = String(u.title || "").replace(/[<>]/g, "").trim().slice(0, 100) || vsYtTitle();
+  /* this upload's own link code, so the sign-ups it brings are counted against it (Social handler → What brings growers in) */
+  const ysrc = "yt-" + Date.now().toString(36);
+  u.desc = String(u.desc || "").replace(/([?&])src=yt(?:-[a-z0-9]+)?(?![\w-])/g, "$1src=" + ysrc);
+  if (u.desc.indexOf("src=" + ysrc) < 0) u.desc = u.desc.replace(/(https?:\/\/)?(www\.)?sebsaathi\.com\/?(?![\w\/?&=-])/, "https://sebsaathi.com/?src=" + ysrc);
   /* a publish time (India time) → YouTube keeps it private and publishes it then */
   const at = u.at && Date.parse(u.at + ":00Z") - 330 * 60000 > Date.now() + 60000 ? new Date(Date.parse(u.at + ":00Z") - 330 * 60000).toISOString() : "";
   ytRes = ""; ytProgress(tr("yt_starting"));
@@ -580,7 +584,7 @@ async function ytUpload() {
     ytRes = "<p>" + tr("yt_done") + ' · <a href="' + watch + '" target="_blank" rel="noopener">' + tr("yt_watch") + '</a> · <a href="' + studio + '" target="_blank" rel="noopener">' + tr("yt_studio") + "</a></p>" + (locked ? '<p class="autherr">' + tr("yt_locked") + "</p>" : "");
     if (at) ytRes += "<p>" + esc(tr("yt_sched_ok").replace("{d}", typeof qShow === "function" ? qShow(at) : at)) + "</p>";
     let kept = false;
-    if (typeof mkQueueYt === "function") { try { kept = await mkQueueYt(title, watch, at || new Date().toISOString()); } catch (e) {} }
+    if (typeof mkQueueYt === "function") { try { kept = await mkQueueYt(title, watch, at || new Date().toISOString(), u.desc.indexOf("src=" + ysrc) >= 0 ? ysrc : ""); } catch (e) {} }
     if (!kept && typeof mkSave === "function") { try { await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: ("YouTube: " + title).slice(0, 80), fb: "", ig: "", yt: watch }).slice(0, 500) }); } catch (e) {} }
   } catch (e) { ytRes = '<p class="autherr">' + esc(tr("yt_err").replace("{m}", String(e.message || e))) + "</p>"; }
   ytBusy = ""; renderStudio();

@@ -665,8 +665,10 @@ async function loadMet() {
 }
 /* visitors (30 days) and sign-ups (all time) that came through this post's link (?src=fb-p<id>, wa-p<id>) */
 function qSite(x) {
-  const out = { vis: 0, sign: 0 }, codes = ["fb-p" + x.id, "wa-p" + x.id];
-  ((mkSt && mkSt.sources) || []).forEach(z => { if (codes.indexOf(z.src) >= 0) { out.vis += +z.visitors || 0; out.sign += +z.n_all || 0; } });
+  /* also wa-p<id>-g<group> (the same message sent to one WhatsApp group) and a YouTube upload's own yt-<code> */
+  const out = { vis: 0, sign: 0 }, codes = ["fb-p" + x.id, "wa-p" + x.id], grp = "wa-p" + x.id + "-", yt = x.result && x.result.yt && x.result.yt.src;
+  if (yt && /^yt-[a-z0-9]{3,20}$/.test(yt)) codes.push(yt);
+  ((mkSt && mkSt.sources) || []).forEach(z => { const c = String(z.src || ""); if (codes.indexOf(c) >= 0 || c.indexOf(grp) === 0) { out.vis += +z.visitors || 0; out.sign += +z.n_all || 0; } });
   return out;
 }
 function qNums(x) {
@@ -741,11 +743,13 @@ function qDraftHtml(x, hasIg) {
   if (k === "wa") {
     return h + '<p class="fine">' + tr("cq_wa_note") + '</p><div class="mklinks"><button class="btn-s" type="button" data-mkq="wacopy" data-id="' + x.id + '">' + tr(mkCopied["q" + x.id] ? "mk_copied" : "cq_wa_copy") + '</button>' +
       '<a class="btn-s wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(qWaText(x)) + '">' + tr("cq_wa_send") + '</a>' +
-      '<button class="btn-s add" type="button" data-mkq="wasent" data-id="' + x.id + '">' + tr("cq_wa_done") + '</button><button class="btn-s" type="button" data-mkq="del" data-id="' + x.id + '">' + tr(mkQDel === String(x.id) ? "mk_q_del_sure" : "mk_q_del") + "</button></div></div>";
+      '<button class="btn-s add" type="button" data-mkq="wasent" data-id="' + x.id + '">' + tr("cq_wa_done") + '</button><button class="btn-s" type="button" data-mkq="del" data-id="' + x.id + '">' + tr(mkQDel === String(x.id) ? "mk_q_del_sure" : "mk_q_del") + "</button></div>" +
+      (typeof spGroupChips === "function" ? spGroupChips(x) : "") + "</div>";   /* one button per WhatsApp group (social-plus.js) */
   }
   if (x.photo_idea) h += '<p class="fine">' + esc(tr("mk_q_photo_idea").replace("{t}", x.photo_idea)) + "</p>";
   if (k === "video") h += '<div class="mkrow"><video class="mkvprev" src="' + esc(x.video_url || "") + '" controls muted playsinline preload="metadata"></video></div>' +
-    (x.video_url ? '<div class="mkrow"><button class="btn-s add" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + '</button><span class="fine">' + tr("ev_p") + "</span></div>" : "");
+    (x.video_url ? '<div class="mkrow"><button class="btn-s add" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + "</button>" +
+      (typeof spWaVidBtn === "function" ? spWaVidBtn(x) : "") + '<span class="fine">' + tr("ev_p") + "</span></div>" : "");
   else h += '<div class="mkrow">' + (x.image_url ? '<img class="mkprev" src="' + esc(x.image_url) + '" alt="">' : "") +
     '<label class="btn-s mkfile">' + tr(x.image_url ? "mk_post_photo_ch" : "mk_post_photo") + '<input type="file" accept="image/*" data-qimg="' + x.id + '" hidden></label>' +
     (x.image_url ? '<button class="btn-s" type="button" data-mkq="rmimg" data-id="' + x.id + '">' + tr("mk_post_rm") + "</button>" : "") + "</div>";
@@ -835,7 +839,8 @@ function qHtml(mode) {
     const failedPart = R.ig && R.ig.ok === false && R.ig.error === "ig_processing";   /* worth trying again; other errors need a change first */
     return "<li>" + qTag(x) + " " + esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) +
       (qKind(x) === "wa" ? " · " + tr("cq_wa_sent") : "") + part(R.fb, "Facebook") + part(R.ig, "Instagram") + part(R.yt, "YouTube") + " " + qMetHtml(x) +
-      (qKind(x) === "video" && x.video_url ? ' <button class="btn-s" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + "</button>" : "") +
+      (qKind(x) === "video" && x.video_url ? ' <button class="btn-s" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + "</button>" +
+        (typeof spWaVidBtn === "function" ? " " + spWaVidBtn(x) : "") : "") +
       ((x.status === "failed" || (failedPart && qKind(x) !== "yt")) ? (x.status === "failed" ? ' · <span class="mkwarn">' + tr("mk_q_failed") + (R.error ? ": " + esc(R.error) : "") + "</span>" : "") + ' <button class="btn-s" type="button" data-mkq="retry" data-id="' + x.id + '">' + tr("mk_q_retry") + "</button>" : "") + "</li>";
   }).join("") + "</ul>";
   /* posts made before the list existed */
@@ -872,10 +877,11 @@ async function mkQueueVideo(blob, caption) {
   return r.data;
 }
 /* a YouTube upload, kept in the same list (YouTube publishes it at its own time) */
-async function mkQueueYt(title, link, at) {
+async function mkQueueYt(title, link, at, src) {
   if (mkQErr) return;
   try {
-    const r = await sb.from("social_queue").insert({ kind: "yt", status: "posted", text: String(title || "").slice(0, 2200), topic: String(title || "").slice(0, 200), fb: false, ig: false, post_at: at || new Date().toISOString(), result: { yt: { ok: true, link } } }).select().single();
+    const yt = Object.assign({ ok: true, link }, src ? { src } : {});   /* src: the upload's own link code (yt-…), so its sign-ups are counted */
+    const r = await sb.from("social_queue").insert({ kind: "yt", status: "posted", text: String(title || "").slice(0, 2200), topic: String(title || "").slice(0, 200), fb: false, ig: false, post_at: at || new Date().toISOString(), result: { yt } }).select().single();
     if (!r.error && mkQ) { mkQ.push(r.data); renderMk(); return true; }
   } catch (e) {}
   return false;

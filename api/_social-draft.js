@@ -60,6 +60,7 @@ The audience: apple growers (bagwan), mostly on phones, who know Hindi well and 
 Each post:
 - Is timely for the month given (orchard work, weather risks, harvest/selling, record keeping, planning) and useful on its own: one clear, practical idea a grower can use today.
 - 50 to 120 words. Short lines. A strong first line (a question or a surprising fact). At most 2 emojis.
+- Most growers share through WhatsApp groups, so just before the call to action add one short line asking readers to forward it to their bagwan WhatsApp group (e.g. "📲 Apne bagwan WhatsApp group mein forward karein", in the post's language).
 - Ends with one gentle call to action that fits the post (for example try the free profit calculator / photo check / orchard record at sebsaathi.com), then 4 to 6 hashtags such as #SebSaathi #AppleFarming #Himachal #Kashmir #Uttarakhand #Bagwani.
 - Mix the topics across the week: tips, a profit/record keeping idea, a disease or pest to watch for this month, a feature of the website, a question to get comments. Do not repeat the recent topics listed.
 
