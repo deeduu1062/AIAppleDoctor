@@ -202,6 +202,8 @@ Object.assign(T.en, {
   vi_prefill: "Words for \"{v}\" are in the Video Studio. Film: {s}",
   bu_spent: "Spent so far", bu_total: "Spent: {a} of about ₹60,000", bu_hint: "Add marketing spends in the Costs tab (for example service \"Posters\", what for \"Marketing\"), and they show here.",
   bu_month: "{a}/month", bu_free: "{n} free months",
+  cn_h: "Connected accounts", cn_checking: "checking…", cn_connect: "Connect", cn_setup: "Set up", cn_on: "connected", cn_ig_link: "Link to Facebook page",
+  cn_wa_ch: "channel added, sent by hand", cn_wa_add: "Add channel link",
   st_h: "Setup (accounts, links and posting)", st_sub: "{d} of {n} accounts linked", st_yt: "YouTube: connect it in the Video Studio box above (YouTube card).",
   st_post_ok: "Posting is connected: Facebook page {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube & videos", ms_wa: "WhatsApp", ms_more: "More",
@@ -249,6 +251,8 @@ Object.assign(T.hi, {
   vi_prefill: "\"{v}\" के शब्द Video Studio में हैं। फ़िल्म करें: {s}",
   bu_spent: "अब तक ख़र्च", bu_total: "ख़र्च: लगभग ₹60,000 में से {a}", bu_hint: "मार्केटिंग के ख़र्च Costs टैब में जोड़ें (जैसे सेवा \"Posters\", किसलिए \"Marketing\"), वे यहाँ दिखेंगे।",
   bu_month: "{a}/महीना", bu_free: "{n} मुफ़्त महीने",
+  cn_h: "जुड़े अकाउंट", cn_checking: "जाँच रहे हैं…", cn_connect: "जोड़ें", cn_setup: "सेट अप करें", cn_on: "जुड़ा है", cn_ig_link: "Facebook पेज से जोड़ें",
+  cn_wa_ch: "चैनल जुड़ा, हाथ से भेजें", cn_wa_add: "चैनल लिंक जोड़ें",
   st_h: "सेटअप (अकाउंट, लिंक और पोस्टिंग)", st_sub: "{n} में से {d} अकाउंट जुड़े", st_yt: "YouTube: ऊपर Video Studio बॉक्स (YouTube कार्ड) में जोड़ें।",
   st_post_ok: "पोस्टिंग जुड़ी है: Facebook पेज {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube और वीडियो", ms_wa: "WhatsApp", ms_more: "और",
@@ -1222,6 +1226,27 @@ function setupHtml() {
   return h;
 }
 
+/* ---- connections strip at the top: YouTube, Facebook, Instagram, WhatsApp ---- */
+let mkYtAsked = false;
+function connHtml() {
+  if (typeof YT !== "undefined" && !YT && !mkYtAsked && typeof ytLoad === "function") { mkYtAsked = true; ytLoad().then(() => renderMk(), () => {}); }
+  const S = mkSoc, Y = typeof YT !== "undefined" ? YT : null, link = k => MK["link:" + k] && MK["link:" + k].value || "";
+  const one = (k, name, st, ok, act) => '<button type="button" class="mkconn-i' + (ok ? " ok" : "") + '" data-conn="' + k + '" data-act="' + act + '">' +
+    '<span class="mkconn-n">' + name + '</span><span class="mkconn-s">' + (ok ? "✓ " : "") + esc(st) + "</span></button>";
+  const yt = !Y ? one("yt", "YouTube", tr("cn_checking"), false, "") : Y.connected && Y.channel ? one("yt", "YouTube", Y.channel.handle || Y.channel.title, true, "open") : one("yt", "YouTube", tr(Y.setup === false ? "cn_setup" : "cn_connect"), false, Y.setup === false ? "setup_yt" : "connect_yt");
+  const fb = !S ? one("fb", "Facebook", tr("cn_checking"), false, "") : S.ok ? one("fb", "Facebook", S.page_name || tr("cn_on"), true, "open") : one("fb", "Facebook", tr("cn_connect"), false, "setup");
+  const ig = !S ? one("ig", "Instagram", tr("cn_checking"), false, "") : S.ok && S.ig_id ? one("ig", "Instagram", S.ig_user ? "@" + S.ig_user : tr("cn_on"), true, "open") : one("ig", "Instagram", tr(S.ok ? "cn_ig_link" : "cn_connect"), false, "setup");
+  const wa = link("whatsapp") ? one("wa", "WhatsApp", tr("cn_wa_ch"), true, "open") : one("wa", "WhatsApp", tr("cn_wa_add"), false, "setup");
+  return '<div class="mkconn" role="group" aria-label="' + esc(tr("cn_h")) + '">' + yt + fb + ig + wa + "</div>";
+}
+async function connGo(k, act) {
+  const link = { yt: typeof YT !== "undefined" && YT && YT.channel && YT.channel.url, fb: MK["link:facebook"] && MK["link:facebook"].value, ig: MK["link:instagram"] && MK["link:instagram"].value || (mkSoc && mkSoc.ig_user ? "https://www.instagram.com/" + mkSoc.ig_user + "/" : ""), wa: MK["link:whatsapp"] && MK["link:whatsapp"].value }[k];
+  if (act === "open") { if (link) window.open(link, "_blank", "noopener"); else { mkOpen.add("setup"); mkGo("settings"); } return; }
+  if (act === "connect_yt") { try { const j = await ytCall("connect"); if (j.url) { location.href = j.url; return; } } catch (e) { mkQMsg = String(e.message || e); } renderMk(); return; }
+  if (act === "setup_yt") { mkGoMake("video"); setTimeout(() => { if (typeof VS !== "undefined") { VS.ytOpen = true; renderStudio(); } const el = $("vsYtBox"); if (el) { el.open = true; el.scrollIntoView({ block: "start", behavior: "smooth" }); } }, 300); return; }
+  if (act === "setup") { mkOpen.add("setup"); mkGo("settings"); setTimeout(() => { const el = document.querySelector('[data-mksec="setup"]'); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); }
+}
+
 /* ---- the page ---- */
 const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid", "demo"]);   /* which sections are open */
 /* tabs by job: Today, Create, Results, Settings (remembered on this device); the old tabs by platform (fb, yt, wa, more) stay as the "classic view" */
@@ -1297,7 +1322,7 @@ function renderMk() {
     /* each tab has its own colour; the header band and the content below take the open tab's colour */
     const TABC = { today: "#C4851C", create: "#1F8A52", results: "#2F64B8", settings: "#6A7380" };
     const wrap = $("mkWrap"); if (wrap) { wrap.style.setProperty("--tabc", TABC[mkSub]); wrap.classList.add("mknewv"); }
-    const bar2 = '<div class="mkhead"><div class="mksub mksub4" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + tabs.map(x => '<button type="button" role="tab" class="mksubt" style="--c:' + TABC[x[0]] + '" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") + "</div></div>";
+    const bar2 = connHtml() + '<div class="mkhead"><div class="mksub mksub4" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + tabs.map(x => '<button type="button" role="tab" class="mksubt" style="--c:' + TABC[x[0]] + '" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") + "</div></div>";
     if (mkSub === "today") {
       top.innerHTML = h + bar2 + todayHtml() +
         mkSec("content", tr("mk_wait_h"), mkQ ? tr("mk_wait_sub").replace("{n}", mkQ.filter(x => x.status === "draft").length).replace("{s}", mkQ.filter(x => x.status === "scheduled").length) : "", qHtml("all"));
@@ -1489,6 +1514,8 @@ W.addEventListener("click", async e => {
     const box = $("mkpText"); if (box) { box.scrollIntoView({ block: "center", behavior: "smooth" }); try { box.focus({ preventScroll: true }); } catch (x) {} }
     return;
   }
+  const cn = e.target.closest("[data-conn]");
+  if (cn) { if (cn.dataset.act) connGo(cn.dataset.conn, cn.dataset.act); return; }
   const pb = e.target.closest("[data-mkpost]");
   if (pb) {
     const a = pb.dataset.mkpost;

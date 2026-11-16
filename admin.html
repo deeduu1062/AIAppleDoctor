@@ -1673,6 +1673,14 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 .vsgrid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;align-items:start;margin-top:12px}
 .vsprev{position:sticky;top:12px}
 .vsgrid.noprev{grid-template-columns:1fr}
+.mkconn{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0 0}
+@media (max-width:560px){.mkconn{grid-template-columns:1fr 1fr}}
+.mkconn-i{--cc:#888;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;padding:8px 10px 8px 12px;border-radius:12px;border:1.5px dashed color-mix(in srgb,var(--cc) 60%,transparent);background:var(--surface);color:var(--fg);font:inherit;text-align:left;cursor:pointer;box-shadow:inset 4px 0 0 var(--cc)}
+.mkconn-i.ok{border-style:solid;background:color-mix(in srgb,var(--cc) 12%,var(--surface))}
+.mkconn-i:hover{background:color-mix(in srgb,var(--cc) 20%,var(--surface))}
+.mkconn-n{font-weight:800;font-size:.95rem}.mkconn-s{font-size:.8rem;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mkconn-i:not(.ok) .mkconn-s{color:var(--cc);font-weight:700}
+.mkconn-i[data-conn="yt"]{--cc:#E62117}.mkconn-i[data-conn="fb"]{--cc:#1877F2}.mkconn-i[data-conn="ig"]{--cc:#D62976}.mkconn-i[data-conn="wa"]{--cc:#1FA855}
 .mkmake .avchips .mkbig{flex:1 1 140px;min-height:52px;font-size:1.05rem;font-weight:700}.mkplan{display:inline-block;margin-top:10px;font-weight:600}.mkwhere{align-items:center;gap:6px;flex-wrap:wrap}.vsprev[hidden]{display:none}
 .vsfold,.avfold{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:10px 0 0;padding:0 12px}
 .vsfold>summary,.avfold>summary{cursor:pointer;padding:12px 0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
@@ -1942,7 +1950,7 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 <script src="/admin.js?v=33"></script>
 <script src="/aicost.js?v=2"></script>
 <script src="/qr.js?v=1"></script>
-<script src="/marketing.js?v=22"></script>
+<script src="/marketing.js?v=23"></script>
 <script src="/vsart.js?v=1"></script>
 <script src="/studio.js?v=13"></script>
 <script src="/vsmusic.js?v=1"></script>
