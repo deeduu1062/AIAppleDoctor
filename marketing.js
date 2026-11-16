@@ -1193,7 +1193,10 @@ function renderMk() {
   if (mkNewView()) {
     const nWait = mkQ ? mkQ.filter(x => (x.status === "draft" && qKind(x) !== "wa") || (x.status === "draft" && qKind(x) === "wa" && qIstDay(x.post_at) <= mkIst()) || (x.status === "failed" && Date.now() - Date.parse(x.updated_at || x.post_at) < 3 * 864e5)).length : 0;
     const tabs = [["today", tr("ms_today") + (nWait ? " (" + nWait + ")" : "")], ["create", tr("ms_create")], ["results", tr("ms_results")], ["settings", tr("ms_settings")]];
-    const bar2 = '<div class="mksub mksub4" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + tabs.map(x => '<button type="button" role="tab" class="mksubt" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") + "</div>";
+    /* each tab has its own colour; the header band and the content below take the open tab's colour */
+    const TABC = { today: "#C4851C", create: "#1F8A52", results: "#2F64B8", settings: "#6A7380" };
+    const wrap = $("mkWrap"); if (wrap) { wrap.style.setProperty("--tabc", TABC[mkSub]); wrap.classList.add("mknewv"); }
+    const bar2 = '<div class="mkhead"><div class="mksub mksub4" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + tabs.map(x => '<button type="button" role="tab" class="mksubt" style="--c:' + TABC[x[0]] + '" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") + "</div></div>";
     if (mkSub === "today") {
       top.innerHTML = h + bar2 + todayHtml() +
         mkSec("content", tr("mk_wait_h"), mkQ ? tr("mk_wait_sub").replace("{n}", mkQ.filter(x => x.status === "draft").length).replace("{s}", mkQ.filter(x => x.status === "scheduled").length) : "", qHtml("all"));
@@ -1227,6 +1230,7 @@ function renderMk() {
     mkRestore(keep);
     return;
   }
+  { const wrap = $("mkWrap"); if (wrap) { wrap.style.removeProperty("--tabc"); wrap.classList.remove("mknewv"); } }
   if (mkSub === "fb") {
     const S = mkSoc || {};
     const line = S.ok ? '<p class="fine">' + mkConnLine(S) + (S.fb_followers != null ? " · " + tr("sc_fb") + " " + mkN(S.fb_followers) : "") + (S.ig_followers != null ? " · " + tr("sc_ig") + " " + mkN(S.ig_followers) : "") + "</p>" : "";

@@ -34,7 +34,7 @@ Object.assign(T.en, {
   wg_send: "Send to a group:", wg_never: "never", wg_status: "For WhatsApp Status: tap Send on WhatsApp and choose My status.", wg_save_err: "Could not save the groups.",
   wv_go: "📲 WhatsApp / Status", wv_busy: "Getting the video…", wv_ready: "📲 Share now", wv_fallback: "This browser can't hand the video file to WhatsApp, so its link is sent. On your phone the video file itself is shared.",
 
-  ms_today: "Today", ms_create: "Create", ms_results: "Results", ms_settings: "⚙ Settings",
+  ms_today: "📋 Today", ms_create: "✨ Create", ms_results: "📈 Results", ms_settings: "⚙️ Settings",
   mk_make_q: "What do you want to make?", mk_m_week: "✨ My week", mk_m_post: "Post", mk_m_video: "Video", mk_m_wa: "WhatsApp message",
   mk_make_after: "New drafts wait in Today for you to check and approve.", mk_wait_h: "Waiting for you", mk_wait_sub: "{n} to check · {s} going out",
   mk_posted_h: "Posted recently", mk_q_none_posted: "Nothing posted yet.", mk_ask_words: "Write the video's words yourself (with the AI)",
@@ -71,7 +71,7 @@ Object.assign(T.hi, {
   wg_send: "ग्रुप में भेजें:", wg_never: "कभी नहीं", wg_status: "WhatsApp Status के लिए: WhatsApp पर भेजें दबाएँ और My status चुनें।", wg_save_err: "ग्रुप सेव नहीं हुए।",
   wv_go: "📲 WhatsApp / Status", wv_busy: "वीडियो लाया जा रहा है…", wv_ready: "📲 अभी शेयर करें", wv_fallback: "यह ब्राउज़र वीडियो सीधे WhatsApp को नहीं दे सकता, इसलिए वीडियो का लिंक भेजा गया। फ़ोन से वीडियो फ़ाइल ही शेयर हो सकती है।",
 
-  ms_today: "आज", ms_create: "बनाएँ", ms_results: "नतीजे", ms_settings: "⚙ सेटिंग",
+  ms_today: "📋 आज", ms_create: "✨ बनाएँ", ms_results: "📈 नतीजे", ms_settings: "⚙️ सेटिंग",
   mk_make_q: "क्या बनाना है?", mk_m_week: "✨ मेरा हफ़्ता", mk_m_post: "पोस्ट", mk_m_video: "वीडियो", mk_m_wa: "WhatsApp संदेश",
   mk_make_after: "नए ड्राफ़्ट Today में आपकी जाँच और मंज़ूरी का इंतज़ार करते हैं।", mk_wait_h: "आपका इंतज़ार", mk_wait_sub: "{n} जाँचने हैं · {s} जाने वाले",
   mk_posted_h: "हाल में पोस्ट हुए", mk_q_none_posted: "अभी कुछ पोस्ट नहीं हुआ।", mk_ask_words: "वीडियो के शब्द ख़ुद लिखें (AI के साथ)",

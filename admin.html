@@ -266,7 +266,19 @@ td.wrapn{white-space:normal!important;min-width:14rem;max-width:24rem;font-size:
 .mkactions{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}.mkactions .btn-s.on{border-color:var(--brand-bg);font-weight:700}
 .mkcomp{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 10px;background:var(--bg);display:grid;gap:8px}.mkcomp .mkta{margin-top:0}
 .mkmake{display:grid;gap:6px;margin:12px 0}.mkmake .avchips{display:flex;flex-wrap:wrap;gap:6px}.mksub .mknew{margin-left:auto;font-weight:700}
-.mksub4 .mksubt{flex:1 1 0;text-align:center}
+/* Social handler, new view: a coloured header band with one colour per tab; content below carries the open tab's colour */
+.mkhead{background:linear-gradient(135deg,var(--brand-bg),color-mix(in srgb,var(--brand-bg) 55%,var(--tabc,#1F8A52)));border-radius:18px;padding:10px;margin:10px 0 14px;box-shadow:0 3px 10px rgba(0,0,0,.14);border-bottom:5px solid var(--tabc,#1F8A52)}
+.mkhead .mksub{margin:0;padding:2px 0 0;gap:8px;display:grid;grid-template-columns:repeat(4,1fr);overflow:visible}
+@media (max-width:560px){.mkhead .mksub{grid-template-columns:1fr 1fr}.mksub4 .mksubt{padding:9px 8px}}
+.mksub4 .mksubt{flex:1 1 0;text-align:center;background:color-mix(in srgb,var(--c) 22%,var(--surface));border:2px solid color-mix(in srgb,var(--c) 60%,transparent);color:var(--fg);transition:transform .12s,box-shadow .12s}
+.mksub4 .mksubt:hover{background:color-mix(in srgb,var(--c) 35%,var(--surface))}
+.mksub4 .mksubt[aria-selected="true"]{background:var(--c);border-color:#fff;color:#fff;font-weight:800;box-shadow:0 3px 8px rgba(0,0,0,.28);transform:translateY(-2px)}
+.mknewv .mkmake{background:color-mix(in srgb,var(--tabc) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--tabc) 40%,transparent);border-radius:14px;padding:10px 14px}
+.mknewv .mkmake .avchip[aria-pressed="true"]{background:var(--tabc);border-color:var(--tabc);color:#fff;font-weight:700}
+.mknewv .mksec{border-left:5px solid var(--tabc)}
+.mknewv .mksec>summary b{color:color-mix(in srgb,var(--tabc) 70%,var(--fg))}
+.mknewv .mktoday{border-color:var(--tabc);background:color-mix(in srgb,var(--tabc) 7%,var(--surface))}
+.mknewv .spbox{border-left:5px solid var(--tabc)}
 .spbox{border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:var(--surface);display:grid;gap:6px;margin:12px 0}.spbox p{margin:0}.spbox .mkwatch{margin:0}
 .spweek{border:2px solid var(--brand-bg)}.sprisk{display:grid;gap:4px;padding:6px 0;border-top:1px solid var(--line)}.sprev{border-top:1px solid var(--line);padding-top:8px;display:grid;gap:6px}
 .sprev .chk{display:inline-flex;margin:0}.spgchips{align-items:center}.spgadd .mkin{flex:1 1 140px}.spgadd .spgsize{flex:0 1 100px}
@@ -1898,7 +1910,7 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 <script src="/admin.js?v=33"></script>
 <script src="/aicost.js?v=2"></script>
 <script src="/qr.js?v=1"></script>
-<script src="/marketing.js?v=18"></script>
+<script src="/marketing.js?v=19"></script>
 <script src="/vsart.js?v=1"></script>
 <script src="/studio.js?v=10"></script>
 <script src="/growers.js?v=1"></script>
@@ -1907,7 +1919,7 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 <script src="/money.js?v=1"></script>
 <script src="/ytstudio.js?v=2"></script>
 <script src="/autovid.js?v=4"></script>
-<script src="/social-plus.js?v=3"></script>
+<script src="/social-plus.js?v=4"></script>
 <script src="/today.js?v=1"></script>
 <script src="/broadcast.js?v=1"></script>
 </body>
