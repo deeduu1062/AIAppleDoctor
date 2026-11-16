@@ -25,7 +25,7 @@ Object.assign(T.en, {
   av_sc_h: "Check the script", av_sc_p: "Read every line and change anything. Nothing is voiced or made until you tap Make video.",
   av_sc_title: "Video title", av_sc_n: "Scene {n}", av_sc_screen: "Words on screen", av_sc_sub: "Second line on screen", av_sc_say: "Spoken", av_sc_end: "End card", av_sc_cta: "Words on the end card", av_sc_cta_say: "Spoken at the end",
   av_sc_up: "Move up", av_sc_del: "Remove scene", av_sc_make: "🎬 Make video from this script", av_sc_redo: "Write it again", av_sc_drop: "Start over", av_sc_ready: "Script ready below: check it, then tap Make video.",
-  av_sc_empty: "Every scene needs words on screen.",
+  av_sc_empty: "Every scene needs words on screen.", av_hear: "▶ Listen", av_hear_stop: "■ Stop", av_hear_busy: "Getting the voice…",
   av_no_tts: "Made without a voice: the voice is not set up yet. To add it, put GOOGLE_TTS_KEY in Vercel (a Google Cloud API key with Text-to-Speech turned on), then Redeploy.",
   av_tts_err: "Made without a voice: Google Text-to-Speech said: {m}", av_where: "9. Where should it go?", av_where_p: "Each ticked place gets its own caption. Everything waits in Today for your OK; for YouTube you choose Public, Unlisted or Private there.",
   av_yt_first: "Connect your YouTube channel (YouTube Studio box above) to upload. The video is ready below.",
@@ -53,7 +53,7 @@ Object.assign(T.hi, {
   av_sc_h: "स्क्रिप्ट जाँचें", av_sc_p: "हर लाइन पढ़ें और जो चाहें बदलें। 'वीडियो बनाएँ' दबाने तक न आवाज़ बनेगी न वीडियो।",
   av_sc_title: "वीडियो का शीर्षक", av_sc_n: "सीन {n}", av_sc_screen: "स्क्रीन पर शब्द", av_sc_sub: "स्क्रीन पर दूसरी लाइन", av_sc_say: "बोला जाएगा", av_sc_end: "आख़िरी कार्ड", av_sc_cta: "आख़िरी कार्ड के शब्द", av_sc_cta_say: "आख़िर में बोला जाएगा",
   av_sc_up: "ऊपर करें", av_sc_del: "सीन हटाएँ", av_sc_make: "🎬 इस स्क्रिप्ट से वीडियो बनाएँ", av_sc_redo: "फिर से लिखें", av_sc_drop: "शुरू से", av_sc_ready: "स्क्रिप्ट नीचे तैयार है: जाँचें, फिर 'वीडियो बनाएँ' दबाएँ।",
-  av_sc_empty: "हर सीन में स्क्रीन पर शब्द चाहिए।",
+  av_sc_empty: "हर सीन में स्क्रीन पर शब्द चाहिए।", av_hear: "▶ सुनें", av_hear_stop: "■ रोकें", av_hear_busy: "आवाज़ आ रही है…",
   av_no_tts: "बिना आवाज़ बना: आवाज़ अभी सेट नहीं है। Vercel में GOOGLE_TTS_KEY डालें, फिर Redeploy करें।", av_tts_err: "बिना आवाज़ बना: {m}",
   av_where: "9. कहाँ जाए?", av_where_p: "हर चुनी जगह के लिए अलग कैप्शन बनता है। सब कुछ Today में आपकी मंज़ूरी का इंतज़ार करता है; YouTube के लिए वहाँ Public, Unlisted या Private चुनें।",
   av_yt_first: "अपलोड के लिए ऊपर YouTube Studio बॉक्स से चैनल जोड़ें। वीडियो नीचे तैयार है।", av_edit: "आप नीचे शब्द, चित्र या समय बदलकर फिर से 'वीडियो बनाएँ' दबा सकते हैं।"
@@ -154,6 +154,36 @@ function avBriefText() {
   return out.join("\n");
 }
 
+/* ▶ Listen: hear one spoken line in the chosen voice before the video is made (same Google voice as the video) */
+const avHear = { k: "", busy: "", el: null, cache: {} };
+const avHearBtn = k => AV.voice === "no" ? "" : '<button type="button" class="btn-s sm avhear" data-avsc="hear" data-i="' + k + '"' + (avHear.busy && avHear.busy !== String(k) ? " disabled" : "") + ">" +
+  esc(avHear.busy === String(k) ? tr("av_hear_busy") : avHear.k === String(k) ? tr("av_hear_stop") : tr("av_hear")) + "</button>";
+function avHearStop() { if (avHear.el) { try { avHear.el.pause(); } catch (e) {} avHear.el = null; } avHear.k = ""; }
+async function avHearGo(k) {
+  const v = AV.script; if (!v) return;
+  if (avHear.k === String(k)) { avHearStop(); avRender(); return; }   /* tapped again while playing: stop */
+  avHearStop();
+  const text = String(k === "end" ? v.cta_say || v.cta : (v.scenes[+k] || {}).say || "").trim();
+  if (!text) return;
+  const key = AV.lang + "|" + AV.voice + "|" + text;
+  avHear.busy = String(k); AV.err = ""; avRender();
+  try {
+    let b64 = avHear.cache[key];
+    if (!b64) {
+      const r = await fetch("/api/social?fn=tts", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await avTok() }, body: JSON.stringify({ texts: [text], lang: AV.lang === "en" ? "en" : "hi", voice: AV.voice }) });
+      const j = await r.json().catch(() => ({}));
+      if (j.error === "no_tts_key") throw new Error(tr("av_no_tts"));
+      if (j.error || !Array.isArray(j.audio) || !j.audio[0]) throw new Error(tr("av_tts_err").replace("{m}", j.detail || j.error || ("HTTP " + r.status)));
+      b64 = avHear.cache[key] = j.audio[0];
+    }
+    const el = new Audio("data:audio/mpeg;base64," + b64);
+    avHear.el = el; avHear.k = String(k);
+    el.onended = () => { if (avHear.el === el) { avHear.el = null; avHear.k = ""; avRender(); } };
+    await el.play();
+  } catch (e) { AV.err = String(e.message || e); avHearStop(); }
+  avHear.busy = ""; avRender();
+}
+
 /* the script check: every scene's screen words and spoken line, editable before anything is voiced or made */
 function avScriptHtml() {
   const v = AV.script; if (!v || AV.busy) return "";
@@ -163,12 +193,12 @@ function avScriptHtml() {
     v.scenes.map((s, i) => '<fieldset class="avsc"><legend>' + esc(tr("av_sc_n").replace("{n}", i + 1)) + "</legend>" +
       '<label class="fine avlab" for="avs' + i + 't">' + esc(tr("av_sc_screen")) + '</label><input class="avin" id="avs' + i + 't" data-avs="' + i + ':title" maxlength="90" value="' + esc(s.title) + '">' +
       '<label class="fine avlab" for="avs' + i + 'u">' + esc(tr("av_sc_sub")) + '</label><input class="avin" id="avs' + i + 'u" data-avs="' + i + ':sub" maxlength="90" value="' + esc(s.sub) + '">' +
-      '<label class="fine avlab" for="avs' + i + 's">' + esc(tr("av_sc_say")) + '</label><textarea class="avin avta" id="avs' + i + 's" data-avs="' + i + ':say" rows="2" maxlength="300">' + esc(s.say) + "</textarea>" +
+      '<label class="fine avlab" for="avs' + i + 's">' + esc(tr("av_sc_say")) + '</label><textarea class="avin avta" id="avs' + i + 's" data-avs="' + i + ':say" rows="2" maxlength="300">' + esc(s.say) + "</textarea>" + avHearBtn(i) +
       '<div class="avchips">' + (i ? '<button type="button" class="btn-s sm" data-avsc="up" data-i="' + i + '">↑ ' + esc(tr("av_sc_up")) + "</button>" : "") +
       (n > 1 ? '<button type="button" class="btn-s sm" data-avsc="del" data-i="' + i + '">✕ ' + esc(tr("av_sc_del")) + "</button>" : "") + "</div></fieldset>").join("") +
     '<fieldset class="avsc"><legend>' + esc(tr("av_sc_end")) + "</legend>" +
       '<label class="fine avlab" for="avsCta">' + esc(tr("av_sc_cta")) + '</label><input class="avin" id="avsCta" data-avs="cta" maxlength="80" value="' + esc(v.cta) + '">' +
-      '<label class="fine avlab" for="avsCtaSay">' + esc(tr("av_sc_cta_say")) + '</label><textarea class="avin avta" id="avsCtaSay" data-avs="cta_say" rows="2" maxlength="200">' + esc(v.cta_say) + "</textarea></fieldset>" +
+      '<label class="fine avlab" for="avsCtaSay">' + esc(tr("av_sc_cta_say")) + '</label><textarea class="avin avta" id="avsCtaSay" data-avs="cta_say" rows="2" maxlength="200">' + esc(v.cta_say) + "</textarea>" + avHearBtn("end") + "</fieldset>" +
     '<div class="avchips"><button type="button" class="btn-s add avgo" data-avsc="make">' + esc(tr("av_sc_make")) + '</button><button type="button" class="btn-s" data-avsc="redo">' + esc(tr("av_sc_redo")) + '</button><button type="button" class="btn-s" data-avsc="drop">' + esc(tr("av_sc_drop")) + "</button></div></div>";
 }
 function avRender() {
@@ -315,6 +345,8 @@ document.addEventListener("click", e => {
   const sc = e.target.closest && e.target.closest("#avBox [data-avsc]");
   if (sc && !AV.busy && AV.script) {
     const a = sc.dataset.avsc, i = +sc.dataset.i, S = AV.script.scenes;
+    if (a === "hear") return avHearGo(sc.dataset.i);
+    avHearStop();
     if (a === "make") return avMakeScript();
     if (a === "redo") { AV.script = null; return avCreate(); }
     if (a === "drop") { AV.script = null; AV.step = ""; avRender(); return; }
