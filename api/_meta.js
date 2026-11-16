@@ -94,6 +94,7 @@ module.exports = async (req, res) => {
     const u = new URL("https://www.facebook.com/v25.0/dialog/oauth");
     const P = { client_id: e.id, redirect_uri: redirect, response_type: "code", state: makeState(hostOf(req), e.secret) };
     if (e.cfg) P.config_id = e.cfg; else P.scope = SCOPES;
+    P.auth_type = "rerequest";   /* make Facebook ask again which Pages to share, instead of reusing an earlier answer */
     Object.entries(P).forEach(([k, v]) => u.searchParams.set(k, v));
     return send(res, 200, { setup: true, url: u.toString() });
   }
