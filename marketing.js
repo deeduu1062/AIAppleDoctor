@@ -1321,6 +1321,11 @@ function metaSetupHtml() {
 }
 
 /* ---- connections strip at the top: YouTube, Facebook, Instagram, WhatsApp ---- */
+/* How many accounts are really connected, judged the same way as the cards (a saved link alone doesn't count) */
+function connCount() {
+  const S = mkSoc, Y = typeof YT !== "undefined" ? YT : null;
+  return [!!(Y && Y.connected && Y.channel), !!(S && S.ok), !!(S && S.ok && S.ig_id), !!(MK["link:whatsapp"] && MK["link:whatsapp"].value)].filter(Boolean).length;
+}
 let mkYtAsked = false;
 function connHtml() {
   if (typeof YT !== "undefined" && !YT && !mkYtAsked && typeof ytLoad === "function") { mkYtAsked = true; ytLoad().then(() => renderMk(), () => {}); }
@@ -1404,7 +1409,7 @@ function renderMk() {
   });
   b += mkSec("plan", tr("mk_plan_h"), "", plan + "</div>");
   b += mkSec("more", tr("mk_more_h"), "", budgetHtml());
-  const socDone = MK_SOCIAL.filter(x => MK["link:" + x[0]] && MK["link:" + x[0]].value).length;
+  const socDone = connCount();
   b += mkSec("setup", tr("st_h"), tr("st_sub").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length), setupHtml());
   /* tabs inside Marketing: Facebook + Instagram, YouTube & videos, WhatsApp, More (remembered on this device) */
   const cnt = ks => mkQ ? mkQ.filter(x => x.status === "draft" && ks.indexOf(qKind(x)) >= 0).length : 0;
