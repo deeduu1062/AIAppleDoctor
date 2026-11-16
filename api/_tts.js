@@ -10,7 +10,9 @@
 
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
-const VOICES = { hi: { f: "hi-IN-Neural2-A", m: "hi-IN-Neural2-B" }, en: { f: "en-IN-Neural2-A", m: "en-IN-Neural2-B" } };
+/* Chirp 3 HD voices sound like a real person talking; the older Neural2 voices are kept as a fallback if Google refuses a Chirp voice */
+const VOICES = { hi: { f: "hi-IN-Chirp3-HD-Kore", m: "hi-IN-Chirp3-HD-Charon" }, en: { f: "en-IN-Chirp3-HD-Kore", m: "en-IN-Chirp3-HD-Charon" } };
+const OLD_VOICES = { hi: { f: "hi-IN-Neural2-A", m: "hi-IN-Neural2-B" }, en: { f: "en-IN-Neural2-A", m: "en-IN-Neural2-B" } };
 
 function send(res, code, obj) {
   res.statusCode = code;
@@ -41,18 +43,23 @@ module.exports = async (req, res) => {
   const b = await readBody(req);
   const texts = (Array.isArray(b.texts) ? b.texts : []).slice(0, 8).map(x => String(x || "").replace(/\s+/g, " ").trim().slice(0, 300));
   if (!texts.some(Boolean)) return send(res, 400, { error: "empty" });
-  const lg = b.lang === "en" ? "en" : "hi", v = VOICES[lg][b.voice === "m" ? "m" : "f"];
+  const lg = b.lang === "en" ? "en" : "hi", who = b.voice === "m" ? "m" : "f";
+  const say = async (text, name) => {
+    const r = await fetch("https://texttospeech.googleapis.com/v1/text:synthesize?key=" + encodeURIComponent(key), {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      /* a touch slower than normal: an unhurried, village way of talking */
+      body: JSON.stringify({ input: { text }, voice: { languageCode: lg === "en" ? "en-IN" : "hi-IN", name }, audioConfig: { audioEncoding: "MP3", speakingRate: lg === "en" ? 0.97 : 0.92, sampleRateHertz: 24000 } })
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error((j.error && j.error.message) || ("google " + r.status)); e.status = r.status; throw e; }
+    return j.audioContent || "";
+  };
+  const all = name => Promise.all(texts.map(text => (text ? say(text, name) : "")));
+  let v = VOICES[lg][who];
   try {
-    const audio = await Promise.all(texts.map(async text => {
-      if (!text) return "";
-      const r = await fetch("https://texttospeech.googleapis.com/v1/text:synthesize?key=" + encodeURIComponent(key), {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: { text }, voice: { languageCode: lg === "en" ? "en-IN" : "hi-IN", name: v }, audioConfig: { audioEncoding: "MP3", speakingRate: lg === "en" ? 1.0 : 0.95, sampleRateHertz: 24000 } })
-      });
-      const j = await r.json().catch(() => ({}));
-      if (!r.ok) { const e = new Error((j.error && j.error.message) || ("google " + r.status)); e.status = r.status; throw e; }
-      return j.audioContent || "";
-    }));
+    let audio;
+    try { audio = await all(v); }
+    catch (e) { if (e.status === 403) throw e; v = OLD_VOICES[lg][who]; audio = await all(v); }   /* Chirp voice not available: use the older voice */
     return send(res, 200, { audio, voice: v });
   } catch (e) {
     return send(res, 200, { error: e.status === 403 || e.status === 400 ? "tts_key" : "tts", detail: String(e.message || e).slice(0, 300) });
