@@ -388,7 +388,11 @@ function vsAudio() {
 }
 function vsMime() {
   if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) return "";
-  const c = ["video/mp4;codecs=avc1.42E01F,mp4a.40.2", "video/mp4;codecs=avc1,mp4a.40.2", "video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
+  /* with a voice or music, only formats that carry sound: "video/mp4;codecs=avc1" alone records a silent video */
+  const snd = !!(VS.music || vsHasVoice());
+  const c = ["video/mp4;codecs=avc1.42E01F,mp4a.40.2", "video/mp4;codecs=avc1,mp4a.40.2", "video/mp4;codecs=avc1,opus", "video/mp4;codecs=avc1.42E01F,opus"]
+    .concat(snd ? ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/mp4", "video/webm"]
+      : ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]);
   return c.find(m => { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } }) || "";
 }
 function vsStop(keep) {
