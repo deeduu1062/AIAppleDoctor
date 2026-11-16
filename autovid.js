@@ -27,7 +27,7 @@ Object.assign(T.en, {
   av_sc_up: "Move up", av_sc_del: "Remove scene", av_sc_make: "🎬 Make video from this script", av_sc_redo: "Write it again", av_sc_drop: "Start over", av_sc_ready: "Script ready below: check it, then tap Make video.",
   av_sc_empty: "Every scene needs words on screen.",
   av_no_tts: "Made without a voice: the voice is not set up yet. To add it, put GOOGLE_TTS_KEY in Vercel (a Google Cloud API key with Text-to-Speech turned on), then Redeploy.",
-  av_tts_err: "Made without a voice: Google Text-to-Speech said: {m}", av_where: "9. Where should it go?", av_where_p: "Facebook + Instagram and WhatsApp go to Today as drafts for you to approve; YouTube waits in Today too: you choose Public, Unlisted or Private and tap Upload.",
+  av_tts_err: "Made without a voice: Google Text-to-Speech said: {m}", av_where: "9. Where should it go?", av_where_p: "Each ticked place gets its own caption. Everything waits in Today for your OK; for YouTube you choose Public, Unlisted or Private there.",
   av_yt_first: "Connect your YouTube channel (YouTube Studio box above) to upload. The video is ready below.",
   av_edit: "You can still change any words, pictures or timings below and tap Make video again."
 });
@@ -55,7 +55,7 @@ Object.assign(T.hi, {
   av_sc_up: "ऊपर करें", av_sc_del: "सीन हटाएँ", av_sc_make: "🎬 इस स्क्रिप्ट से वीडियो बनाएँ", av_sc_redo: "फिर से लिखें", av_sc_drop: "शुरू से", av_sc_ready: "स्क्रिप्ट नीचे तैयार है: जाँचें, फिर 'वीडियो बनाएँ' दबाएँ।",
   av_sc_empty: "हर सीन में स्क्रीन पर शब्द चाहिए।",
   av_no_tts: "बिना आवाज़ बना: आवाज़ अभी सेट नहीं है। Vercel में GOOGLE_TTS_KEY डालें, फिर Redeploy करें।", av_tts_err: "बिना आवाज़ बना: {m}",
-  av_where: "9. कहाँ जाए?", av_where_p: "Facebook + Instagram और WhatsApp ड्राफ़्ट बनकर Today में मंज़ूरी के लिए जाते हैं; YouTube भी Today में रुकता है: आप Public, Unlisted या Private चुनकर अपलोड दबाएँ।",
+  av_where: "9. कहाँ जाए?", av_where_p: "हर चुनी जगह के लिए अलग कैप्शन बनता है। सब कुछ Today में आपकी मंज़ूरी का इंतज़ार करता है; YouTube के लिए वहाँ Public, Unlisted या Private चुनें।",
   av_yt_first: "अपलोड के लिए ऊपर YouTube Studio बॉक्स से चैनल जोड़ें। वीडियो नीचे तैयार है।", av_edit: "आप नीचे शब्द, चित्र या समय बदलकर फिर से 'वीडियो बनाएँ' दबा सकते हैं।"
 });
 
@@ -67,8 +67,8 @@ const AV_TOPICS = {
 };
 const AV_THEME = { alert: "alert", tip: "tip", season: "season", feat: "feat", money: "tip", q: "tip", own: "tip" };
 const AV_END = { site: "Visit sebsaathi.com, it is free", dx: "Try the free disease check on sebsaathi.com", share: "Share this video with your grower friends", join: "Join Seb Saathi free today at sebsaathi.com" };
-const AV = { where: { fb: true, wa: true, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null, music: "auto" };
-try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "after", "style", "music"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; if (o.where) AV.where = { fb: !!o.where.fb, wa: !!o.where.wa, yt: !!o.where.yt }; } } catch (e) {}
+const AV = { where: { fb: true, ig: true, wa: true, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null, music: "auto" };
+try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "after", "style", "music"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; if (o.where) AV.where = { fb: !!o.where.fb, ig: o.where.ig === undefined ? !!o.where.fb : !!o.where.ig, wa: !!o.where.wa, yt: !!o.where.yt }; } } catch (e) {}
 const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after, where: AV.where, style: AV.style, music: AV.music, check: AV.check })); } catch (e) {} };
 
 function avQuestions() {   /* top Saathi topics from the AI quality tab (quality.js), loaded when needed */
@@ -99,7 +99,6 @@ const avL = t => esc(String(t).replace(/^\d+\.\s*/, ""));
 function avSumm() {
   const L = { hi: "हिंदी", hn: "Hinglish", en: "English" }, out = [L[AV.lang] || AV.lang, tr("av_v_" + AV.voice), AV.music === "none" ? tr("av_mu_none") : "♪",
     tr("av_l_" + AV.len).replace(/\s*\(.*\)$/, ""), tr("vs_f_" + AV.fmt).replace(/\s*\(.*\)$/, ""), tr("av_p_" + AV.pics)];
-  if (avCreateTab()) out.push(["fb", "wa", "yt"].filter(k => AV.where[k]).map(k => ({ fb: "Facebook", wa: "WhatsApp", yt: "YouTube" })[k]).join(" + ") || "—");
   return out.join(" · ");
 }
 function avHtml() {
@@ -121,8 +120,9 @@ function avHtml() {
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
       (AV.pics === "mine" ? '<p><label class="btn-s sm vsfile">' + esc(tr("av_p_add")) + '<input type="file" accept="image/*" multiple id="avPhotos" hidden></label> <span class="fine">' + (AV.photos.length ? esc(tr("av_p_n").replace("{n}", AV.photos.length)) : "") + "</span></p>" : "") + "</fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_end")) + '</legend><div class="avchips">' + ["site", "dx", "share", "join"].map(k => avChip("end", k, tr("av_e_" + k))).join("") + "</div></fieldset>" +
-    (avCreateTab() ? '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_where")) + '</legend><div class="avchips">' + avTick("fb", "Facebook + Instagram") + avTick("wa", "WhatsApp") + avTick("yt", "YouTube Short") + '</div><p class="fine">' + esc(tr("av_where_p")) + "</p></fieldset>"
+    (avCreateTab() ? ""
       : '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>") + "</details>" +
+    (avCreateTab() ? '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_where")) + '</legend><div class="avchips">' + avTick("fb", "Facebook") + avTick("ig", "Instagram") + avTick("yt", "YouTube") + avTick("wa", "WhatsApp") + '</div><p class="fine">' + esc(tr("av_where_p")) + "</p></fieldset>" : "") +
     '<p><button type="button" class="btn-s add avgo" id="avGo"' + dis + ">" + esc(AV.busy ? AV.step : VS.out && AV.done ? tr("av_again") : tr("av_go")) + "</button></p>" +
     (AV.step && !AV.busy ? '<p class="fine" role="status">' + esc(AV.step) + "</p>" : "") +
     (AV.note ? '<p class="fine">' + esc(AV.note) + "</p>" : "") + (AV.err ? '<p class="autherr" role="alert">' + esc(AV.err) + "</p>" : "") + avScriptHtml() + "</div>";
@@ -278,9 +278,11 @@ async function avBuild(v) {
     AV.done = true;
     if (avCreateTab() && !AV.oneTap) {   /* Create tab: every place that is ticked */
       const W = AV.where;
-      if ((W.fb || W.wa) && typeof vsQueue === "function") {
+      if ((W.fb || W.ig || W.wa) && typeof vsQueue === "function") {
         avStep("av_s_fb"); await vsQueue();
-        if (W.wa && VS.out && VS.out.qid && typeof mkEverywhere === "function") await mkEverywhere(VS.out.qid);   /* captions for Facebook, the Reel and a WhatsApp message */
+        const qid = VS.out && VS.out.qid;
+        if (qid && (W.ig || W.wa) && typeof mkEverywhere === "function") await mkEverywhere(qid, { fb: W.fb, ig: W.ig, wa: W.wa });   /* its own caption for each ticked place */
+        else if (qid && typeof qUpd === "function") { try { await qUpd(qid, { fb: true, ig: false }); } catch (e) {} }
       }
       if (W.yt && typeof ytHold === "function") {
         if (typeof ytHold === "function") { avStep("av_s_ythold"); await ytHold(); AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_held"); }

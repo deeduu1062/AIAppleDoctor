@@ -35,7 +35,7 @@ Object.assign(T.en, {
   wv_go: "📲 WhatsApp / Status", wv_busy: "Getting the video…", wv_ready: "📲 Share now", wv_fallback: "This browser can't hand the video file to WhatsApp, so its link is sent. On your phone the video file itself is shared.",
 
   ms_today: "📋 Today", ms_create: "✨ Create", ms_results: "📈 Results", ms_settings: "⚙️ Settings",
-  mk_make_q: "What do you want to make?", mk_m_week: "✨ My week", mk_m_post: "Post", mk_m_video: "Video", mk_m_wa: "WhatsApp message",
+  mk_make_q: "What do you want to make?", mk_m_week: "✨ My week", mk_m_post: "📝 Create post", mk_m_video: "🎬 Create video", mk_m_wa: "WhatsApp message", mk_m_plan: "✨ Plan my whole week at once", mk_m_back: "← Back to post or video",
   mk_make_after: "New drafts wait in Today for you to check and approve.", mk_wait_h: "Waiting for you", mk_wait_sub: "{n} to check · {s} going out",
   mk_posted_h: "Posted recently", mk_q_none_posted: "Nothing posted yet.", mk_ask_words: "Write the video's words yourself (with the AI)",
   mk_classic_h: "Classic view", mk_classic_p: "The old layout, one tab per platform, if you need it for a while.", mk_new_view: "✨ New view",
@@ -72,7 +72,7 @@ Object.assign(T.hi, {
   wv_go: "📲 WhatsApp / Status", wv_busy: "वीडियो लाया जा रहा है…", wv_ready: "📲 अभी शेयर करें", wv_fallback: "यह ब्राउज़र वीडियो सीधे WhatsApp को नहीं दे सकता, इसलिए वीडियो का लिंक भेजा गया। फ़ोन से वीडियो फ़ाइल ही शेयर हो सकती है।",
 
   ms_today: "📋 आज", ms_create: "✨ बनाएँ", ms_results: "📈 नतीजे", ms_settings: "⚙️ सेटिंग",
-  mk_make_q: "क्या बनाना है?", mk_m_week: "✨ मेरा हफ़्ता", mk_m_post: "पोस्ट", mk_m_video: "वीडियो", mk_m_wa: "WhatsApp संदेश",
+  mk_make_q: "क्या बनाना है?", mk_m_week: "✨ मेरा हफ़्ता", mk_m_post: "📝 पोस्ट बनाएँ", mk_m_video: "🎬 वीडियो बनाएँ", mk_m_wa: "WhatsApp संदेश", mk_m_plan: "✨ पूरा हफ़्ता एक साथ प्लान करें", mk_m_back: "← पोस्ट या वीडियो पर वापस",
   mk_make_after: "नए ड्राफ़्ट Today में आपकी जाँच और मंज़ूरी का इंतज़ार करते हैं।", mk_wait_h: "आपका इंतज़ार", mk_wait_sub: "{n} जाँचने हैं · {s} जाने वाले",
   mk_posted_h: "हाल में पोस्ट हुए", mk_q_none_posted: "अभी कुछ पोस्ट नहीं हुआ।", mk_ask_words: "वीडियो के शब्द ख़ुद लिखें (AI के साथ)",
   mk_classic_h: "पुराना रूप", mk_classic_p: "पुराना लेआउट, हर प्लेटफ़ॉर्म का अलग टैब, अगर कुछ दिन चाहिए।", mk_new_view: "✨ नया रूप",

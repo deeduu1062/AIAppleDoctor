@@ -309,7 +309,9 @@ Object.assign(T.en, {
   ev_done: "Drafts made: {w}. Check them below.", ev_yt: "The YouTube Short is ready in the Video Studio (YouTube & videos tab) with its title: tap Upload.",
   ev_yt_no: "For YouTube, connect your channel in the Video Studio (YouTube & videos tab).",
   td_yt: "YouTube videos waiting for your OK ({n})",
-  mk_msg_fold: "ready to copy, tap to open", mk_vmore: "More video tools", mk_vmore_p: "one-tap YouTube Short, write words with the AI, demo script, video ideas",
+  mk_msg_fold: "ready to copy, tap to open",
+  pw_h: "Share on:", pw_ig: "Instagram needs a photo: add one to the draft in Today before you approve it.", pw_none: "Tick at least one place to share it.",
+  pw_done: "Drafts made for {w}. They wait in Today for your OK.", pw_part: "Made for {w}, but the rest failed:", mk_vmore: "More video tools", mk_vmore_p: "one-tap YouTube Short, write words with the AI, demo script, video ideas",
   ytd_h: "Waiting for your OK: nothing goes to YouTube until you tap Upload.", ytd_title: "Title", ytd_desc: "Description",
   ytd_priv: "Who can see it on YouTube", ytd_at: "Publish at (India time, optional)", ytd_at_p: "Leave empty to use the choice above as soon as it uploads. With a time, YouTube keeps it private until then and makes it Public at that time.",
   ytd_go: "Upload to YouTube: {p}", ytd_pub_at: "goes Public on {d}", ytd_busy: "Uploading to YouTube…", ytd_del: "Discard", ytd_ok: "✓ Sent to YouTube. It's in the YouTube list.",
@@ -335,7 +337,9 @@ Object.assign(T.hi, {
   ev_done: "ड्राफ़्ट बन गए: {w}। नीचे जाँचें।", ev_yt: "YouTube Short टाइटल के साथ Video Studio (YouTube और वीडियो टैब) में तैयार है: अपलोड दबाएँ।",
   ev_yt_no: "YouTube के लिए Video Studio (YouTube और वीडियो टैब) में अपना चैनल जोड़ें।",
   td_yt: "YouTube वीडियो आपकी मंज़ूरी के इंतज़ार में ({n})",
-  mk_msg_fold: "कॉपी के लिए तैयार, खोलने के लिए टैप करें", mk_vmore: "वीडियो के और टूल", mk_vmore_p: "एक-टैप YouTube Short, AI से शब्द, डेमो स्क्रिप्ट, वीडियो आइडिया",
+  mk_msg_fold: "कॉपी के लिए तैयार, खोलने के लिए टैप करें",
+  pw_h: "कहाँ शेयर करें:", pw_ig: "Instagram के लिए फ़ोटो चाहिए: मंज़ूरी से पहले Today में ड्राफ़्ट में फ़ोटो जोड़ें।", pw_none: "शेयर के लिए कम से कम एक जगह चुनें।",
+  pw_done: "{w} के लिए ड्राफ़्ट बन गए। Today में आपकी मंज़ूरी का इंतज़ार है।", pw_part: "{w} के लिए बना, पर बाकी नहीं बना:", mk_vmore: "वीडियो के और टूल", mk_vmore_p: "एक-टैप YouTube Short, AI से शब्द, डेमो स्क्रिप्ट, वीडियो आइडिया",
   ytd_h: "आपकी मंज़ूरी का इंतज़ार: जब तक आप अपलोड नहीं दबाते, YouTube पर कुछ नहीं जाता।", ytd_title: "शीर्षक", ytd_desc: "विवरण",
   ytd_priv: "YouTube पर कौन देख सकता है", ytd_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", ytd_at_p: "ख़ाली छोड़ें तो अपलोड होते ही ऊपर वाला विकल्प लगेगा। समय डालें तो YouTube तब तक private रखकर उसी समय Public करेगा।",
   ytd_go: "YouTube पर अपलोड करें: {p}", ytd_pub_at: "{d} को Public होगा", ytd_busy: "YouTube पर अपलोड हो रहा है…", ytd_del: "हटाएँ", ytd_ok: "✓ YouTube पर भेज दिया। YouTube सूची में है।",
@@ -817,11 +821,18 @@ function qDraftHtml(x, hasIg) {
 }
 /* ---- "Ask the AI": say what you want, the AI writes it (api/_social-draft.js kinds custom / video / wamsg) ---- */
 const mkAsk = { fb: "", yt: "", wa: "" };
+/* Create post: where it should go (Facebook, Instagram, WhatsApp), remembered on this device */
+const mkPostW = { fb: true, ig: true, wa: false };
+try { const o = JSON.parse(localStorage.getItem("mk-postw") || "null"); if (o) ["fb", "ig", "wa"].forEach(k => { mkPostW[k] = !!o[k]; }); } catch (e) {}
+const mkPostWHtml = () => '<div class="mkrow mkwhere"><span class="fine" style="margin:0"><b>' + tr("pw_h") + "</b></span>" +
+  [["fb", "Facebook"], ["ig", "Instagram"], ["wa", "WhatsApp"]].map(x => '<button type="button" class="btn-s sm avchip" data-postw="' + x[0] + '" aria-pressed="' + mkPostW[x[0]] + '">' + (mkPostW[x[0]] ? "☑ " : "☐ ") + x[1] + "</button>").join("") +
+  "</div>" + (mkPostW.ig ? '<p class="fine">' + tr("pw_ig") + "</p>" : "");
 let mkAskBusy = "", mkAskMsg = { fb: "", yt: "", wa: "" };
 function askHtml(mode) {
   const busy = mkAskBusy === mode;
   return '<div class="mkask"><label for="mkAsk-' + mode + '"><b>' + tr("ask_h_" + mode) + "</b></label>" +
     '<textarea class="mkin mkta" id="mkAsk-' + mode + '" data-ask="' + mode + '" rows="3" maxlength="800" placeholder="' + esc(tr("ask_ph_" + mode)) + '">' + esc(mkAsk[mode]) + "</textarea>" +
+    (mode === "fb" && mkSub === "create" ? mkPostWHtml() : "") +
     '<div class="mkrow"><select class="mkin mksel" id="mkqLang-' + mode + '" data-asklang="1" aria-label="Language">' + ["hn", "hi", "en"].map(l => '<option value="' + l + '"' + (l === mkQLang ? " selected" : "") + ">" + tr("mk_q_l_" + l) + "</option>").join("") + "</select>" +
     '<button class="btn-s add" type="button" data-askgo="' + mode + '"' + (mkAskBusy ? " disabled" : "") + ">" + tr(busy ? "ask_busy" : "ask_go") + "</button></div>" +
     '<p class="fine">' + esc(tr("ask_ctx") + (mkBest().length ? " " + tr("ask_ctx_best").replace("{n}", mkBest().length) : "")) + "</p>" +
@@ -830,6 +841,7 @@ function askHtml(mode) {
 async function askGo(mode) {
   const want = String(mkAsk[mode] || "").trim();
   if (!want) { mkAskMsg[mode] = '<span class="mkwarn">' + esc(tr("ask_empty")) + "</span>"; renderMk(); const t = $("mkAsk-" + mode); if (t) t.focus(); return; }
+  if (mode === "fb" && mkSub === "create") return askPost(want);
   mkAskBusy = mode; mkAskMsg[mode] = ""; renderMk();
   try {
     const kind = mode === "yt" ? "video" : mode === "wa" ? "wamsg" : "custom";
@@ -851,6 +863,30 @@ async function askGo(mode) {
   mkAskBusy = ""; renderMk();
 }
 
+/* Create post: one ask makes a Facebook/Instagram draft and, if ticked, a WhatsApp version; all wait in Today */
+async function askPost(want) {
+  const W = mkPostW;
+  if (!W.fb && !W.ig && !W.wa) { mkAskMsg.fb = '<span class="mkwarn">' + esc(tr("pw_none")) + "</span>"; renderMk(); return; }
+  mkAskBusy = "fb"; mkAskMsg.fb = ""; renderMk();
+  const call = async kind => {
+    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ kind, ask: want, lang: mkQLang, best: mkBestTexts() }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error === "not_setup" ? tr("mk_q_setup") : j.error === "not_setup_v2" ? tr("mk_v2_setup") : j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : tr("mk_q_err").replace("{m}", j.error || r.status));
+    return j;
+  };
+  const made = [];
+  try {
+    if (W.fb || W.ig) {
+      const j = await call("custom");
+      for (const d of j.drafts || []) { try { await sb.from("social_queue").update({ fb: !!W.fb, ig: !!W.ig }).eq("id", d.id); } catch (e) {} }
+      made.push([W.fb ? "Facebook" : "", W.ig ? "Instagram" : ""].filter(Boolean).join(" + "));
+    }
+    if (W.wa) { await call("wamsg"); made.push("WhatsApp"); }
+    mkAsk.fb = ""; mkAskMsg.fb = "✓ " + esc(tr("pw_done").replace("{w}", made.join(", ")));
+  } catch (e) { mkAskMsg.fb = '<span class="mkwarn">' + esc((made.length ? tr("pw_part").replace("{w}", made.join(", ")) + " " : "") + String(e.message || e)) + "</span>"; }
+  mkAskBusy = ""; await loadQ();
+}
+
 /* one list per tab: fb = posts + videos (Facebook/Instagram), wa = WhatsApp tips, yt = YouTube uploads */
 const Q_KINDS = { fb: ["post", "video"], wa: ["wa"], yt: ["yt"], all: ["post", "video", "wa", "yt"], posted: ["post", "video", "wa", "yt"] };
 function qHtml(mode) {
@@ -858,7 +894,9 @@ function qHtml(mode) {
   const S = mkSoc || {}, hasIg = !!(S.ok && S.ig_id), busy = !!mkQBusy;
   const make = mode === "fbmake" || mode === "wamake", fbish = mode === "fb" || mode === "fbmake", waish = mode === "wa" || mode === "wamake";
   let h = "";
-  if (fbish) {
+  if (mode === "fbmake") {   /* Create post: the AI box above does the rest; only "write it myself" here */
+    h += '<div class="mkactions"><button class="btn-s' + (mkCompose ? " on" : "") + '" type="button" data-mkq="compose" aria-expanded="' + mkCompose + '">' + tr(mkCompose ? "cq_close" : "cq_write") + "</button></div>";
+  } else if (fbish) {
     h += '<div class="mkactions">' +
       '<button class="btn-s' + (mkCompose ? " on" : "") + '" type="button" data-mkq="compose" aria-expanded="' + mkCompose + '">' + tr(mkCompose ? "cq_close" : "cq_write") + "</button>" +
       '<button class="btn-s" type="button" data-mkq="draft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "post" ? tr("mk_q_drafting") : tr("cq_ai")) + "</button>" +
@@ -866,7 +904,7 @@ function qHtml(mode) {
   } else if (waish) {
     h += '<div class="mkactions"><button class="btn-s" type="button" data-mkq="wadraft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "wa" ? tr("mk_q_drafting") : tr("cq_wa")) + "</button></div>";
   }
-  if (fbish || waish) h += '<div class="mkrow">' + (fbish ? '<select class="mkin mksel" id="mkqN" aria-label="' + esc(tr("cq_ai")) + '">' + [3, 5, 7].map(n => '<option value="' + n + '"' + (n === mkQN ? " selected" : "") + ">" + tr("mk_q_n").replace("{n}", n) + "</option>").join("") + "</select>" : "") +
+  if ((fbish || waish) && mode !== "fbmake") h += '<div class="mkrow">' + (fbish ? '<select class="mkin mksel" id="mkqN" aria-label="' + esc(tr("cq_ai")) + '">' + [3, 5, 7].map(n => '<option value="' + n + '"' + (n === mkQN ? " selected" : "") + ">" + tr("mk_q_n").replace("{n}", n) + "</option>").join("") + "</select>" : "") +
     '<select class="mkin mksel" id="mkqLang" aria-label="Language">' + ["hn", "hi", "en"].map(l => '<option value="' + l + '"' + (l === mkQLang ? " selected" : "") + ">" + tr("mk_q_l_" + l) + "</option>").join("") + "</select></div>";
   if (fbish && mkSoc && !mkSoc.ok) h += '<p class="fine mkwarn">' + tr("mk_q_notoken") + "</p>";
   if (fbish && mkCompose) h += composeHtml();
@@ -984,8 +1022,9 @@ function todayHtml() {
 
 /* ---- one video → every platform: Facebook video, Instagram Reel, WhatsApp message, YouTube Short ---- */
 let mkEvBusy = "";
-async function mkEverywhere(id) {
+async function mkEverywhere(id, only) {   /* only: { fb, ig, wa } from "Create video"; left out = every place */
   const x = qGet(id); if (!x || !x.video_url || mkEvBusy) return;
+  const O = only || { fb: true, ig: true, wa: true };
   mkEvBusy = String(id); mkQMsg = ""; renderMk();
   try {
     const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() },
@@ -997,14 +1036,20 @@ async function mkEverywhere(id) {
     const topic = String(x.topic || R.yt_title || "").slice(0, 200) || null, made = [];
     /* Facebook: a new draft (an already posted video stays as it is) */
     const fbRow = { kind: "video", status: "draft", text: R.fb || x.text || "", topic, video_url: x.video_url, fb: true, ig: false, post_at: when };
-    if (x.status === "draft") { await qUpd(id, { text: fbRow.text, topic, fb: true, ig: false, post_at: when }); }
-    else { const a = await sb.from("social_queue").insert(fbRow).select().single(); if (a.error) throw a.error; mkQ.push(a.data); }
-    made.push("Facebook");
-    if (hasIg && R.ig) {   /* the Reel goes out an hour later, with its own caption */
+    let reused = false;
+    if (O.fb) {
+      if (x.status === "draft") { await qUpd(id, { text: fbRow.text, topic, fb: true, ig: false, post_at: when }); }
+      else { const a = await sb.from("social_queue").insert(fbRow).select().single(); if (a.error) throw a.error; mkQ.push(a.data); }
+      made.push("Facebook");
+    } else if (x.status === "draft") {   /* no Facebook: the draft becomes the Reel, or goes */
+      if (O.ig && hasIg && R.ig) { await qUpd(id, { text: R.ig, topic, fb: false, ig: true, post_at: when }); made.push("Instagram Reel"); reused = true; }
+      else { await sb.from("social_queue").delete().eq("id", id); mkQ = mkQ.filter(y => String(y.id) !== String(id)); }
+    }
+    if (O.ig && !reused && hasIg && R.ig) {   /* the Reel goes out an hour later, with its own caption */
       const a = await sb.from("social_queue").insert({ kind: "video", status: "draft", text: R.ig, topic, video_url: x.video_url, fb: false, ig: true, post_at: new Date(Date.parse(when) + 3600000).toISOString() }).select().single();
       if (a.error) throw a.error; mkQ.push(a.data); made.push("Instagram Reel");
     }
-    if (R.wa) {
+    if (O.wa && R.wa) {
       const a = await sb.from("social_queue").insert({ kind: "wa", status: "draft", text: R.wa, topic, fb: false, ig: false, post_at: new Date(Date.parse(when) + 7200000).toISOString() }).select().single();
       if (a.error) throw a.error; mkQ.push(a.data); made.push("WhatsApp");
     }
@@ -1181,7 +1226,7 @@ function setupHtml() {
 const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid", "demo"]);   /* which sections are open */
 /* tabs by job: Today, Create, Results, Settings (remembered on this device); the old tabs by platform (fb, yt, wa, more) stay as the "classic view" */
 let mkSub = "today", mkMake = "week";
-try { const v = localStorage.getItem("mk-sub2"); if (/^(today|create|results|settings|fb|yt|wa|more)$/.test(v || "")) mkSub = v; const m = localStorage.getItem("mk-make"); if (/^(week|post|video|wa)$/.test(m || "")) mkMake = m; } catch (e) {}
+try { const v = localStorage.getItem("mk-sub2"); if (/^(today|create|results|settings|fb|yt|wa|more)$/.test(v || "")) mkSub = v; const m = localStorage.getItem("mk-make"); if (/^(week|post|video|wa)$/.test(m || "")) mkMake = m === "wa" ? "post" : m; } catch (e) {}
 const mkNewView = () => ["today", "create", "results", "settings"].indexOf(mkSub) >= 0;
 const mkOpenTab = x => mkNewView() ? "today" : qTab(x);
 const mkGoMake = m => { mkMake = m; try { localStorage.setItem("mk-make", m); } catch (e) {} mkGo("create"); };
@@ -1259,11 +1304,11 @@ function renderMk() {
       bot.innerHTML = "";
     } else if (mkSub === "create") {
       const chips = '<div class="mkmake" role="group" aria-label="' + esc(tr("mk_make_q")) + '"><b>' + tr("mk_make_q") + '</b><div class="avchips">' +
-        [["week", "mk_m_week"], ["post", "mk_m_post"], ["video", "mk_m_video"], ["wa", "mk_m_wa"]].map(x => '<button type="button" class="btn-s sm avchip" data-mkmake="' + x[0] + '" aria-pressed="' + (mkMake === x[0]) + '">' + tr(x[1]) + "</button>").join("") + "</div></div>";
+        [["post", "mk_m_post"], ["video", "mk_m_video"]].map(x => '<button type="button" class="btn-s avchip mkbig" data-mkmake="' + x[0] + '" aria-pressed="' + (mkMake === x[0]) + '">' + tr(x[1]) + "</button>").join("") + "</div>" +
+        '<button type="button" class="link mkplan" data-mkmake="' + (mkMake === "week" ? "post" : "week") + '">' + tr(mkMake === "week" ? "mk_m_back" : "mk_m_plan") + "</button></div>";
       let A = "", B = "";
       /* kept short: the ready-made messages and the extra video tools stay folded until you open them */
-      if (mkMake === "post") A = askHtml("fb") + qHtml("fbmake") + mkSec("cmsg", tr("mk_msg_h"), tr("mk_msg_fold"), msgOf("fb"));
-      else if (mkMake === "wa") A = askHtml("wa") + qHtml("wamake") + mkSec("cmsg", tr("mk_msg_h"), tr("mk_msg_fold"), '<p class="fine">' + tr("mk_msg_p") + "</p>" + msgOf("wa"));
+      if (mkMake === "post" || mkMake === "wa") A = askHtml("fb") + qHtml("fbmake") + mkSec("cmsg", tr("mk_msg_h"), tr("mk_msg_fold"), msgOf("fb") + '<p class="fine"><b>WhatsApp</b></p>' + msgOf("wa"));
       else if (mkMake === "video") {
         const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
         B = mkSec("vmore", tr("mk_vmore"), tr("mk_vmore_p"), '<div id="mkVmore"></div>' + mkSec("askyt", tr("mk_ask_words"), "", askHtml("yt")) + mkSec("demo", tr("demo_h"), "", demoHtml()) + mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml()));
@@ -1430,6 +1475,8 @@ W.addEventListener("click", async e => {
     else if (tl.dataset.tl === "png") mkQrPng(mkSrcLink(code), code);
     return;
   }
+  const pw = e.target.closest("[data-postw]");
+  if (pw) { mkPostW[pw.dataset.postw] = !mkPostW[pw.dataset.postw]; try { localStorage.setItem("mk-postw", JSON.stringify(mkPostW)); } catch (x) {} renderMk(); return; }
   const ag = e.target.closest("[data-askgo]");
   if (ag) { askGo(ag.dataset.askgo); return; }
   const sb2 = e.target.closest("[data-mksub]");
