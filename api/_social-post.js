@@ -6,7 +6,7 @@
 //                         how each post did (reach, likes, comments, shares), for the Marketing tab
 // Header on both: Authorization: Bearer <Supabase access token of an admin>
 //
-// Needs ONE setting in Vercel → Settings → Environment Variables:
+// The Page key comes from "Connect with Facebook" (api/_meta.js) or, the older way, ONE setting in Vercel:
 //   META_PAGE_TOKEN   a Page access token for the Seb Saathi Facebook Page (the never-expiring kind,
 //                     from a long-lived user token → /me/accounts), with pages_manage_posts,
 //                     pages_read_engagement, pages_show_list, instagram_basic, instagram_content_publish
@@ -16,7 +16,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
-const { accounts, publish, stats, metrics } = require("./_social");
+const { accounts, publish, stats, metrics, pageToken } = require("./_social");
 
 function send(res, code, obj) {
   res.statusCode = code;
@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
     if (!ADMIN_EMAILS.includes(String(user.email || "").toLowerCase())) return send(res, 403, { error: "admin" });
   } catch (e) { return send(res, 502, { error: "auth_down" }); }
 
-  const pt = process.env.META_PAGE_TOKEN;
+  const pt = await pageToken();   /* from "Connect with Facebook", or META_PAGE_TOKEN */
   if (!pt) return send(res, 200, { setup: false });
   let acc;
   try { acc = await accounts(pt); }

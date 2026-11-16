@@ -3481,9 +3481,21 @@ function logVisit(u) {
     const ua = navigator.userAgent || "", device = /iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "mobile" : "desktop";
     const row = { visitor: vid, page: "home", ref, device, lang, signed_in: !!u };
     if (visitSrc) row.src = visitSrc;
-    sb.from("site_visits").insert(row).then(r => {   /* before supabase/marketing_v2.sql has been run there is no src column: log the visit without it */
-      if (r && r.error && row.src) { delete row.src; sb.from("site_visits").insert(row).then(() => {}, () => {}); }
-    }, () => {});
+    /* rough place (country, state, city) from the site's own server; kept for this browser session */
+    const place = new Promise(ok => {
+      try { const c = JSON.parse(sessionStorage.getItem("ss-geo") || "null"); if (c) return ok(c); } catch (e) {}
+      const t = setTimeout(() => ok(null), 1500);
+      fetch("/api/social?fn=geo").then(r => r.ok ? r.json() : null).then(g => { clearTimeout(t); try { if (g) sessionStorage.setItem("ss-geo", JSON.stringify(g)); } catch (e) {} ok(g); }, () => { clearTimeout(t); ok(null); });
+    });
+    place.then(g => {
+      if (g && g.country) { row.country = g.country; if (g.region) row.region = g.region; if (g.city) row.city = g.city; }
+      const add = x => sb.from("site_visits").insert(x);
+      add(row).then(r => {   /* before the location columns (or supabase/marketing_v2.sql's src column) exist: log the visit without them */
+        if (!(r && r.error)) return;
+        delete row.country; delete row.region; delete row.city;
+        add(row).then(r2 => { if (r2 && r2.error && row.src) { delete row.src; add(row).then(() => {}, () => {}); } }, () => {});
+      }, () => {});
+    });
   } catch (e) {}
 }
 

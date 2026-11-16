@@ -8,7 +8,7 @@
 
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
-const { accounts, publish } = require("./_social");
+const { accounts, publish, pageToken } = require("./_social");
 
 function send(res, code, obj) {
   res.statusCode = code;
@@ -32,8 +32,8 @@ module.exports = async (req, res) => {
   const k = String(req.headers["x-cron-key"] || "");
   if (k.length < 32) return send(res, 401, { error: "key" });
 
-  const pt = process.env.META_PAGE_TOKEN;
-  if (!pt) return send(res, 200, { idle: true, why: "no META_PAGE_TOKEN yet" });   /* leave posts waiting */
+  const pt = await pageToken();   /* from "Connect with Facebook", or META_PAGE_TOKEN */
+  if (!pt) return send(res, 200, { idle: true, why: "Facebook not connected yet" });   /* leave posts waiting */
 
   let acc;
   try { acc = await accounts(pt); }

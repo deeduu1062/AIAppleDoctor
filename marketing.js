@@ -204,6 +204,17 @@ Object.assign(T.en, {
   bu_month: "{a}/month", bu_free: "{n} free months",
   cn_h: "Connected accounts", cn_checking: "checking…", cn_connect: "Connect", cn_setup: "Set up", cn_on: "connected", cn_ig_link: "Link to Facebook page",
   cn_wa_ch: "channel added, sent by hand", cn_wa_add: "Add channel link",
+  fbc_ok: "✓ Facebook connected. Posts can now go out from here.", fbc_err: "Facebook didn't connect: {m}", fbc_again: "please try again", fbc_nopage: "no Facebook Page found on that log-in (pick the Seb Saathi Page when Facebook asks)", fbc_denied: "access was not allowed",
+  fbc_ig_help: "Instagram posts through your Facebook Page. In Instagram: Settings → Account type → switch to Professional. Then on your Facebook Page: Settings → Linked accounts → Instagram → Connect. Then tap Facebook here to connect again.",
+  fbc_off: "Disconnect Facebook", fbc_off_q: "Disconnect the Facebook Page? Posts will stop going out until you connect again.",
+  fbc_ready: "Everything is set up. Tap the button, log in to Facebook and pick the Seb Saathi Page (and its Instagram).", fbc_go: "Connect with Facebook",
+  fbc_h: "One-time setup (about 10 minutes)", fbc_p: "After this, connecting is one tap: log in to Facebook and pick your Page.", fbc_missing: "Still missing: {m}",
+  fbc_s1: "Instagram: professional and linked to your Page", fbc_s1p: "Instagram → Settings → Account type → Professional. Then Facebook Page → Settings → Linked accounts → Instagram → Connect.",
+  fbc_s2: "Open (or create) your Meta app", fbc_s2p: "developers.facebook.com → My Apps. If you have none: Create app → use case \"Manage everything on your Page\".",
+  fbc_s3: "Add this site's return address", fbc_s3p: "In the app: Use cases → Customize → Facebook Login → Settings → Valid OAuth Redirect URIs → add {u} → Save.",
+  fbc_s4: "Put the app's ID and secret in Vercel", fbc_s4p: "App settings → Basic: copy App ID and App Secret. Vercel → Settings → Environment Variables: META_APP_ID and META_APP_SECRET → Save → Redeploy.",
+  fbc_s5: "Run the small Supabase setup", fbc_s5p: "Supabase → SQL Editor: run the meta_auth setup from the chat (it makes the safe place for the Page key).",
+  fbc_s6: "Come back and tap Connect with Facebook", fbc_s6p: "Tap Refresh here, then Facebook in the top row. Log in and pick the Seb Saathi Page.",
   st_h: "Setup (accounts, links and posting)", st_sub: "{d} of {n} accounts linked", st_yt: "YouTube: connect it in the Video Studio box above (YouTube card).",
   st_post_ok: "Posting is connected: Facebook page {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube & videos", ms_wa: "WhatsApp", ms_more: "More",
@@ -253,6 +264,17 @@ Object.assign(T.hi, {
   bu_month: "{a}/महीना", bu_free: "{n} मुफ़्त महीने",
   cn_h: "जुड़े अकाउंट", cn_checking: "जाँच रहे हैं…", cn_connect: "जोड़ें", cn_setup: "सेट अप करें", cn_on: "जुड़ा है", cn_ig_link: "Facebook पेज से जोड़ें",
   cn_wa_ch: "चैनल जुड़ा, हाथ से भेजें", cn_wa_add: "चैनल लिंक जोड़ें",
+  fbc_ok: "✓ Facebook जुड़ गया। अब यहीं से पोस्ट जा सकती हैं।", fbc_err: "Facebook नहीं जुड़ा: {m}", fbc_again: "फिर से कोशिश करें", fbc_nopage: "उस लॉग-इन पर कोई Facebook पेज नहीं मिला (Facebook पूछे तो सेब साथी पेज चुनें)", fbc_denied: "अनुमति नहीं दी गई",
+  fbc_ig_help: "Instagram आपके Facebook पेज से पोस्ट करता है। Instagram में: Settings → Account type → Professional। फिर Facebook पेज पर: Settings → Linked accounts → Instagram → Connect। फिर यहाँ Facebook दबाकर दोबारा जोड़ें।",
+  fbc_off: "Facebook हटाएँ", fbc_off_q: "Facebook पेज हटाएँ? दोबारा जोड़ने तक पोस्ट नहीं जाएँगी।",
+  fbc_ready: "सब तैयार है। बटन दबाएँ, Facebook में लॉग-इन करें और सेब साथी पेज (और उसका Instagram) चुनें।", fbc_go: "Facebook से जोड़ें",
+  fbc_h: "एक बार का सेटअप (लगभग 10 मिनट)", fbc_p: "इसके बाद जोड़ना एक टैप का काम: Facebook में लॉग-इन करें और अपना पेज चुनें।", fbc_missing: "अभी बाकी: {m}",
+  fbc_s1: "Instagram: प्रोफ़ेशनल और पेज से जुड़ा", fbc_s1p: "Instagram → Settings → Account type → Professional। फिर Facebook पेज → Settings → Linked accounts → Instagram → Connect।",
+  fbc_s2: "अपना Meta ऐप खोलें (या बनाएँ)", fbc_s2p: "developers.facebook.com → My Apps। कोई नहीं है तो: Create app → use case \"Manage everything on your Page\"।",
+  fbc_s3: "इस साइट का वापसी पता जोड़ें", fbc_s3p: "ऐप में: Use cases → Customize → Facebook Login → Settings → Valid OAuth Redirect URIs → {u} जोड़ें → Save।",
+  fbc_s4: "ऐप की ID और secret Vercel में डालें", fbc_s4p: "App settings → Basic: App ID और App Secret कॉपी करें। Vercel → Settings → Environment Variables: META_APP_ID और META_APP_SECRET → Save → Redeploy।",
+  fbc_s5: "Supabase का छोटा सेटअप चलाएँ", fbc_s5p: "Supabase → SQL Editor: चैट वाला meta_auth सेटअप चलाएँ (पेज की चाबी रखने की सुरक्षित जगह बनाता है)।",
+  fbc_s6: "वापस आकर Facebook से जोड़ें", fbc_s6p: "यहाँ Refresh दबाएँ, फिर ऊपर की पंक्ति में Facebook। लॉग-इन करें और सेब साथी पेज चुनें।",
   st_h: "सेटअप (अकाउंट, लिंक और पोस्टिंग)", st_sub: "{n} में से {d} अकाउंट जुड़े", st_yt: "YouTube: ऊपर Video Studio बॉक्स (YouTube कार्ड) में जोड़ें।",
   st_post_ok: "पोस्टिंग जुड़ी है: Facebook पेज {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube और वीडियो", ms_wa: "WhatsApp", ms_more: "और",
@@ -415,7 +437,7 @@ async function loadMk() {
     mkLocal = true;
     try { MK = JSON.parse(localStorage.getItem("mk-state") || "{}") || {}; } catch (x) { MK = {}; }
   }
-  renderMk(); loadSoc(); loadQ(); loadStats(); loadPilots(); loadCosts2(); loadYtStats();
+  renderMk(); loadSoc(); loadMeta(); loadQ(); loadStats(); loadPilots(); loadCosts2(); loadYtStats();
   mkInv = null; mkInvErr = "";
   try { const r = await sb.rpc("admin_invites"); if (r.error) mkInvErr = "setup"; else mkInv = r.data || []; } catch (e) { mkInvErr = "setup"; }
   renderMk();
@@ -540,6 +562,29 @@ function tlOutHtml(d, code, link) {
 /* ---- posting (api/social-post.js) ---- */
 let mkSoc = null, mkPostText = "", mkImg = null, mkPostBusy = "", mkPostRes = null, mkCompose = false;
 async function mkTok() { try { const r = await sb.auth.getSession(); return r && r.data && r.data.session ? r.data.session.access_token : ""; } catch (e) { return ""; } }
+/* "Connect with Facebook" (api/_meta.js): is it set up, and which Page is connected */
+let mkMeta = null, mkFbNote = "";
+async function metaCall(action) {
+  const r = await fetch("/api/meta", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ action }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+  return j;
+}
+async function loadMeta() { try { mkMeta = await metaCall("status"); } catch (e) { mkMeta = { setup: false, missing: [], error: String(e.message || e) }; } renderMk(); }
+async function metaConnect() {
+  if (!mkMeta || !mkMeta.setup) { mkOpen.add("setup"); mkGo("settings"); setTimeout(() => { const el = document.querySelector('[data-mksec="setup"]'); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); return; }
+  try { const j = await metaCall("connect"); if (j.url) { location.href = j.url; return; } } catch (e) { mkFbNote = tr("fbc_err").replace("{m}", String(e.message || e)); }
+  renderMk();
+}
+/* back from Facebook's log-in page: say how it went, then tidy the address */
+try {
+  const q = new URLSearchParams(location.search), r = q.get("fb");
+  if (r) {
+    const why = q.get("m") || "", map = { setup: "META_APP_ID / META_APP_SECRET", expired: tr("fbc_again"), no_page: tr("fbc_nopage"), access_denied: tr("fbc_denied"), user_denied: tr("fbc_denied") };
+    mkFbNote = r === "ok" ? tr("fbc_ok") : tr("fbc_err").replace("{m}", map[why] || why);
+    history.replaceState(null, "", location.pathname + location.hash);
+  }
+} catch (e) {}
 async function loadSoc() {
   mkSoc = null; renderMk();
   try { const r = await fetch("/api/social?fn=post", { headers: { Authorization: "Bearer " + await mkTok() } }); mkSoc = await r.json(); }
@@ -1218,12 +1263,28 @@ function setupHtml() {
   h += "<p><b>" + tr("mk_post_h") + "</b></p>";
   if (!mkSoc) h += '<p class="fine">' + tr("mk_post_checking") + "</p>";
   else if (mkSoc.setup && mkSoc.ok) h += '<p class="fine">✓ ' + esc(tr("st_post_ok").replace("{f}", mkSoc.page_name || "").replace("{i}", mkSoc.ig_id ? tr("mk_post_ig").replace("{u}", mkSoc.ig_user || "") : tr("mk_post_noig"))) + "</p>";
-  else h += (mkSoc.error ? '<p class="fine mkwarn">' + esc(tr("mk_post_err").replace("{m}", mkSoc.error)) + "</p>" : "") +
-      '<p class="fine">' + tr("mk_post_setup_h") + " · " + tr("mk_post_setup_p") + '</p><ol class="mksteps">' +
-      MK_SETUP.map(x => "<li><b>" + esc(x[0]) + "</b><br><span class=\"fine\">" + esc(x[1]) + "</span>" + (x[2] ? ' <a href="' + x[2] + '" target="_blank" rel="noopener">' + tr("mk_open") + "</a>" : "") + "</li>").join("") + "</ol>" +
-      '<div class="mklinks"><button class="btn-s" type="button" data-mkpost="refresh">' + tr("ad_refresh") + "</button></div>";
+  else h += (mkSoc.error ? '<p class="fine mkwarn">' + esc(tr("mk_post_err").replace("{m}", mkSoc.error)) + "</p>" : "") + metaSetupHtml();
+  if (mkSoc && mkSoc.ok && mkMeta && mkMeta.connected) h += '<div class="mklinks"><button class="btn-s" type="button" data-conn="fb" data-act="fb_off">' + tr("fbc_off") + "</button></div>";
   h += '<p class="fine">' + tr("st_yt") + "</p>";
   return h;
+}
+
+/* the one-time setup for "Connect with Facebook", with this site's own return address */
+function metaSetupHtml() {
+  const M = mkMeta || {}, ready = !!M.setup, redir = M.redirect || ("https://" + location.host + "/api/meta");
+  if (ready) return '<p class="fine">' + tr("fbc_ready") + '</p><div class="mklinks"><button class="btn-s add" type="button" data-conn="fb" data-act="connect_fb">' + tr("fbc_go") + "</button></div>";
+  const steps = [
+    [tr("fbc_s1"), tr("fbc_s1p")],
+    [tr("fbc_s2"), tr("fbc_s2p"), "https://developers.facebook.com/apps/"],
+    [tr("fbc_s3"), tr("fbc_s3p").replace("{u}", redir)],
+    [tr("fbc_s4"), tr("fbc_s4p"), "https://vercel.com/dashboard"],
+    [tr("fbc_s5"), tr("fbc_s5p")],
+    [tr("fbc_s6"), tr("fbc_s6p")]
+  ];
+  return '<p class="fine"><b>' + tr("fbc_h") + "</b> " + tr("fbc_p") + "</p>" +
+    (M.missing && M.missing.length ? '<p class="fine mkwarn">' + esc(tr("fbc_missing").replace("{m}", M.missing.join(", "))) + "</p>" : "") +
+    '<ol class="mksteps">' + steps.map(x => "<li><b>" + esc(x[0]) + '</b><br><span class="fine">' + esc(x[1]) + "</span>" + (x[2] ? ' <a href="' + x[2] + '" target="_blank" rel="noopener">' + tr("mk_open") + "</a>" : "") + "</li>").join("") + "</ol>" +
+    '<div class="mklinks"><button class="btn-s" type="button" data-mkpost="refresh">' + tr("ad_refresh") + "</button></div>";
 }
 
 /* ---- connections strip at the top: YouTube, Facebook, Instagram, WhatsApp ---- */
@@ -1234,14 +1295,17 @@ function connHtml() {
   const one = (k, name, st, ok, act) => '<button type="button" class="mkconn-i' + (ok ? " ok" : "") + '" data-conn="' + k + '" data-act="' + act + '">' +
     '<span class="mkconn-n">' + name + '</span><span class="mkconn-s">' + (ok ? "✓ " : "") + esc(st) + "</span></button>";
   const yt = !Y ? one("yt", "YouTube", tr("cn_checking"), false, "") : Y.connected && Y.channel ? one("yt", "YouTube", Y.channel.handle || Y.channel.title, true, "open") : one("yt", "YouTube", tr(Y.setup === false ? "cn_setup" : "cn_connect"), false, Y.setup === false ? "setup_yt" : "connect_yt");
-  const fb = !S ? one("fb", "Facebook", tr("cn_checking"), false, "") : S.ok ? one("fb", "Facebook", S.page_name || tr("cn_on"), true, "open") : one("fb", "Facebook", tr("cn_connect"), false, "setup");
-  const ig = !S ? one("ig", "Instagram", tr("cn_checking"), false, "") : S.ok && S.ig_id ? one("ig", "Instagram", S.ig_user ? "@" + S.ig_user : tr("cn_on"), true, "open") : one("ig", "Instagram", tr(S.ok ? "cn_ig_link" : "cn_connect"), false, "setup");
+  const fb = !S ? one("fb", "Facebook", tr("cn_checking"), false, "") : S.ok ? one("fb", "Facebook", S.page_name || tr("cn_on"), true, "open") : one("fb", "Facebook", tr("cn_connect"), false, "connect_fb");
+  const ig = !S ? one("ig", "Instagram", tr("cn_checking"), false, "") : S.ok && S.ig_id ? one("ig", "Instagram", S.ig_user ? "@" + S.ig_user : tr("cn_on"), true, "open") : S.ok ? one("ig", "Instagram", tr("cn_ig_link"), false, "ig_help") : one("ig", "Instagram", tr("cn_connect"), false, "connect_fb");
   const wa = link("whatsapp") ? one("wa", "WhatsApp", tr("cn_wa_ch"), true, "open") : one("wa", "WhatsApp", tr("cn_wa_add"), false, "setup");
-  return '<div class="mkconn" role="group" aria-label="' + esc(tr("cn_h")) + '">' + yt + fb + ig + wa + "</div>";
+  return '<div class="mkconn" role="group" aria-label="' + esc(tr("cn_h")) + '">' + yt + fb + ig + wa + "</div>" + (mkFbNote ? '<p class="fine mkconn-note" role="status">' + esc(mkFbNote) + "</p>" : "");
 }
 async function connGo(k, act) {
   const link = { yt: typeof YT !== "undefined" && YT && YT.channel && YT.channel.url, fb: MK["link:facebook"] && MK["link:facebook"].value, ig: MK["link:instagram"] && MK["link:instagram"].value || (mkSoc && mkSoc.ig_user ? "https://www.instagram.com/" + mkSoc.ig_user + "/" : ""), wa: MK["link:whatsapp"] && MK["link:whatsapp"].value }[k];
   if (act === "open") { if (link) window.open(link, "_blank", "noopener"); else { mkOpen.add("setup"); mkGo("settings"); } return; }
+  if (act === "connect_fb") return metaConnect();
+  if (act === "fb_off") { if (!confirm(tr("fbc_off_q"))) return; try { await metaCall("disconnect"); } catch (e) {} loadMeta(); loadSoc(); return; }
+  if (act === "ig_help") { mkFbNote = tr("fbc_ig_help"); renderMk(); return; }
   if (act === "connect_yt") { try { const j = await ytCall("connect"); if (j.url) { location.href = j.url; return; } } catch (e) { mkQMsg = String(e.message || e); } renderMk(); return; }
   if (act === "setup_yt") { mkGoMake("video"); setTimeout(() => { if (typeof VS !== "undefined") { VS.ytOpen = true; renderStudio(); } const el = $("vsYtBox"); if (el) { el.open = true; el.scrollIntoView({ block: "start", behavior: "smooth" }); } }, 300); return; }
   if (act === "setup") { mkOpen.add("setup"); mkGo("settings"); setTimeout(() => { const el = document.querySelector('[data-mksec="setup"]'); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); }
@@ -1521,7 +1585,7 @@ W.addEventListener("click", async e => {
     const a = pb.dataset.mkpost;
     if (a === "go") mkDoPost();
     else if (a === "later") { mkPostBusy = "mk_post_up"; mkDoLater(); }
-    else if (a === "refresh") loadSoc();
+    else if (a === "refresh") { loadSoc(); loadMeta(); }
     else if (a === "rmimg") { if (mkImg && mkImg.prev) URL.revokeObjectURL(mkImg.prev); mkImg = null; renderMk(); }
     return;
   }

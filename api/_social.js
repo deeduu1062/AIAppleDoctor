@@ -4,6 +4,18 @@
 const G = "https://graph.facebook.com/v25.0/";
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
+// the Page key: the one saved by "Connect with Facebook" (api/_meta.js, public.meta_auth) or, if none, META_PAGE_TOKEN in Vercel
+async function pageToken() {
+  const svc = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (svc) {
+    try {
+      const r = await fetch("https://rylqzyylbsephirwslce.supabase.co/rest/v1/meta_auth?id=eq.1&select=page_token", { headers: { apikey: svc, Authorization: "Bearer " + svc } });
+      if (r.ok) { const j = await r.json(); if (j[0] && j[0].page_token) return j[0].page_token; }
+    } catch (e) {}
+  }
+  return process.env.META_PAGE_TOKEN || "";
+}
+
 async function graph(path, token, params, method) {
   const url = new URL(G + path);
   const opts = { method: method || "GET" };
@@ -151,4 +163,4 @@ async function metrics(items, pt) {
   return out;
 }
 
-module.exports = { graph, accounts, publish, stats, tagLinks, metrics };
+module.exports = { graph, accounts, publish, stats, tagLinks, metrics, pageToken };
