@@ -736,7 +736,7 @@ function renderStudio() {
     '<div class="vsf"><label for="vsCap">' + tr("vs_cap") + '</label><textarea id="vsCap" rows="7" readonly>' + esc(vsCaption()) + '</textarea></div>' +
     '<div class="vsctl"><button type="button" class="btn-s" id="vsCopy">' + tr("vs_copy") + "</button></div>" +
     '<p class="fine">' + tr("vs_how") + "</p></details>" +
-    '<details class="vsfold" id="vsYtBox"' + (VS.ytOpen ? " open" : "") + '><summary><b>' + tr("yt_h") + '</b> <span class="fine">' + esc(ytSum) + "</span></summary>" + ytCardHtml() + "</details>" +
+    (YT && YT.connected && YT.channel ? "" : '<details class="vsfold" id="vsYtBox"' + (VS.ytOpen ? " open" : "") + '><summary><b>' + tr("yt_h") + '</b> <span class="fine">' + esc(ytSum) + "</span></summary>" + ytCardHtml() + "</details>") +   /* connected: the top row of the Social handler already says so */
     "</div></div>";
   /* the canvas is made once and moved back in: a recording keeps working through any re-render */
   if (!vsCv) { vsCv = document.createElement("canvas"); vsCv.id = "vsCanvas"; vsCtx = vsCv.getContext("2d"); }
