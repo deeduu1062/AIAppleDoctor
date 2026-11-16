@@ -1213,6 +1213,9 @@ Object.assign(T.en, { ex_add: "+ Add expense", ex_h: "My expenses", ex_p: "What 
   pl_vs: "Change since {m}", pl_growers: "Growers", pl_growers_sub: "{p} paying · {f} free",
   pl_be: "Saathi Plus growers to break even", pl_be_sub: "at {m} a month (or {y} on the yearly {yp} plan) to cover this month's expenses and AI.", pl_be_have: "You have {n} paying now.",
   pl_be_none: "No costs this month yet.", pl_updated: "Updated {t}",
+  pl_yr: "Estimated yearly cost", pl_yr_sub: "About {a} a month (expenses + AI), the average of the last {n} months × 12.",
+  pl_yr_sub1: "About {a} a month (expenses + AI) × 12. Only one month recorded so far, so this firms up as you add more months.",
+  pl_yr_list: "From the price list: about {a} a month × 12. Add your real expenses below for a better figure.", pl_yr_none: "No costs recorded yet.",
   ex_copy: "Copy regular bills from last month", ex_copy_h: "Bills from {m}", ex_copy_p: "Tick the ones you paid again this month. They are added with this month's date; change the amount after if it was different.",
   ex_copy_add: "Add ticked", ex_copy_none: "Everything from last month is already added.",
   pl_note: "Income = approved grower payments, in the month they paid (a yearly plan counts in full that month). Expenses = what you added below. AI cost = growers' Saathi questions, photo checks and receipt readings, counted automatically (at about ₹{r} to the dollar). So don't add your Anthropic bill for these as an expense; only add AI you use for marketing.",
@@ -1229,6 +1232,9 @@ Object.assign(T.hi, { ex_add: "+ ख़र्च जोड़ें", ex_h: "म
   pl_vs: "{m} से बदलाव", pl_growers: "बाग़वान", pl_growers_sub: "{p} भुगतान वाले · {f} मुफ़्त",
   pl_be: "बराबरी के लिए Saathi Plus बाग़वान", pl_be_sub: "{m} महीना पर (या साल वाले {yp} प्लान पर {y}), ताकि इस महीने का ख़र्च और AI निकल जाए।", pl_be_have: "अभी {n} भुगतान वाले हैं।",
   pl_be_none: "इस महीने अभी कोई ख़र्च नहीं।", pl_updated: "अपडेट {t}",
+  pl_yr: "अनुमानित सालाना ख़र्च", pl_yr_sub: "लगभग {a} महीना (ख़र्च + AI), पिछले {n} महीनों का औसत × 12।",
+  pl_yr_sub1: "लगभग {a} महीना (ख़र्च + AI) × 12। अभी सिर्फ़ एक महीने का रिकॉर्ड है, और महीने जुड़ने पर आँकड़ा पक्का होगा।",
+  pl_yr_list: "प्राइस लिस्ट से: लगभग {a} महीना × 12। सही आँकड़े के लिए नीचे अपने असल ख़र्च जोड़ें।", pl_yr_none: "अभी कोई ख़र्च दर्ज नहीं।",
   ex_copy: "पिछले महीने के नियमित बिल कॉपी करें", ex_copy_h: "{m} के बिल", ex_copy_p: "जो इस महीने फिर भरे, उन पर टिक करें। ये इस महीने की तारीख़ से जुड़ेंगे; रक़म अलग थी तो बाद में बदल दें।",
   ex_copy_add: "टिक वाले जोड़ें", ex_copy_none: "पिछले महीने का सब कुछ पहले से जुड़ा है।",
   pl_note: "आमदनी = बाग़वानों के मंज़ूर भुगतान, जिस महीने भरे (साल का प्लान उसी महीने पूरा गिना जाता है)। ख़र्च = जो आपने नीचे जोड़ा। AI ख़र्च = बाग़वानों के साथी सवाल, फ़ोटो जाँच और रसीद पढ़ना, अपने आप गिना जाता है (लगभग ₹{r} प्रति डॉलर), इसलिए इसे Anthropic बिल के रूप में ख़र्च में न जोड़ें; सिर्फ़ मार्केटिंग वाला AI जोड़ें।",
@@ -1352,10 +1358,17 @@ function renderCosts() {
   const need = cur.exp + cur.ai, beM = Math.ceil(need / PLUS_MONTH), beY = Math.ceil(need / (PLUS_YEAR / 12));
   const beTile = '<div class="betile"><span>' + tr("pl_be") + "</span><b>" + (need > 0 ? fmtN(beM) : "0") + '</b><span class="sub">' +
     (need > 0 ? tr("pl_be_sub").replace("{m}", paRup(PLUS_MONTH)).replace("{y}", fmtN(beY)).replace("{yp}", paRup(PLUS_YEAR)) + (paying ? " " + tr("pl_be_have").replace("{n}", fmtN(paying)) : "") : tr("pl_be_none")) + "</span></div>";
+  /* estimated yearly cost: average monthly (expenses + AI) over the last 12 months that have records, × 12; price list only if nothing is entered yet */
+  const yKeys = []; for (let i = 0; i < 12; i++) { const d = new Date(Date.UTC(py, pm - 1 - i, 1)); yKeys.push(d.toISOString().slice(0, 7)); }
+  const yUsed = yKeys.filter(k => PL[k] && PL[k].exp + PL[k].ai > 0.005), yTot = yKeys.reduce((s, k) => s + (PL[k] ? PL[k].exp + PL[k].ai : 0), 0);
+  const yN = yUsed.length ? yKeys.indexOf(yUsed[yUsed.length - 1]) + 1 : 0;   /* months from the first month with costs up to this month */
+  const yMon = yN ? yTot / yN : (fixed + ai), yEst = yMon * 12;
+  const yTile = '<div class="betile ytile"><span>' + tr("pl_yr") + "</span><b>" + (yEst > 0 ? exRup(Math.round(yEst)) : "–") + '</b><span class="sub">' +
+    (yN ? tr(yN === 1 ? "pl_yr_sub1" : "pl_yr_sub").replace("{a}", exRup(Math.round(yMon))).replace("{n}", fmtN(yN)) : yEst > 0 ? tr("pl_yr_list").replace("{a}", exRup(Math.round(yMon))) : tr("pl_yr_none")) + "</span></div>";
   $("coStats").innerHTML = '<h5 class="plh">' + tr("pl_now").replace("{m}", esc(exMonthName(now))) + "</h5>" +
     st("pl_inc", exRup(cur.inc) + dl(cur.inc, prev ? prev.inc : 0, true), "pos") + st("pl_exp", EX ? exRup(cur.exp) + dl(cur.exp, prev ? prev.exp : 0, false) : "–") +
     st("pl_ai", AIU ? exRup(cur.ai) + dl(cur.ai, prev ? prev.ai : 0, false) : "–", "aitile") + plSt("pl_pl", pl(cur), prev ? dl(pl(cur), pl(prev), true) : "") +
-    gTile + beTile +
+    gTile + beTile + yTile +
     '<h5 class="plh">' + tr("pl_all") + "</h5>" +
     st("pl_inc", exRup(all.inc), "pos") + st("pl_exp", EX ? exRup(all.exp) : "–") + st("pl_ai", AIU ? exRup(all.ai) : "–") + plSt("pl_pl", pl(all)) +
     st("co_s_income", paRup(Math.round(income))) +
