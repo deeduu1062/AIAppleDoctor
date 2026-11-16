@@ -18,6 +18,7 @@ Object.assign(T.en, {
   vs_media: "Add photo or clip", vs_media_ch: "Change photo/clip", vs_media_rm: "Remove", vs_nomedia: "No photo: brand colours are used.",
   vs_up: "Move up", vs_del: "Delete", vs_add: "+ Add scene", vs_max: "Up to 8 scenes.",
   vs_end: "Last screen", vs_cta: "Call to action",
+  vs_caps: "Captions that follow the voice", vs_caps_p: "The spoken words appear on screen as they are said, so people watching without sound still get it.",
   vs_music: "Background music (optional)", vs_music_add: "Add music file", vs_music_rm: "Remove music", vs_vol: "Volume",
   vs_music_note: "Use only music you have the right to use, or Instagram may mute the video. You can also add music later inside Instagram.",
   vs_play: "▶ Preview", vs_stop: "■ Stop", vs_make: "Make video", vs_reset: "Reset words",
@@ -69,6 +70,7 @@ Object.assign(T.hi, {
   vs_media: "फ़ोटो या क्लिप जोड़ें", vs_media_ch: "फ़ोटो/क्लिप बदलें", vs_media_rm: "हटाएँ", vs_nomedia: "फ़ोटो नहीं: ब्रांड के रंग लगेंगे।",
   vs_up: "ऊपर करें", vs_del: "हटाएँ", vs_add: "+ सीन जोड़ें", vs_max: "ज़्यादा से ज़्यादा 8 सीन।",
   vs_end: "आख़िरी स्क्रीन", vs_cta: "बुलावा (CTA)",
+  vs_caps: "आवाज़ के साथ चलते कैप्शन", vs_caps_p: "जो बोला जा रहा है वह उसी समय स्क्रीन पर आता है, ताकि बिना आवाज़ देखने वाले भी समझ लें।",
   vs_music: "बैकग्राउंड म्यूज़िक (ज़रूरी नहीं)", vs_music_add: "म्यूज़िक फ़ाइल जोड़ें", vs_music_rm: "म्यूज़िक हटाएँ", vs_vol: "आवाज़",
   vs_music_note: "सिर्फ़ वही म्यूज़िक लगाएँ जिसका आपको हक़ है, वरना Instagram वीडियो की आवाज़ बंद कर सकता है। म्यूज़िक बाद में Instagram में भी जोड़ सकते हैं।",
   vs_play: "▶ देखें", vs_stop: "■ रोकें", vs_make: "वीडियो बनाएँ", vs_reset: "शब्द वापस करें",
@@ -182,7 +184,7 @@ const VS_TAGS = "#सेबसाथी #SebSaathi #सेब #Apple #AppleFarmi
 const VS_FMT = { "916": [1080, 1920], "11": [1080, 1080], "45": [1080, 1350] };
 
 /* ---------- state ---------- */
-const VS = { tpl: "tip", vlang: "hi", fmt: "916", cta: "", scenes: [], music: null, vol: 0.6, sel: 0, out: null, msg: "", err: "" };
+const VS = { tpl: "tip", vlang: "hi", fmt: "916", cta: "", scenes: [], music: null, vol: 0.6, caps: true, sel: 0, out: null, msg: "", err: "" };
 const vsMonth = () => VS_MONTH[VS.vlang][new Date().getMonth()];
 function vsFromTpl() {
   VS.ai = null; VS.endVoice = null;
@@ -190,17 +192,18 @@ function vsFromTpl() {
   VS.cta = VS_BRAND[VS.vlang].cta;
 }
 function vsSave() {
-  try { localStorage.setItem("vs-draft", JSON.stringify({ tpl: VS.tpl, vlang: VS.vlang, fmt: VS.fmt, cta: VS.cta, vol: VS.vol,
-    scenes: VS.scenes.map(s => ({ label: s.label, title: s.title, sub: s.sub, dur: s.dur, art: s.art || "" })) })); } catch (e) {}
+  try { localStorage.setItem("vs-draft", JSON.stringify({ tpl: VS.tpl, vlang: VS.vlang, fmt: VS.fmt, cta: VS.cta, vol: VS.vol, caps: VS.caps,
+    scenes: VS.scenes.map(s => ({ label: s.label, title: s.title, sub: s.sub, dur: s.dur, art: s.art || "", say: s.say || "" })) })); } catch (e) {}
 }
 (function vsLoad() {
   let d = null; try { d = JSON.parse(localStorage.getItem("vs-draft") || "null"); } catch (e) {}
+  if (d && d.caps === false) VS.caps = false;
   if (d && VS_TPL[d.tpl] && VS_BRAND[d.vlang] && Array.isArray(d.scenes) && d.scenes.length) {
     Object.assign(VS, { tpl: d.tpl, vlang: d.vlang, fmt: VS_FMT[d.fmt] ? d.fmt : "916", cta: String(d.cta || VS_BRAND[d.vlang].cta), vol: +d.vol >= 0 ? +d.vol : 0.6 });
     VS.scenes = d.scenes.slice(0, 8).map(s => ({ label: String(s.label || ""), title: String(s.title || ""), sub: String(s.sub || ""), dur: Math.min(10, Math.max(1.5, +s.dur || 3)), art: String(s.art || ""), media: null }));
   } else vsFromTpl();
 })();
-const VS_END = 3.2, VS_X = 0.35; /* end-card seconds (longer when its voice-over is longer), crossfade seconds */
+const VS_END = 3.2, VS_X = 0.45; /* end-card seconds (longer when its voice-over is longer), crossfade seconds */
 const vsEndDur = () => Math.max(VS_END, VS.endVoice ? Math.round((VS.endVoice.duration + 1.0) * 10) / 10 : 0);
 const vsTotal = () => VS.scenes.reduce((s, x) => s + x.dur, 0) + vsEndDur();
 
@@ -222,8 +225,16 @@ function vsWrap(ctx, text, maxW) {
 }
 function vsRound(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 function vsBg(ctx, W, H, th, t) {
-  const g = ctx.createLinearGradient(0, 0, W * 0.6, H); g.addColorStop(0, th.a); g.addColorStop(1, th.b);
+  const g = ctx.createLinearGradient(W * 0.2 * Math.sin(t * 0.15), 0, W * (0.6 + 0.25 * Math.cos(t * 0.12)), H); g.addColorStop(0, th.a); g.addColorStop(1, th.b);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  /* soft specks drifting up, like pollen in the light */
+  const k = W / 1080; ctx.save(); ctx.fillStyle = "#FFFFFF";
+  for (let j = 0; j < 18; j++) {
+    const h1 = (j * 0.618034) % 1, h2 = (j * 0.381966 + 0.27) % 1, sp = 18 + 34 * h2;
+    const y = H + 30 * k - ((h2 * (H + 60 * k) + t * sp * k) % (H + 60 * k)), x = h1 * W + Math.sin(t * 0.6 + j) * 26 * k;
+    ctx.globalAlpha = 0.06 + 0.1 * h1; ctx.beginPath(); ctx.arc(x, y, (4 + 9 * h2) * k, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
   if (vsMark.complete && vsMark.naturalWidth) {
     const s = W * 0.95; ctx.save(); ctx.globalAlpha = 0.09; ctx.translate(W * 0.62, H * 0.3 + Math.sin(t * 0.8) * 12); ctx.rotate(-0.12);
     ctx.drawImage(vsMark, -s / 2, -s / 2, s, s * 196 / 180); ctx.restore();
@@ -247,18 +258,23 @@ function vsScene(ctx, W, H, sc, i, local, th) {
   const media = sc.media && vsMedia(ctx, W, H, sc.media, p, i);
   const art = !media && sc.art && typeof vsArt === "function";
   if (!media) vsBg(ctx, W, H, th, local + i);
-  if (art) vsArt(ctx, W, H, sc.art, local, th);   /* built-in drawn picture (vsart.js) */
+  const caps = vsCapsOn(sc);
+  if (art) {   /* built-in drawn picture (vsart.js), with a slow push-in */
+    const z = (1 + 0.08 * vsEase(p * 0.9)) * (caps ? 0.84 : 1), cy = H * (tall ? 0.36 : 0.32), oy = caps ? -H * 0.05 : 0;
+    ctx.save(); ctx.translate(W / 2, cy + oy); ctx.scale(z, z); ctx.translate(-W / 2, -cy); vsArt(ctx, W, H, sc.art, local, th); ctx.restore();
+  }
   const maxW = W - 150 * k;
   /* measure */
   let tpx = (tall ? 104 : 88) * k, lines;
   for (;;) { ctx.font = vsFont("700", tpx, hi); lines = vsWrap(ctx, sc.title, maxW); if (lines.length <= 4 || tpx < 56 * k) break; tpx *= 0.9; }
-  const spx = (tall ? 46 : 40) * k; ctx.font = vsBody("500", spx); const subs = vsWrap(ctx, sc.sub, maxW).slice(0, 3);
+  const spx = (tall ? 46 : 40) * k; ctx.font = vsBody("500", spx); const subs = caps ? [] : vsWrap(ctx, sc.sub, maxW).slice(0, 3);
   const lpx = 40 * k, lh = tpx * (hi ? 1.18 : 1.06), slh = spx * 1.35;
   const isNum = /^\d{1,2}$/.test(sc.label.trim());
   const labH = sc.label.trim() ? (isNum ? 112 * k : lpx * 1.9) + 26 * k : 0;
   const blockH = labH + lines.length * lh + (subs.length ? 36 * k + subs.length * slh : 0);
   let y = (media || art ? H * (tall ? 0.70 : 0.68) : H * 0.52) - blockH / 2;
-  y = Math.min(y, H - blockH - (tall ? 190 : 90) * k);
+  if (caps) y = (media || art ? H * (tall ? 0.6 : 0.5) : H * 0.42) - blockH / 2;
+  y = Math.min(y, H - blockH - (caps ? vsCapRoom(W, H) : (tall ? 190 : 90) * k));
   const x = 75 * k;
   const pop = (d) => vsEase((local - d) / 0.55);
   /* label */
@@ -286,6 +302,53 @@ function vsScene(ctx, W, H, sc, i, local, th) {
     ctx.save(); ctx.shadowColor = "transparent"; ctx.fillStyle = th.acc; ctx.fillRect(x, y - 24 * k, 120 * k * e, 6 * k); ctx.restore();
   }
   ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  if (caps) vsCaps(ctx, W, H, sc, local, hi);
+}
+
+/* ---------- captions that follow the voice ----------
+   Each word gets a share of the voice line's length (longer words and pauses after , . । take longer),
+   shown 3-4 words at a time, the word being said picked out in yellow. */
+const vsCapsOn = sc => VS.caps !== false && !!(sc && sc.voice && String(sc.say || "").trim());
+const vsCapRoom = (W, H) => (H / W > 1.5 ? 640 : H / W > 1.15 ? 400 : 330) * (W / 1080);
+function vsCapPlan(sc) {
+  const key = sc.say + "|" + sc.voice.duration;
+  if (sc._cap && sc._capKey === key) return sc._cap;
+  const words = String(sc.say).split(/\s+/).filter(Boolean);
+  const wt = words.map(w => w.length + 2 + (/[.!?।]["']?$/.test(w) ? 6 : /[,;:]["']?$/.test(w) ? 3 : 0));
+  const tot = wt.reduce((a, b) => a + b, 0) || 1, t0 = 0.3 + 0.08, span = Math.max(0.5, sc.voice.duration - 0.2);
+  let acc = 0;
+  const W = words.map((w, i) => { const s = t0 + span * acc / tot; acc += wt[i]; return { w, s, e: t0 + span * acc / tot }; });
+  const chunks = []; let cur = [], len = 0;
+  W.forEach((x, i) => { cur.push(i); len += x.w.length + 1; if (cur.length >= 4 || len > 24 || /[.!?।,;:]["']?$/.test(x.w)) { chunks.push(cur); cur = []; len = 0; } });
+  if (cur.length) chunks.push(cur);
+  sc._capKey = key; sc._cap = { W, chunks };
+  return sc._cap;
+}
+function vsCaps(ctx, W, H, sc, local, hi) {
+  const P = vsCapPlan(sc), k = W / 1080;
+  if (!P.W.length || local < P.W[0].s - 0.15 || local > P.W[P.W.length - 1].e + 0.5) return;
+  let wi = 0; P.W.forEach((x, i) => { if (x.s <= local) wi = i; });
+  const ch = P.chunks.find(c => c.indexOf(wi) >= 0) || P.chunks[0];
+  const px = (H / W > 1.5 ? 78 : 64) * k, lh = px * (hi ? 1.3 : 1.2), maxW = W - 170 * k;
+  ctx.font = vsFont("700", px, hi);
+  const sp = ctx.measureText(" ").width, lines = [[]]; let lw = 0;
+  ch.forEach(i => { const w = ctx.measureText(P.W[i].w).width; if (lw && lw + sp + w > maxW) { lines.push([]); lw = 0; } lines[lines.length - 1].push({ i, w }); lw += (lw ? sp : 0) + w; });
+  const widths = lines.map(L => L.reduce((a, x) => a + x.w, 0) + sp * (L.length - 1));
+  const bw = Math.max(...widths) + 64 * k, bh = lines.length * lh + 34 * k;
+  const bottom = H - (H / W > 1.5 ? 380 : H / W > 1.15 ? 150 : 110) * k, by = bottom - bh;
+  const e = vsEase((local - P.W[ch[0]].s + 0.15) / 0.18);
+  ctx.save(); ctx.translate(W / 2, by + bh / 2); ctx.scale(0.92 + 0.08 * e, 0.92 + 0.08 * e); ctx.globalAlpha = e;
+  ctx.fillStyle = "rgba(0,0,0,.62)"; vsRound(ctx, -bw / 2, -bh / 2, bw, bh, 22 * k); ctx.fill();
+  ctx.textBaseline = "top";
+  lines.forEach((L, j) => {
+    let x = -widths[j] / 2; const y = -bh / 2 + 17 * k + j * lh + (hi ? 4 * k : 0);
+    L.forEach(o => {
+      const said = o.i < wi, now = o.i === wi && local <= P.W[o.i].e + 0.25;
+      ctx.fillStyle = now ? "#FFD54A" : said || o.i <= wi ? "#FFFFFF" : "rgba(255,255,255,.62)";
+      ctx.fillText(P.W[o.i].w, x, y); x += o.w + sp;
+    });
+  });
+  ctx.restore();
 }
 function vsEnd(ctx, W, H, th, local) {
   const k = W / 1080, b = VS_BRAND[VS.vlang], hi = VS.vlang === "hi";
@@ -341,7 +404,8 @@ function vsDraw(t) {
     if (!vsOff) vsOff = document.createElement("canvas");
     const off = vsOff; if (off.width !== W || off.height !== H) { off.width = W; off.height = H; }
     const oc = off.getContext("2d"); oc.clearRect(0, 0, W, H); oc.drawImage(vsCv, 0, 0); ctx.save(); one(prev.i, prev.local + a.local); ctx.restore();
-    ctx.save(); ctx.globalAlpha = vsEase(a.local / VS_X); ctx.drawImage(off, 0, 0); ctx.restore();
+    const ex = vsEase(a.local / VS_X), zz = 1.06 - 0.06 * ex;
+    ctx.save(); ctx.globalAlpha = ex; ctx.translate(W / 2, H / 2); ctx.scale(zz, zz); ctx.drawImage(off, -W / 2, -H / 2); ctx.restore();
   }
   if (a.i < n) vsChrome(ctx, W, H, a.i, vsClamp(a.local / VS.scenes[a.i].dur), n);
 }
@@ -659,11 +723,12 @@ function renderStudio() {
     '<div class="vsctl">' + (VS.scenes.length < 8 ? '<button type="button" class="btn-s" id="vsAdd">' + tr("vs_add") + "</button>" : '<span class="fine">' + tr("vs_max") + "</span>") +
     '<button type="button" class="btn-s" id="vsReset">' + tr("vs_reset") + "</button></div>" +
     '<div class="vsscene' + (VS.sel === VS.scenes.length ? " on" : "") + '" data-vsi="' + VS.scenes.length + '"><div class="vshd"><b>' + tr("vs_end") + '</b></div><div class="vsf"><label for="vs-cta">' + tr("vs_cta") + '</label><input id="vs-cta" maxlength="80" value="' + esc(VS.cta) + '"></div></div>' +
+    '<div class="vsscene"><label class="chk"><input type="checkbox" id="vsCaps"' + (VS.caps !== false ? " checked" : "") + "><span><b>" + tr("vs_caps") + '</b></span></label><p class="fine">' + tr("vs_caps_p") + "</p></div>" +
     '<div class="vsscene"><div class="vshd"><b>' + tr("vs_music") + "</b></div>" +
     '<div class="vsmedia">' + (VS.music ? '<span class="vsthumb">🎵 ' + esc(VS.music.name) + '</span><button type="button" class="btn-s vsmini" id="vsMusicRm">' + tr("vs_music_rm") + "</button>" +
       '<label class="vsdur">' + tr("vs_vol") + ' <input type="range" id="vsVol" min="0" max="1" step="0.05" value="' + VS.vol + '"></label>'
       : '<label class="btn-s vsfile">' + tr("vs_music_add") + '<input type="file" accept="audio/*" id="vsMusic" hidden></label>') + "</div>" +
-    '<p class="fine">' + tr("vs_music_note") + "</p></div>" +
+    '<p class="fine">' + tr("vs_music_note") + "</p>" + (typeof muHtml === "function" ? muHtml() : "") + "</div>" +
     ytCardHtml() +
     '<div class="vsf"><label for="vsCap">' + tr("vs_cap") + '</label><textarea id="vsCap" rows="7" readonly>' + esc(vsCaption()) + '</textarea></div>' +
     '<div class="vsctl"><button type="button" class="btn-s" id="vsCopy">' + tr("vs_copy") + "</button></div>" +
@@ -754,6 +819,7 @@ function vsLoadFile(file, i) {
     if (t.dataset.vsf === "dur") { const i = vsSceneOf(t); VS.scenes[i].dur = +t.value; vsSave(); renderStudio(); }
     else if (t.dataset.vsf === "art") { const i = vsSceneOf(t); VS.scenes[i].art = t.value; vsSave(); vsSelect(i); vsStill(); }
     else if (t.dataset.vsmedia != null && t.files && t.files[0]) vsLoadFile(t.files[0], +t.dataset.vsmedia);
+    else if (t.id === "vsCaps") { VS.caps = t.checked; vsSave(); vsStill(); }
     else if (t.id === "vsMusic" && t.files && t.files[0]) {
       const f = t.files[0]; if (!/^audio\//.test(f.type)) { VS.err = tr("vs_bad_file"); renderStudio(); return; }
       const el = new Audio(); el.src = URL.createObjectURL(f); el.preload = "auto";

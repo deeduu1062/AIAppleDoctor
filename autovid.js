@@ -21,7 +21,7 @@ Object.assign(T.en, {
   av_facts: "Facts to get exactly right", av_facts_ph: "Doses, dates, places, numbers. Used exactly as you write them, nothing made up.",
   av_lines: "My own lines (spoken word for word)", av_lines_ph: "One line per row. Each one is spoken exactly as written, in this order.",
   av_style: "Style", av_st_: "AI chooses", av_st_alert: "Serious alert", av_st_friend: "Friendly neighbour", av_st_story: "Story", av_st_fun: "Funny", av_st_expert: "Expert", av_style_ph: "Anything else about the style, e.g. \"talk like an old bagwan, slow and calm\"",
-  av_check: "Let me check the script before the video is made",
+  av_check: "Let me check the script before the video is made", av_music: "Background music", av_mu_auto: "Yes, to suit the video", av_mu_none: "No music",
   av_sc_h: "Check the script", av_sc_p: "Read every line and change anything. Nothing is voiced or made until you tap Make video.",
   av_sc_title: "Video title", av_sc_n: "Scene {n}", av_sc_screen: "Words on screen", av_sc_sub: "Second line on screen", av_sc_say: "Spoken", av_sc_end: "End card", av_sc_cta: "Words on the end card", av_sc_cta_say: "Spoken at the end",
   av_sc_up: "Move up", av_sc_del: "Remove scene", av_sc_make: "🎬 Make video from this script", av_sc_redo: "Write it again", av_sc_drop: "Start over", av_sc_ready: "Script ready below: check it, then tap Make video.",
@@ -49,7 +49,7 @@ Object.assign(T.hi, {
   av_facts: "जो बातें बिल्कुल सही चाहिए", av_facts_ph: "मात्रा, तारीख़, जगह, नंबर। जैसे लिखेंगे वैसे ही इस्तेमाल होंगे, कुछ बनाया नहीं जाएगा।",
   av_lines: "मेरी अपनी लाइनें (हूबहू बोली जाएँगी)", av_lines_ph: "हर पंक्ति में एक लाइन। हर लाइन जैसी लिखी वैसी, इसी क्रम में बोली जाएगी।",
   av_style: "अंदाज़", av_st_: "AI चुने", av_st_alert: "गंभीर चेतावनी", av_st_friend: "दोस्ताना पड़ोसी", av_st_story: "कहानी", av_st_fun: "मज़ेदार", av_st_expert: "जानकार", av_style_ph: "अंदाज़ के बारे में और कुछ, जैसे \"पुराने बागवान की तरह, धीरे और शांत\"",
-  av_check: "वीडियो बनने से पहले स्क्रिप्ट मुझे दिखाएँ",
+  av_check: "वीडियो बनने से पहले स्क्रिप्ट मुझे दिखाएँ", av_music: "बैकग्राउंड म्यूज़िक", av_mu_auto: "हाँ, वीडियो के हिसाब से", av_mu_none: "म्यूज़िक नहीं",
   av_sc_h: "स्क्रिप्ट जाँचें", av_sc_p: "हर लाइन पढ़ें और जो चाहें बदलें। 'वीडियो बनाएँ' दबाने तक न आवाज़ बनेगी न वीडियो।",
   av_sc_title: "वीडियो का शीर्षक", av_sc_n: "सीन {n}", av_sc_screen: "स्क्रीन पर शब्द", av_sc_sub: "स्क्रीन पर दूसरी लाइन", av_sc_say: "बोला जाएगा", av_sc_end: "आख़िरी कार्ड", av_sc_cta: "आख़िरी कार्ड के शब्द", av_sc_cta_say: "आख़िर में बोला जाएगा",
   av_sc_up: "ऊपर करें", av_sc_del: "सीन हटाएँ", av_sc_make: "🎬 इस स्क्रिप्ट से वीडियो बनाएँ", av_sc_redo: "फिर से लिखें", av_sc_drop: "शुरू से", av_sc_ready: "स्क्रिप्ट नीचे तैयार है: जाँचें, फिर 'वीडियो बनाएँ' दबाएँ।",
@@ -67,9 +67,9 @@ const AV_TOPICS = {
 };
 const AV_THEME = { alert: "alert", tip: "tip", season: "season", feat: "feat", money: "tip", q: "tip", own: "tip" };
 const AV_END = { site: "Visit sebsaathi.com, it is free", dx: "Try the free disease check on sebsaathi.com", share: "Share this video with your grower friends", join: "Join Seb Saathi free today at sebsaathi.com" };
-const AV = { where: { fb: true, wa: true, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null };
-try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "after", "style"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; if (o.where) AV.where = { fb: !!o.where.fb, wa: !!o.where.wa, yt: !!o.where.yt }; } } catch (e) {}
-const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after, where: AV.where, style: AV.style, check: AV.check })); } catch (e) {} };
+const AV = { where: { fb: true, wa: true, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null, music: "auto" };
+try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "after", "style", "music"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; if (o.where) AV.where = { fb: !!o.where.fb, wa: !!o.where.wa, yt: !!o.where.yt }; } } catch (e) {}
+const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after, where: AV.where, style: AV.style, music: AV.music, check: AV.check })); } catch (e) {} };
 
 function avQuestions() {   /* top Saathi topics from the AI quality tab (quality.js), loaded when needed */
   if (typeof AQ !== "undefined" && AQ && typeof aqTopic === "function") {
@@ -106,6 +106,7 @@ function avHtml() {
     avBriefHtml(dis) +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_lang")) + '</legend><div class="avchips">' + avChip("lang", "hi", "हिंदी") + avChip("lang", "hn", "Hinglish") + avChip("lang", "en", "English") + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_voice")) + '</legend><div class="avchips">' + avChip("voice", "f", tr("av_v_f")) + avChip("voice", "m", tr("av_v_m")) + avChip("voice", "no", tr("av_v_no")) + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_music")) + '</legend><div class="avchips">' + avChip("music", "auto", tr("av_mu_auto")) + avChip("music", "none", tr("av_mu_none")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_len")) + '</legend><div class="avchips">' + avChip("len", "s", tr("av_l_s")) + avChip("len", "m", tr("av_l_m")) + avChip("len", "l", tr("av_l_l")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_size")) + '</legend><div class="avchips">' + avChip("fmt", "916", tr("vs_f_916")) + avChip("fmt", "11", tr("vs_f_11")) + avChip("fmt", "45", tr("vs_f_45")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
@@ -126,6 +127,7 @@ function avBriefHtml(dis) {
     '<input class="avin" id="avStyleOwn" data-avb="styleOwn" maxlength="200" placeholder="' + esc(tr("av_style_ph")) + '" value="' + esc(AV.styleOwn) + '">' +
     '<p><button type="button" class="btn-s sm avchip" data-avcheck="1" aria-pressed="' + AV.check + '">' + (AV.check ? "☑ " : "☐ ") + esc(tr("av_check")) + "</button></p></fieldset>";
 }
+const avMood = () => AV.style === "alert" || (AV.type === "alert" && !AV.style) ? "alert" : AV.style === "fun" || AV.type === "feat" || AV.type === "money" ? "happy" : "calm";
 const AV_STYLE = { alert: "a serious, urgent alert", friend: "a friendly neighbour chatting over the fence", story: "a short story about a grower, with a beginning, a problem and what he did", fun: "light and funny, with a small joke, but the advice stays correct", expert: "a calm expert explaining clearly" };
 const avLinesOf = t => String(t || "").split(/\n+/).map(x => x.trim()).filter(Boolean);
 function avBriefText() {
@@ -240,12 +242,15 @@ async function avBuild(v) {
     VS.tpl = AV_THEME[AV.type] || "tip"; VS.vlang = AV.lang === "hi" ? "hi" : AV.lang === "en" ? "en" : "hl"; VS.fmt = AV.fmt;
     VS.scenes = v.scenes.map((s, i) => {
       const b = bufs[i] || null, base = i ? 3.2 : 2.8;
-      return { label: s.label || "", title: s.title, sub: s.sub || "", art: s.art || "apple", media: media[i] || null, voice: b, dur: Math.round(Math.min(10, Math.max(base, b ? b.duration + 0.9 : base)) * 10) / 10 };
+      return { label: s.label || "", title: s.title, sub: s.sub || "", say: s.say || "", art: s.art || "apple", media: media[i] || null, voice: b, dur: Math.round(Math.min(10, Math.max(base, b ? b.duration + 0.9 : base)) * 10) / 10 };
     });
     VS.endVoice = bufs[v.scenes.length] || null;
     VS.cta = v.cta || VS_BRAND[VS.vlang].cta;
     VS.ai = { title: v.title || "", caption: v.caption || "" };
     VS.sel = 0; VS.err = ""; VS.msg = ""; vsSave();
+    /* background music that fits: your own track with this mood, or the built-in one (vsmusic.js) */
+    if (AV.music !== "none" && typeof muPick === "function") { try { await muPick(avMood()); } catch (e) {} }
+    else if (AV.music === "none" && VS.music) { try { VS.music.el.pause(); } catch (e) {} VS.music = null; }
     if (document.fonts && document.fonts.ready) await document.fonts.ready.catch(() => {});
 
     /* record */
