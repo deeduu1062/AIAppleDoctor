@@ -17,7 +17,8 @@ Object.assign(T.en, {
   av_s_fb: "Adding it to the Facebook + Instagram list…", av_s_yt: "Uploading to YouTube…",
   av_need_topic: "Pick a topic or type one.", av_err: "Could not make it: {m}",
   av_no_tts: "Made without a voice: the voice is not set up yet. To add it, put GOOGLE_TTS_KEY in Vercel (a Google Cloud API key with Text-to-Speech turned on), then Redeploy.",
-  av_tts_err: "Made without a voice: Google Text-to-Speech said: {m}", av_yt_first: "Connect your YouTube channel (YouTube Studio box above) to upload. The video is ready below.",
+  av_tts_err: "Made without a voice: Google Text-to-Speech said: {m}", av_where: "9. Where should it go?", av_where_p: "Facebook + Instagram and WhatsApp go to Today as drafts for you to approve; YouTube uploads straight away.",
+  av_yt_first: "Connect your YouTube channel (YouTube Studio box above) to upload. The video is ready below.",
   av_edit: "You can still change any words, pictures or timings below and tap Make video again."
 });
 Object.assign(T.hi, {
@@ -34,6 +35,7 @@ Object.assign(T.hi, {
   av_s_fb: "Facebook + Instagram सूची में जोड़ रहे हैं…", av_s_yt: "YouTube पर अपलोड हो रहा है…",
   av_need_topic: "विषय चुनें या लिखें।", av_err: "नहीं बन सका: {m}",
   av_no_tts: "बिना आवाज़ बना: आवाज़ अभी सेट नहीं है। Vercel में GOOGLE_TTS_KEY डालें, फिर Redeploy करें।", av_tts_err: "बिना आवाज़ बना: {m}",
+  av_where: "9. कहाँ जाए?", av_where_p: "Facebook + Instagram और WhatsApp ड्राफ़्ट बनकर Today में मंज़ूरी के लिए जाते हैं; YouTube पर तुरंत अपलोड होता है।",
   av_yt_first: "अपलोड के लिए ऊपर YouTube Studio बॉक्स से चैनल जोड़ें। वीडियो नीचे तैयार है।", av_edit: "आप नीचे शब्द, चित्र या समय बदलकर फिर से 'वीडियो बनाएँ' दबा सकते हैं।"
 });
 
@@ -45,9 +47,9 @@ const AV_TOPICS = {
 };
 const AV_THEME = { alert: "alert", tip: "tip", season: "season", feat: "feat", money: "tip", q: "tip", own: "tip" };
 const AV_END = { site: "Visit sebsaathi.com, it is free", dx: "Try the free disease check on sebsaathi.com", share: "Share this video with your grower friends", join: "Join Seb Saathi free today at sebsaathi.com" };
-const AV = { type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "" };
-try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) ["type", "lang", "voice", "len", "fmt", "pics", "end", "after"].forEach(k => { if (o[k]) AV[k] = o[k]; }); } catch (e) {}
-const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after })); } catch (e) {} };
+const AV = { where: { fb: true, wa: true, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "" };
+try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "after"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.where) AV.where = { fb: !!o.where.fb, wa: !!o.where.wa, yt: !!o.where.yt }; } } catch (e) {}
+const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after, where: AV.where })); } catch (e) {} };
 
 function avQuestions() {   /* top Saathi topics from the AI quality tab (quality.js), loaded when needed */
   if (typeof AQ !== "undefined" && AQ && typeof aqTopic === "function") {
@@ -69,6 +71,8 @@ const avChip = (k, v, label) => '<button type="button" class="btn-s sm avchip" d
 
 /* opened from the Facebook + Instagram tab: no YouTube upload choice there, and "Add to Facebook + Instagram list" is the default */
 const avFbTab = () => typeof mkSub !== "undefined" && mkSub === "fb";
+const avCreateTab = () => typeof mkSub !== "undefined" && mkSub === "create";   /* the new Create tab: "Where should it go?" ticks */
+const avTick = (k, label) => '<button type="button" class="btn-s sm avchip" data-avw="' + k + '" aria-pressed="' + !!AV.where[k] + '">' + (AV.where[k] ? "☑ " : "☐ ") + esc(label) + "</button>";
 let avFbSet = false;
 function avHtml() {
   if (avFbTab() && !avFbSet) { avFbSet = true; if (AV.after !== "none") AV.after = "fb"; }
@@ -86,7 +90,8 @@ function avHtml() {
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
       (AV.pics === "mine" ? '<p><label class="btn-s sm vsfile">' + esc(tr("av_p_add")) + '<input type="file" accept="image/*" multiple id="avPhotos" hidden></label> <span class="fine">' + (AV.photos.length ? esc(tr("av_p_n").replace("{n}", AV.photos.length)) : "") + "</span></p>" : "") + "</fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_end")) + '</legend><div class="avchips">' + ["site", "dx", "share", "join"].map(k => avChip("end", k, tr("av_e_" + k))).join("") + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>" +
+    (avCreateTab() ? '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_where")) + '</legend><div class="avchips">' + avTick("fb", "Facebook + Instagram") + avTick("wa", "WhatsApp") + avTick("yt", "YouTube Short") + '</div><p class="fine">' + esc(tr("av_where_p")) + "</p></fieldset>"
+      : '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>") +
     '<p><button type="button" class="btn-s add avgo" id="avGo"' + dis + ">" + esc(AV.busy ? AV.step : VS.out && AV.done ? tr("av_again") : tr("av_go")) + "</button></p>" +
     (AV.step && !AV.busy ? '<p class="fine" role="status">' + esc(AV.step) + "</p>" : "") +
     (AV.note ? '<p class="fine">' + esc(AV.note) + "</p>" : "") + (AV.err ? '<p class="autherr" role="alert">' + esc(AV.err) + "</p>" : "") + "</div>";
@@ -166,7 +171,16 @@ async function avCreate() {
 
     /* afterwards */
     AV.done = true;
-    if (AV.after === "fb" && typeof vsQueue === "function") { avStep("av_s_fb"); await vsQueue(); }
+    if (avCreateTab() && !AV.oneTap) {   /* Create tab: every place that is ticked */
+      const W = AV.where;
+      if ((W.fb || W.wa) && typeof vsQueue === "function") {
+        avStep("av_s_fb"); await vsQueue();
+        if (W.wa && VS.out && VS.out.qid && typeof mkEverywhere === "function") await mkEverywhere(VS.out.qid);   /* captions for Facebook, the Reel and a WhatsApp message */
+      }
+      if (W.yt && typeof ytUpload === "function") {
+        if (typeof YT !== "undefined" && YT && YT.connected) { avStep("av_s_yt"); await ytUpload(); } else AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_first");
+      }
+    } else if (AV.after === "fb" && typeof vsQueue === "function") { avStep("av_s_fb"); await vsQueue(); }
     else if (AV.after === "yt" && typeof ytUpload === "function") {
       if (typeof YT !== "undefined" && YT && YT.connected) { avStep("av_s_yt"); if (AV.ytAt && typeof YTU !== "undefined" && YTU) YTU.at = AV.ytAt; await ytUpload(); } else AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_first");
     }
@@ -184,6 +198,8 @@ document.addEventListener("click", e => {
     else { AV[k] = v; if (k === "type") { AV.topic = ""; } }
     AV.err = ""; avSave(); avRender(); return;
   }
+  const w = e.target.closest && e.target.closest("#avBox [data-avw]");
+  if (w && !AV.busy) { AV.where[w.dataset.avw] = !AV.where[w.dataset.avw]; avSave(); avRender(); return; }
   if (e.target.closest && e.target.closest("#avGo")) avCreate();
 });
 document.addEventListener("input", e => { if (e.target && e.target.id === "avOwn") { AV.own = e.target.value; if (AV.own) AV.topic = ""; document.querySelectorAll('#avBox [data-av="topic"]').forEach(b => b.setAttribute("aria-pressed", "false")); } });

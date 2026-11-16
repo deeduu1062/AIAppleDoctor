@@ -799,33 +799,36 @@ async function askGo(mode) {
 }
 
 /* one list per tab: fb = posts + videos (Facebook/Instagram), wa = WhatsApp tips, yt = YouTube uploads */
-const Q_KINDS = { fb: ["post", "video"], wa: ["wa"], yt: ["yt"] };
+const Q_KINDS = { fb: ["post", "video"], wa: ["wa"], yt: ["yt"], all: ["post", "video", "wa", "yt"], posted: ["post", "video", "wa", "yt"] };
 function qHtml(mode) {
   mode = mode || "fb";
   const S = mkSoc || {}, hasIg = !!(S.ok && S.ig_id), busy = !!mkQBusy;
+  const make = mode === "fbmake" || mode === "wamake", fbish = mode === "fb" || mode === "fbmake", waish = mode === "wa" || mode === "wamake";
   let h = "";
-  if (mode === "fb") {
+  if (fbish) {
     h += '<div class="mkactions">' +
       '<button class="btn-s' + (mkCompose ? " on" : "") + '" type="button" data-mkq="compose" aria-expanded="' + mkCompose + '">' + tr(mkCompose ? "cq_close" : "cq_write") + "</button>" +
       '<button class="btn-s" type="button" data-mkq="draft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "post" ? tr("mk_q_drafting") : tr("cq_ai")) + "</button>" +
       '<button class="btn-s" type="button" data-mkq="studio">' + tr("cq_vid") + "</button></div>";
-  } else if (mode === "wa") {
+  } else if (waish) {
     h += '<div class="mkactions"><button class="btn-s" type="button" data-mkq="wadraft"' + (busy || mkQErr ? " disabled" : "") + ">" + (mkQBusy === "wa" ? tr("mk_q_drafting") : tr("cq_wa")) + "</button></div>";
   }
-  if (mode !== "yt") h += '<div class="mkrow">' + (mode === "fb" ? '<select class="mkin mksel" id="mkqN" aria-label="' + esc(tr("cq_ai")) + '">' + [3, 5, 7].map(n => '<option value="' + n + '"' + (n === mkQN ? " selected" : "") + ">" + tr("mk_q_n").replace("{n}", n) + "</option>").join("") + "</select>" : "") +
+  if (fbish || waish) h += '<div class="mkrow">' + (fbish ? '<select class="mkin mksel" id="mkqN" aria-label="' + esc(tr("cq_ai")) + '">' + [3, 5, 7].map(n => '<option value="' + n + '"' + (n === mkQN ? " selected" : "") + ">" + tr("mk_q_n").replace("{n}", n) + "</option>").join("") + "</select>" : "") +
     '<select class="mkin mksel" id="mkqLang" aria-label="Language">' + ["hn", "hi", "en"].map(l => '<option value="' + l + '"' + (l === mkQLang ? " selected" : "") + ">" + tr("mk_q_l_" + l) + "</option>").join("") + "</select></div>";
-  if (mode === "fb" && mkSoc && !mkSoc.ok) h += '<p class="fine mkwarn">' + tr("mk_q_notoken") + "</p>";
-  if (mode === "fb" && mkCompose) h += composeHtml();
+  if (fbish && mkSoc && !mkSoc.ok) h += '<p class="fine mkwarn">' + tr("mk_q_notoken") + "</p>";
+  if (fbish && mkCompose) h += composeHtml();
   if (mkQMsg) h += '<div class="mkres" role="status"><p class="mkwarn">' + esc(mkQMsg) + "</p></div>";
-  if (mkEvMsg && mode === "fb") h += '<div class="mkres" role="status"><p>' + esc(mkEvMsg) + "</p></div>";
+  if (mkEvMsg && (fbish || mode === "all")) h += '<div class="mkres" role="status"><p>' + esc(mkEvMsg) + "</p></div>";
   if (mkQErr) return h + '<p class="fine mkwarn">' + tr("mk_q_setup") + "</p>";
+  if (make) return h + '<p class="fine">' + tr("mk_make_after") + "</p>";   /* making only: the drafts wait in Today */
   if (!mkQ) return h + '<p class="fine">' + tr("mk_post_checking") + "</p>";
   const now = Date.now(), K = Q_KINDS[mode] || Q_KINDS.fb, Q = mkQ.filter(x => K.indexOf(qKind(x)) >= 0);
   const drafts = Q.filter(x => x.status === "draft");
   const sched = Q.filter(x => x.status === "scheduled" || x.status === "posting" || (qKind(x) === "yt" && x.status === "posted" && Date.parse(x.post_at) > now));
   const done = Q.filter(x => (x.status === "posted" || x.status === "failed") && !(qKind(x) === "yt" && Date.parse(x.post_at) > now))
     .sort((a, b) => Date.parse(b.post_at || b.updated_at) - Date.parse(a.post_at || a.updated_at));
-  if (mode !== "yt") {
+  if (mode === "posted") { drafts.length = 0; sched.length = 0; if (!done.length) h += '<p class="fine">' + tr("mk_q_none_posted") + "</p>"; }
+  else if (mode !== "yt") {
     h += '<p class="mkqh"><b>' + tr("mk_q_drafts").replace("{n}", drafts.length) + "</b></p>";
     if (!drafts.length) h += '<p class="fine">' + tr(mode === "wa" ? "cq_wa_none" : "mk_q_none") + "</p>";
   } else if (!sched.length && !done.length) h += '<p class="fine">' + tr("yt_list_none") + "</p>";
@@ -836,7 +839,7 @@ function qHtml(mode) {
     "<li>" + qTag(x) + " " + esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) + (qKind(x) === "yt" ? "" : " · " + qWhere(x)) +
     (qKind(x) === "yt" ? " · " + tr("cq_yt_self") + qYtLock(x) + (x.result && x.result.yt && x.result.yt.link ? ' · <a href="' + esc(x.result.yt.link) + '" target="_blank" rel="noopener">' + tr("mk_post_view") + "</a>" : "")
       : x.status === "scheduled" ? " " + qNowBtn(x) + ' <button class="btn-s" type="button" data-mkq="unsched" data-id="' + x.id + '">' + tr("mk_q_unsched") + "</button>" : " · " + tr("mk_post_busy")) + "</li>").join("") + "</ul>";
-  if (done.length) h += "<p><b>" + tr("mk_q_done") + '</b></p><ul class="mkwatch">' + done.slice(0, 12).map(x => {
+  if (done.length && mode !== "all") h += "<p><b>" + tr("mk_q_done") + '</b></p><ul class="mkwatch">' + done.slice(0, mode === "posted" ? 30 : 12).map(x => {
     const R = x.result || {}, part = (o, w) => o ? (o.ok ? ' · <a href="' + esc(o.link) + '" target="_blank" rel="noopener">' + w + "</a>" : ' · <span class="mkwarn">' + esc(tr("mk_q_partial").replace("{w}", w).replace("{m}", qErrTxt(o.error))) + "</span>") : "";
     const failedPart = R.ig && R.ig.ok === false && R.ig.error === "ig_processing";   /* worth trying again; other errors need a change first */
     return "<li>" + qTag(x) + " " + esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) +
@@ -846,7 +849,7 @@ function qHtml(mode) {
       ((x.status === "failed" || (failedPart && qKind(x) !== "yt")) ? (x.status === "failed" ? ' · <span class="mkwarn">' + tr("mk_q_failed") + (R.error ? ": " + esc(R.error) : "") + "</span>" : "") + ' <button class="btn-s" type="button" data-mkq="retry" data-id="' + x.id + '">' + tr("mk_q_retry") + "</button>" : "") + "</li>";
   }).join("") + "</ul>";
   /* posts made before the list existed */
-  const old = mode === "wa" ? [] : Object.keys(MK).filter(k => k.indexOf("post:") === 0 && (mode === "yt") === /"yt":"http/.test(MK[k].value || "")).sort().reverse().slice(0, 5);
+  const old = mode === "wa" || mode === "all" ? [] : mode === "posted" ? Object.keys(MK).filter(k => k.indexOf("post:") === 0).sort().reverse().slice(0, 5) : Object.keys(MK).filter(k => k.indexOf("post:") === 0 && (mode === "yt") === /"yt":"http/.test(MK[k].value || "")).sort().reverse().slice(0, 5);
   if (old.length) h += '<details class="mkmore"><summary>' + tr("cq_old") + '</summary><ul class="mkwatch">' + old.map(k => {
     let v = {}; try { v = JSON.parse(MK[k].value || "{}"); } catch (e) {}
     return "<li>" + esc(mkDay(new Date(+k.slice(5)).toISOString().slice(0, 10))) + " · " + esc(v.t || "") + (v.fb ? ' · <a href="' + esc(v.fb) + '" target="_blank" rel="noopener">Facebook</a>' : "") + (v.ig ? ' · <a href="' + esc(v.ig) + '" target="_blank" rel="noopener">Instagram</a>' : "") + (v.yt ? ' · <a href="' + esc(v.yt) + '" target="_blank" rel="noopener">YouTube</a>' : "") + "</li>";
@@ -905,7 +908,7 @@ function todayHtml() {
   const ready = wait.filter(qHasBody);
   const failed = mkQ.filter(x => x.status === "failed" && now - Date.parse(x.updated_at || x.post_at) < 3 * 86400000);
   const line = (x, extra) => "<li>" + qTag(x) + " " + esc(qKind(x) === "wa" ? "" : qShow(x.post_at).replace(/^.*?,\s*/, "") + " · ") + esc(x.topic || String(x.text || "").slice(0, 50)) + (extra || "") +
-    ' <button class="link" type="button" data-mksub="' + qTab(x) + '">' + tr("td_open") + "</button></li>";
+    ' <button class="link" type="button" data-mksub="' + mkOpenTab(x) + '">' + tr("td_open") + "</button></li>";
   if (out.length) h += "<p><b>" + esc(tr("td_out").replace("{n}", out.length)) + '</b></p><ul class="mkwatch">' + out.map(x => line(x, qKind(x) === "yt" ? "" : " · " + qWhere(x))).join("") + "</ul>";
   if (wa.length) h += "<p><b>" + esc(tr("td_wa").replace("{n}", wa.length)) + '</b></p><ul class="mkwatch">' + wa.map(x => line(x)).join("") + "</ul>";
   if (failed.length) h += '<p class="mkwarn"><b>' + esc(tr("td_failed").replace("{n}", failed.length)) + '</b></p><ul class="mkwatch">' + failed.map(x => line(x)).join("") + "</ul>";
@@ -913,7 +916,7 @@ function todayHtml() {
     h += "<p><b>" + esc(tr("td_wait").replace("{n}", wait.length)) + "</b></p>";
     if (wait.length > ready.length) h += '<p class="fine">' + esc(tr("td_empty").replace("{n}", wait.length - ready.length)) + "</p>";
     h += '<div class="mklinks">' + (ready.length ? '<button class="btn-s add" type="button" data-mkq="approveall">' + tr("td_approve").replace("{n}", ready.length) + "</button>" : "") +
-      '<button class="btn-s" type="button" data-mksub="fb">' + tr("td_check") + "</button></div>";
+      '<button class="btn-s" type="button" data-mksub="' + (mkNewView() ? "today" : "fb") + '">' + tr("td_check") + "</button></div>";
   }
   if (!out.length && !wa.length && !wait.length && !failed.length) {
     const next = mkQ.filter(x => x.status === "scheduled" && Date.parse(x.post_at) > now).sort((a, b) => Date.parse(a.post_at) - Date.parse(b.post_at))[0];
@@ -1120,16 +1123,23 @@ function setupHtml() {
 
 /* ---- the page ---- */
 const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid", "demo"]);   /* which sections are open */
-let mkSub = "fb";   /* which Marketing tab is open; remembered on this device */
-try { const v = localStorage.getItem("mk-sub"); if (/^(fb|yt|wa|more)$/.test(v || "")) mkSub = v; } catch (e) {}
+/* tabs by job: Today, Create, Results, Settings (remembered on this device); the old tabs by platform (fb, yt, wa, more) stay as the "classic view" */
+let mkSub = "today", mkMake = "week";
+try { const v = localStorage.getItem("mk-sub2"); if (/^(today|create|results|settings|fb|yt|wa|more)$/.test(v || "")) mkSub = v; const m = localStorage.getItem("mk-make"); if (/^(week|post|video|wa)$/.test(m || "")) mkMake = m; } catch (e) {}
+const mkNewView = () => ["today", "create", "results", "settings"].indexOf(mkSub) >= 0;
+const mkOpenTab = x => mkNewView() ? "today" : qTab(x);
+const mkGoMake = m => { mkMake = m; try { localStorage.setItem("mk-make", m); } catch (e) {} mkGo("create"); };
 let mkFbVid = true;   /* Facebook + Instagram tab: show the video maker ("Create a video for me" + Video Studio); remembered on this device */
 try { mkFbVid = localStorage.getItem("mk-fbvid") !== "0"; } catch (e) {}
+document.addEventListener("click", e => {   /* Create tab: what to make */
+  const m = e.target.closest && e.target.closest("[data-mkmake]"); if (m) mkGoMake(m.dataset.mkmake);
+});
 document.addEventListener("click", e => {
   if (!(e.target.closest && e.target.closest("[data-mkfbvid]"))) return;
   mkFbVid = !mkFbVid; try { localStorage.setItem("mk-fbvid", mkFbVid ? "1" : "0"); } catch (x) {}
   renderMk(); if (mkFbVid) { const el = $("mkStudio"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }
 });
-const mkGo = t => { mkSub = t; try { localStorage.setItem("mk-sub", t); } catch (e) {} renderMk(); };
+const mkGo = t => { mkSub = t; try { localStorage.setItem("mk-sub2", t); } catch (e) {} renderMk(); };
 const mkMsgIsFb = m => /facebook/i.test(m[0]);
 const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
 function renderMk() {
@@ -1177,8 +1187,46 @@ function renderMk() {
   const cnt = ks => mkQ ? mkQ.filter(x => x.status === "draft" && ks.indexOf(qKind(x)) >= 0).length : 0;
   const nFb = cnt(["post", "video"]), nWa = cnt(["wa"]);
   const subs = [["fb", tr("ms_fb") + (nFb ? " (" + nFb + ")" : "")], ["yt", tr("ms_yt")], ["wa", tr("ms_wa") + (nWa ? " (" + nWa + ")" : "")], ["more", tr("ms_more")]];
-  const bar = '<div class="mksub" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + subs.map(x => '<button type="button" role="tab" class="mksubt" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") + "</div>";
+  const bar = '<div class="mksub" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + subs.map(x => '<button type="button" role="tab" class="mksubt" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") +
+    '<button type="button" class="mksubt mknew" data-mksub="today">' + tr("mk_new_view") + "</button></div>";
   let T1 = "", T2 = "";
+  if (mkNewView()) {
+    const nWait = mkQ ? mkQ.filter(x => (x.status === "draft" && qKind(x) !== "wa") || (x.status === "draft" && qKind(x) === "wa" && qIstDay(x.post_at) <= mkIst()) || (x.status === "failed" && Date.now() - Date.parse(x.updated_at || x.post_at) < 3 * 864e5)).length : 0;
+    const tabs = [["today", tr("ms_today") + (nWait ? " (" + nWait + ")" : "")], ["create", tr("ms_create")], ["results", tr("ms_results")], ["settings", tr("ms_settings")]];
+    const bar2 = '<div class="mksub mksub4" role="tablist" aria-label="' + esc(tr("adm_t_mk")) + '">' + tabs.map(x => '<button type="button" role="tab" class="mksubt" data-mksub="' + x[0] + '" aria-selected="' + (mkSub === x[0]) + '">' + esc(x[1]) + "</button>").join("") + "</div>";
+    if (mkSub === "today") {
+      top.innerHTML = h + bar2 + todayHtml() +
+        mkSec("content", tr("mk_wait_h"), mkQ ? tr("mk_wait_sub").replace("{n}", mkQ.filter(x => x.status === "draft").length).replace("{s}", mkQ.filter(x => x.status === "scheduled").length) : "", qHtml("all"));
+      bot.innerHTML = "";
+    } else if (mkSub === "create") {
+      const chips = '<div class="mkmake" role="group" aria-label="' + esc(tr("mk_make_q")) + '"><b>' + tr("mk_make_q") + '</b><div class="avchips">' +
+        [["week", "mk_m_week"], ["post", "mk_m_post"], ["video", "mk_m_video"], ["wa", "mk_m_wa"]].map(x => '<button type="button" class="btn-s sm avchip" data-mkmake="' + x[0] + '" aria-pressed="' + (mkMake === x[0]) + '">' + tr(x[1]) + "</button>").join("") + "</div></div>";
+      let A = "", B = "";
+      if (mkMake === "post") A = askHtml("fb") + qHtml("fbmake") + mkSec("msg", tr("mk_msg_h"), "", msgOf("fb"));
+      else if (mkMake === "wa") A = askHtml("wa") + qHtml("wamake") + mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + msgOf("wa"));
+      else if (mkMake === "video") {
+        const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
+        B = mkSec("askyt", tr("mk_ask_words"), "", askHtml("yt")) + mkSec("demo", tr("demo_h"), "", demoHtml()) + mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml());
+      }
+      top.innerHTML = h + bar2 + chips + A; bot.innerHTML = B;
+    } else if (mkSub === "results") {
+      top.innerHTML = h + bar2 + score + (typeof ysHtml === "function" ? ysHtml() : "") +
+        mkSec("best", tr("best_h"), mkBest().length ? tr("best_sub").replace("{n}", mkBest().length) : "", bestHtml()) + srcH +
+        mkSec("posted", tr("mk_posted_h"), "", qHtml("posted"));
+      bot.innerHTML = "";
+    } else {
+      top.innerHTML = h + bar2 + mkSec("setup", tr("st_h"), tr("st_sub").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length), setupHtml()) + nextH + pilotH +
+        mkSec("inv", tr("mk_inv_h"), invSub, inv) + b.replace(mkSec("inv", tr("mk_inv_h"), invSub, inv), "").replace(mkSec("setup", tr("st_h"), tr("st_sub").replace("{d}", socDone).replace("{n}", MK_SOCIAL.length), setupHtml()), "") +
+        '<section class="spbox"><div class="mkph"><b>' + tr("mk_classic_h") + '</b></div><p class="fine">' + tr("mk_classic_p") + '</p><div class="mklinks">' +
+        [["fb", "ms_fb"], ["yt", "ms_yt"], ["wa", "ms_wa"], ["more", "ms_more"]].map(x => '<button type="button" class="btn-s" data-mksub="' + x[0] + '">' + tr(x[1]) + "</button>").join("") + "</div></section>";
+      bot.innerHTML = "";
+    }
+    const st = $("mkStudio"); if (st) st.hidden = !(mkSub === "create" && mkMake === "video");
+    const goal = document.querySelector('#ap-mk [data-i18n="mk_p"]'); if (goal) goal.hidden = mkSub !== "settings";
+    if (typeof avRender === "function" && typeof AV !== "undefined" && !AV.busy) avRender();
+    mkRestore(keep);
+    return;
+  }
   if (mkSub === "fb") {
     const S = mkSoc || {};
     const line = S.ok ? '<p class="fine">' + mkConnLine(S) + (S.fb_followers != null ? " · " + tr("sc_fb") + " " + mkN(S.fb_followers) : "") + (S.ig_followers != null ? " · " + tr("sc_ig") + " " + mkN(S.ig_followers) : "") + "</p>" : "";
@@ -1352,7 +1400,7 @@ W.addEventListener("click", async e => {
   const a = b.dataset.mkq, id = b.dataset.id, x = qGet(id);
   if (a !== "del") mkQDel = null;
   if (a === "compose") { mkCompose = !mkCompose; mkPostRes = null; renderMk(); if (mkCompose) { const t = $("mkpText"); if (t) t.focus(); } return; }
-  if (a === "studio") { mkGo("yt"); const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+  if (a === "studio") { if (mkNewView()) mkGoMake("video"); else mkGo("yt"); const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (a === "now") return qPostNow(id);
   if (a === "every") return mkEverywhere(id);
   if (a === "draft") return qDraft("post");

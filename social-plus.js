@@ -34,6 +34,11 @@ Object.assign(T.en, {
   wg_send: "Send to a group:", wg_never: "never", wg_status: "For WhatsApp Status: tap Send on WhatsApp and choose My status.", wg_save_err: "Could not save the groups.",
   wv_go: "📲 WhatsApp / Status", wv_busy: "Getting the video…", wv_ready: "📲 Share now", wv_fallback: "This browser can't hand the video file to WhatsApp, so its link is sent. On your phone the video file itself is shared.",
 
+  ms_today: "Today", ms_create: "Create", ms_results: "Results", ms_settings: "⚙ Settings",
+  mk_make_q: "What do you want to make?", mk_m_week: "✨ My week", mk_m_post: "Post", mk_m_video: "Video", mk_m_wa: "WhatsApp message",
+  mk_make_after: "New drafts wait in Today for you to check and approve.", mk_wait_h: "Waiting for you", mk_wait_sub: "{n} to check · {s} going out",
+  mk_posted_h: "Posted recently", mk_q_none_posted: "Nothing posted yet.", mk_ask_words: "Write the video's words yourself (with the AI)",
+  mk_classic_h: "Classic view", mk_classic_p: "The old layout, one tab per platform, if you need it for a while.", mk_new_view: "✨ New view",
   wn_h: "What brings growers in", wn_sub: "{n} sign-ups from social links (30 days)", wn_p: "Every post, video, WhatsApp message and YouTube upload has its own link, so each sign-up is counted against the one that brought it. The AI is shown the best ones when it writes new posts.",
   wn_c_what: "Post", wn_c_vis: "Visitors", wn_c_sign: "Sign-ups", wn_c_reach: "Reach", wn_none: "No sign-ups or visitors from posts yet. They show here once growers start tapping your links.",
   wn_by: "Sign-ups by channel (30 days):", wn_kind: "Average sign-ups per item: {t}", wn_ig: "Instagram captions can't hold links, so Instagram only counts through the bio link.", wn_other: "Other links"
@@ -66,6 +71,11 @@ Object.assign(T.hi, {
   wg_send: "ग्रुप में भेजें:", wg_never: "कभी नहीं", wg_status: "WhatsApp Status के लिए: WhatsApp पर भेजें दबाएँ और My status चुनें।", wg_save_err: "ग्रुप सेव नहीं हुए।",
   wv_go: "📲 WhatsApp / Status", wv_busy: "वीडियो लाया जा रहा है…", wv_ready: "📲 अभी शेयर करें", wv_fallback: "यह ब्राउज़र वीडियो सीधे WhatsApp को नहीं दे सकता, इसलिए वीडियो का लिंक भेजा गया। फ़ोन से वीडियो फ़ाइल ही शेयर हो सकती है।",
 
+  ms_today: "आज", ms_create: "बनाएँ", ms_results: "नतीजे", ms_settings: "⚙ सेटिंग",
+  mk_make_q: "क्या बनाना है?", mk_m_week: "✨ मेरा हफ़्ता", mk_m_post: "पोस्ट", mk_m_video: "वीडियो", mk_m_wa: "WhatsApp संदेश",
+  mk_make_after: "नए ड्राफ़्ट Today में आपकी जाँच और मंज़ूरी का इंतज़ार करते हैं।", mk_wait_h: "आपका इंतज़ार", mk_wait_sub: "{n} जाँचने हैं · {s} जाने वाले",
+  mk_posted_h: "हाल में पोस्ट हुए", mk_q_none_posted: "अभी कुछ पोस्ट नहीं हुआ।", mk_ask_words: "वीडियो के शब्द ख़ुद लिखें (AI के साथ)",
+  mk_classic_h: "पुराना रूप", mk_classic_p: "पुराना लेआउट, हर प्लेटफ़ॉर्म का अलग टैब, अगर कुछ दिन चाहिए।", mk_new_view: "✨ नया रूप",
   wn_h: "बाग़वान कहाँ से आ रहे हैं", wn_sub: "सोशल लिंक से {n} साइन-अप (30 दिन)", wn_p: "हर पोस्ट, वीडियो, WhatsApp संदेश और YouTube वीडियो का अपना लिंक है, इसलिए हर साइन-अप उसी के नाम गिना जाता है जिसने उसे भेजा। नए पोस्ट लिखते समय AI को सबसे अच्छे दिखाए जाते हैं।",
   wn_c_what: "पोस्ट", wn_c_vis: "विज़िटर", wn_c_sign: "साइन-अप", wn_c_reach: "पहुँच", wn_none: "अभी पोस्ट से कोई साइन-अप या विज़िटर नहीं। बाग़वान लिंक दबाने लगेंगे तो यहाँ दिखेंगे।",
   wn_by: "चैनल के हिसाब से साइन-अप (30 दिन):", wn_kind: "हर चीज़ पर औसत साइन-अप: {t}", wn_ig: "Instagram कैप्शन में लिंक नहीं चलते, इसलिए Instagram सिर्फ़ बायो लिंक से गिना जाता है।", wn_other: "दूसरे लिंक"
@@ -196,7 +206,7 @@ function spWeekHtml() {
       return "<li>" + (tick ? '<label class="chk"><input type="checkbox" data-sprev="' + x.id + '"' + (SP.unt.has(String(x.id)) ? "" : " checked") + "><span></span></label> " : "") + qTag(x) + " " +
         esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) +
         (wa ? ' <span class="fine">(' + tr("wk_rev_wa") + ")</span>" : qKind(x) === "post" && !x.image_url ? ' <span class="fine">(' + tr("wk_rev_nophoto") + ")</span>" : "") +
-        ' <button class="link" type="button" data-sp="edit" data-id="' + x.id + '" data-tab="' + qTab(x) + '">' + tr("wk_edit") + "</button></li>";
+        ' <button class="link" type="button" data-sp="edit" data-id="' + x.id + '" data-tab="' + (mkNewView() ? "today" : qTab(x)) + '">' + tr("wk_edit") + "</button></li>";
     }).join("") + "</ul>";
     const n = I.filter(x => qKind(x) !== "wa" && qHasBody(x) && !SP.unt.has(String(x.id))).length;
     if (n) h += '<div class="mklinks"><button type="button" class="btn-s add" data-sp="revgo"' + (W.busy ? " disabled" : "") + ">" + tr("wk_rev_go").replace("{n}", n) + "</button></div>";
@@ -215,8 +225,9 @@ async function spWeekGo() {
     await loadQ();
     /* videos: made one after the other by "Create a video for me" (autovid.js), then put on their own days */
     if (W.nVids && typeof avCreate === "function" && typeof AV !== "undefined") {
-      if (mkSub !== "fb") mkGo("fb");
-      if (typeof mkFbVid !== "undefined" && !mkFbVid) { mkFbVid = true; renderMk(); }
+      if (mkNewView()) { if (!(mkSub === "create" && mkMake === "video")) { mkMake = "video"; mkGo("create"); } }
+      else { if (mkSub !== "fb") mkGo("fb"); if (typeof mkFbVid !== "undefined" && !mkFbVid) { mkFbVid = true; renderMk(); } }
+      AV.oneTap = true;
       const keep = JSON.stringify(AV), risk = spRisks()[0];
       const recent = (mkQ || []).map(x => String(x.topic || "").toLowerCase());
       const feats = ((AV_TOPICS.feat || {}).en || []).filter(t => recent.indexOf(t.toLowerCase()) < 0);
@@ -242,6 +253,7 @@ async function spWeekGo() {
           if (r && r.ok) { y.s = "ok"; if (r.locked) y.m = tr("wk_yt_lock"); } else { y.s = "err"; y.m = (r && r.err) || ""; }
         }
       }
+      AV.oneTap = false;
       try { const o = JSON.parse(keep); ["type", "topic", "own", "lang", "voice", "len", "fmt", "pics", "end", "after"].forEach(k => { AV[k] = o[k]; }); AV.step = ""; avSave(); avRender(); } catch (e) {}
     }
     W.msg = tr("wk_done");
@@ -361,7 +373,7 @@ async function spYpGo() {
   const t = Y.topic.trim();
   if (t) Object.assign(AV, { own: t, topic: "" });
   else { AV.type = "season"; AV.own = ""; AV.topic = (avTopics() || [])[0] || "Orchard jobs this month"; }
-  AV.after = "yt"; AV.ytAt = Y.at && Date.parse(Y.at + ":00Z") - 330 * 60000 > Date.now() + 120000 ? Y.at : "";
+  AV.after = "yt"; AV.oneTap = true; AV.ytAt = Y.at && Date.parse(Y.at + ":00Z") - 330 * 60000 > Date.now() + 120000 ? Y.at : "";
   if (typeof VS !== "undefined") VS.out = null;
   if (typeof ytLast !== "undefined") ytLast = null;
   avRender();
@@ -371,7 +383,7 @@ async function spYpGo() {
   else if (r && r.ok) Y.msg = esc(r.locked ? tr("yp_lock") : AV.ytAt ? tr("yp_ok_at").replace("{d}", AV.ytAt.replace("T", " ")) : tr("yp_ok")) +
     (r.link ? ' <a href="' + esc(r.link) + '" target="_blank" rel="noopener">' + tr("yt_watch") + "</a>" : "");
   else Y.msg = '<span class="mkwarn">' + esc(tr("yp_err").replace("{m}", (r && r.err) || AV.note || "")) + "</span>";
-  Object.assign(AV, keep); AV.ytAt = ""; avSave(); avRender();
+  Object.assign(AV, keep); AV.ytAt = ""; AV.oneTap = false; avSave(); avRender();
   Y.busy = false; if (!AV.err && r && r.ok) { Y.topic = ""; Y.at = ""; }
   renderMk();
   const el = $("spYp"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -387,7 +399,18 @@ function spDraw() {
   const dow = new Date(Date.now() + 330 * 60000).getUTCDay();
   if (mkQ && !mkQErr && [5, 6, 0, 1].indexOf(dow) >= 0 && spPlanned() < 3 && !SP.wk.busy)
     ins(top.querySelector(".mktoday"), "beforeend", '<div class="mklinks"><span class="fine">' + tr("wk_today") + '</span><button type="button" class="btn-s add" data-sp="weekjump">' + tr("wk_today_go") + "</button></div>");
-  if (mkSub === "fb") {
+  if (mkSub === "create") {
+    const mk = top.querySelector(".mkmake");
+    if (mkMake === "week" || SP.wk.busy) ins(mk, "afterend", spWeekHtml());
+    else if (mkMake === "video") ins(mk, "afterend", spYpHtml());
+  } else if (mkSub === "results") {
+    ins(top.querySelector(".mksub"), "afterend", mkSec("wins", tr("wn_h"), spWinsSub(), spWinsHtml()));
+    spLoadHist();
+  } else if (mkSub === "settings") {
+    const G = spGroups(), s = G.reduce((a, g) => a + spGNums(g).sign, 0);
+    const sec = mkSec("wag", tr("wg_h"), tr("wg_sub").replace("{n}", G.length).replace("{s}", mkN(s)), spGroupsHtml());
+    if (!ins(top.querySelector('[data-mksec="setup"]'), "afterend", sec)) top.insertAdjacentHTML("beforeend", sec);
+  } else if (mkSub === "fb") {
     ins(top.querySelector(".mksub"), "afterend", spWeekHtml());
     const best = bot.querySelector('[data-mksec="best"]');
     const sec = mkSec("wins", tr("wn_h"), spWinsSub(), spWinsHtml());
@@ -423,7 +446,7 @@ document.addEventListener("click", async e => {
   const a = b.dataset.sp;
   if (a === "weekgo") { spWeekGo(); return; }
   if (a === "ypgo") { spYpGo(); return; }
-  if (a === "weekjump") { mkGo("fb"); const el = $("spWeek"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+  if (a === "weekjump") { if (mkNewView()) mkGoMake("week"); else mkGo("fb"); const el = $("spWeek"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (a === "revgo") { spRevGo(); return; }
   if (a === "edit") {
     mkOpen.add("content"); mkOpen.add("watips"); mkGo(b.dataset.tab || "fb");
