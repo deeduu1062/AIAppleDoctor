@@ -67,8 +67,8 @@ const AV_TOPICS = {
 };
 const AV_THEME = { alert: "alert", tip: "tip", season: "season", feat: "feat", money: "tip", q: "tip", own: "tip" };
 const AV_END = { site: "Visit sebsaathi.com, it is free", dx: "Try the free disease check on sebsaathi.com", share: "Share this video with your grower friends", join: "Join Seb Saathi free today at sebsaathi.com" };
-const AV = { where: { fb: true, ig: true, wa: true, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null, music: "auto" };
-try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "after", "style", "music"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; if (o.where) AV.where = { fb: !!o.where.fb, ig: o.where.ig === undefined ? !!o.where.fb : !!o.where.ig, wa: !!o.where.wa, yt: !!o.where.yt }; } } catch (e) {}
+const AV = { where: { fb: false, ig: false, wa: false, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null, music: "auto" };
+try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "style", "music"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; }   /* where it goes ("after", "where") is never remembered: every new video starts with nothing ticked, and you choose */ } catch (e) {}
 const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after, where: AV.where, style: AV.style, music: AV.music, check: AV.check })); } catch (e) {} };
 
 function avQuestions() {   /* top Saathi topics from the AI quality tab (quality.js), loaded when needed */
@@ -92,11 +92,10 @@ function avTopics() {
 const avIdeas = () => typeof mkViAll === "function" && typeof mkDone === "function" ? mkViAll().filter(v => !mkDone(v.key)).slice(0, 10) : [];
 const avChip = (k, v, label) => '<button type="button" class="btn-s sm avchip" data-av="' + k + '" data-v="' + esc(v) + '" aria-pressed="' + (String(AV[k]) === String(v)) + '">' + esc(label) + "</button>";
 
-/* opened from the Facebook + Instagram tab: no YouTube upload choice there, and "Add to Facebook + Instagram list" is the default */
+/* opened from the Facebook + Instagram tab: no YouTube upload choice there; "Just show me" stays the default until you choose */
 const avFbTab = () => typeof mkSub !== "undefined" && mkSub === "fb";
 const avCreateTab = () => typeof mkSub !== "undefined" && mkSub === "create";   /* the new Create tab: "Where should it go?" ticks */
 const avTick = (k, label) => '<button type="button" class="btn-s sm avchip" data-avw="' + k + '" aria-pressed="' + !!AV.where[k] + '">' + (AV.where[k] ? "☑ " : "☐ ") + esc(label) + "</button>";
-let avFbSet = false;
 const avL = t => esc(String(t).replace(/^\d+\.\s*/, ""));
 /* the settings folded into one line: what is chosen now */
 function avSumm() {
@@ -105,7 +104,6 @@ function avSumm() {
   return out.join(" · ");
 }
 function avHtml() {
-  if (avFbTab() && !avFbSet) { avFbSet = true; if (AV.after !== "none") AV.after = "fb"; }
   if (avFbTab() && AV.after === "yt") AV.after = "fb";
   const tps = avTopics(), dis = AV.busy ? " disabled" : "";
   return '<div class="avbox"><h5>' + esc(tr("av_h")) + '</h5><p class="fine">' + esc(tr("av_p")) + "</p>" +
