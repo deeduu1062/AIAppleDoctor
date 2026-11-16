@@ -584,7 +584,11 @@ try {
   if (r) {
     const why = q.get("m") || "", map = { setup: "META_APP_ID / META_APP_SECRET", expired: tr("fbc_again"), no_page: tr("fbc_nopage"), access_denied: tr("fbc_denied"), user_denied: tr("fbc_denied") };
     mkFbNote = r === "ok" ? tr("fbc_ok") : tr("fbc_err").replace("{m}", map[why] || why);
+    try { localStorage.setItem("mk-fbnote", JSON.stringify({ t: Date.now(), m: mkFbNote })); } catch (e) {}   /* kept for 30 minutes, so a reload doesn't hide it */
     history.replaceState(null, "", location.pathname + location.hash);
+  } else {
+    const k = JSON.parse(localStorage.getItem("mk-fbnote") || "null");
+    if (k && Date.now() - k.t < 30 * 60e3) mkFbNote = k.m;
   }
 } catch (e) {}
 async function loadSoc() {
@@ -1336,7 +1340,15 @@ function connHtml() {
   const fb = !S ? one("fb", "Facebook", tr("cn_checking"), false, "") : S.ok ? one("fb", "Facebook", S.page_name || tr("cn_on"), true, "open") : one("fb", "Facebook", tr("cn_connect"), false, "connect_fb");
   const ig = !S ? one("ig", "Instagram", tr("cn_checking"), false, "") : S.ok && S.ig_id ? one("ig", "Instagram", S.ig_user ? "@" + S.ig_user : tr("cn_on"), true, "open") : S.ok ? one("ig", "Instagram", tr("cn_ig_link"), false, "ig_help") : one("ig", "Instagram", tr("cn_connect"), false, "connect_fb");
   const wa = link("whatsapp") ? one("wa", "WhatsApp", tr("cn_wa_ch"), true, "open") : one("wa", "WhatsApp", tr("cn_wa_add"), false, "setup");
-  return '<div class="mkconn" role="group" aria-label="' + esc(tr("cn_h")) + '">' + yt + fb + ig + wa + "</div>" + (mkFbNote ? '<p class="fine mkconn-note" role="status">' + esc(mkFbNote) + "</p>" : "");
+  /* why Facebook isn't connected, always shown under the row (not only right after coming back from Facebook) */
+  const M = mkMeta || {};
+  const fbWhy = S && S.ok ? "" :
+    M.setup === false && (M.missing || []).length ? "Facebook setup missing: " + M.missing.join(", ") :
+    M.error ? "Facebook check failed: " + M.error :
+    S && S.error ? (M.connected ? "Facebook Page saved (" + (M.page_name || "?") + "), but Facebook refused it: " : "Facebook: ") + S.error :
+    M.setup && M.connected === false && S ? "Facebook: no Page saved yet." : "";
+  const notes = [mkFbNote, fbWhy].filter((x, i, a) => x && a.indexOf(x) === i);
+  return '<div class="mkconn" role="group" aria-label="' + esc(tr("cn_h")) + '">' + yt + fb + ig + wa + "</div>" + notes.map(n => '<p class="fine mkconn-note" role="status">' + esc(n) + "</p>").join("");
 }
 async function connGo(k, act) {
   const link = { yt: typeof YT !== "undefined" && YT && YT.channel && YT.channel.url, fb: MK["link:facebook"] && MK["link:facebook"].value, ig: MK["link:instagram"] && MK["link:instagram"].value || (mkSoc && mkSoc.ig_user ? "https://www.instagram.com/" + mkSoc.ig_user + "/" : ""), wa: MK["link:whatsapp"] && MK["link:whatsapp"].value }[k];
