@@ -168,7 +168,7 @@ async function avCreate() {
     AV.done = true;
     if (AV.after === "fb" && typeof vsQueue === "function") { avStep("av_s_fb"); await vsQueue(); }
     else if (AV.after === "yt" && typeof ytUpload === "function") {
-      if (typeof YT !== "undefined" && YT && YT.connected) { avStep("av_s_yt"); await ytUpload(); } else AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_first");
+      if (typeof YT !== "undefined" && YT && YT.connected) { avStep("av_s_yt"); if (AV.ytAt && typeof YTU !== "undefined" && YTU) YTU.at = AV.ytAt; await ytUpload(); } else AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_first");
     }
     AV.step = tr("av_s5") + " " + tr("av_edit");
   } catch (e) { AV.err = tr("av_err").replace("{m}", String(e.message || e)); AV.step = ""; }

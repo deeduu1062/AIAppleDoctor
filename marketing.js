@@ -711,6 +711,8 @@ function qApprovePatch(x) {
 /* a WhatsApp message's site link is tagged with its own number (?src=wa-p<id>), so its visitors and sign-ups can be counted */
 const qWaText = x => String(x.text || "").replace(/([?&])src=wa\b(?!-)/g, "$1src=wa-p" + x.id)
   .replace(/(^|[^\/\w.])((?:https?:\/\/)?(?:www\.)?sebsaathi\.com\/?)(?![\w\/?&=-])/g, (m, a, u) => a + "https://sebsaathi.com/?src=wa-p" + x.id);
+/* an upload YouTube locked as private (Google audit not done yet) */
+const qYtLock = x => x.result && x.result.yt && x.result.yt.locked ? ' · <span class="mkwarn">🔒 ' + tr("yt_lock_tag") + "</span>" : "";
 const qTag = x => '<span class="mkkind k-' + qKind(x) + '">' + tr("cq_k_" + qKind(x)) + "</span>";
 const qWhere = x => qKind(x) === "yt" ? "YouTube" : qKind(x) === "wa" ? "WhatsApp" : (x.fb ? "Facebook" : "") + (x.fb && x.ig ? " + " : "") + (x.ig ? "Instagram" : "");
 let mkNowId = null;   /* the item being posted now */
@@ -832,13 +834,13 @@ function qHtml(mode) {
   if (appr.length > 1) h += '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="approveall">' + tr("mk_q_approve_all").replace("{n}", appr.length) + "</button></div>";
   if (sched.length) h += "<p><b>" + tr("mk_q_sched").replace("{n}", sched.length) + '</b></p><ul class="mkwatch">' + sched.map(x =>
     "<li>" + qTag(x) + " " + esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) + (qKind(x) === "yt" ? "" : " · " + qWhere(x)) +
-    (qKind(x) === "yt" ? " · " + tr("cq_yt_self") + (x.result && x.result.yt && x.result.yt.link ? ' · <a href="' + esc(x.result.yt.link) + '" target="_blank" rel="noopener">' + tr("mk_post_view") + "</a>" : "")
+    (qKind(x) === "yt" ? " · " + tr("cq_yt_self") + qYtLock(x) + (x.result && x.result.yt && x.result.yt.link ? ' · <a href="' + esc(x.result.yt.link) + '" target="_blank" rel="noopener">' + tr("mk_post_view") + "</a>" : "")
       : x.status === "scheduled" ? " " + qNowBtn(x) + ' <button class="btn-s" type="button" data-mkq="unsched" data-id="' + x.id + '">' + tr("mk_q_unsched") + "</button>" : " · " + tr("mk_post_busy")) + "</li>").join("") + "</ul>";
   if (done.length) h += "<p><b>" + tr("mk_q_done") + '</b></p><ul class="mkwatch">' + done.slice(0, 12).map(x => {
     const R = x.result || {}, part = (o, w) => o ? (o.ok ? ' · <a href="' + esc(o.link) + '" target="_blank" rel="noopener">' + w + "</a>" : ' · <span class="mkwarn">' + esc(tr("mk_q_partial").replace("{w}", w).replace("{m}", qErrTxt(o.error))) + "</span>") : "";
     const failedPart = R.ig && R.ig.ok === false && R.ig.error === "ig_processing";   /* worth trying again; other errors need a change first */
     return "<li>" + qTag(x) + " " + esc(qShow(x.post_at)) + " · " + esc(x.topic || String(x.text || "").slice(0, 60)) +
-      (qKind(x) === "wa" ? " · " + tr("cq_wa_sent") : "") + part(R.fb, "Facebook") + part(R.ig, "Instagram") + part(R.yt, "YouTube") + " " + qMetHtml(x) +
+      (qKind(x) === "wa" ? " · " + tr("cq_wa_sent") : "") + part(R.fb, "Facebook") + part(R.ig, "Instagram") + part(R.yt, "YouTube") + qYtLock(x) + " " + qMetHtml(x) +
       (qKind(x) === "video" && x.video_url ? ' <button class="btn-s" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + "</button>" +
         (typeof spWaVidBtn === "function" ? " " + spWaVidBtn(x) : "") : "") +
       ((x.status === "failed" || (failedPart && qKind(x) !== "yt")) ? (x.status === "failed" ? ' · <span class="mkwarn">' + tr("mk_q_failed") + (R.error ? ": " + esc(R.error) : "") + "</span>" : "") + ' <button class="btn-s" type="button" data-mkq="retry" data-id="' + x.id + '">' + tr("mk_q_retry") + "</button>" : "") + "</li>";
@@ -877,10 +879,10 @@ async function mkQueueVideo(blob, caption) {
   return r.data;
 }
 /* a YouTube upload, kept in the same list (YouTube publishes it at its own time) */
-async function mkQueueYt(title, link, at, src) {
+async function mkQueueYt(title, link, at, src, locked) {
   if (mkQErr) return;
   try {
-    const yt = Object.assign({ ok: true, link }, src ? { src } : {});   /* src: the upload's own link code (yt-…), so its sign-ups are counted */
+    const yt = Object.assign({ ok: true, link }, src ? { src } : {}, locked ? { locked: true } : {});   /* src: the upload's own link code (yt-…), so its sign-ups are counted */
     const r = await sb.from("social_queue").insert({ kind: "yt", status: "posted", text: String(title || "").slice(0, 2200), topic: String(title || "").slice(0, 200), fb: false, ig: false, post_at: at || new Date().toISOString(), result: { yt } }).select().single();
     if (!r.error && mkQ) { mkQ.push(r.data); renderMk(); return true; }
   } catch (e) {}

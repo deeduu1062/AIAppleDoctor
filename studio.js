@@ -48,7 +48,8 @@ Object.assign(T.en, {
   yt_p_public: "Public", yt_p_unlisted: "Unlisted (only with the link)", yt_p_private: "Private (only you)",
   yt_go: "Upload to YouTube", yt_upping: "Uploading… {p}%", yt_starting: "Starting upload…",
   yt_done: "Uploaded to YouTube ✓", yt_watch: "Watch", yt_studio: "Open in YouTube Studio",
-  yt_locked: "YouTube has kept it Private. Videos uploaded through a new, unaudited app stay private: open it in YouTube Studio and set it to Public (one tap). To stop this, send Google the YouTube API audit form once.",
+  yt_locked: "YouTube has locked it as Private: until Google audits your app, uploads from it stay private and can't be made public, not even in YouTube Studio. For now, download the video and post it in the YouTube app (it goes public straight away). To fix this for good, send Google the YouTube API Services audit form once (Google Cloud → YouTube Data API v3 → Quotas → audit form).",
+  yt_ai: "Made with AI (voice or pictures): tell YouTube", yt_ai_p: "YouTube asks you to say so when a video uses an AI voice or made-up realistic scenes.",
   yt_err: "Upload failed: {m}", yt_reconnect: "The YouTube connection has expired or was removed. Connect again.",
   yt_back_ok: "YouTube channel connected.", yt_back_err: "YouTube didn't connect: {m}",
   yt_connect_first: "Connect your YouTube channel below to upload straight from here."
@@ -97,7 +98,8 @@ Object.assign(T.hi, {
   yt_p_public: "सभी (Public)", yt_p_unlisted: "सिर्फ़ लिंक वाले (Unlisted)", yt_p_private: "सिर्फ़ आप (Private)",
   yt_go: "YouTube पर अपलोड करें", yt_upping: "अपलोड हो रहा है… {p}%", yt_starting: "अपलोड शुरू हो रहा है…",
   yt_done: "YouTube पर अपलोड हो गया ✓", yt_watch: "देखें", yt_studio: "YouTube Studio में खोलें",
-  yt_locked: "YouTube ने इसे Private रखा है। नए, बिना ऑडिट वाले ऐप से अपलोड वीडियो private रहते हैं: YouTube Studio में खोलकर Public करें (एक टैप)। इसे बंद करने के लिए Google को एक बार YouTube API ऑडिट फ़ॉर्म भेजें।",
+  yt_locked: "YouTube ने इसे Private पर लॉक किया है: जब तक Google आपके ऐप का ऑडिट नहीं करता, इससे अपलोड वीडियो private रहते हैं और YouTube Studio में भी public नहीं होते। अभी के लिए वीडियो डाउनलोड करके YouTube ऐप से पोस्ट करें (तुरंत public होगा)। पक्के हल के लिए Google को एक बार YouTube API Services ऑडिट फ़ॉर्म भेजें।",
+  yt_ai: "AI से बना (आवाज़ या चित्र): YouTube को बताएँ", yt_ai_p: "जब वीडियो में AI आवाज़ या बनाए हुए असली जैसे दृश्य हों, YouTube बताने को कहता है।",
   yt_err: "अपलोड नहीं हुआ: {m}", yt_reconnect: "YouTube कनेक्शन ख़त्म हो गया या हटा दिया गया। दोबारा जोड़ें।",
   yt_back_ok: "YouTube चैनल जुड़ गया।", yt_back_err: "YouTube नहीं जुड़ा: {m}",
   yt_connect_first: "यहीं से अपलोड करने के लिए नीचे अपना YouTube चैनल जोड़ें।"
@@ -414,7 +416,7 @@ function vsStart(record) {
       const type = mime.split(";")[0], blob = new Blob(chunks, { type });
       if (VS.out) URL.revokeObjectURL(VS.out.url);
       VS.out = { url: URL.createObjectURL(blob), blob, size: blob.size, ext: type.indexOf("mp4") >= 0 ? "mp4" : "webm", secs: Math.round(vsTotal()), hidden: P.hidden };
-      VS.msg = ""; vsQRes = ""; YTU = { title: vsYtTitle(), desc: vsYtDesc(), priv: (YTU && YTU.priv) || "public", at: "" }; renderStudio();
+      VS.msg = ""; vsQRes = ""; YTU = { title: vsYtTitle(), desc: vsYtDesc(), priv: (YTU && YTU.priv) || "public", at: "", ai: VS.scenes.some(s => s.voice) || !!VS.endVoice }; renderStudio();
     };
   } else vsAudio();
   const P = { t0: performance.now(), rec, cur: -1, hidden: false, last: 0 };
@@ -508,7 +510,7 @@ function vsUseVideo(blob, title, desc, url) {
 const vsYtDesc = () => vsCaption().replace("https://sebsaathi.com", "https://sebsaathi.com/?src=yt");
 
 /* ---------- YouTube: connect the channel and upload (api/youtube.js, supabase/youtube.sql) ---------- */
-let YT = null, YTU = null, ytBusy = "", ytRes = "", ytNote = "";
+let YT = null, YTU = null, ytBusy = "", ytRes = "", ytNote = "", ytLast = null;   /* ytLast: how the last upload went, for one-tap publishing */
 const vsYtTitle = () => (String((VS.ai && VS.ai.title) || (VS.scenes[0] || {}).title || VS_BRAND[VS.vlang].name).replace(/[<>]/g, "").slice(0, 88) + " #Shorts").trim();
 async function ytCall(action) {
   const r = await fetch("/api/youtube", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ action }) });
@@ -547,6 +549,7 @@ function ytOutHtml() {
     '<div class="vsf"><label for="ytDesc">' + tr("yt_desc") + '</label><textarea id="ytDesc" rows="4" maxlength="4900">' + esc(u.desc) + "</textarea></div>" +
     '<div class="vsf"><label for="ytPriv">' + tr("yt_priv") + '</label><select id="ytPriv" class="ytsel">' + ["public", "unlisted", "private"].map(p => '<option value="' + p + '"' + (p === u.priv ? " selected" : "") + ">" + tr("yt_p_" + p) + "</option>").join("") + "</select></div>" +
     '<div class="vsf"><label for="ytAt">' + tr("yt_when") + '</label><input id="ytAt" type="datetime-local" value="' + esc(u.at || "") + '"><span class="fine">' + tr("yt_when_p") + "</span></div>" +
+    '<div class="vsf"><label class="chk"><input type="checkbox" id="ytAi"' + (u.ai ? " checked" : "") + "><span>" + tr("yt_ai") + '</span></label><span class="fine">' + tr("yt_ai_p") + "</span></div>" +
     '<div class="vsctl"><button type="button" class="btn-s vsgo" data-yt="upload"' + (ytBusy ? " disabled" : "") + ">" + (ytBusy ? esc(ytBusy) : tr("yt_go")) + "</button></div>" +
     (ytRes ? '<div role="status">' + ytRes + "</div>" : "") + "</div>";
 }
@@ -560,7 +563,7 @@ async function ytUpload() {
   if (u.desc.indexOf("src=" + ysrc) < 0) u.desc = u.desc.replace(/(https?:\/\/)?(www\.)?sebsaathi\.com\/?(?![\w\/?&=-])/, "https://sebsaathi.com/?src=" + ysrc);
   /* a publish time (India time) → YouTube keeps it private and publishes it then */
   const at = u.at && Date.parse(u.at + ":00Z") - 330 * 60000 > Date.now() + 60000 ? new Date(Date.parse(u.at + ":00Z") - 330 * 60000).toISOString() : "";
-  ytRes = ""; ytProgress(tr("yt_starting"));
+  ytRes = ""; ytLast = null; ytProgress(tr("yt_starting"));
   try {
     const k = await ytCall("token");
     if (!k.access_token) { YT.connected = !!k.connected && k.error !== "reconnect"; throw new Error(k.error === "reconnect" ? tr("yt_reconnect") : (k.error || tr("yt_reconnect"))); }
@@ -569,7 +572,7 @@ async function ytUpload() {
       method: "POST",
       headers: { Authorization: "Bearer " + k.access_token, "Content-Type": "application/json; charset=UTF-8", "X-Upload-Content-Type": type, "X-Upload-Content-Length": String(o.blob.size) },
       body: JSON.stringify({ snippet: { title, description: String(u.desc || "").replace(/[<>]/g, "").slice(0, 4900), categoryId: "27", defaultLanguage: VS.vlang === "en" ? "en" : "hi", defaultAudioLanguage: VS.vlang === "en" ? "en" : "hi", tags: ["Seb Saathi", "सेब साथी", "apple farming", "सेब", "Himachal apple", "Kashmir apple"] },
-        status: Object.assign({ privacyStatus: at ? "private" : (u.priv || "public"), selfDeclaredMadeForKids: false }, at ? { publishAt: at } : {}) })
+        status: Object.assign({ privacyStatus: at ? "private" : (u.priv || "public"), selfDeclaredMadeForKids: false, containsSyntheticMedia: !!u.ai }, at ? { publishAt: at } : {}) })
     });
     if (!init.ok) { const j = await init.json().catch(() => ({})); throw new Error((j.error && j.error.message) || ("YouTube " + init.status)); }
     const loc = init.headers.get("Location"); if (!loc) throw new Error("no upload address");
@@ -581,13 +584,15 @@ async function ytUpload() {
     });
     const watch = "https://youtube.com/shorts/" + v.id, studio = "https://studio.youtube.com/video/" + v.id + "/edit";
     const locked = !at && (u.priv || "public") !== "private" && v.status && v.status.privacyStatus === "private";
-    ytRes = "<p>" + tr("yt_done") + ' · <a href="' + watch + '" target="_blank" rel="noopener">' + tr("yt_watch") + '</a> · <a href="' + studio + '" target="_blank" rel="noopener">' + tr("yt_studio") + "</a></p>" + (locked ? '<p class="autherr">' + tr("yt_locked") + "</p>" : "");
+    ytRes = "<p>" + tr("yt_done") + ' · <a href="' + watch + '" target="_blank" rel="noopener">' + tr("yt_watch") + '</a> · <a href="' + studio + '" target="_blank" rel="noopener">' + tr("yt_studio") + "</a></p>" + (locked ? '<p class="autherr">' + tr("yt_locked") + '</p><p><a class="btn-s vsgo" href="' + o.url + '" download="seb-saathi-' + v.id + "." + o.ext + '">' + tr("vs_dl") + "</a></p>" : "");
+    ytLast = { ok: true, locked, link: watch };
     if (at) ytRes += "<p>" + esc(tr("yt_sched_ok").replace("{d}", typeof qShow === "function" ? qShow(at) : at)) + "</p>";
     let kept = false;
-    if (typeof mkQueueYt === "function") { try { kept = await mkQueueYt(title, watch, at || new Date().toISOString(), u.desc.indexOf("src=" + ysrc) >= 0 ? ysrc : ""); } catch (e) {} }
+    if (typeof mkQueueYt === "function") { try { kept = await mkQueueYt(title, watch, at || new Date().toISOString(), u.desc.indexOf("src=" + ysrc) >= 0 ? ysrc : "", locked); } catch (e) {} }
     if (!kept && typeof mkSave === "function") { try { await mkSave("post:" + Date.now(), { done: true, value: JSON.stringify({ t: ("YouTube: " + title).slice(0, 80), fb: "", ig: "", yt: watch }).slice(0, 500) }); } catch (e) {} }
-  } catch (e) { ytRes = '<p class="autherr">' + esc(tr("yt_err").replace("{m}", String(e.message || e))) + "</p>"; }
+  } catch (e) { ytRes = '<p class="autherr">' + esc(tr("yt_err").replace("{m}", String(e.message || e))) + "</p>"; ytLast = { ok: false, err: String(e.message || e) }; }
   ytBusy = ""; renderStudio();
+  return ytLast;
 }
 
 /* ---------- page ---------- */
@@ -723,6 +728,7 @@ function vsLoadFile(file, i) {
   body.addEventListener("change", e => {
     const t = e.target;
     if (t.id === "ytPriv" && YTU) { YTU.priv = t.value; return; }
+    if (t.id === "ytAi" && YTU) { YTU.ai = t.checked; return; }
     if (t.dataset.vsf === "dur") { const i = vsSceneOf(t); VS.scenes[i].dur = +t.value; vsSave(); renderStudio(); }
     else if (t.dataset.vsf === "art") { const i = vsSceneOf(t); VS.scenes[i].art = t.value; vsSave(); vsSelect(i); vsStill(); }
     else if (t.dataset.vsmedia != null && t.files && t.files[0]) vsLoadFile(t.files[0], +t.dataset.vsmedia);

@@ -16,6 +16,11 @@ Object.assign(T.en, {
   wk_rev_none: "Nothing waiting for the coming week.", wk_rev_go: "Approve {n} ticked", wk_rev_ok: "✓ {n} approved. They go out on their own at the times shown.",
   wk_rev_wa: "reminder", wk_rev_nophoto: "no photo: Facebook only", wk_edit: "Edit",
   wk_today: "Next week isn't planned yet.", wk_today_go: "✨ Make my week",
+  wk_yt: "Also upload the videos to YouTube", wk_s_yt: "Uploading video {i} to YouTube", wk_yt_lock: "uploaded, but YouTube kept it private (audit needed)",
+  yp_h: "🎬 Make & publish to YouTube", yp_p: "One tap: the video is written, voiced, made and uploaded to your Seb Saathi channel as a Short, with the settings you last used below. Keep this tab open and in front until it's done.",
+  yp_topic: "Topic (optional)", yp_topic_ph: "Leave empty for this month's orchard jobs", yp_at: "Publish at (India time, optional)", yp_go: "🎬 Make & publish", yp_busy: "Working… see the steps below",
+  yp_conn: "Connect your YouTube channel first (YouTube box in the Video Studio below).", yp_ok: "✓ Uploaded to YouTube.", yp_ok_at: "✓ Uploaded. YouTube publishes it at {d}.", yp_lock: "Uploaded, but YouTube locked it as private until Google audits your app. Download it below and post it in the YouTube app for now.",
+  yp_err: "Not published: {m}", yt_lock_tag: "private: YouTube audit needed",
 
   wx_h: "⛅ Weather watch · next 4 days", wx_none: "No weather risk for apple trees in the apple areas in the next 4 days.", wx_load: "Checking the forecast…", wx_err: "Could not get the forecast: {m}",
   wx_auto_on: "Alert drafts: automatic", wx_auto_off: "Alert drafts: off", wx_auto_p: "When a risk shows up, an alert post and a WhatsApp message are drafted for you (once every 4 days per risk). You still approve them.",
@@ -43,6 +48,11 @@ Object.assign(T.hi, {
   wk_rev_none: "आने वाले हफ़्ते के लिए कुछ बाक़ी नहीं।", wk_rev_go: "टिक वाले {n} मंज़ूर करें", wk_rev_ok: "✓ {n} मंज़ूर। ये दिखाए समय पर अपने आप जाएँगे।",
   wk_rev_wa: "याद", wk_rev_nophoto: "फ़ोटो नहीं: सिर्फ़ Facebook", wk_edit: "बदलें",
   wk_today: "अगला हफ़्ता अभी तय नहीं।", wk_today_go: "✨ मेरा हफ़्ता बनाएँ",
+  wk_yt: "वीडियो YouTube पर भी अपलोड करें", wk_s_yt: "वीडियो {i} YouTube पर अपलोड हो रहा है", wk_yt_lock: "अपलोड हुआ, पर YouTube ने private रखा (ऑडिट चाहिए)",
+  yp_h: "🎬 बनाएँ और YouTube पर डालें", yp_p: "एक टैप: वीडियो लिखा, आवाज़ दी, बनाया और Short के रूप में आपके सेब साथी चैनल पर अपलोड होता है, नीचे की पिछली सेटिंग से। पूरा होने तक यह टैब खुला और सामने रखें।",
+  yp_topic: "विषय (ज़रूरी नहीं)", yp_topic_ph: "ख़ाली छोड़ें तो इस महीने के बाग़ के काम", yp_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", yp_go: "🎬 बनाएँ और डालें", yp_busy: "काम चल रहा है… नीचे देखें",
+  yp_conn: "पहले अपना YouTube चैनल जोड़ें (नीचे Video Studio में YouTube बॉक्स)।", yp_ok: "✓ YouTube पर अपलोड हो गया।", yp_ok_at: "✓ अपलोड हुआ। YouTube इसे {d} पर पब्लिश करेगा।", yp_lock: "अपलोड हुआ, पर Google ऑडिट तक YouTube ने इसे private लॉक किया। अभी नीचे से डाउनलोड करके YouTube ऐप से पोस्ट करें।",
+  yp_err: "पब्लिश नहीं हुआ: {m}", yt_lock_tag: "private: YouTube ऑडिट चाहिए",
 
   wx_h: "⛅ मौसम पर नज़र · अगले 4 दिन", wx_none: "अगले 4 दिन सेब इलाक़ों में पेड़ों के लिए मौसम का कोई ख़तरा नहीं।", wx_load: "मौसम देखा जा रहा है…", wx_err: "मौसम नहीं मिला: {m}",
   wx_auto_on: "चेतावनी ड्राफ़्ट: अपने आप", wx_auto_off: "चेतावनी ड्राफ़्ट: बंद", wx_auto_p: "ख़तरा दिखते ही चेतावनी पोस्ट और WhatsApp संदेश अपने आप ड्राफ़्ट होते हैं (हर ख़तरे पर 4 दिन में एक बार)। मंज़ूरी आप ही देंगे।",
@@ -62,13 +72,13 @@ Object.assign(T.hi, {
 });
 
 const SP = {
-  wk: { busy: false, steps: [], msg: "", nPosts: 3, nVids: 2, wa: true }, unt: new Set(), revMsg: "",
+  wk: { busy: false, steps: [], msg: "", nPosts: 3, nVids: 2, wa: true, yt: false }, yp: { topic: "", at: "", busy: false, msg: "" }, unt: new Set(), revMsg: "",
   wx: null, wxErr: "", wxBusy: "", wxMsg: "", wxRan: false,
   gf: { name: "", area: "", size: "" }, gDel: null, gCopied: null, gErr: "",
   hist: null, histBusy: false
 };
-try { const o = JSON.parse(localStorage.getItem("sp-wk") || "null"); if (o) { if ([3, 5].indexOf(o.nPosts) >= 0) SP.wk.nPosts = o.nPosts; if ([0, 1, 2].indexOf(o.nVids) >= 0) SP.wk.nVids = o.nVids; SP.wk.wa = o.wa !== false; } } catch (e) {}
-const spSaveWk = () => { try { localStorage.setItem("sp-wk", JSON.stringify({ nPosts: SP.wk.nPosts, nVids: SP.wk.nVids, wa: SP.wk.wa })); } catch (e) {} };
+try { const o = JSON.parse(localStorage.getItem("sp-wk") || "null"); if (o) { if ([3, 5].indexOf(o.nPosts) >= 0) SP.wk.nPosts = o.nPosts; if ([0, 1, 2].indexOf(o.nVids) >= 0) SP.wk.nVids = o.nVids; SP.wk.wa = o.wa !== false; SP.wk.yt = !!o.yt; } } catch (e) {}
+const spSaveWk = () => { try { localStorage.setItem("sp-wk", JSON.stringify({ nPosts: SP.wk.nPosts, nVids: SP.wk.nVids, wa: SP.wk.wa, yt: SP.wk.yt })); } catch (e) {} };
 const spIstDate = (d) => new Date((d || Date.now()) + 330 * 60000).toISOString().slice(0, 10);
 const spDayName = iso => new Date(iso + "T00:00:00Z").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 /* 7:30 pm India time (14:00 UTC), `days` days from today */
@@ -170,7 +180,8 @@ function spWeekHtml() {
   let h = '<section class="spbox spweek" id="spWeek"><div class="mkph"><b>' + tr("wk_h") + "</b></div><p class=\"fine\">" + tr("wk_p") + "</p>" +
     '<div class="mkrow"><select class="mkin mksel" id="spWkPosts" aria-label="' + esc(tr("wk_posts")) + '"' + dis + ">" + [3, 5].map(n => '<option value="' + n + '"' + (n === W.nPosts ? " selected" : "") + ">" + n + " " + tr("wk_posts") + "</option>").join("") + "</select>" +
     '<select class="mkin mksel" id="spWkVids" aria-label="' + esc(tr("wk_vids")) + '"' + dis + ">" + [0, 1, 2].map(n => '<option value="' + n + '"' + (n === W.nVids ? " selected" : "") + ">" + tr("wk_v" + n) + "</option>").join("") + "</select>" +
-    '<label class="chk"><input type="checkbox" id="spWkWa"' + (W.wa ? " checked" : "") + dis + "><span>" + tr("wk_wa") + "</span></label></div>" +
+    '<label class="chk"><input type="checkbox" id="spWkWa"' + (W.wa ? " checked" : "") + dis + "><span>" + tr("wk_wa") + "</span></label>" +
+    (W.nVids ? '<label class="chk"><input type="checkbox" id="spWkYt"' + (W.yt ? " checked" : "") + dis + "><span>" + tr("wk_yt") + "</span></label>" : "") + "</div>" +
     '<div class="mkrow"><button type="button" class="btn-s add" data-sp="weekgo"' + (W.busy || mkQErr ? " disabled" : "") + ">" + tr(W.busy ? "wk_busy" : "wk_go") + "</button></div>" +
     (W.nVids ? '<p class="fine">' + tr("wk_vnote") + "</p>" : "");
   if (W.steps.length) h += '<ul class="mkwatch spsteps">' + W.steps.map(s => "<li>" + (s.s === "ok" ? "✓ " : s.s === "err" ? "✗ " : "… ") + esc(s.t) + (s.m ? ' <span class="fine mkwarn">' + esc(s.m) + "</span>" : "") + "</li>").join("") + "</ul>";
@@ -223,6 +234,13 @@ async function spWeekGo() {
         if (AV.err || !qid) { s.s = "err"; s.m = AV.err ? AV.err.replace(/^.*?:\s*/, "") : tr("vs_q_webm"); continue; }
         try { await qUpd(qid, { post_at: spEvening(days[i]), topic: String(AV.topic).slice(0, 200) }); } catch (e) {}
         s.s = "ok";
+        /* the same video as a YouTube Short, published by YouTube on its day */
+        if (W.yt && typeof ytUpload === "function" && typeof YT !== "undefined" && YT && YT.connected && YTU) {
+          const y = step(tr("wk_s_yt").replace("{i}", i + 1));
+          YTU.at = new Date(Date.parse(spEvening(days[i])) + 330 * 60000).toISOString().slice(0, 16);
+          const r = await ytUpload();
+          if (r && r.ok) { y.s = "ok"; if (r.locked) y.m = tr("wk_yt_lock"); } else { y.s = "err"; y.m = (r && r.err) || ""; }
+        }
       }
       try { const o = JSON.parse(keep); ["type", "topic", "own", "lang", "voice", "len", "fmt", "pics", "end", "after"].forEach(k => { AV[k] = o[k]; }); AV.step = ""; avSave(); avRender(); } catch (e) {}
     }
@@ -326,6 +344,39 @@ function spWinsSub() {
   return tr("wn_sub").replace("{n}", mkN(n));
 }
 
+/* =================== Make & publish to YouTube (one tap) =================== */
+function spYpHtml() {
+  const Y = SP.yp, conn = typeof YT !== "undefined" && YT && YT.connected, dis = Y.busy ? " disabled" : "";
+  return '<section class="spbox spweek" id="spYp"><div class="mkph"><b>' + tr("yp_h") + '</b></div><p class="fine">' + tr("yp_p") + "</p>" +
+    '<div class="mkrow"><input class="mkin" id="spYpTopic" maxlength="200" aria-label="' + esc(tr("yp_topic")) + '" placeholder="' + esc(tr("yp_topic_ph")) + '" value="' + esc(Y.topic) + '"' + dis + "></div>" +
+    '<label class="fine" for="spYpAt">' + tr("yp_at") + '</label><div class="mkrow"><input class="mkin" id="spYpAt" type="datetime-local" value="' + esc(Y.at) + '"' + dis + ">" +
+    '<button type="button" class="btn-s add" data-sp="ypgo"' + (Y.busy || !conn ? " disabled" : "") + ">" + tr(Y.busy ? "yp_busy" : "yp_go") + "</button></div>" +
+    (!conn ? '<p class="fine mkwarn">' + tr("yp_conn") + "</p>" : "") + (Y.msg ? '<p class="fine" role="status">' + Y.msg + "</p>" : "") + "</section>";
+}
+async function spYpGo() {
+  const Y = SP.yp; if (Y.busy || typeof avCreate !== "function" || typeof AV === "undefined" || AV.busy) return;
+  if (!(typeof YT !== "undefined" && YT && YT.connected)) { Y.msg = '<span class="mkwarn">' + esc(tr("yp_conn")) + "</span>"; renderMk(); return; }
+  Y.busy = true; Y.msg = ""; renderMk();
+  const keep = { type: AV.type, topic: AV.topic, own: AV.own, after: AV.after };
+  const t = Y.topic.trim();
+  if (t) Object.assign(AV, { own: t, topic: "" });
+  else { AV.type = "season"; AV.own = ""; AV.topic = (avTopics() || [])[0] || "Orchard jobs this month"; }
+  AV.after = "yt"; AV.ytAt = Y.at && Date.parse(Y.at + ":00Z") - 330 * 60000 > Date.now() + 120000 ? Y.at : "";
+  if (typeof VS !== "undefined") VS.out = null;
+  if (typeof ytLast !== "undefined") ytLast = null;
+  avRender();
+  await avCreate();
+  const r = typeof ytLast !== "undefined" ? ytLast : null;
+  if (AV.err) Y.msg = '<span class="mkwarn">' + esc(tr("yp_err").replace("{m}", AV.err.replace(/^.*?:\s*/, ""))) + "</span>";
+  else if (r && r.ok) Y.msg = esc(r.locked ? tr("yp_lock") : AV.ytAt ? tr("yp_ok_at").replace("{d}", AV.ytAt.replace("T", " ")) : tr("yp_ok")) +
+    (r.link ? ' <a href="' + esc(r.link) + '" target="_blank" rel="noopener">' + tr("yt_watch") + "</a>" : "");
+  else Y.msg = '<span class="mkwarn">' + esc(tr("yp_err").replace("{m}", (r && r.err) || AV.note || "")) + "</span>";
+  Object.assign(AV, keep); AV.ytAt = ""; avSave(); avRender();
+  Y.busy = false; if (!AV.err && r && r.ok) { Y.topic = ""; Y.at = ""; }
+  renderMk();
+  const el = $("spYp"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
 /* =================== drawing it into the Social handler =================== */
 function spDraw() {
   const top = $("mkTop"), bot = $("mkBot"); if (!top || !bot) return;
@@ -342,6 +393,8 @@ function spDraw() {
     const sec = mkSec("wins", tr("wn_h"), spWinsSub(), spWinsHtml());
     if (!ins(best, "beforebegin", sec)) bot.insertAdjacentHTML("beforeend", sec);
     spLoadHist();
+  } else if (mkSub === "yt") {
+    ins(top.querySelector(".mksub"), "afterend", spYpHtml());
   } else if (mkSub === "wa") {
     const G = spGroups(), s = G.reduce((a, g) => a + spGNums(g).sign, 0);
     const sec = mkSec("wag", tr("wg_h"), tr("wg_sub").replace("{n}", G.length).replace("{s}", mkN(s)), spGroupsHtml());
@@ -369,6 +422,7 @@ document.addEventListener("click", async e => {
   const b = e.target.closest && e.target.closest("[data-sp]"); if (!b) return;
   const a = b.dataset.sp;
   if (a === "weekgo") { spWeekGo(); return; }
+  if (a === "ypgo") { spYpGo(); return; }
   if (a === "weekjump") { mkGo("fb"); const el = $("spWeek"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (a === "revgo") { spRevGo(); return; }
   if (a === "edit") {
@@ -399,6 +453,7 @@ document.addEventListener("click", async e => {
 });
 document.addEventListener("input", e => {
   const t = e.target; if (!t || !t.id) return;
+  if (t.id === "spYpTopic") { SP.yp.topic = t.value; return; }
   if (t.id === "spGName") SP.gf.name = t.value; else if (t.id === "spGArea") SP.gf.area = t.value; else if (t.id === "spGSize") SP.gf.size = t.value;
 });
 document.addEventListener("change", e => {
@@ -407,4 +462,6 @@ document.addEventListener("change", e => {
   if (t.id === "spWkPosts") { SP.wk.nPosts = +t.value; spSaveWk(); }
   else if (t.id === "spWkVids") { SP.wk.nVids = +t.value; spSaveWk(); renderMk(); }
   else if (t.id === "spWkWa") { SP.wk.wa = t.checked; spSaveWk(); }
+  else if (t.id === "spWkYt") { SP.wk.yt = t.checked; spSaveWk(); }
+  else if (t.id === "spYpAt") { SP.yp.at = t.value; }
 });
