@@ -1065,6 +1065,8 @@ const coMonthly = x => x.amount_inr == null ? 0 : x.per === "year" ? x.amount_in
 /* ---------- Costs tab: "My expenses" — what Seb Saathi really cost, entered by hand each month (admin_expenses table) ---------- */
 let EX = null, exErr = "", exSel = null, exEdit = null, exCopy = false;
 const EX_ITEMS = ["Vercel", "Supabase", "AI for marketing (Anthropic)","GoDaddy (domain)", "Twilio (WhatsApp/SMS)", "Resend (email)", "Facebook/Instagram ads", "Printing / leaflets", "Travel", "Phone / internet", "Other"];
+const EX_REP = ["once", "monthly", "yearly"];
+const exRep = x => EX_REP.indexOf(x && x.repeats) >= 0 ? x.repeats : "once";
 const exToday = () => new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);   /* India date */
 const exNowKey = () => exToday().slice(0, 7);
 const exRup = n => "₹" + (Math.round((+n || 0) * 100) / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 });
@@ -1094,6 +1096,7 @@ function renderExp() {
     '<div class="field"><label>' + tr("ex_c_date") + '</label><input name="spent_on" type="date" required value="' + esc(x.spent_on || exToday()) + '"></div>' +
     '<div class="field"><label>' + tr("ex_c_item") + '</label><input name="item" maxlength="80" required list="exItems" value="' + esc(x.item || "") + '" placeholder="' + esc(tr("ex_item_ph")) + '"></div>' +
     '<div class="field"><label>' + tr("ex_c_amt") + '</label><input name="amount_inr" type="number" min="0" step="0.01" inputmode="decimal" required value="' + esc(x.amount_inr == null ? "" : x.amount_inr) + '"></div>' +
+    '<div class="field"><label>' + tr("ex_c_rep") + '</label><select name="repeats">' + EX_REP.map(r => '<option value="' + r + '"' + ((x.repeats || "once") === r ? " selected" : "") + ">" + tr("ex_rep_" + r) + "</option>").join("") + "</select></div>" +
     '<div class="field wide"><label>' + tr("ex_c_note") + '</label><input name="note" maxlength="500" value="' + esc(x.note || "") + '" placeholder="' + esc(tr("ex_note_ph")) + '"></div>' +
     '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("co_save") + '</button><button class="btn-s" type="button" data-exact="cancel">' + tr("co_cancel") + "</button>" +
     (x.id ? '<button class="btn-s danger" type="button" data-exact="del" data-id="' + esc(x.id) + '">' + tr("co_del") + "</button>" : "") + "</div></form>";
@@ -1123,7 +1126,7 @@ function renderExp() {
     h += '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ex_c_date") + '</th><th scope="col">' + tr("ex_c_item") + '</th><th scope="col" class="n">' + tr("ex_c_amt") +
       '</th><th scope="col">' + tr("ex_c_note") + "</th><th></th></tr></thead><tbody>" +
       rows.map(x => exEdit === x.id ? '<tr><td colspan="5">' + form(x) + "</td></tr>" :
-        "<tr><td>" + paDay(x.spent_on) + "</td><td><b>" + esc(x.item) + '</b></td><td class="n">' + exRup(x.amount_inr) + '</td><td class="wrapn">' + esc(x.note || "") +
+        "<tr><td>" + paDay(x.spent_on) + "</td><td><b>" + esc(x.item) + "</b>" + (exRep(x) !== "once" ? ' <span class="exrep">' + tr("ex_rep_" + exRep(x)) + "</span>" : "") + '</td><td class="n">' + exRup(x.amount_inr) + '</td><td class="wrapn">' + esc(x.note || "") +
         '</td><td><button class="btn-s" type="button" data-exact="edit" data-id="' + esc(x.id) + '">' + tr("co_edit") + "</button></td></tr>").join("") + "</tbody></table></div>";
   } else h += "<p>" + tr(exSel === now ? "ex_none_now" : "ex_none") + "</p>";
   el.innerHTML = h + "</div>";
@@ -1164,7 +1167,7 @@ document.addEventListener("click", async e => {
     const td = exToday(), ym = td.slice(0, 7), [y, m] = ym.split("-").map(Number), last = new Date(Date.UTC(y, m, 0)).getUTCDate();
     const day = x => { const d = Math.min(+String(x.spent_on).slice(8, 10) || 1, last), s = ym + "-" + String(d).padStart(2, "0"); return s > td ? td : s; };
     b.disabled = true;
-    const r = await sb.from("admin_expenses").insert(src.map(x => ({ spent_on: day(x), item: x.item, amount_inr: +x.amount_inr || 0, note: x.note || null, updated_at: new Date().toISOString() }))).select();
+    const r = await sb.from("admin_expenses").insert(src.map(x => Object.assign({ spent_on: day(x), item: x.item, amount_inr: +x.amount_inr || 0, note: x.note || null, updated_at: new Date().toISOString() }, "repeats" in x ? { repeats: exRep(x) } : {}))).select();
     if (r.error) { b.disabled = false; set("coErr", tr("pa_err").replace("{m}", r.error.message || "")); return; }
     EX = (r.data || []).concat(EX).sort((p, q) => String(q.spent_on).localeCompare(String(p.spent_on)));
     exCopy = false; exSel = exNowKey(); set("coErr", ""); renderCosts(); return;
@@ -1182,16 +1185,20 @@ document.addEventListener("submit", async e => {
   e.preventDefault();
   const g = n => { const i = f.querySelector('[name="' + n + '"]'); return i ? String(i.value || "").trim() : ""; };   /* not f.elements[n]: elements.item is a built-in function */
   const amt = Math.round((+g("amount_inr") || 0) * 100) / 100;
-  const row = { spent_on: g("spent_on"), item: g("item"), amount_inr: amt, note: g("note") || null, updated_at: new Date().toISOString() };
+  const row = { spent_on: g("spent_on"), item: g("item"), amount_inr: amt, note: g("note") || null, repeats: EX_REP.indexOf(g("repeats")) >= 0 ? g("repeats") : "once", updated_at: new Date().toISOString() };
   if (!row.item || !/^\d{4}-\d{2}-\d{2}$/.test(row.spent_on) || !(amt >= 0)) return;
   if (!sb || !isAdmin()) return;
   const btn = f.querySelector('[type="submit"]'); if (btn) btn.disabled = true;
   const id = f.dataset.exform;
-  const r = id ? await sb.from("admin_expenses").update(row).eq("id", id).select().single() : await sb.from("admin_expenses").insert(row).select().single();
+  const save = o => id ? sb.from("admin_expenses").update(o).eq("id", id).select().single() : sb.from("admin_expenses").insert(o).select().single();
+  let r = await save(row);
+  /* SQL not re-run yet: a one-time cost still saves without the how-often column */
+  if (r.error && row.repeats === "once" && /repeats/i.test(String(r.error.message || ""))) { const o = Object.assign({}, row); delete o.repeats; r = await save(o); }
   if (r.error) {
     if (btn) btn.disabled = false;
     const m = String(r.error.message || r.error.code || ""), code = String(r.error.code || "");
-    const msg = code === "42P01" || code === "PGRST205" || /could not find the table|does not exist|schema cache/i.test(m) ? tr("ex_setup")
+    const msg = /repeats/i.test(m) ? tr("ex_setup_rep")
+      : code === "42P01" || code === "PGRST205" || /could not find the table|does not exist|schema cache/i.test(m) ? tr("ex_setup")
       : code === "42501" || /row-level security|permission denied/i.test(m) ? tr("ex_deny") : tr("pa_err").replace("{m}", m);
     let p = f.querySelector(".exerr"); if (!p) { p = document.createElement("p"); p.className = "autherr exerr wide"; p.setAttribute("role", "alert"); f.appendChild(p); }
     p.textContent = msg; return;
@@ -1213,9 +1220,11 @@ Object.assign(T.en, { ex_add: "+ Add expense", ex_h: "My expenses", ex_p: "What 
   pl_vs: "Change since {m}", pl_growers: "Growers", pl_growers_sub: "{p} paying · {f} free",
   pl_be: "Saathi Plus growers to break even", pl_be_sub: "at {m} a month (or {y} on the yearly {yp} plan) to cover this month's expenses and AI.", pl_be_have: "You have {n} paying now.",
   pl_be_none: "No costs this month yet.", pl_updated: "Updated {t}",
-  pl_yr: "Estimated yearly cost", pl_yr_sub: "About {a} a month (expenses + AI), the average of the last {n} months × 12.",
-  pl_yr_sub1: "About {a} a month (expenses + AI) × 12. Only one month recorded so far, so this firms up as you add more months.",
-  pl_yr_list: "From the price list: about {a} a month × 12. Add your real expenses below for a better figure.", pl_yr_none: "No costs recorded yet.",
+  pl_yr: "Estimated yearly cost", pl_yr_sub: "Monthly bills {m} × 12 + yearly bills {y} + AI about {a} a month × 12. One-time costs are not counted.",
+  pl_yr_list: "From the price list: about {a} a month × 12. Add your real expenses below for a better figure.", pl_yr_none: "No regular costs recorded yet.",
+  pl_yr_mark: "Tip: tap Edit on your regular bills below and set How often to Monthly or Yearly.",
+  ex_c_rep: "How often", ex_rep_once: "One time", ex_rep_monthly: "Monthly", ex_rep_yearly: "Yearly",
+  ex_setup_rep: "How often isn't set up yet. In Supabase → SQL Editor, run supabase/admin_expenses.sql again, then try again.",
   ex_copy: "Copy regular bills from last month", ex_copy_h: "Bills from {m}", ex_copy_p: "Tick the ones you paid again this month. They are added with this month's date; change the amount after if it was different.",
   ex_copy_add: "Add ticked", ex_copy_none: "Everything from last month is already added.",
   pl_note: "Income = approved grower payments, in the month they paid (a yearly plan counts in full that month). Expenses = what you added below. AI cost = growers' Saathi questions, photo checks and receipt readings, counted automatically (at about ₹{r} to the dollar). So don't add your Anthropic bill for these as an expense; only add AI you use for marketing.",
@@ -1232,9 +1241,11 @@ Object.assign(T.hi, { ex_add: "+ ख़र्च जोड़ें", ex_h: "म
   pl_vs: "{m} से बदलाव", pl_growers: "बाग़वान", pl_growers_sub: "{p} भुगतान वाले · {f} मुफ़्त",
   pl_be: "बराबरी के लिए Saathi Plus बाग़वान", pl_be_sub: "{m} महीना पर (या साल वाले {yp} प्लान पर {y}), ताकि इस महीने का ख़र्च और AI निकल जाए।", pl_be_have: "अभी {n} भुगतान वाले हैं।",
   pl_be_none: "इस महीने अभी कोई ख़र्च नहीं।", pl_updated: "अपडेट {t}",
-  pl_yr: "अनुमानित सालाना ख़र्च", pl_yr_sub: "लगभग {a} महीना (ख़र्च + AI), पिछले {n} महीनों का औसत × 12।",
-  pl_yr_sub1: "लगभग {a} महीना (ख़र्च + AI) × 12। अभी सिर्फ़ एक महीने का रिकॉर्ड है, और महीने जुड़ने पर आँकड़ा पक्का होगा।",
-  pl_yr_list: "प्राइस लिस्ट से: लगभग {a} महीना × 12। सही आँकड़े के लिए नीचे अपने असल ख़र्च जोड़ें।", pl_yr_none: "अभी कोई ख़र्च दर्ज नहीं।",
+  pl_yr: "अनुमानित सालाना ख़र्च", pl_yr_sub: "मासिक बिल {m} × 12 + सालाना बिल {y} + AI लगभग {a} महीना × 12। एक बार वाले ख़र्च नहीं गिने गए।",
+  pl_yr_list: "प्राइस लिस्ट से: लगभग {a} महीना × 12। सही आँकड़े के लिए नीचे अपने असल ख़र्च जोड़ें।", pl_yr_none: "अभी कोई नियमित ख़र्च दर्ज नहीं।",
+  pl_yr_mark: "सुझाव: नीचे अपने नियमित बिलों पर Edit दबाएँ और कितनी बार में मासिक या सालाना चुनें।",
+  ex_c_rep: "कितनी बार", ex_rep_once: "एक बार", ex_rep_monthly: "मासिक", ex_rep_yearly: "सालाना",
+  ex_setup_rep: "कितनी बार अभी सेट नहीं है। Supabase → SQL Editor में supabase/admin_expenses.sql दोबारा चलाएँ, फिर कोशिश करें।",
   ex_copy: "पिछले महीने के नियमित बिल कॉपी करें", ex_copy_h: "{m} के बिल", ex_copy_p: "जो इस महीने फिर भरे, उन पर टिक करें। ये इस महीने की तारीख़ से जुड़ेंगे; रक़म अलग थी तो बाद में बदल दें।",
   ex_copy_add: "टिक वाले जोड़ें", ex_copy_none: "पिछले महीने का सब कुछ पहले से जुड़ा है।",
   pl_note: "आमदनी = बाग़वानों के मंज़ूर भुगतान, जिस महीने भरे (साल का प्लान उसी महीने पूरा गिना जाता है)। ख़र्च = जो आपने नीचे जोड़ा। AI ख़र्च = बाग़वानों के साथी सवाल, फ़ोटो जाँच और रसीद पढ़ना, अपने आप गिना जाता है (लगभग ₹{r} प्रति डॉलर), इसलिए इसे Anthropic बिल के रूप में ख़र्च में न जोड़ें; सिर्फ़ मार्केटिंग वाला AI जोड़ें।",
@@ -1358,13 +1369,24 @@ function renderCosts() {
   const need = cur.exp + cur.ai, beM = Math.ceil(need / PLUS_MONTH), beY = Math.ceil(need / (PLUS_YEAR / 12));
   const beTile = '<div class="betile"><span>' + tr("pl_be") + "</span><b>" + (need > 0 ? fmtN(beM) : "0") + '</b><span class="sub">' +
     (need > 0 ? tr("pl_be_sub").replace("{m}", paRup(PLUS_MONTH)).replace("{y}", fmtN(beY)).replace("{yp}", paRup(PLUS_YEAR)) + (paying ? " " + tr("pl_be_have").replace("{n}", fmtN(paying)) : "") : tr("pl_be_none")) + "</span></div>";
-  /* estimated yearly cost: average monthly (expenses + AI) over the last 12 months that have records, × 12; price list only if nothing is entered yet */
+  /* estimated yearly cost = monthly bills × 12 + yearly bills + average monthly AI × 12; one-time costs are left out.
+     Each regular bill counts once, at its latest amount: a monthly bill if it was paid in the last 3 months, a yearly bill if paid in the last 12. */
   const yKeys = []; for (let i = 0; i < 12; i++) { const d = new Date(Date.UTC(py, pm - 1 - i, 1)); yKeys.push(d.toISOString().slice(0, 7)); }
-  const yUsed = yKeys.filter(k => PL[k] && PL[k].exp + PL[k].ai > 0.005), yTot = yKeys.reduce((s, k) => s + (PL[k] ? PL[k].exp + PL[k].ai : 0), 0);
-  const yN = yUsed.length ? yKeys.indexOf(yUsed[yUsed.length - 1]) + 1 : 0;   /* months from the first month with costs up to this month */
-  const yMon = yN ? yTot / yN : (fixed + ai), yEst = yMon * 12;
+  const seen = {}; let yMB = 0, yYB = 0;
+  (EX || []).forEach(x => {   /* EX is newest first, so the first entry of each bill is its latest amount */
+    const r = exRep(x), k = r + "|" + String(x.item || "").trim().toLowerCase(), mk = String(x.spent_on).slice(0, 7);
+    if (r === "once" || seen[k]) return; seen[k] = 1;
+    if (r === "monthly" && yKeys.slice(0, 3).indexOf(mk) >= 0) yMB += +x.amount_inr || 0;
+    if (r === "yearly" && yKeys.indexOf(mk) >= 0) yYB += +x.amount_inr || 0;
+  });
+  const aiUsed = yKeys.filter(k => PL[k] && PL[k].ai > 0.005), aiN = aiUsed.length ? yKeys.indexOf(aiUsed[aiUsed.length - 1]) + 1 : 0;
+  const yAi = aiN ? yKeys.reduce((s, k) => s + (PL[k] ? PL[k].ai : 0), 0) / aiN : 0;
+  const yReal = yMB * 12 + yYB + yAi * 12, yList = !yReal && (fixed + ai) > 0 ? (fixed + ai) * 12 : 0, yEst = yReal || yList;
+  const noRep = (EX || []).length && !(EX || []).some(x => exRep(x) !== "once");
   const yTile = '<div class="betile ytile"><span>' + tr("pl_yr") + "</span><b>" + (yEst > 0 ? exRup(Math.round(yEst)) : "–") + '</b><span class="sub">' +
-    (yN ? tr(yN === 1 ? "pl_yr_sub1" : "pl_yr_sub").replace("{a}", exRup(Math.round(yMon))).replace("{n}", fmtN(yN)) : yEst > 0 ? tr("pl_yr_list").replace("{a}", exRup(Math.round(yMon))) : tr("pl_yr_none")) + "</span></div>";
+    (yReal ? tr("pl_yr_sub").replace("{m}", exRup(Math.round(yMB))).replace("{y}", exRup(Math.round(yYB))).replace("{a}", exRup(Math.round(yAi)))
+      : yList ? tr("pl_yr_list").replace("{a}", exRup(Math.round(fixed + ai))) : tr("pl_yr_none")) +
+    (noRep ? " " + tr("pl_yr_mark") : "") + "</span></div>";
   $("coStats").innerHTML = '<h5 class="plh">' + tr("pl_now").replace("{m}", esc(exMonthName(now))) + "</h5>" +
     st("pl_inc", exRup(cur.inc) + dl(cur.inc, prev ? prev.inc : 0, true), "pos") + st("pl_exp", EX ? exRup(cur.exp) + dl(cur.exp, prev ? prev.exp : 0, false) : "–") +
     st("pl_ai", AIU ? exRup(cur.ai) + dl(cur.ai, prev ? prev.ai : 0, false) : "–", "aitile") + plSt("pl_pl", pl(cur), prev ? dl(pl(cur), pl(prev), true) : "") +

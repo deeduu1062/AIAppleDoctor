@@ -12,6 +12,10 @@ create table if not exists public.admin_expenses (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+-- how often the bill comes: once, monthly or yearly (used for "Estimated yearly cost")
+alter table public.admin_expenses add column if not exists repeats text not null default 'once';
+alter table public.admin_expenses drop constraint if exists admin_expenses_repeats_ok;
+alter table public.admin_expenses add constraint admin_expenses_repeats_ok check (repeats in ('once', 'monthly', 'yearly'));
 create index if not exists admin_expenses_day on public.admin_expenses (spent_on desc);
 
 alter table public.admin_expenses enable row level security;
