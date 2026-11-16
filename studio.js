@@ -18,7 +18,7 @@ Object.assign(T.en, {
   vs_media: "Add photo or clip", vs_media_ch: "Change photo/clip", vs_media_rm: "Remove", vs_nomedia: "No photo: brand colours are used.",
   vs_up: "Move up", vs_del: "Delete", vs_add: "+ Add scene", vs_max: "Up to 8 scenes.",
   vs_end: "Last screen", vs_cta: "Call to action",
-  vs_edit_h: "Edit the video by hand", vs_edit_p: "scenes, words, pictures, captions, music, timing", vs_yt_off: "not connected",
+  vs_edit_h: "Change this video", vs_edit_p: "words, pictures, captions, music or timing, then tap Make video again", vs_edit_go: "✏️ Change this video", vs_yt_off: "not connected",
   vs_caps: "Captions that follow the voice", vs_caps_p: "The spoken words appear on screen as they are said, so people watching without sound still get it.",
   vs_music: "Background music (optional)", vs_music_add: "Add music file", vs_music_rm: "Remove music", vs_vol: "Volume",
   vs_music_note: "Use only music you have the right to use, or Instagram may mute the video. You can also add music later inside Instagram.",
@@ -71,7 +71,7 @@ Object.assign(T.hi, {
   vs_media: "फ़ोटो या क्लिप जोड़ें", vs_media_ch: "फ़ोटो/क्लिप बदलें", vs_media_rm: "हटाएँ", vs_nomedia: "फ़ोटो नहीं: ब्रांड के रंग लगेंगे।",
   vs_up: "ऊपर करें", vs_del: "हटाएँ", vs_add: "+ सीन जोड़ें", vs_max: "ज़्यादा से ज़्यादा 8 सीन।",
   vs_end: "आख़िरी स्क्रीन", vs_cta: "बुलावा (CTA)",
-  vs_edit_h: "वीडियो ख़ुद बदलें", vs_edit_p: "सीन, शब्द, चित्र, कैप्शन, म्यूज़िक, समय", vs_yt_off: "जुड़ा नहीं",
+  vs_edit_h: "यह वीडियो बदलें", vs_edit_p: "शब्द, चित्र, कैप्शन, म्यूज़िक या समय, फिर 'वीडियो बनाएँ' दोबारा दबाएँ", vs_edit_go: "✏️ यह वीडियो बदलें", vs_yt_off: "जुड़ा नहीं",
   vs_caps: "आवाज़ के साथ चलते कैप्शन", vs_caps_p: "जो बोला जा रहा है वह उसी समय स्क्रीन पर आता है, ताकि बिना आवाज़ देखने वाले भी समझ लें।",
   vs_music: "बैकग्राउंड म्यूज़िक (ज़रूरी नहीं)", vs_music_add: "म्यूज़िक फ़ाइल जोड़ें", vs_music_rm: "म्यूज़िक हटाएँ", vs_vol: "आवाज़",
   vs_music_note: "सिर्फ़ वही म्यूज़िक लगाएँ जिसका आपको हक़ है, वरना Instagram वीडियो की आवाज़ बंद कर सकता है। म्यूज़िक बाद में Instagram में भी जोड़ सकते हैं।",
@@ -716,9 +716,11 @@ function renderStudio() {
     '<p class="fine" id="vsMsg" role="status">' + esc(VS.msg) + "</p>" +
     (VS.err ? '<p class="autherr" role="alert">' + esc(VS.err) + "</p>" : "") +
     (o && !busy ? '<div class="vsout"><p>' + tr("vs_done").replace("{t}", o.secs).replace("{size}", vsKb(o.size)) + '</p><a class="btn-s vsgo" href="' + o.url + '" download="seb-saathi-' + VS.tpl + "-" + new Date().toISOString().slice(0, 10) + "." + o.ext + '">' + tr("vs_dl") + " (" + o.ext.toUpperCase() + ")</a>" +
-      (o.ext !== "mp4" ? '<p class="autherr">' + tr("vs_webm") + "</p>" : "") + (o.hidden ? '<p class="autherr">' + tr("vs_hidden") + "</p>" : "") + vsQueueHtml() + ytOutHtml() + "</div>" : "") +
+      (o.ext !== "mp4" ? '<p class="autherr">' + tr("vs_webm") + "</p>" : "") + (o.hidden ? '<p class="autherr">' + tr("vs_hidden") + "</p>" : "") +
+      (VS.editOpen ? "" : '<p><button type="button" class="btn-s" id="vsEditGo">' + tr("vs_edit_go") + "</button></p>") + vsQueueHtml() + ytOutHtml() + "</div>" : "") +
     "</div>" +
     '<div class="vsform"' + (busy ? ' inert' : "") + '>' +
+    (VS.editOpen ? "" : '<div hidden>') +   /* nothing to change until a video is made: "Change this video" opens it */
     '<details class="vsfold" id="vsEdit"' + (VS.editOpen ? " open" : "") + '><summary><b>' + tr("vs_edit_h") + '</b> <span class="fine">' + tr("vs_edit_p") + "</span></summary>" +
     '<div class="vsgrp"><span class="vsl">' + tr("vs_tpl") + '</span><div class="vschips">' + ["tip", "feat", "alert", "season"].map(k => vsChip("tpl", k, VS.tpl, tr("vs_t_" + k))).join("") + "</div></div>" +
     '<div class="vsgrp"><span class="vsl">' + tr("vs_vlang") + '</span><div class="vschips">' + vsChip("lang", "hi", VS.vlang, "हिंदी") + vsChip("lang", "hl", VS.vlang, "Hinglish") + vsChip("lang", "en", VS.vlang, "English") + "</div></div>" +
@@ -735,7 +737,7 @@ function renderStudio() {
     '<p class="fine">' + tr("vs_music_note") + "</p>" + (typeof muHtml === "function" ? muHtml() : "") + "</div>" +
     '<div class="vsf"><label for="vsCap">' + tr("vs_cap") + '</label><textarea id="vsCap" rows="7" readonly>' + esc(vsCaption()) + '</textarea></div>' +
     '<div class="vsctl"><button type="button" class="btn-s" id="vsCopy">' + tr("vs_copy") + "</button></div>" +
-    '<p class="fine">' + tr("vs_how") + "</p></details>" +
+    '<p class="fine">' + tr("vs_how") + "</p></details>" + (VS.editOpen ? "" : "</div>") +
     (YT && YT.connected && YT.channel ? "" : '<details class="vsfold" id="vsYtBox"' + (VS.ytOpen ? " open" : "") + '><summary><b>' + tr("yt_h") + '</b> <span class="fine">' + esc(ytSum) + "</span></summary>" + ytCardHtml() + "</details>") +   /* connected: the top row of the Social handler already says so */
     "</div></div>";
   /* the canvas is made once and moved back in: a recording keeps working through any re-render */
@@ -803,6 +805,7 @@ function vsLoadFile(file, i) {
     else if (b.id === "vsReset") { if (confirm(tr("vs_reset_q"))) { vsFromTpl(); VS.sel = 0; vsSave(); renderStudio(); } }
     else if (b.id === "vsPlay") { if (VS.play) vsStop(false); else vsStart(false); }
     else if (b.id === "vsMake") vsStart(true);
+    else if (b.id === "vsEditGo") { VS.editOpen = true; renderStudio(); const el = $("vsEdit"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }
     else if (b.id === "vsQueue") vsQueue();
     else if (b.id === "vsEvery") vsEvery();
     else if (b.id === "vsMusicRm") { if (VS.music) { VS.music.el.pause(); URL.revokeObjectURL(VS.music.url); } VS.music = null; renderStudio(); }
