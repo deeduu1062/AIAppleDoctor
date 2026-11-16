@@ -307,7 +307,12 @@ Object.assign(T.en, {
   ev_go: "📣 Make posts for every platform", ev_busy: "Writing captions…",
   ev_p: "AI writes a Facebook post, an Instagram Reel caption, a WhatsApp message and a YouTube Short title for this video.",
   ev_done: "Drafts made: {w}. Check them below.", ev_yt: "The YouTube Short is ready in the Video Studio (YouTube & videos tab) with its title: tap Upload.",
-  ev_yt_no: "For YouTube, connect your channel in the Video Studio (YouTube & videos tab)."
+  ev_yt_no: "For YouTube, connect your channel in the Video Studio (YouTube & videos tab).",
+  td_yt: "YouTube videos waiting for your OK ({n})",
+  ytd_h: "Waiting for your OK: nothing goes to YouTube until you tap Upload.", ytd_title: "Title", ytd_desc: "Description",
+  ytd_priv: "Who can see it on YouTube", ytd_at: "Publish at (India time, optional)", ytd_at_p: "Leave empty to use the choice above as soon as it uploads. With a time, YouTube keeps it private until then and makes it Public at that time.",
+  ytd_go: "Upload to YouTube: {p}", ytd_pub_at: "goes Public on {d}", ytd_busy: "Uploading to YouTube…", ytd_del: "Discard", ytd_ok: "✓ Sent to YouTube. It's in the YouTube list.",
+  ytd_conn: "Connect your YouTube channel first (YouTube box in the Video Studio), then tap Upload again."
 });
 Object.assign(T.hi, {
   td_h: "आज", td_open: "खोलें", td_out: "आज जाने वाले ({n})", td_wa: "आज हाथ से भेजने वाले WhatsApp ({n})",
@@ -327,7 +332,12 @@ Object.assign(T.hi, {
   ev_go: "📣 हर प्लेटफ़ॉर्म के लिए पोस्ट बनाएँ", ev_busy: "कैप्शन लिख रहे हैं…",
   ev_p: "AI इस वीडियो के लिए Facebook पोस्ट, Instagram Reel कैप्शन, WhatsApp संदेश और YouTube Short का टाइटल लिखता है।",
   ev_done: "ड्राफ़्ट बन गए: {w}। नीचे जाँचें।", ev_yt: "YouTube Short टाइटल के साथ Video Studio (YouTube और वीडियो टैब) में तैयार है: अपलोड दबाएँ।",
-  ev_yt_no: "YouTube के लिए Video Studio (YouTube और वीडियो टैब) में अपना चैनल जोड़ें।"
+  ev_yt_no: "YouTube के लिए Video Studio (YouTube और वीडियो टैब) में अपना चैनल जोड़ें।",
+  td_yt: "YouTube वीडियो आपकी मंज़ूरी के इंतज़ार में ({n})",
+  ytd_h: "आपकी मंज़ूरी का इंतज़ार: जब तक आप अपलोड नहीं दबाते, YouTube पर कुछ नहीं जाता।", ytd_title: "शीर्षक", ytd_desc: "विवरण",
+  ytd_priv: "YouTube पर कौन देख सकता है", ytd_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", ytd_at_p: "ख़ाली छोड़ें तो अपलोड होते ही ऊपर वाला विकल्प लगेगा। समय डालें तो YouTube तब तक private रखकर उसी समय Public करेगा।",
+  ytd_go: "YouTube पर अपलोड करें: {p}", ytd_pub_at: "{d} को Public होगा", ytd_busy: "YouTube पर अपलोड हो रहा है…", ytd_del: "हटाएँ", ytd_ok: "✓ YouTube पर भेज दिया। YouTube सूची में है।",
+  ytd_conn: "पहले अपना YouTube चैनल जोड़ें (Video Studio में YouTube बॉक्स), फिर अपलोड दोबारा दबाएँ।"
 });
 
 /* which Costs-tab rows count towards each budget line (matched on service + what for) */
@@ -737,8 +747,49 @@ async function qPostNow(id) {
   }
   mkNowId = null; renderMk();
 }
+/* a YouTube Short waiting for your OK (studio.js ytHold): watch it, choose who sees it, then Upload or Discard */
+const qYtd = x => Object.assign({ priv: "public", at: "", ai: false }, (x.result && x.result.ytd) || {});
+let mkYtBusy = "";
+function qYtDraftHtml(x) {
+  const d = qYtd(x), id = x.id, busy = mkYtBusy === String(id);
+  return '<div class="mkq mkytd"><div class="mkrow">' + qTag(x) + "<b>" + esc(tr("ytd_h")) + "</b></div>" +
+    (x.video_url ? '<div class="mkrow"><video class="mkvprev" src="' + esc(x.video_url) + '" controls playsinline preload="metadata"></video></div>' : "") +
+    '<label class="fine" for="mkyt-t-' + id + '">' + tr("ytd_title") + '</label><input class="mkin" id="mkyt-t-' + id + '" maxlength="100" data-qf="ytt" data-id="' + id + '" value="' + esc(x.topic || "") + '">' +
+    '<label class="fine" for="mkyt-d-' + id + '">' + tr("ytd_desc") + '</label><textarea class="mkin mkta" rows="5" id="mkyt-d-' + id + '" data-qf="text" data-id="' + id + '">' + esc(x.text) + "</textarea>" +
+    '<label class="fine" for="mkyt-p-' + id + '">' + tr("ytd_priv") + '</label><select class="mkin mksel" id="mkyt-p-' + id + '" data-qf="ytp" data-id="' + id + '">' +
+      ["public", "unlisted", "private"].map(p => '<option value="' + p + '"' + (p === d.priv ? " selected" : "") + ">" + tr("yt_p_" + p) + "</option>").join("") + "</select>" +
+    '<label class="fine" for="mkyt-a-' + id + '">' + tr("ytd_at") + '</label><input class="mkin" type="datetime-local" id="mkyt-a-' + id + '" data-qf="yta" data-id="' + id + '" value="' + esc(d.at || "") + '">' +
+    '<p class="fine">' + tr("ytd_at_p") + "</p>" +
+    '<div class="mkrow"><label class="chk"><input type="checkbox" data-qf="ytai" data-id="' + id + '"' + (d.ai ? " checked" : "") + "><span>" + tr("yt_ai") + "</span></label></div>" +
+    '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="ytup" data-id="' + id + '"' + (mkYtBusy ? " disabled" : "") + ">" +
+      esc(busy ? tr("ytd_busy") : tr("ytd_go").replace("{p}", d.at ? tr("ytd_pub_at").replace("{d}", d.at.replace("T", " ")) : tr("yt_p_" + d.priv))) + "</button>" +
+    '<button class="btn-s" type="button" data-mkq="del" data-id="' + id + '"' + (busy ? " disabled" : "") + ">" + tr(mkQDel === String(id) ? "mk_q_del_sure" : "ytd_del") + "</button></div></div>";
+}
+/* Upload: the saved video goes to the Video Studio's uploader with the title, description and choice from the card; the draft is then removed */
+async function qYtSend(id) {
+  const x = qGet(id); if (!x || !x.video_url || mkYtBusy || typeof ytUpload !== "function") return;
+  if (typeof YT !== "undefined" && !YT && typeof ytLoad === "function") await ytLoad();
+  if (!(typeof YT !== "undefined" && YT && YT.connected)) { mkQMsg = tr("ytd_conn"); renderMk(); return; }
+  const d = qYtd(x);
+  mkYtBusy = String(id); mkQMsg = ""; renderMk();
+  try {
+    const same = typeof VS !== "undefined" && VS.out && VS.out.pub === x.video_url && VS.out.blob;
+    let blob = null;
+    if (!same) { const v = await fetch(x.video_url); if (!v.ok) throw new Error("video " + v.status); blob = await v.blob(); }
+    vsUseVideo(blob, "", "", x.video_url);
+    YTU = { title: String(x.topic || "").trim() || vsYtTitle(), desc: String(x.text || ""), priv: d.priv, at: d.at || "", ai: !!d.ai };
+    const r = await ytUpload();
+    if (r && r.ok) {
+      const del = await sb.from("social_queue").delete().eq("id", id);
+      if (!del.error) mkQ = mkQ.filter(y => String(y.id) !== String(id));
+      mkQMsg = tr("ytd_ok") + (r.locked ? " " + tr("yt_lock_tag") : "");
+    } else mkQMsg = tr("yt_err").replace("{m}", (r && r.err) || "");
+  } catch (e) { mkQMsg = tr("yt_err").replace("{m}", String(e.message || e)); }
+  mkYtBusy = ""; renderMk();
+}
 function qDraftHtml(x, hasIg) {
   const k = qKind(x);
+  if (k === "yt") return qYtDraftHtml(x);
   let h = '<div class="mkq">' + '<div class="mkrow">' + qTag(x) + (x.topic ? "<b>" + esc(x.topic) + "</b>" : "") + "</div>" +
     '<label class="fine" for="mkqw-' + x.id + '">' + tr(k === "wa" ? "cq_wa_when" : "mk_q_when") + '</label><input class="mkin" type="datetime-local" id="mkqw-' + x.id + '" data-qf="post_at" data-id="' + x.id + '" value="' + qIst(x.post_at) + '">' +
     '<textarea class="mkin mkta" rows="7" data-qf="text" data-id="' + x.id + '" aria-label="' + esc(tr("mk_post_text")) + '">' + esc(x.text) + "</textarea>";
@@ -831,7 +882,7 @@ function qHtml(mode) {
   else if (mode !== "yt") {
     h += '<p class="mkqh"><b>' + tr("mk_q_drafts").replace("{n}", drafts.length) + "</b></p>";
     if (!drafts.length) h += '<p class="fine">' + tr(mode === "wa" ? "cq_wa_none" : "mk_q_none") + "</p>";
-  } else if (!sched.length && !done.length) h += '<p class="fine">' + tr("yt_list_none") + "</p>";
+  } else if (!drafts.length && !sched.length && !done.length) h += '<p class="fine">' + tr("yt_list_none") + "</p>";
   drafts.forEach(x => { h += qDraftHtml(x, hasIg); });
   const appr = drafts.filter(x => qKind(x) !== "wa");
   if (appr.length > 1) h += '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="approveall">' + tr("mk_q_approve_all").replace("{n}", appr.length) + "</button></div>";
@@ -904,13 +955,16 @@ function todayHtml() {
   const out = mkQ.filter(x => (x.status === "scheduled" || x.status === "posting" || (qKind(x) === "yt" && x.status === "posted" && Date.parse(x.post_at) > now)) && qIstDay(x.post_at) <= today)
     .sort((a, b) => Date.parse(a.post_at) - Date.parse(b.post_at));
   const wa = mkQ.filter(x => qKind(x) === "wa" && x.status === "draft" && qIstDay(x.post_at) <= today);
-  const wait = mkQ.filter(x => x.status === "draft" && qKind(x) !== "wa");
+  const ytw = mkQ.filter(x => qKind(x) === "yt" && x.status === "draft");
+  const wait = mkQ.filter(x => x.status === "draft" && qKind(x) !== "wa" && qKind(x) !== "yt");
   const ready = wait.filter(qHasBody);
   const failed = mkQ.filter(x => x.status === "failed" && now - Date.parse(x.updated_at || x.post_at) < 3 * 86400000);
   const line = (x, extra) => "<li>" + qTag(x) + " " + esc(qKind(x) === "wa" ? "" : qShow(x.post_at).replace(/^.*?,\s*/, "") + " · ") + esc(x.topic || String(x.text || "").slice(0, 50)) + (extra || "") +
     ' <button class="link" type="button" data-mksub="' + mkOpenTab(x) + '">' + tr("td_open") + "</button></li>";
   if (out.length) h += "<p><b>" + esc(tr("td_out").replace("{n}", out.length)) + '</b></p><ul class="mkwatch">' + out.map(x => line(x, qKind(x) === "yt" ? "" : " · " + qWhere(x))).join("") + "</ul>";
   if (wa.length) h += "<p><b>" + esc(tr("td_wa").replace("{n}", wa.length)) + '</b></p><ul class="mkwatch">' + wa.map(x => line(x)).join("") + "</ul>";
+  if (ytw.length) h += "<p><b>" + esc(tr("td_yt").replace("{n}", ytw.length)) + '</b></p><ul class="mkwatch">' + ytw.map(x => "<li>" + qTag(x) + " " + esc(x.topic || String(x.text || "").slice(0, 50)) +
+    ' <button class="link" type="button" data-mksub="' + (mkNewView() ? "today" : "yt") + '">' + tr("td_open") + "</button></li>").join("") + "</ul>";
   if (failed.length) h += '<p class="mkwarn"><b>' + esc(tr("td_failed").replace("{n}", failed.length)) + '</b></p><ul class="mkwatch">' + failed.map(x => line(x)).join("") + "</ul>";
   if (wait.length) {
     h += "<p><b>" + esc(tr("td_wait").replace("{n}", wait.length)) + "</b></p>";
@@ -918,7 +972,7 @@ function todayHtml() {
     h += '<div class="mklinks">' + (ready.length ? '<button class="btn-s add" type="button" data-mkq="approveall">' + tr("td_approve").replace("{n}", ready.length) + "</button>" : "") +
       '<button class="btn-s" type="button" data-mksub="' + (mkNewView() ? "today" : "fb") + '">' + tr("td_check") + "</button></div>";
   }
-  if (!out.length && !wa.length && !wait.length && !failed.length) {
+  if (!out.length && !wa.length && !wait.length && !ytw.length && !failed.length) {
     const next = mkQ.filter(x => x.status === "scheduled" && Date.parse(x.post_at) > now).sort((a, b) => Date.parse(a.post_at) - Date.parse(b.post_at))[0];
     h += '<p class="fine">' + esc(next ? tr("td_next").replace("{d}", qShow(next.post_at)) : tr("td_none")) + "</p>" +
       (next ? "" : '<div class="mklinks"><button class="btn-s add" type="button" data-mkq="draft"' + (mkQBusy ? " disabled" : "") + ">" + (mkQBusy === "post" ? tr("mk_q_drafting") : tr("td_week")) + "</button></div>");
@@ -1300,6 +1354,7 @@ W.addEventListener("input", e => {
     return;
   }
   if (t.dataset && t.dataset.qf === "text") { const x = qGet(t.dataset.id); if (x) x.text = t.value; }
+  if (t.dataset && t.dataset.qf === "ytt") { const x = qGet(t.dataset.id); if (x) x.topic = t.value; }
   if (t.dataset && t.dataset.pif === "note") { const x = (mkPil || []).find(y => String(y.id) === t.dataset.id); if (x) x.note = t.value; }
 });
 W.addEventListener("change", async e => {
@@ -1335,6 +1390,13 @@ W.addEventListener("change", async e => {
   if (f === "text") return qAct(() => qUpd(id, { text: t.value.slice(0, 2200) }));
   if (f === "post_at") { if (t.value) return qAct(() => qUpd(id, { post_at: qUtc(t.value) })); return; }
   if (f === "fb" || f === "ig") return qAct(() => qUpd(id, { [f]: t.checked }));
+  if (f === "ytt") return qAct(() => qUpd(id, { topic: t.value.replace(/[<>]/g, "").slice(0, 100) }));
+  if (f === "ytp" || f === "yta" || f === "ytai") {
+    const x = qGet(id); if (!x) return;
+    const d = qYtd(x);
+    if (f === "ytp") d.priv = t.value; else if (f === "yta") d.at = t.value || ""; else d.ai = t.checked;
+    return qAct(() => qUpd(id, { result: Object.assign({}, x.result || {}, { ytd: d }) }));
+  }
 });
 W.addEventListener("click", async e => {
   if (e.target.closest("#vsBody")) return;
@@ -1406,15 +1468,16 @@ W.addEventListener("click", async e => {
   if (a === "compose") { mkCompose = !mkCompose; mkPostRes = null; renderMk(); if (mkCompose) { const t = $("mkpText"); if (t) t.focus(); } return; }
   if (a === "studio") { if (mkNewView()) mkGoMake("video"); else mkGo("yt"); const el = $("vsBody"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (a === "now") return qPostNow(id);
+  if (a === "ytup") return qYtSend(id);
   if (a === "every") return mkEverywhere(id);
   if (a === "draft") return qDraft("post");
   if (a === "wadraft") return qDraft("wa");
-  if (a === "approve" && x) {
+  if (a === "approve" && x && qKind(x) !== "yt") {
     if (!String(x.text || "").trim() && !x.image_url && !x.video_url) { mkQMsg = tr("mk_q_empty"); renderMk(); return; }
     return qAct(() => qUpd(id, Object.assign({ text: x.text }, qApprovePatch(x))));
   }
   if (a === "approveall") return qAct(async () => {
-    for (const d of mkQ.filter(y => y.status === "draft" && qKind(y) !== "wa" && (String(y.text || "").trim() || y.image_url || y.video_url))) await qUpd(d.id, Object.assign({ text: d.text }, qApprovePatch(d)));
+    for (const d of mkQ.filter(y => y.status === "draft" && qKind(y) !== "wa" && qKind(y) !== "yt" && (String(y.text || "").trim() || y.image_url || y.video_url))) await qUpd(d.id, Object.assign({ text: d.text }, qApprovePatch(d)));
   });
   if (a === "wacopy" && x) { if (await mkClip(qWaText(x))) { mkCopied["q" + id] = true; renderMk(); setTimeout(() => { delete mkCopied["q" + id]; renderMk(); }, 2000); } return; }
   if (a === "wasent" && x) return qAct(() => qUpd(id, { text: x.text, status: "posted", post_at: new Date().toISOString() }));

@@ -16,10 +16,10 @@ Object.assign(T.en, {
   wk_rev_none: "Nothing waiting for the coming week.", wk_rev_go: "Approve {n} ticked", wk_rev_ok: "✓ {n} approved. They go out on their own at the times shown.",
   wk_rev_wa: "reminder", wk_rev_nophoto: "no photo: Facebook only", wk_edit: "Edit",
   wk_today: "Next week isn't planned yet.", wk_today_go: "✨ Make my week",
-  wk_yt: "Also upload the videos to YouTube", wk_s_yt: "Uploading video {i} to YouTube", wk_yt_lock: "uploaded, but YouTube kept it private (audit needed)",
-  yp_h: "🎬 Make & publish to YouTube", yp_p: "One tap: the video is written, voiced, made and uploaded to your Seb Saathi channel as a Short, with the settings you last used below. Keep this tab open and in front until it's done.",
-  yp_topic: "Topic (optional)", yp_topic_ph: "Leave empty for this month's orchard jobs", yp_at: "Publish at (India time, optional)", yp_go: "🎬 Make & publish", yp_busy: "Working… see the steps below",
-  yp_conn: "Connect your YouTube channel first (YouTube box in the Video Studio below).", yp_ok: "✓ Uploaded to YouTube.", yp_ok_at: "✓ Uploaded. YouTube publishes it at {d}.", yp_lock: "Uploaded, but YouTube locked it as private until Google audits your app. Download it below and post it in the YouTube app for now.",
+  wk_yt: "Also make the videos as YouTube Shorts (they wait in Today for your OK)", wk_s_yt: "Putting video {i} in Today for your YouTube OK", wk_yt_lock: "uploaded, but YouTube kept it private (audit needed)",
+  yp_h: "🎬 Make a YouTube Short", yp_p: "One tap: the video is written, voiced and made as a Short, with the settings you last used below. It then waits in Today: you watch it, choose Public, Unlisted or Private, and tap Upload. Keep this tab open and in front until it's made.",
+  yp_topic: "Topic (optional)", yp_topic_ph: "Leave empty for this month's orchard jobs", yp_at: "Publish at (India time, optional)", yp_go: "🎬 Make it", yp_busy: "Working… see the steps below",
+  yp_conn: "To upload it later, connect your YouTube channel (YouTube box in the Video Studio below).", yp_ok: "✓ Uploaded to YouTube.", yp_held: "✓ Made. It is waiting in Today: check it and tap Upload to YouTube.", yp_ok_at: "✓ Uploaded. YouTube publishes it at {d}.", yp_lock: "Uploaded, but YouTube locked it as private until Google audits your app. Download it below and post it in the YouTube app for now.",
   yp_err: "Not published: {m}", yt_lock_tag: "private: YouTube audit needed",
 
   wx_h: "⛅ Weather watch · next 4 days", wx_none: "No weather risk for apple trees in the apple areas in the next 4 days.", wx_load: "Checking the forecast…", wx_err: "Could not get the forecast: {m}",
@@ -53,10 +53,10 @@ Object.assign(T.hi, {
   wk_rev_none: "आने वाले हफ़्ते के लिए कुछ बाक़ी नहीं।", wk_rev_go: "टिक वाले {n} मंज़ूर करें", wk_rev_ok: "✓ {n} मंज़ूर। ये दिखाए समय पर अपने आप जाएँगे।",
   wk_rev_wa: "याद", wk_rev_nophoto: "फ़ोटो नहीं: सिर्फ़ Facebook", wk_edit: "बदलें",
   wk_today: "अगला हफ़्ता अभी तय नहीं।", wk_today_go: "✨ मेरा हफ़्ता बनाएँ",
-  wk_yt: "वीडियो YouTube पर भी अपलोड करें", wk_s_yt: "वीडियो {i} YouTube पर अपलोड हो रहा है", wk_yt_lock: "अपलोड हुआ, पर YouTube ने private रखा (ऑडिट चाहिए)",
-  yp_h: "🎬 बनाएँ और YouTube पर डालें", yp_p: "एक टैप: वीडियो लिखा, आवाज़ दी, बनाया और Short के रूप में आपके सेब साथी चैनल पर अपलोड होता है, नीचे की पिछली सेटिंग से। पूरा होने तक यह टैब खुला और सामने रखें।",
-  yp_topic: "विषय (ज़रूरी नहीं)", yp_topic_ph: "ख़ाली छोड़ें तो इस महीने के बाग़ के काम", yp_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", yp_go: "🎬 बनाएँ और डालें", yp_busy: "काम चल रहा है… नीचे देखें",
-  yp_conn: "पहले अपना YouTube चैनल जोड़ें (नीचे Video Studio में YouTube बॉक्स)।", yp_ok: "✓ YouTube पर अपलोड हो गया।", yp_ok_at: "✓ अपलोड हुआ। YouTube इसे {d} पर पब्लिश करेगा।", yp_lock: "अपलोड हुआ, पर Google ऑडिट तक YouTube ने इसे private लॉक किया। अभी नीचे से डाउनलोड करके YouTube ऐप से पोस्ट करें।",
+  wk_yt: "वीडियो YouTube Shorts के लिए भी बनाएँ (Today में आपकी मंज़ूरी का इंतज़ार करेंगे)", wk_s_yt: "वीडियो {i} YouTube मंज़ूरी के लिए Today में रख रहे हैं", wk_yt_lock: "अपलोड हुआ, पर YouTube ने private रखा (ऑडिट चाहिए)",
+  yp_h: "🎬 YouTube Short बनाएँ", yp_p: "एक टैप: वीडियो लिखा, आवाज़ दी और Short बनाया जाता है, नीचे की पिछली सेटिंग से। फिर यह Today में रुकता है: आप देखें, Public, Unlisted या Private चुनें और अपलोड दबाएँ। बनने तक यह टैब खुला और सामने रखें।",
+  yp_topic: "विषय (ज़रूरी नहीं)", yp_topic_ph: "ख़ाली छोड़ें तो इस महीने के बाग़ के काम", yp_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", yp_go: "🎬 बनाएँ", yp_busy: "काम चल रहा है… नीचे देखें",
+  yp_conn: "बाद में अपलोड के लिए अपना YouTube चैनल जोड़ें (नीचे Video Studio में YouTube बॉक्स)।", yp_ok: "✓ YouTube पर अपलोड हो गया।", yp_held: "✓ बन गया। Today में रुका है: देखें और YouTube पर अपलोड दबाएँ।", yp_ok_at: "✓ अपलोड हुआ। YouTube इसे {d} पर पब्लिश करेगा।", yp_lock: "अपलोड हुआ, पर Google ऑडिट तक YouTube ने इसे private लॉक किया। अभी नीचे से डाउनलोड करके YouTube ऐप से पोस्ट करें।",
   yp_err: "पब्लिश नहीं हुआ: {m}", yt_lock_tag: "private: YouTube ऑडिट चाहिए",
 
   wx_h: "⛅ मौसम पर नज़र · अगले 4 दिन", wx_none: "अगले 4 दिन सेब इलाक़ों में पेड़ों के लिए मौसम का कोई ख़तरा नहीं।", wx_load: "मौसम देखा जा रहा है…", wx_err: "मौसम नहीं मिला: {m}",
@@ -183,7 +183,7 @@ async function spWxAutoRun() {
 }
 
 /* =================== 1. Make my week =================== */
-const spWeekItems = () => (mkQ || []).filter(x => x.status === "draft" && Date.parse(x.post_at || 0) < Date.now() + 9 * 864e5).sort((a, b) => Date.parse(a.post_at) - Date.parse(b.post_at));
+const spWeekItems = () => (mkQ || []).filter(x => x.status === "draft" && qKind(x) !== "yt" && Date.parse(x.post_at || 0) < Date.now() + 9 * 864e5).sort((a, b) => Date.parse(a.post_at) - Date.parse(b.post_at));
 const spPlanned = () => (mkQ || []).filter(x => (x.status === "draft" || x.status === "scheduled") && (qKind(x) === "post" || qKind(x) === "video") && Date.parse(x.post_at) > Date.now() && Date.parse(x.post_at) < Date.now() + 7 * 864e5).length;
 function spWeekHtml() {
   const W = SP.wk, dis = W.busy ? " disabled" : "";
@@ -246,11 +246,9 @@ async function spWeekGo() {
         try { await qUpd(qid, { post_at: spEvening(days[i]), topic: String(AV.topic).slice(0, 200) }); } catch (e) {}
         s.s = "ok";
         /* the same video as a YouTube Short, published by YouTube on its day */
-        if (W.yt && typeof ytUpload === "function" && typeof YT !== "undefined" && YT && YT.connected && YTU) {
+        if (W.yt && typeof ytHold === "function" && YTU) {   /* waits in Today for your OK; nothing goes to YouTube by itself */
           const y = step(tr("wk_s_yt").replace("{i}", i + 1));
-          YTU.at = new Date(Date.parse(spEvening(days[i])) + 330 * 60000).toISOString().slice(0, 16);
-          const r = await ytUpload();
-          if (r && r.ok) { y.s = "ok"; if (r.locked) y.m = tr("wk_yt_lock"); } else { y.s = "err"; y.m = (r && r.err) || ""; }
+          try { await ytHold(new Date(Date.parse(spEvening(days[i])) + 330 * 60000).toISOString().slice(0, 16)); y.s = "ok"; } catch (e) { y.s = "err"; y.m = String(e.message || e); }
         }
       }
       AV.oneTap = false;
@@ -362,12 +360,11 @@ function spYpHtml() {
   return '<section class="spbox spweek" id="spYp"><div class="mkph"><b>' + tr("yp_h") + '</b></div><p class="fine">' + tr("yp_p") + "</p>" +
     '<div class="mkrow"><input class="mkin" id="spYpTopic" maxlength="200" aria-label="' + esc(tr("yp_topic")) + '" placeholder="' + esc(tr("yp_topic_ph")) + '" value="' + esc(Y.topic) + '"' + dis + "></div>" +
     '<label class="fine" for="spYpAt">' + tr("yp_at") + '</label><div class="mkrow"><input class="mkin" id="spYpAt" type="datetime-local" value="' + esc(Y.at) + '"' + dis + ">" +
-    '<button type="button" class="btn-s add" data-sp="ypgo"' + (Y.busy || !conn ? " disabled" : "") + ">" + tr(Y.busy ? "yp_busy" : "yp_go") + "</button></div>" +
+    '<button type="button" class="btn-s add" data-sp="ypgo"' + (Y.busy ? " disabled" : "") + ">" + tr(Y.busy ? "yp_busy" : "yp_go") + "</button></div>" +
     (!conn ? '<p class="fine mkwarn">' + tr("yp_conn") + "</p>" : "") + (Y.msg ? '<p class="fine" role="status">' + Y.msg + "</p>" : "") + "</section>";
 }
 async function spYpGo() {
   const Y = SP.yp; if (Y.busy || typeof avCreate !== "function" || typeof AV === "undefined" || AV.busy) return;
-  if (!(typeof YT !== "undefined" && YT && YT.connected)) { Y.msg = '<span class="mkwarn">' + esc(tr("yp_conn")) + "</span>"; renderMk(); return; }
   Y.busy = true; Y.msg = ""; renderMk();
   const keep = { type: AV.type, topic: AV.topic, own: AV.own, after: AV.after };
   const t = Y.topic.trim();
@@ -378,8 +375,10 @@ async function spYpGo() {
   if (typeof ytLast !== "undefined") ytLast = null;
   avRender();
   await avCreate();
-  const r = typeof ytLast !== "undefined" ? ytLast : null;
+  const held = !AV.err && (mkQ || []).some(x => qKind(x) === "yt" && x.status === "draft" && x.video_url && typeof VS !== "undefined" && VS.out && x.video_url === VS.out.pub);
+  const r = held ? { ok: true, held: true } : typeof ytLast !== "undefined" ? ytLast : null;
   if (AV.err) Y.msg = '<span class="mkwarn">' + esc(tr("yp_err").replace("{m}", AV.err.replace(/^.*?:\s*/, ""))) + "</span>";
+  else if (r && r.held) Y.msg = esc(tr("yp_held")) + ' <button class="link" type="button" data-mksub="' + (mkNewView() ? "today" : "yt") + '">' + tr("td_open") + "</button>";
   else if (r && r.ok) Y.msg = esc(r.locked ? tr("yp_lock") : AV.ytAt ? tr("yp_ok_at").replace("{d}", AV.ytAt.replace("T", " ")) : tr("yp_ok")) +
     (r.link ? ' <a href="' + esc(r.link) + '" target="_blank" rel="noopener">' + tr("yt_watch") + "</a>" : "");
   else Y.msg = '<span class="mkwarn">' + esc(tr("yp_err").replace("{m}", (r && r.err) || AV.note || "")) + "</span>";

@@ -52,7 +52,8 @@ Object.assign(T.en, {
   yt_ai: "Made with AI (voice or pictures): tell YouTube", yt_ai_p: "YouTube asks you to say so when a video uses an AI voice or made-up realistic scenes.",
   yt_err: "Upload failed: {m}", yt_reconnect: "The YouTube connection has expired or was removed. Connect again.",
   yt_back_ok: "YouTube channel connected.", yt_back_err: "YouTube didn't connect: {m}",
-  yt_connect_first: "Connect your YouTube channel below to upload straight from here."
+  yt_connect_first: "Connect your YouTube channel below to upload straight from here.",
+  ytd_held: "Waiting for your OK in Today. Nothing goes to YouTube until you tap Upload there."
 });
 Object.assign(T.hi, {
   vs_ai_shoot: "AI के शब्द आ गए। क्या फ़िल्म करें: {s}",
@@ -102,7 +103,8 @@ Object.assign(T.hi, {
   yt_ai: "AI से बना (आवाज़ या चित्र): YouTube को बताएँ", yt_ai_p: "जब वीडियो में AI आवाज़ या बनाए हुए असली जैसे दृश्य हों, YouTube बताने को कहता है।",
   yt_err: "अपलोड नहीं हुआ: {m}", yt_reconnect: "YouTube कनेक्शन ख़त्म हो गया या हटा दिया गया। दोबारा जोड़ें।",
   yt_back_ok: "YouTube चैनल जुड़ गया।", yt_back_err: "YouTube नहीं जुड़ा: {m}",
-  yt_connect_first: "यहीं से अपलोड करने के लिए नीचे अपना YouTube चैनल जोड़ें।"
+  yt_connect_first: "यहीं से अपलोड करने के लिए नीचे अपना YouTube चैनल जोड़ें।",
+  ytd_held: "Today में आपकी मंज़ूरी का इंतज़ार है। जब तक आप वहाँ अपलोड नहीं दबाते, YouTube पर कुछ नहीं जाता।"
 });
 
 /* ---------- templates: words for each video language ---------- */
@@ -597,6 +599,22 @@ async function ytUpload() {
   } catch (e) { ytRes = '<p class="autherr">' + esc(tr("yt_err").replace("{m}", String(e.message || e))) + "</p>"; ytLast = { ok: false, err: String(e.message || e) }; }
   ytBusy = ""; renderStudio();
   return ytLast;
+}
+
+/* a made video waits in Today for your OK before it goes to YouTube: it is saved as a YouTube draft (social_queue kind "yt", status "draft").
+   at: optional publish time, India time "YYYY-MM-DDTHH:MM". Nothing is sent to YouTube here. */
+async function ytHold(at) {
+  const o = VS.out; if (!o || !o.blob || typeof mkUpload !== "function" || typeof sb === "undefined") return null;
+  const u = YTU || { title: vsYtTitle(), desc: vsYtDesc(), priv: "public", ai: false };
+  if (!o.pub) o.pub = await mkUpload(o.blob, o.ext, o.blob.type || "video/mp4");
+  const row = { kind: "yt", status: "draft", text: String(u.desc || "").replace(/[<>]/g, "").slice(0, 2200), topic: String(u.title || vsYtTitle()).replace(/[<>]/g, "").slice(0, 100),
+    video_url: o.pub, fb: false, ig: false, post_at: new Date().toISOString(), result: { ytd: { priv: ["public", "unlisted", "private"].indexOf(u.priv) >= 0 ? u.priv : "public", at: at || u.at || "", ai: !!u.ai } } };
+  const r = await sb.from("social_queue").insert(row).select().single();
+  if (r.error) throw r.error;
+  if (typeof mkQ !== "undefined" && mkQ) mkQ.push(r.data);
+  ytRes = "<p>✓ " + esc(tr("ytd_held")) + "</p>";
+  if (typeof renderMk === "function") renderMk();
+  return r.data;
 }
 
 /* ---------- page ---------- */

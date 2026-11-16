@@ -14,10 +14,10 @@ Object.assign(T.en, {
   av_after: "9. When it's ready", av_a_none: "Just show me", av_a_fb: "Add to Facebook + Instagram list", av_a_yt: "Upload to YouTube as a Short",
   av_go: "🎬 Create video", av_again: "Make another version",
   av_s1: "Writing the video…", av_s2: "Recording the voice…", av_s3: "Getting pictures ready…", av_s4: "Making the video — keep this tab open and in front…", av_s5: "✓ Video ready below. Watch it, then download, post or upload.",
-  av_s_fb: "Adding it to the Facebook + Instagram list…", av_s_yt: "Uploading to YouTube…",
+  av_s_fb: "Adding it to the Facebook + Instagram list…", av_s_yt: "Uploading to YouTube…", av_s_ythold: "Putting the YouTube Short in Today for your OK…", av_yt_held: "YouTube Short: waiting for your OK in Today.",
   av_need_topic: "Pick a topic or type one.", av_err: "Could not make it: {m}",
   av_no_tts: "Made without a voice: the voice is not set up yet. To add it, put GOOGLE_TTS_KEY in Vercel (a Google Cloud API key with Text-to-Speech turned on), then Redeploy.",
-  av_tts_err: "Made without a voice: Google Text-to-Speech said: {m}", av_where: "9. Where should it go?", av_where_p: "Facebook + Instagram and WhatsApp go to Today as drafts for you to approve; YouTube uploads straight away.",
+  av_tts_err: "Made without a voice: Google Text-to-Speech said: {m}", av_where: "9. Where should it go?", av_where_p: "Facebook + Instagram and WhatsApp go to Today as drafts for you to approve; YouTube waits in Today too: you choose Public, Unlisted or Private and tap Upload.",
   av_yt_first: "Connect your YouTube channel (YouTube Studio box above) to upload. The video is ready below.",
   av_edit: "You can still change any words, pictures or timings below and tap Make video again."
 });
@@ -32,10 +32,10 @@ Object.assign(T.hi, {
   av_after: "9. बनने के बाद", av_a_none: "बस मुझे दिखाएँ", av_a_fb: "Facebook + Instagram सूची में जोड़ें", av_a_yt: "YouTube पर Short अपलोड करें",
   av_go: "🎬 वीडियो बनाएँ", av_again: "दूसरा रूप बनाएँ",
   av_s1: "वीडियो लिखा जा रहा है…", av_s2: "आवाज़ रिकॉर्ड हो रही है…", av_s3: "चित्र तैयार हो रहे हैं…", av_s4: "वीडियो बन रहा है — टैब खुला और सामने रखें…", av_s5: "✓ वीडियो नीचे तैयार है। देखें, फिर डाउनलोड, पोस्ट या अपलोड करें।",
-  av_s_fb: "Facebook + Instagram सूची में जोड़ रहे हैं…", av_s_yt: "YouTube पर अपलोड हो रहा है…",
+  av_s_fb: "Facebook + Instagram सूची में जोड़ रहे हैं…", av_s_yt: "YouTube पर अपलोड हो रहा है…", av_s_ythold: "YouTube Short आपकी मंज़ूरी के लिए Today में रख रहे हैं…", av_yt_held: "YouTube Short: Today में आपकी मंज़ूरी का इंतज़ार।",
   av_need_topic: "विषय चुनें या लिखें।", av_err: "नहीं बन सका: {m}",
   av_no_tts: "बिना आवाज़ बना: आवाज़ अभी सेट नहीं है। Vercel में GOOGLE_TTS_KEY डालें, फिर Redeploy करें।", av_tts_err: "बिना आवाज़ बना: {m}",
-  av_where: "9. कहाँ जाए?", av_where_p: "Facebook + Instagram और WhatsApp ड्राफ़्ट बनकर Today में मंज़ूरी के लिए जाते हैं; YouTube पर तुरंत अपलोड होता है।",
+  av_where: "9. कहाँ जाए?", av_where_p: "Facebook + Instagram और WhatsApp ड्राफ़्ट बनकर Today में मंज़ूरी के लिए जाते हैं; YouTube भी Today में रुकता है: आप Public, Unlisted या Private चुनकर अपलोड दबाएँ।",
   av_yt_first: "अपलोड के लिए ऊपर YouTube Studio बॉक्स से चैनल जोड़ें। वीडियो नीचे तैयार है।", av_edit: "आप नीचे शब्द, चित्र या समय बदलकर फिर से 'वीडियो बनाएँ' दबा सकते हैं।"
 });
 
@@ -177,12 +177,12 @@ async function avCreate() {
         avStep("av_s_fb"); await vsQueue();
         if (W.wa && VS.out && VS.out.qid && typeof mkEverywhere === "function") await mkEverywhere(VS.out.qid);   /* captions for Facebook, the Reel and a WhatsApp message */
       }
-      if (W.yt && typeof ytUpload === "function") {
-        if (typeof YT !== "undefined" && YT && YT.connected) { avStep("av_s_yt"); await ytUpload(); } else AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_first");
+      if (W.yt && typeof ytHold === "function") {
+        if (typeof ytHold === "function") { avStep("av_s_ythold"); await ytHold(); AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_held"); }
       }
     } else if (AV.after === "fb" && typeof vsQueue === "function") { avStep("av_s_fb"); await vsQueue(); }
-    else if (AV.after === "yt" && typeof ytUpload === "function") {
-      if (typeof YT !== "undefined" && YT && YT.connected) { avStep("av_s_yt"); if (AV.ytAt && typeof YTU !== "undefined" && YTU) YTU.at = AV.ytAt; await ytUpload(); } else AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_first");
+    else if (AV.after === "yt" && typeof ytHold === "function") {
+      if (typeof ytHold === "function") { avStep("av_s_ythold"); await ytHold(AV.ytAt || ""); AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_held"); }
     }
     AV.step = tr("av_s5") + " " + tr("av_edit");
   } catch (e) { AV.err = tr("av_err").replace("{m}", String(e.message || e)); AV.step = ""; }
