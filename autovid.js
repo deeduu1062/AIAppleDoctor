@@ -67,7 +67,12 @@ function avTopics() {
 }
 const avChip = (k, v, label) => '<button type="button" class="btn-s sm avchip" data-av="' + k + '" data-v="' + esc(v) + '" aria-pressed="' + (String(AV[k]) === String(v)) + '">' + esc(label) + "</button>";
 
+/* opened from the Facebook + Instagram tab: no YouTube upload choice there, and "Add to Facebook + Instagram list" is the default */
+const avFbTab = () => typeof mkSub !== "undefined" && mkSub === "fb";
+let avFbSet = false;
 function avHtml() {
+  if (avFbTab() && !avFbSet) { avFbSet = true; if (AV.after !== "none") AV.after = "fb"; }
+  if (avFbTab() && AV.after === "yt") AV.after = "fb";
   const tps = avTopics(), dis = AV.busy ? " disabled" : "";
   return '<div class="avbox"><h5>' + esc(tr("av_h")) + '</h5><p class="fine">' + esc(tr("av_p")) + "</p>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_type")) + "</legend><div class=\"avchips\">" + ["alert", "tip", "season", "feat", "money", "q", "own"].map(k => avChip("type", k, tr("av_t_" + k))).join("") + "</div></fieldset>" +
@@ -81,7 +86,7 @@ function avHtml() {
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
       (AV.pics === "mine" ? '<p><label class="btn-s sm vsfile">' + esc(tr("av_p_add")) + '<input type="file" accept="image/*" multiple id="avPhotos" hidden></label> <span class="fine">' + (AV.photos.length ? esc(tr("av_p_n").replace("{n}", AV.photos.length)) : "") + "</span></p>" : "") + "</fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_end")) + '</legend><div class="avchips">' + ["site", "dx", "share", "join"].map(k => avChip("end", k, tr("av_e_" + k))).join("") + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_after")) + '</legend><div class="avchips">' + ["none", "fb", "yt"].map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>" +
     '<p><button type="button" class="btn-s add avgo" id="avGo"' + dis + ">" + esc(AV.busy ? AV.step : VS.out && AV.done ? tr("av_again") : tr("av_go")) + "</button></p>" +
     (AV.step && !AV.busy ? '<p class="fine" role="status">' + esc(AV.step) + "</p>" : "") +
     (AV.note ? '<p class="fine">' + esc(AV.note) + "</p>" : "") + (AV.err ? '<p class="autherr" role="alert">' + esc(AV.err) + "</p>" : "") + "</div>";

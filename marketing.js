@@ -205,7 +205,7 @@ Object.assign(T.en, {
   st_h: "Setup (accounts, links and posting)", st_sub: "{d} of {n} accounts linked", st_yt: "YouTube: connect it in the Video Studio box above (YouTube card).",
   st_post_ok: "Posting is connected: Facebook page {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube & videos", ms_wa: "WhatsApp", ms_more: "More",
-  ms_fb_h: "Posts for Facebook and Instagram", ms_yt_h: "Your YouTube uploads", ms_wa_h: "WhatsApp channel tips",
+  ms_fb_h: "Posts for Facebook and Instagram", ms_fb_vid: "🎬 Make a video for Facebook / Instagram", ms_fb_vid_hide: "Hide the video maker", ms_yt_h: "Your YouTube uploads", ms_wa_h: "WhatsApp channel tips",
   ms_yt_p: "Connect your YouTube channel in the Video Studio above (YouTube card).", yt_list_none: "No YouTube uploads yet. Make a video in the Video Studio above and upload it.",
   cq_wa_none: "No tips waiting. Tap the button above to get this week's tip.",
   ask_h_fb: "✨ Ask the AI for a post", ask_h_yt: "✨ Ask the AI for a video", ask_h_wa: "✨ Ask the AI for a WhatsApp message",
@@ -252,7 +252,7 @@ Object.assign(T.hi, {
   st_h: "सेटअप (अकाउंट, लिंक और पोस्टिंग)", st_sub: "{n} में से {d} अकाउंट जुड़े", st_yt: "YouTube: ऊपर Video Studio बॉक्स (YouTube कार्ड) में जोड़ें।",
   st_post_ok: "पोस्टिंग जुड़ी है: Facebook पेज {f}{i}",
   ms_fb: "Facebook + Instagram", ms_yt: "YouTube और वीडियो", ms_wa: "WhatsApp", ms_more: "और",
-  ms_fb_h: "Facebook और Instagram के पोस्ट", ms_yt_h: "आपके YouTube वीडियो", ms_wa_h: "WhatsApp चैनल टिप",
+  ms_fb_h: "Facebook और Instagram के पोस्ट", ms_fb_vid: "🎬 Facebook / Instagram के लिए वीडियो बनाएँ", ms_fb_vid_hide: "वीडियो मेकर छिपाएँ", ms_yt_h: "आपके YouTube वीडियो", ms_wa_h: "WhatsApp चैनल टिप",
   ms_yt_p: "ऊपर Video Studio (YouTube कार्ड) में अपना YouTube चैनल जोड़ें।", yt_list_none: "अभी कोई YouTube वीडियो नहीं। ऊपर Video Studio में वीडियो बनाकर अपलोड करें।",
   cq_wa_none: "कोई टिप बाकी नहीं। इस हफ़्ते की टिप के लिए ऊपर का बटन दबाएँ।",
   ask_h_fb: "✨ AI से पोस्ट लिखवाएँ", ask_h_yt: "✨ AI से वीडियो बनवाएँ", ask_h_wa: "✨ AI से WhatsApp संदेश लिखवाएँ",
@@ -1114,6 +1114,13 @@ function setupHtml() {
 const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid", "demo"]);   /* which sections are open */
 let mkSub = "fb";   /* which Marketing tab is open; remembered on this device */
 try { const v = localStorage.getItem("mk-sub"); if (/^(fb|yt|wa|more)$/.test(v || "")) mkSub = v; } catch (e) {}
+let mkFbVid = true;   /* Facebook + Instagram tab: show the video maker ("Create a video for me" + Video Studio); remembered on this device */
+try { mkFbVid = localStorage.getItem("mk-fbvid") !== "0"; } catch (e) {}
+document.addEventListener("click", e => {
+  if (!(e.target.closest && e.target.closest("[data-mkfbvid]"))) return;
+  mkFbVid = !mkFbVid; try { localStorage.setItem("mk-fbvid", mkFbVid ? "1" : "0"); } catch (x) {}
+  renderMk(); if (mkFbVid) { const el = $("mkStudio"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }
+});
 const mkGo = t => { mkSub = t; try { localStorage.setItem("mk-sub", t); } catch (e) {} renderMk(); };
 const mkMsgIsFb = m => /facebook/i.test(m[0]);
 const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
@@ -1167,7 +1174,10 @@ function renderMk() {
   if (mkSub === "fb") {
     const S = mkSoc || {};
     const line = S.ok ? '<p class="fine">' + mkConnLine(S) + (S.fb_followers != null ? " · " + tr("sc_fb") + " " + mkN(S.fb_followers) : "") + (S.ig_followers != null ? " · " + tr("sc_ig") + " " + mkN(S.ig_followers) : "") + "</p>" : "";
-    T1 = line + askHtml("fb") + mkSec("content", tr("ms_fb_h"), mkQ ? tr("cq_sub").replace("{d}", nFb).replace("{s}", mkQ.filter(x => x.status === "scheduled" && x.kind !== "wa").length) : "", qHtml("fb")) +
+    /* same video maker as YouTube & videos: it sits right under the Ask the AI box, the post list below it */
+    T1 = line + askHtml("fb") +
+      '<p><button type="button" class="btn-s' + (mkFbVid ? "" : " add") + '" data-mkfbvid aria-expanded="' + mkFbVid + '">' + esc(tr(mkFbVid ? "ms_fb_vid_hide" : "ms_fb_vid")) + "</button></p>";
+    T2 = mkSec("content", tr("ms_fb_h"), mkQ ? tr("cq_sub").replace("{d}", nFb).replace("{s}", mkQ.filter(x => x.status === "scheduled" && x.kind !== "wa").length) : "", qHtml("fb")) +
       mkSec("best", tr("best_h"), mkBest().length ? tr("best_sub").replace("{n}", mkBest().length) : "", bestHtml()) +
       mkSec("msg", tr("mk_msg_h"), "", msgOf("fb"));
   } else if (mkSub === "yt") {
@@ -1185,8 +1195,9 @@ function renderMk() {
   /* YouTube & videos: the Video Studio (#mkStudio) sits right under the tab buttons, the rest of the tab below it */
   if (mkSub === "yt") { top.innerHTML = h + todayHtml() + bar; bot.innerHTML = T1 + T2; }
   else { top.innerHTML = h + todayHtml() + bar + T1; bot.innerHTML = T2; }
-  const st = $("mkStudio"); if (st) st.hidden = mkSub !== "yt";
+  const st = $("mkStudio"); if (st) st.hidden = !(mkSub === "yt" || mkSub === "fb" && mkFbVid);
   const goal = document.querySelector('#ap-mk [data-i18n="mk_p"]'); if (goal) goal.hidden = mkSub !== "more";
+  if (typeof avRender === "function" && typeof AV !== "undefined" && !AV.busy) avRender();   /* video maker options differ per tab */
   mkRestore(keep);
 }
 /* typing must survive a re-render (data arrives while you type) */
