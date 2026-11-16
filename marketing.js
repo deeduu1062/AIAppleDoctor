@@ -337,7 +337,7 @@ Object.assign(T.en, {
   td_yt: "YouTube videos waiting for your OK ({n})",
   mk_msg_fold: "ready to copy, tap to open",
   pw_h: "Share on:", pw_ig: "Instagram needs a photo: add one to the draft in Today before you approve it.", pw_none: "Tick at least one place to share it.",
-  pw_done: "Drafts made for {w}. They wait in Today for your OK.", pw_part: "Made for {w}, but the rest failed:", mk_vmore: "More video tools", mk_vmore_p: "one-tap YouTube Short, write words with the AI, demo script, video ideas",
+  pw_done: "Drafts made for {w}. They wait in Today for your OK.", pw_part: "Made for {w}, but the rest failed:", mk_vfilm: "Film it yourself", mk_vfilm_p: "a ready 20–30 second script to film yourself showing the app", mk_vmore: "More video tools", mk_vmore_p: "one-tap YouTube Short, write words with the AI, demo script, video ideas",
   ytd_h: "Waiting for your OK: nothing goes to YouTube until you tap Upload.", ytd_title: "Title", ytd_desc: "Description",
   ytd_priv: "Who can see it on YouTube", ytd_at: "Publish at (India time, optional)", ytd_at_p: "Leave empty to use the choice above as soon as it uploads. With a time, YouTube keeps it private until then and makes it Public at that time.",
   ytd_go: "Upload to YouTube: {p}", ytd_pub_at: "goes Public on {d}", ytd_busy: "Uploading to YouTube…", ytd_del: "Discard", ytd_ok: "✓ Sent to YouTube. It's in the YouTube list.",
@@ -365,7 +365,7 @@ Object.assign(T.hi, {
   td_yt: "YouTube वीडियो आपकी मंज़ूरी के इंतज़ार में ({n})",
   mk_msg_fold: "कॉपी के लिए तैयार, खोलने के लिए टैप करें",
   pw_h: "कहाँ शेयर करें:", pw_ig: "Instagram के लिए फ़ोटो चाहिए: मंज़ूरी से पहले Today में ड्राफ़्ट में फ़ोटो जोड़ें।", pw_none: "शेयर के लिए कम से कम एक जगह चुनें।",
-  pw_done: "{w} के लिए ड्राफ़्ट बन गए। Today में आपकी मंज़ूरी का इंतज़ार है।", pw_part: "{w} के लिए बना, पर बाकी नहीं बना:", mk_vmore: "वीडियो के और टूल", mk_vmore_p: "एक-टैप YouTube Short, AI से शब्द, डेमो स्क्रिप्ट, वीडियो आइडिया",
+  pw_done: "{w} के लिए ड्राफ़्ट बन गए। Today में आपकी मंज़ूरी का इंतज़ार है।", pw_part: "{w} के लिए बना, पर बाकी नहीं बना:", mk_vfilm: "ख़ुद फ़िल्म करें", mk_vfilm_p: "ऐप दिखाते हुए ख़ुद फ़िल्म करने की 20–30 सेकंड की तैयार स्क्रिप्ट", mk_vmore: "वीडियो के और टूल", mk_vmore_p: "एक-टैप YouTube Short, AI से शब्द, डेमो स्क्रिप्ट, वीडियो आइडिया",
   ytd_h: "आपकी मंज़ूरी का इंतज़ार: जब तक आप अपलोड नहीं दबाते, YouTube पर कुछ नहीं जाता।", ytd_title: "शीर्षक", ytd_desc: "विवरण",
   ytd_priv: "YouTube पर कौन देख सकता है", ytd_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", ytd_at_p: "ख़ाली छोड़ें तो अपलोड होते ही ऊपर वाला विकल्प लगेगा। समय डालें तो YouTube तब तक private रखकर उसी समय Public करेगा।",
   ytd_go: "YouTube पर अपलोड करें: {p}", ytd_pub_at: "{d} को Public होगा", ytd_busy: "YouTube पर अपलोड हो रहा है…", ytd_del: "हटाएँ", ytd_ok: "✓ YouTube पर भेज दिया। YouTube सूची में है।",
@@ -1400,7 +1400,7 @@ function renderMk() {
       if (mkMake === "post" || mkMake === "wa") A = askHtml("fb") + qHtml("fbmake") + mkSec("cmsg", tr("mk_msg_h"), tr("mk_msg_fold"), msgOf("fb") + '<p class="fine"><b>WhatsApp</b></p>' + msgOf("wa"));
       else if (mkMake === "video") {
         const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
-        B = mkSec("vmore", tr("mk_vmore"), tr("mk_vmore_p"), '<div id="mkVmore"></div>' + mkSec("askyt", tr("mk_ask_words"), "", askHtml("yt")) + mkSec("demo", tr("demo_h"), "", demoHtml()) + mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml()));
+        B = mkSec("vfilm", tr("mk_vfilm"), tr("mk_vfilm_p"), demoHtml());   /* the video ideas are now topics in "Create a video for me" */
       }
       top.innerHTML = h + bar2 + chips + A; bot.innerHTML = B;
     } else if (mkSub === "results") {

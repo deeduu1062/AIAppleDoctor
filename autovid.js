@@ -5,7 +5,7 @@
    Sits at the top of the Video Studio (Social handler → YouTube & videos). */
 Object.assign(T.en, {
   av_h: "🎬 Create a video for me", av_p: "Pick a topic and tap Create video. Keep this tab open while it records.",
-  av_type: "1. What kind of video?", av_t_alert: "Disease alert", av_t_tip: "Orchard tip", av_t_season: "This month's jobs", av_t_feat: "Show a Seb Saathi feature", av_t_money: "Profit and selling", av_t_q: "Answer growers' questions", av_t_own: "My own topic",
+  av_type: "1. What kind of video?", av_t_alert: "Disease alert", av_t_tip: "Orchard tip", av_t_season: "This month's jobs", av_t_feat: "Show a Seb Saathi feature", av_t_money: "Profit and selling", av_t_q: "Answer growers' questions", av_t_own: "My own topic", av_t_idea: "💡 My video ideas",
   av_topic: "2. Topic", av_topic_ph: "Or type your own topic, e.g. \"How to spot scab early after rain\"", av_q_load: "Loading what growers ask Saathi…", av_q_none: "No Saathi questions yet — type a topic.",
   av_lang: "3. Language", av_voice: "4. Voice-over", av_v_f: "Woman's voice", av_v_m: "Man's voice", av_v_no: "No voice",
   av_len: "5. Length", av_l_s: "Short ~20 sec (3 scenes)", av_l_m: "Medium ~30 sec (4–5 scenes)", av_l_l: "Long ~45 sec (6 scenes)",
@@ -33,7 +33,7 @@ Object.assign(T.en, {
 });
 Object.assign(T.hi, {
   av_h: "🎬 मेरे लिए वीडियो बनाएँ", av_p: "विषय चुनें और \"वीडियो बनाएँ\" दबाएँ। बनते समय यह टैब खुला रखें।",
-  av_type: "1. कैसा वीडियो?", av_t_alert: "बीमारी चेतावनी", av_t_tip: "बाग़ की सलाह", av_t_season: "इस महीने के काम", av_t_feat: "सेब साथी की सुविधा दिखाएँ", av_t_money: "मुनाफ़ा और बिक्री", av_t_q: "बाग़वानों के सवालों के जवाब", av_t_own: "मेरा अपना विषय",
+  av_type: "1. कैसा वीडियो?", av_t_alert: "बीमारी चेतावनी", av_t_tip: "बाग़ की सलाह", av_t_season: "इस महीने के काम", av_t_feat: "सेब साथी की सुविधा दिखाएँ", av_t_money: "मुनाफ़ा और बिक्री", av_t_q: "बाग़वानों के सवालों के जवाब", av_t_own: "मेरा अपना विषय", av_t_idea: "💡 मेरे वीडियो आइडिया",
   av_topic: "2. विषय", av_topic_ph: "या अपना विषय लिखें", av_q_load: "साथी से पूछे सवाल लोड हो रहे हैं…", av_q_none: "अभी कोई सवाल नहीं — विषय लिखें।",
   av_lang: "3. भाषा", av_voice: "4. आवाज़", av_v_f: "महिला की आवाज़", av_v_m: "पुरुष की आवाज़", av_v_no: "आवाज़ नहीं",
   av_len: "5. लंबाई", av_l_s: "छोटा ~20 सेकंड", av_l_m: "मध्यम ~30 सेकंड", av_l_l: "लंबा ~45 सेकंड",
@@ -85,8 +85,11 @@ function avTopics() {
   if (AV.type === "season") { const m = new Date().toLocaleDateString("en-IN", { month: "long" }), n = new Date(Date.now() + 25 * 864e5).toLocaleDateString("en-IN", { month: "long" }); return ["Orchard jobs for " + m, "Get ready for " + n, "Common mistakes in " + m]; }
   if (AV.type === "q") return avQuestions();
   if (AV.type === "own") return [];
+  if (AV.type === "idea") return avIdeas().map(v => v.name);
   return (AV_TOPICS[AV.type] || {}).en || [];
 }
+/* the planned video ideas (Social handler list) that aren't made yet, as topics */
+const avIdeas = () => typeof mkViAll === "function" && typeof mkDone === "function" ? mkViAll().filter(v => !mkDone(v.key)).slice(0, 10) : [];
 const avChip = (k, v, label) => '<button type="button" class="btn-s sm avchip" data-av="' + k + '" data-v="' + esc(v) + '" aria-pressed="' + (String(AV[k]) === String(v)) + '">' + esc(label) + "</button>";
 
 /* opened from the Facebook + Instagram tab: no YouTube upload choice there, and "Add to Facebook + Instagram list" is the default */
@@ -106,7 +109,7 @@ function avHtml() {
   if (avFbTab() && AV.after === "yt") AV.after = "fb";
   const tps = avTopics(), dis = AV.busy ? " disabled" : "";
   return '<div class="avbox"><h5>' + esc(tr("av_h")) + '</h5><p class="fine">' + esc(tr("av_p")) + "</p>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_type")) + "</legend><div class=\"avchips\">" + ["alert", "tip", "season", "feat", "money", "q", "own"].map(k => avChip("type", k, tr("av_t_" + k))).join("") + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_type")) + "</legend><div class=\"avchips\">" + ["alert", "tip", "season", "feat", "money", "q", "idea", "own"].filter(k => k !== "idea" || avIdeas().length).map(k => avChip("type", k, tr("av_t_" + k))).join("") + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_topic")) + '</legend><div class="avchips">' +
       (tps === null ? '<span class="fine">' + esc(tr("av_q_load")) + "</span>" : AV.type === "q" && !tps.length ? '<span class="fine">' + esc(tr("av_q_none")) + "</span>" : tps.map(x => avChip("topic", x, x)).join("")) + "</div>" +
       '<input class="avin" id="avOwn" maxlength="200" placeholder="' + esc(tr("av_topic_ph")) + '" value="' + esc(AV.own) + '"></fieldset>' +
@@ -209,7 +212,9 @@ async function avCreate() {
   if (AV.voice !== "no" && typeof vsEnsureAC === "function") try { vsEnsureAC(); } catch (e) {}
   try {
     avStep("av_s1");
-    const v = await avWrite(topic);
+    const idea = AV.type === "idea" ? avIdeas().find(x => x.name === topic) : null;
+    const v = await avWrite(idea ? idea.name + ". Hook: " + idea.hook + ". Show: " + idea.show : topic);
+    if (idea) AV.ideaKey = idea.key;
     if (AV.check && !AV.oneTap) {   /* 2. you check the script; nothing is voiced or made yet */
       AV.script = v; AV.step = tr("av_sc_ready"); AV.busy = false; avRender();
       const el = $("avScript"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -292,6 +297,7 @@ async function avBuild(v) {
       if (typeof ytHold === "function") { avStep("av_s_ythold"); await ytHold(AV.ytAt || ""); AV.note = (AV.note ? AV.note + " " : "") + tr("av_yt_held"); }
     }
     AV.step = tr("av_s5") + " " + tr("av_edit");
+    if (AV.ideaKey && typeof mkSave === "function") { try { await mkSave(AV.ideaKey, { done: true }); } catch (e) {} AV.ideaKey = ""; }
   }
 }
 
