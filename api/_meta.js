@@ -18,7 +18,7 @@ const crypto = require("crypto");
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const G = "https://graph.facebook.com/v25.0/";
-const SCOPES = "pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish";
+const SCOPES = "pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,read_insights,instagram_manage_insights";   /* the last two: page and Instagram numbers on the admin Overview */
 const env = () => ({ id: process.env.META_APP_ID || "", secret: process.env.META_APP_SECRET || "", cfg: process.env.META_LOGIN_CONFIG_ID || "", svc: process.env.SUPABASE_SERVICE_ROLE_KEY || "" });
 
 function send(res, code, obj) { res.statusCode = code; res.setHeader("Content-Type", "application/json"); res.setHeader("Cache-Control", "no-store"); res.end(JSON.stringify(obj)); }

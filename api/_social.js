@@ -45,6 +45,29 @@ async function stats(acc, token) {
   return out;
 }
 
+// page numbers for the last 28 days, for the admin Overview: { fb: {views, reach, visits, engaged}, ig: {views, reach, profile, clicks, engaged} }
+// Meta gives these only with the insights permissions (read_insights, instagram_manage_insights); anything it refuses stays null
+async function pageInsights(acc, token) {
+  const out = { fb: {}, ig: {}, need: false };
+  const last = j => { const d = j && j.data && j.data[0]; const vs = d && d.values; const v = vs && vs.length ? vs[vs.length - 1].value : d && d.total_value ? d.total_value.value : null; return num(v); };
+  const fbTry = async (key, names) => {
+    for (const m of names) {
+      try { const v = last(await graph(acc.page_id + "/insights", token, { metric: m, period: "days_28" })); if (v != null) { out.fb[key] = v; return; } }
+      catch (e) { if (e.meta && (e.meta.code === 10 || e.meta.code === 200)) out.need = true; }
+    }
+  };
+  const until = Math.floor(Date.now() / 1000), since = until - 28 * 86400;
+  const igTry = async (key, m) => {
+    try { const v = last(await graph(acc.ig_id + "/insights", token, { metric: m, period: "day", metric_type: "total_value", since: String(since), until: String(until) })); if (v != null) out.ig[key] = v; }
+    catch (e) { if (e.meta && (e.meta.code === 10 || e.meta.code === 200)) out.need = true; }
+  };
+  const jobs = [fbTry("views", ["page_media_view", "page_impressions"]), fbTry("reach", ["page_total_media_view_unique", "page_impressions_unique"]),
+    fbTry("visits", ["page_views_total"]), fbTry("engaged", ["page_post_engagements"])];
+  if (acc.ig_id) jobs.push(igTry("views", "views"), igTry("reach", "reach"), igTry("profile", "profile_views"), igTry("clicks", "website_clicks"), igTry("engaged", "accounts_engaged"));
+  await Promise.all(jobs);
+  return out;
+}
+
 // links to the website in a Facebook post are tagged ?src=fb, so the Marketing tab can count who came from Facebook
 // (Instagram captions can't hold a working link; the Instagram bio link carries ?src=ig instead)
 const tagLinks = (text, src) => text.replace(/(https?:\/\/)?(www\.)?sebsaathi\.com(\/[^\s?#]*)?(\?[^\s#]*)?/gi, (m, pr, w, path, q) =>
@@ -163,4 +186,4 @@ async function metrics(items, pt) {
   return out;
 }
 
-module.exports = { graph, accounts, publish, stats, tagLinks, metrics, pageToken };
+module.exports = { graph, accounts, publish, stats, tagLinks, metrics, pageToken, pageInsights };

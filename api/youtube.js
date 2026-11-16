@@ -18,7 +18,7 @@
 const crypto = require("crypto");
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
-const SCOPES = "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly";
+const SCOPES = "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/yt-analytics.readonly";   /* analytics: views in the last 28 days on the admin Overview */
 const env = () => ({ id: process.env.GOOGLE_CLIENT_ID || "", secret: process.env.GOOGLE_CLIENT_SECRET || "", svc: process.env.SUPABASE_SERVICE_ROLE_KEY || "" });
 
 function send(res, code, obj) {
@@ -121,6 +121,25 @@ module.exports = async (req, res) => {
       const c = await fetch("https://www.googleapis.com/youtube/v3/channels?part=statistics&id=" + encodeURIComponent(row.channel_id), { headers: { Authorization: "Bearer " + t.access_token } }).then(r => r.json());
       const st = ((c.items || [])[0] || {}).statistics || {};
       return send(res, 200, { setup: true, connected: true, channel, subscribers: st.hiddenSubscriberCount ? null : (st.subscriberCount != null ? +st.subscriberCount : null), views: st.viewCount != null ? +st.viewCount : null, videos: st.videoCount != null ? +st.videoCount : null });
+    } catch (err) { return send(res, 200, { setup: true, connected: true, channel, error: err.code === "invalid_grant" ? "reconnect" : String(err.message || err).slice(0, 200) }); }
+  }
+  if (act === "insights") {   /* admin Overview: channel totals, plus the last 28 days from YouTube Analytics (needs the analytics permission) */
+    if (!row) return send(res, 200, { setup: true, connected: false });
+    try {
+      const t = await freshToken(e, row), H = { headers: { Authorization: "Bearer " + t.access_token } };
+      const c = await fetch("https://www.googleapis.com/youtube/v3/channels?part=statistics&id=" + encodeURIComponent(row.channel_id), H).then(r => r.json());
+      const st = ((c.items || [])[0] || {}).statistics || {};
+      const out = { setup: true, connected: true, channel, subscribers: st.hiddenSubscriberCount ? null : (st.subscriberCount != null ? +st.subscriberCount : null),
+        views: st.viewCount != null ? +st.viewCount : null, videos: st.videoCount != null ? +st.videoCount : null, d28: null, need: false };
+      const day = n => new Date(Date.now() + 5.5 * 3600e3 - n * 86400e3).toISOString().slice(0, 10);
+      const a = await fetch("https://youtubeanalytics.googleapis.com/v2/reports?ids=channel%3D%3DMINE&startDate=" + day(28) + "&endDate=" + day(0) +
+        "&metrics=views,estimatedMinutesWatched,subscribersGained,subscribersLost", H);
+      const aj = await a.json().catch(() => ({}));
+      if (a.ok && Array.isArray(aj.rows)) {
+        const r0 = aj.rows[0] || [0, 0, 0, 0];
+        out.d28 = { views: +r0[0] || 0, minutes: +r0[1] || 0, gained: +r0[2] || 0, lost: +r0[3] || 0 };
+      } else if (a.status === 403 || a.status === 401) out.need = true;
+      return send(res, 200, out);
     } catch (err) { return send(res, 200, { setup: true, connected: true, channel, error: err.code === "invalid_grant" ? "reconnect" : String(err.message || err).slice(0, 200) }); }
   }
   if (act === "studio") {   /* YouTube Studio panel (Social handler → YouTube & videos): channel numbers and the latest uploads */

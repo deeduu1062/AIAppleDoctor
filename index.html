@@ -3478,7 +3478,10 @@ function logVisit(u) {
     if (!vid) vid = "nostore" + Math.random().toString(36).slice(2, 12);
     let ref = null;
     try { if (document.referrer) { const h = new URL(document.referrer).hostname.replace(/^www\./, ""); if (h && h !== location.hostname) ref = h.slice(0, 120); } } catch (e) {}
-    const ua = navigator.userAgent || "", device = /iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "mobile" : "desktop";
+    const ua = navigator.userAgent || "";
+    /* opened inside the Instagram or Facebook app (those apps usually send no referrer): note the app as the sending site */
+    if (!ref) { try { if (/Instagram/i.test(ua)) ref = "instagram.com"; else if (/FBAN|FBAV|FB_IAB|FBIOS|FB4A/i.test(ua) || new URLSearchParams(location.search).get("fbclid")) ref = "facebook.com"; } catch (e) {} }
+    const device =/iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "mobile" : "desktop";
     const row = { visitor: vid, page: "home", ref, device, lang, signed_in: !!u };
     if (visitSrc) row.src = visitSrc;
     /* rough place (country, state, city) from the site's own server; kept for this browser session */

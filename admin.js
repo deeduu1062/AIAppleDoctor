@@ -889,6 +889,112 @@ Object.assign(T.hi, {
   rv_up:"👍 काम आया (30 दिन): {n}", rv_down:"👎 काम नहीं आया (30 दिन): {n}", rv_none:"जाँचने को कुछ नहीं। कोई 👎 जवाब बाक़ी नहीं।", rv_q:"सवाल", rv_note:"बाग़वान की टिप्पणी", rv_done:"जाँचा हुआ मार्क करें", rv_setup:"रेटिंग अभी सेट नहीं है: Supabase में supabase/chat_feedback.sql चलाएँ।",
   ov_err_fb:"सुझाव टेबल अभी नहीं बनी (supabase/feedback.sql)।", ov_err_ch:"साथी चैट टेबल अभी नहीं बनी (supabase/chat.sql)।", ov_err:"लोड नहीं हो सका: {m}"
 });
+/* ---------- social media on the Overview: website visits from each platform (supabase/social_visits.sql) and the page/channel numbers ---------- */
+Object.assign(T.en, {
+  so_h: "Social media", so_vis_h: "Website visits from social media", so_c_from: "Came from", so_c_people: "People (30 days)", so_c_joined: "Joined (30 days)",
+  so_p_facebook: "Facebook", so_p_instagram: "Instagram", so_p_youtube: "YouTube", so_p_whatsapp: "WhatsApp", so_p_google: "Google search", so_p_other: "Other sites and links", so_p_direct: "Typed in / no link",
+  so_setup: "Run supabase/social_visits.sql in Supabase once to turn this on.", so_note: "Counted from tracked links (?src=fb, ig, yt, wa), the site that sent the visitor, and visits opened inside the Facebook or Instagram app. WhatsApp often hides where a visit came from, so use the WhatsApp links from the Social handler.",
+  so_where_h: "Where social media visitors are (30 days)", so_c_states: "Top states", so_c_cities: "Top cities", so_abroad: "{n} from outside India", so_none: "No visits yet",
+  so_pg_h: "Your pages and channel", so_c_num: "Number", so_followers: "Followers", so_subs: "Subscribers", so_views28: "Views (28 days)", so_reach28: "People reached (28 days)",
+  so_visits28: "Page visits (28 days)", so_profile28: "Profile visits (28 days)", so_clicks28: "Website taps (28 days)", so_engaged28: "Engaged (28 days)", so_watch28: "Watch time (28 days)", so_gain28: "New subscribers (28 days)",
+  so_allviews: "Views, all time", so_videos: "Videos", so_min: "{n} min", so_hr: "{n} hours", so_change: "{c} in 7 days",
+  so_notconn: "Not connected. Connect it in Social handler → Settings.", so_loading: "Loading…", so_err: "Could not load: {m}", so_recon: "Connection expired. Connect again in Social handler → Settings.",
+  so_need_meta: "For views and reach, connect Facebook again in Social handler → Settings (it now asks for the page numbers permission).",
+  so_need_yt: "For views in the last 28 days, connect YouTube again in Social handler → Settings (it now asks for the analytics permission).",
+  so_c_visits: "Visits"
+});
+Object.assign(T.hi, {
+  so_h: "सोशल मीडिया", so_vis_h: "सोशल मीडिया से वेबसाइट विज़िट", so_c_from: "कहाँ से आए", so_c_people: "लोग (30 दिन)", so_c_joined: "जुड़े (30 दिन)",
+  so_p_facebook: "Facebook", so_p_instagram: "Instagram", so_p_youtube: "YouTube", so_p_whatsapp: "WhatsApp", so_p_google: "Google खोज", so_p_other: "दूसरी साइटें और लिंक", so_p_direct: "सीधे टाइप किया / कोई लिंक नहीं",
+  so_setup: "इसे चालू करने के लिए Supabase में एक बार supabase/social_visits.sql चलाएँ।", so_note: "ट्रैक लिंक (?src=fb, ig, yt, wa), भेजने वाली साइट, और Facebook या Instagram ऐप के अंदर खुली विज़िट से गिना जाता है। WhatsApp अक्सर नहीं बताता कि विज़िट कहाँ से आई, इसलिए Social handler वाले WhatsApp लिंक ही भेजें।",
+  so_where_h: "सोशल मीडिया वाले विज़िटर कहाँ हैं (30 दिन)", so_c_states: "मुख्य राज्य", so_c_cities: "मुख्य शहर", so_abroad: "{n} भारत से बाहर से", so_none: "अभी कोई विज़िट नहीं",
+  so_pg_h: "आपके पेज और चैनल", so_c_num: "संख्या", so_followers: "फ़ॉलोअर", so_subs: "सब्सक्राइबर", so_views28: "व्यू (28 दिन)", so_reach28: "कितने लोगों तक पहुँचे (28 दिन)",
+  so_visits28: "पेज विज़िट (28 दिन)", so_profile28: "प्रोफ़ाइल विज़िट (28 दिन)", so_clicks28: "वेबसाइट पर टैप (28 दिन)", so_engaged28: "जुड़े लोग (28 दिन)", so_watch28: "देखने का समय (28 दिन)", so_gain28: "नए सब्सक्राइबर (28 दिन)",
+  so_allviews: "कुल व्यू", so_videos: "वीडियो", so_min: "{n} मिनट", so_hr: "{n} घंटे", so_change: "7 दिन में {c}",
+  so_notconn: "जुड़ा नहीं है। Social handler → Settings में जोड़ें।", so_loading: "लोड हो रहा है…", so_err: "लोड नहीं हो सका: {m}", so_recon: "कनेक्शन ख़त्म हो गया। Social handler → Settings में दोबारा जोड़ें।",
+  so_need_meta: "व्यू और पहुँच के लिए Social handler → Settings में Facebook दोबारा जोड़ें (अब यह पेज के आँकड़ों की अनुमति माँगता है)।",
+  so_need_yt: "पिछले 28 दिन के व्यू के लिए Social handler → Settings में YouTube दोबारा जोड़ें (अब यह analytics की अनुमति माँगता है)।",
+  so_c_visits: "विज़िट"
+});
+let SO = null, soBusy = false;
+async function soToken() { const r = await sb.auth.getSession(); return r && r.data && r.data.session ? r.data.session.access_token : ""; }
+async function loadSocialOv() {
+  if (soBusy || !sb) return; soBusy = true;
+  SO = { vis: null, visErr: "", meta: null, yt: null }; renderSocialOv();
+  const tok = await soToken().catch(() => "");
+  const visits = (async () => {
+    try { const r = await sb.rpc("admin_social_visits"); if (r.error) throw r.error; SO.vis = r.data || {}; }
+    catch (e) { const m = String(e.message || e); SO.visErr = String(e.code || "") === "PGRST202" || /could not find the function|does not exist|schema cache/i.test(m) ? "setup" : m; }
+    renderSocialOv();
+  })();
+  const meta = (async () => {
+    try { const r = await fetch("/api/social?fn=post&insights=1", { headers: { Authorization: "Bearer " + tok } }); SO.meta = await r.json(); }
+    catch (e) { SO.meta = { ok: false, error: String(e.message || e) }; }
+    renderSocialOv();
+  })();
+  const yt = (async () => {
+    try {
+      const r = await fetch("/api/youtube", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + tok }, body: JSON.stringify({ action: "insights" }) });
+      SO.yt = await r.json().catch(() => ({ error: "HTTP " + r.status }));
+    } catch (e) { SO.yt = { error: String(e.message || e) }; }
+    renderSocialOv();
+  })();
+  await Promise.all([visits, meta, yt]); soBusy = false;
+}
+/* 7-day follower change from the daily snapshots the Social handler keeps (only once that tab has loaded them) */
+function soChange(which, now) {
+  try { if (typeof mkFolChange === "function") { const s = mkFolChange(which, now); if (s) return s; } } catch (e) {}
+  return "";
+}
+function renderSocialOv() {
+  const el = $("ovSoc"); if (!el) return;
+  if (!SO) { el.innerHTML = ""; return; }
+  const v = x => x == null ? "–" : fmtN(+x);
+  let h = '<h5 class="ovsub">' + tr("so_vis_h") + "</h5>";
+  if (SO.visErr) h += '<p class="fine">' + esc(SO.visErr === "setup" ? tr("so_setup") : tr("so_err").replace("{m}", SO.visErr)) + "</p>";
+  else if (!SO.vis) h += '<p class="fine">' + tr("so_loading") + "</p>";
+  else {
+    const P = SO.vis.platforms || [], main = ["facebook", "instagram", "youtube", "whatsapp"];
+    const rowP = p => {
+      const arrow = p.prev7 ? (p.d7 > p.prev7 ? ' <b class="svup">▲</b>' : p.d7 < p.prev7 ? ' <b class="svdn">▼</b>' : "") : "";
+      return '<tr' + (main.indexOf(p.p) < 0 ? ' class="sub"' : "") + '><th scope="row">' + tr("so_p_" + p.p) + '</th><td class="n">' + v(p.today) + '</td><td class="n">' + v(p.d7) + arrow + '</td><td class="n">' + v(p.d30) + '</td><td class="n">' + v(p.total) +
+        '</td><td class="n">' + v(p.people30) + '</td><td class="n">' + v(p.joined30) + "</td></tr>";
+    };
+    h += '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("so_c_from") + "</th>" +
+      ["ov_c_today", "ov_c_7", "ov_c_30", "ov_c_total", "so_c_people", "so_c_joined"].map(k => '<th scope="col" class="n">' + tr(k) + "</th>").join("") + "</tr></thead><tbody>" + P.map(rowP).join("") + "</tbody></table></div>" +
+      '<p class="fine">' + tr("so_note") + "</p>";
+    const place = (list, city) => (list || []).map(r => esc(city ? (r.city || tr("vp_unknown")) : (IN_STATES[r.code] || r.code || tr("vp_unknown"))) + " " + fmtN(+r.n)).join(", ");
+    h += '<h5 class="ovsub">' + tr("so_where_h") + '</h5><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("so_c_from") + '</th><th scope="col">' + tr("so_c_states") + '</th><th scope="col">' + tr("so_c_cities") + "</th></tr></thead><tbody>" +
+      P.filter(p => main.indexOf(p.p) >= 0).map(p => '<tr><th scope="row">' + tr("so_p_" + p.p) + "</th><td>" + (p.d30 ? (place(p.states) || (+p.abroad ? "" : tr("vp_unknown"))) + (+p.abroad ? (place(p.states) ? "<br>" : "") + "<span class=\"fine\">" + esc(tr("so_abroad").replace("{n}", fmtN(+p.abroad))) + "</span>" : "") : tr("so_none")) +
+        "</td><td>" + (p.d30 ? (place(p.cities, true) || tr("vp_unknown")) : "–") + "</td></tr>").join("") + "</tbody></table></div>";
+  }
+  /* page and channel numbers */
+  const M = SO.meta, Y = SO.yt, I = M && M.insights || { fb: {}, ig: {} }, notes = [];
+  const line = (k, val, sub) => '<tr><th scope="row">' + tr(k) + '</th><td class="n">' + val + (sub ? '<br><span class="fine">' + esc(sub) + "</span>" : "") + "</td></tr>";
+  const block = (name, body) => '<tr class="sohead"><th scope="rowgroup" colspan="2">' + name + "</th></tr>" + body;
+  const status = (o, isYt) => !o ? tr("so_loading") : o.error === "reconnect" ? tr("so_recon") : o.error ? tr("so_err").replace("{m}", String(o.error).slice(0, 120)) : (isYt ? !o.connected : (o.setup === false || o.ok === false)) ? tr("so_notconn") : "";
+  const one = s => '<tr><td colspan="2" class="fine">' + esc(s) + "</td></tr>";
+  let fbB, igB, ytB;
+  const ms = status(M);
+  if (ms) { fbB = one(ms); igB = one(ms); }
+  else {
+    fbB = line("so_followers", v(M.fb_followers), soChange("fb", M.fb_followers)) + line("so_views28", v(I.fb.views)) + line("so_reach28", v(I.fb.reach)) + line("so_visits28", v(I.fb.visits)) + line("so_engaged28", v(I.fb.engaged));
+    igB = !M.ig_id ? one(tr("so_notconn")) : line("so_followers", v(M.ig_followers), soChange("ig", M.ig_followers)) + line("so_views28", v(I.ig.views)) + line("so_reach28", v(I.ig.reach)) + line("so_profile28", v(I.ig.profile)) + line("so_clicks28", v(I.ig.clicks));
+    if (I.need || (I.fb.views == null && I.fb.reach == null)) notes.push(tr("so_need_meta"));
+  }
+  const ys = status(Y, true);
+  if (ys) ytB = one(ys);
+  else {
+    const d = Y.d28, mins = d ? d.minutes : null;
+    const watch = mins == null ? "–" : mins >= 120 ? esc(tr("so_hr").replace("{n}", fmtN(Math.round(mins / 60)))) : esc(tr("so_min").replace("{n}", fmtN(mins)));
+    ytB = line("so_subs", v(Y.subscribers), soChange("yt", Y.subscribers)) + line("so_views28", v(d && d.views)) + line("so_watch28", watch) + line("so_gain28", d ? v(d.gained - d.lost) : "–") + line("so_allviews", v(Y.views)) + line("so_videos", v(Y.videos));
+    if (!d) notes.push(tr("so_need_yt"));
+  }
+  h += '<h5 class="ovsub">' + tr("so_pg_h") + '</h5><div class="tablewrap"><table class="ledger sopg"><thead><tr><th scope="col"></th><th scope="col" class="n">' + tr("so_c_num") + "</th></tr></thead><tbody>" +
+    block(tr("so_p_facebook"), fbB) + block(tr("so_p_instagram"), igB) + block(tr("so_p_youtube"), ytB) + "</tbody></table></div>" +
+    notes.map(n => '<p class="fine">' + esc(n) + "</p>").join("");
+  el.innerHTML = h;
+}
 let OV = null, ovBusy = false;
 const ovIstDay = () => { const n = new Date(Date.now() + 5.5 * 3600e3); return new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()) - 5.5 * 3600e3).toISOString(); };
 const ovAgo = d => new Date(Date.now() - d * 864e5).toISOString();
@@ -902,6 +1008,7 @@ async function loadOverview() {
   if (!isAdmin() || !sb || ovBusy) return;
   ovBusy = true; set("ovErr", ""); $("ovRefresh").disabled = true;
   const o = { at: new Date().toISOString(), fb: null, ch: null, q: [] }, errs = [];
+  loadSocialOv();   /* social media numbers load on their own; the Facebook and YouTube calls can take a few seconds */
   const today = ovIstDay(), d7 = ovAgo(7), d30 = ovAgo(30);
   try {
     const [t, n, w, d, m] = await Promise.all([ovCount("feedback"), ovCount("feedback", q => q.neq("status", "done")),
@@ -997,8 +1104,9 @@ function renderOverview() {
       '<details class="svdays"><summary class="ovsub">' + tr("ov_sv_days") + '</summary><div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ov_sv_day") + '</th><th scope="col" class="n">' + tr("ov_sv_n") + '</th><th scope="col" class="n">' + tr("ov_sv_u") + "</th></tr></thead><tbody>" +
       ((sv.days || []).length ? sv.days.map(d => '<tr><th scope="row">' + esc(new Date(d.day + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { weekday: "short", day: "numeric", month: "short" })) + '</th><td class="n">' + fmtN(+d.n) + '</td><td class="n">' + fmtN(+d.u) + "</td></tr>").join("") : '<tr><td colspan="3">–</td></tr>') +
       "</tbody></table></div></details>" : "");
-  $("ovTab").innerHTML = svHtml + tbl("ov_pa_h", money(pa.money) + row("ov_t_paid", pa.paid || [null, null, null, null]) + row("ov_t_wait", pa.wait || [null, null, null, null], "sub") + row("ov_t_active", [null, null, null, pa.active], "sub")) + tbl("ov_fb_h", row("ov_t_received", [f.d, f.w, f.m, f.t]) + row("ov_t_notdone", [null, null, null, f.n], "sub")) +
+  $("ovTab").innerHTML = svHtml + '<div id="ovSoc"></div>' + tbl("ov_pa_h", money(pa.money) + row("ov_t_paid", pa.paid || [null, null, null, null]) + row("ov_t_wait", pa.wait || [null, null, null, null], "sub") + row("ov_t_active", [null, null, null, pa.active], "sub")) + tbl("ov_fb_h", row("ov_t_received", [f.d, f.w, f.m, f.t]) + row("ov_t_notdone", [null, null, null, f.n], "sub")) +
     tbl("ov_ch_h", row("ov_t_questions", [c.d, c.w, c.m, c.t]) + row("ov_t_growers", [null, null, c.users, null], "sub"));
+  renderSocialOv();
   const q = OV.q || [];
   $("ovQ").innerHTML = !q.length ? '<p class="fine">' + tr("ov_q_none") + "</p>" :
     '<div class="tablewrap"><table class="ledger"><thead><tr><th scope="col">' + tr("ov_c_when") + '</th><th scope="col">' + tr("ov_c_q") + "</th></tr></thead><tbody>" +

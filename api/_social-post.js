@@ -16,7 +16,7 @@
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
-const { accounts, publish, stats, metrics, pageToken } = require("./_social");
+const { accounts, publish, stats, metrics, pageToken, pageInsights } = require("./_social");
 
 function send(res, code, obj) {
   res.statusCode = code;
@@ -48,7 +48,10 @@ module.exports = async (req, res) => {
   let acc;
   try { acc = await accounts(pt); }
   catch (e) { return send(res, 200, { setup: true, ok: false, error: String(e.message || e).slice(0, 300) }); }
-  if (req.method === "GET") return send(res, 200, Object.assign({ setup: true, ok: true }, acc, await stats(acc, pt)));
+  if (req.method === "GET") {
+    const extra = /[?&]insights=1\b/.test(String(req.url || "")) ? { insights: await pageInsights(acc, pt) } : {};   /* admin Overview: page numbers for 28 days */
+    return send(res, 200, Object.assign({ setup: true, ok: true }, acc, await stats(acc, pt), extra));
+  }
 
   const b = await readBody(req);
   if (Array.isArray(b.metrics)) {
