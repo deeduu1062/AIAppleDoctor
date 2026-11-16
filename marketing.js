@@ -583,7 +583,8 @@ try {
   const q = new URLSearchParams(location.search), r = q.get("fb");
   if (r) {
     const why = q.get("m") || "", map = { setup: "META_APP_ID / META_APP_SECRET", expired: tr("fbc_again"), no_page: tr("fbc_nopage"), access_denied: tr("fbc_denied"), user_denied: tr("fbc_denied") };
-    mkFbNote = r === "ok" ? tr("fbc_ok") : tr("fbc_err").replace("{m}", map[why] || why);
+    const who = /^no_page:/.test(why) ? why.slice(8) : "";   /* the Facebook account that logged in, when no Page came back */
+    mkFbNote = r === "ok" ? tr("fbc_ok") : tr("fbc_err").replace("{m}", who ? map.no_page + " — logged in as \"" + who + "\". Switch Facebook to your own personal profile (the one that manages the Page) and try again." : map[why] || why);
     try { localStorage.setItem("mk-fbnote", JSON.stringify({ t: Date.now(), m: mkFbNote })); } catch (e) {}   /* kept for 30 minutes, so a reload doesn't hide it */
     history.replaceState(null, "", location.pathname + location.hash);
   } else {

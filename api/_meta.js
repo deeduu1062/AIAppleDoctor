@@ -75,8 +75,19 @@ module.exports = async (req, res) => {
       const redirect = "https://" + host + "/api/meta";
       const short = await fb("oauth/access_token", { client_id: e.id, client_secret: e.secret, redirect_uri: redirect, code: q.get("code") });
       const long = await fb("oauth/access_token", { grant_type: "fb_exchange_token", client_id: e.id, client_secret: e.secret, fb_exchange_token: short.access_token });
-      const pages = ((await fb("me/accounts", { access_token: long.access_token, fields: "id,name,access_token,instagram_business_account{id,username}", limit: "50" })).data || []).filter(p => p.access_token);
-      if (!pages.length) return back(res, "fb=err&m=no_page");
+      const PF = "id,name,access_token,instagram_business_account{id,username}";
+      let pages = ((await fb("me/accounts", { access_token: long.access_token, fields: PF, limit: "50" })).data || []).filter(p => p.access_token);
+      if (!pages.length) {   /* Facebook's business log-in sometimes leaves me/accounts empty: ask which Pages were granted, then fetch each one */
+        try {
+          const dbg = await fb("debug_token", { input_token: long.access_token, access_token: e.id + "|" + e.secret });
+          const ids = [...new Set(((dbg.data && dbg.data.granular_scopes) || []).filter(s => /^pages_/.test(s.scope)).flatMap(s => s.target_ids || []))];
+          for (const id of ids.slice(0, 20)) { try { const p = await fb(id, { access_token: long.access_token, fields: PF }); if (p.access_token) pages.push(p); } catch (x) {} }
+        } catch (x) {}
+      }
+      if (!pages.length) {
+        let who = ""; try { who = (await fb("me", { access_token: long.access_token, fields: "name" })).name || ""; } catch (x) {}
+        return back(res, "fb=err&m=" + encodeURIComponent("no_page" + (who ? ":" + who : "")));
+      }
       const p = pages.find(x => /seb\s*saathi|सेब\s*साथी/i.test(x.name || "")) || pages[0], ig = p.instagram_business_account || null;
       await db("POST", e.svc, { id: 1, page_id: p.id, page_name: p.name, page_token: p.access_token, ig_id: ig ? ig.id : null, ig_user: ig ? ig.username : null, connected_at: new Date().toISOString() });
       return back(res, "fb=ok");
