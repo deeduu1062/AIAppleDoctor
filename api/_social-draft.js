@@ -109,6 +109,11 @@ Make 4 to 6 scenes. The first scene is a strong hook (a question or a problem gr
 - "sub": second line on screen, at most 10 words (can be empty)
 - "say": what the voice says for this scene, one or two short spoken sentences, 8 to 22 words, adding a little more than the screen words. It must sound like a bagwan from upper Shimla (Rohru, Kotkhai, Jubbal) talking to a neighbour over the fence, not like a TV announcer or a government notice: everyday spoken Hindi, short sentences, plain words, a warm "bhai", "bagwan bhaiyo" or "dekho" now and then (not every line). Use the words growers really use: bagicha, bagwan, peti, dawai, spray, mandi, aadhti, kiraya, tudaan, bharaan, grading, packing, phool aana, phal lagna, ola, paala, barf. Avoid heavy Sanskrit words (say "dawai" not "rasayan", "bagicha" not "udyan", "fayda" not "labh", "kaam" not "karya").
 - "art": the picture, exactly one of: ${ART_KEYS.join(", ")}  (leaf_spots = diseased leaf, spray = sprayer, phone = the Seb Saathi app, crate = apple box, money = rupees/profit, chart = profit or records, shears = pruning, soil = soil and manure, snow = winter/chilling, flower = flowering)
+The admin may add a brief. Follow it exactly:
+- MUST SAY: every point must come through clearly, in the screen words or the voice.
+- FACTS FROM THE ADMIN: these are the admin's own checked facts. Use them exactly as written (same numbers, names, dates, doses); never change, round or add to them. They may be used even where the safety rules below would stop you; the safety rules still apply to everything else.
+- OWN LINES: use each one word for word as the "say" of one scene, in the order given (do not translate or correct them), and write that scene's screen words to match.
+- STYLE: write in that tone.
 Then "cta" (end card call to action, at most 8 words) and "cta_say" (the voice for the end card, at most 14 words, mentioning sebsaathi.com).
 What the website does today: orchard record, spray and work diary with expenses, season sales record (Mandi, Adani per kilo, Theka), real profit per box, disease check from one photo, Saathi chatbot (also by voice), spray schedule and season calendar, family sharing, invite friends.
 Safety rules: never name a chemical, brand or dose (for sprays say follow the state spray schedule and the label); never quote prices; no made-up growers, numbers or testimonials; never promise results.
@@ -154,7 +159,8 @@ module.exports = async (req, res) => {
 
   const b = await readBody(req);
   const kind = ["wa", "videos", "custom", "wamsg", "video", "repurpose", "autovideo"].indexOf(b.kind) >= 0 ? b.kind : "post";
-  const want = String(b.ask || "").replace(/\s+/g, " ").trim().slice(0, 800);
+  const want = b.kind === "autovideo" ? String(b.ask || "").replace(/[ \t]+/g, " ").replace(/\s*\n\s*/g, "\n").trim().slice(0, 3500)   /* a video can carry the admin's brief, line by line */
+    : String(b.ask || "").replace(/\s+/g, " ").trim().slice(0, 800);
   if ((kind === "custom" || kind === "wamsg" || kind === "video" || kind === "repurpose" || kind === "autovideo") && !want) return send(res, 400, { error: "empty" });
   const n = kind === "post" || kind === "videos" ? Math.max(1, Math.min(7, Math.round(+b.n || 3))) : 1;
   const lang = b.lang === "hi" ? "hi" : b.lang === "en" ? "en" : "hn";
@@ -212,7 +218,7 @@ module.exports = async (req, res) => {
   }
   if (kind === "autovideo") {   /* one-tap video: words, voice lines and pictures; returned, not saved */
     const v = posts[0] || {}, t = (x, m) => String(x || "").replace(/\s+/g, " ").trim().slice(0, m);
-    const scenes = (Array.isArray(v.scenes) ? v.scenes : []).slice(0, 6).map(x => ({ label: t(x.label, 30), title: t(x.title, 90), sub: t(x.sub, 90), say: t(x.say, 260), art: ART_KEYS.indexOf(String(x.art || "")) >= 0 ? String(x.art) : "apple" })).filter(x => x.title);
+    const scenes = (Array.isArray(v.scenes) ? v.scenes : []).slice(0, 6).map(x => ({ label: t(x.label, 30), title: t(x.title, 90), sub: t(x.sub, 90), say: t(x.say, 300), art: ART_KEYS.indexOf(String(x.art || "")) >= 0 ? String(x.art) : "apple" })).filter(x => x.title);
     if (!scenes.length) return send(res, 502, { error: "ai" });
     return send(res, 200, { video: { title: t(v.title, 90), scenes, cta: t(v.cta, 80), cta_say: t(v.cta_say, 200), caption: String(v.caption || "").slice(0, 2000) } });
   }
