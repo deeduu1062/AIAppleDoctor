@@ -860,3 +860,37 @@ function vsLoadFile(file, i) {
 })();
 /* the Marketing tab may have started before this file loaded: check the YouTube connection now */
 if (typeof mkStarted !== "undefined" && mkStarted && !YT) ytLoad();
+
+/* ---------- picture card for a post (Social handler → Create post): headline, drawn picture, logo and web address ----------
+   o = { title, sub, art, hi }; gives a 1080×1350 JPEG (Instagram's 4:5 size, also fine on Facebook) */
+async function vsCard(o) {
+  if (document.fonts && document.fonts.ready) await document.fonts.ready.catch(() => {});
+  const W = 1080, H = 1350, k = 1, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d"), t = String(o.title || "").trim(), sub = String(o.sub || "").trim();
+  const hi = o.hi != null ? !!o.hi : /[ऀ-ॿ]/.test(t + sub);
+  const art = VS_ART.indexOf(o.art) >= 0 ? o.art : "apple";
+  const th = VS_THEMES[["leaf_spots", "bug", "rain", "snow"].indexOf(art) >= 0 ? "alert" : ["money", "chart", "crate", "calendar"].indexOf(art) >= 0 ? "season" : "tip"];
+  vsBg(ctx, W, H, th, 3.2);
+  /* the picture, a little higher than in a video */
+  ctx.save(); ctx.translate(0, -H * 0.06); vsArt(ctx, W, H, art, 3, th); ctx.restore();
+  /* headline and second line */
+  const maxW = W - 150; let px = 100, lines;
+  for (;;) { ctx.font = vsFont("700", px, hi); lines = vsWrap(ctx, t, maxW); if (lines.length <= 3 || px < 60) break; px *= 0.9; }
+  const lh = px * (hi ? 1.2 : 1.08), spx = 44; ctx.font = vsBody("500", spx); const subs = vsWrap(ctx, sub, maxW).slice(0, 2);
+  const blockH = lines.length * lh + (subs.length ? 30 + subs.length * spx * 1.35 : 0);
+  let y = Math.min(H * 0.66 - blockH / 2, H - 210 - blockH);
+  ctx.textBaseline = "top"; ctx.fillStyle = "#FFFFFF"; ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4;
+  ctx.font = vsFont("700", px, hi); lines.forEach((ln, j) => ctx.fillText(ln, 75, y + j * lh)); y += lines.length * lh;
+  if (subs.length) {
+    y += 30; ctx.shadowColor = "transparent"; ctx.fillStyle = th.acc; ctx.fillRect(75, y - 16, 120, 6);
+    ctx.fillStyle = "rgba(255,255,255,.92)"; ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.font = vsBody("500", spx); subs.forEach((s, j) => ctx.fillText(s, 75, y + j * spx * 1.35));
+  }
+  ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  /* footer band: logo, name, web address */
+  const fy = H - 130; ctx.fillStyle = "rgba(0,0,0,.28)"; ctx.fillRect(0, fy, W, 130);
+  if (vsMark.complete && vsMark.naturalWidth) ctx.drawImage(vsMark, 60, fy + 28, 68, 68 * 196 / 180);
+  const b = VS_BRAND[hi ? "hi" : "hl"];
+  ctx.fillStyle = "#FFFFFF"; ctx.textBaseline = "middle"; ctx.font = vsFont("700", 52, hi); ctx.fillText(b.name, 145, fy + 66);
+  ctx.textAlign = "right"; ctx.font = '600 40px "IBM Plex Mono",ui-monospace,monospace'; ctx.fillText("sebsaathi.com", W - 60, fy + 66); ctx.textAlign = "left";
+  return new Promise(ok => cv.toBlob(bl => ok(bl), "image/jpeg", 0.9));
+}

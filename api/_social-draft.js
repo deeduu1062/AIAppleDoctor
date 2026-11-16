@@ -53,6 +53,7 @@ const SEASON = [
   "December: dormancy, snow; pruning starts in some areas; planting pits; close the year's orchard records."
 ];
 
+const ART_KEYS = ["apple", "leaf", "leaf_spots", "tree", "spray", "phone", "calendar", "money", "rain", "mountain", "camera", "crate", "chart", "bug", "shears", "family", "check", "soil", "snow", "flower"];
 const BRIEF = `You write social media posts for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand. Tagline: "Your Orchard Manager". It helps growers keep an orchard record, work out real profit per peti (box) after all costs, compare mandi vs ladhani, check apple diseases from a photo, follow the season calendar and spray stages, and ask "Saathi", the chatbot, in Hindi or Hinglish.
 
 The audience: apple growers (bagwan), mostly on phones, who know Hindi well and some English. Facebook and Instagram.
@@ -70,9 +71,14 @@ Safety rules (always):
 - No made-up statistics, quotes, growers or testimonials.
 
 For each post also give "photo_idea": one short line describing a photo the admin could take in their own orchard to go with it (Instagram needs a photo).
+Also, in the same language as the post:
+- "ig": the Instagram caption for the same post: 40 to 100 words, a hook first line, short lines, no web links (Instagram links don't work: say the link is in the bio, e.g. "Link bio mein 👆"), then 8 to 12 hashtags.
+- "card_title": the big words for a picture card that goes with the post, at most 7 words, the one idea a grower should remember.
+- "card_sub": one short second line for the card, at most 10 words (can be empty).
+- "art": the drawn picture for the card, exactly one of: ${ART_KEYS.join(", ")}
 
 Reply with ONLY a JSON array, no other text:
-[{"topic": "3-6 word topic", "text": "the full post", "photo_idea": "..."}]`;
+[{"topic": "3-6 word topic", "text": "the full post", "photo_idea": "...", "ig": "...", "card_title": "...", "card_sub": "...", "art": "..."}]`;
 
 /* the weekly WhatsApp channel tip: same rules, shorter, sent by hand from the admin page */
 const WA_BRIEF = `You write the weekly WhatsApp channel tip for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand.
@@ -101,7 +107,6 @@ Reply with ONLY a JSON array with one item, no other text:
 [{"title": "YouTube title, at most 70 characters", "scenes": [{"label": "...", "title": "...", "sub": "..."}], "cta": "end card call to action, at most 8 words", "shoot": "what to film for each scene, in English, one or two lines", "caption": "post caption for Reels/YouTube, 40-90 words, ending with 4-6 hashtags"}]`;
 
 /* one-tap video (admin → YouTube & videos → One-tap video): words, a spoken voice-over line and a built-in picture for every scene */
-const ART_KEYS = ["apple", "leaf", "leaf_spots", "tree", "spray", "phone", "calendar", "money", "rain", "mountain", "camera", "crate", "chart", "bug", "shears", "family", "check", "soil", "snow", "flower"];
 const AUTOVID_BRIEF = `You write a complete short phone video (25 to 45 seconds) for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand, made by an apple grower from Rohru. The video is made automatically: each scene shows a simple drawn picture, big words on screen, and a voice reads one line. The admin tells you the topic.
 Make 4 to 6 scenes. The first scene is a strong hook (a question or a problem growers feel). Then clear, practical steps or points. Each scene has:
 - "label": small tag, 1-3 words, or a step number like "1"
@@ -249,9 +254,12 @@ module.exports = async (req, res) => {
   const rows = posts.slice(0, n).map((p, i) => {
     const day = 1 + Math.floor(i * 7 / n);
     const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + day, 14, 0));
+    /* the Instagram caption and the picture card's words wait in result.draft until the post is approved (marketing.js) */
+    const t = (x, m) => String(x || "").replace(/\s+/g, " ").trim().slice(0, m);
+    const draft = { ig: String(p.ig || "").trim().slice(0, 2200), card_title: t(p.card_title, 80), card_sub: t(p.card_sub, 90), art: ART_KEYS.indexOf(String(p.art || "")) >= 0 ? String(p.art) : "apple" };
     return {
       status: "draft", text: String(p.text || "").trim().slice(0, 2200), topic: String(p.topic || "").slice(0, 200) || null,
-      photo_idea: String(p.photo_idea || "").slice(0, 400) || null, fb: true, ig: false, post_at: d.toISOString()
+      photo_idea: String(p.photo_idea || "").slice(0, 400) || null, fb: true, ig: false, post_at: d.toISOString(), result: { draft }
     };
   }).filter(x => x.text);
   if (!rows.length) return send(res, 502, { error: "ai" });

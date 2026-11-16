@@ -263,7 +263,7 @@ async function spWeekGo() {
 async function spRevGo() {
   const I = spWeekItems().filter(x => qKind(x) !== "wa" && qHasBody(x) && !SP.unt.has(String(x.id)));
   let n = 0;
-  for (const x of I) { try { await qUpd(x.id, qApprovePatch(x)); n++; } catch (e) { SP.revMsg = tr("mk_q_err").replace("{m}", String(e.message || e)); } }
+  for (const x0 of I) { try { const x = typeof qReady === "function" ? await qReady(x0) : x0; await qUpd(x.id, qApprovePatch(x)); n++; } catch (e) { SP.revMsg = tr("mk_q_err").replace("{m}", String(e.message || e)); } }
   if (n) SP.revMsg = tr("wk_rev_ok").replace("{n}", n);
   renderMk();
 }

@@ -336,7 +336,8 @@ Object.assign(T.en, {
   ev_yt_no: "For YouTube, connect your channel in the Video Studio (YouTube & videos tab).",
   td_yt: "YouTube videos waiting for your OK ({n})",
   mk_msg_fold: "ready to copy, tap to open",
-  pw_h: "Share on:", pw_ig: "Instagram needs a photo: add one to the draft in Today before you approve it.", pw_none: "Tick at least one place to share it.",
+  pw_h: "Share on:", pw_ig: "A picture card is made for every post, and Instagram gets its own caption. You can swap in your own photo in Today.",
+  pc_make: "🎨 Picture card", pc_busy: "Making the card…", pc_ig_added: "An Instagram draft with its own caption was added below.", pw_none: "Tick at least one place to share it.",
   pw_done: "Drafts made for {w}. They wait in Today for your OK.", pw_part: "Made for {w}, but the rest failed:", mk_vfilm: "Film it yourself", mk_vfilm_p: "a ready 20–30 second script to film yourself showing the app", mk_vmore: "More video tools", mk_vmore_p: "one-tap YouTube Short, write words with the AI, demo script, video ideas",
   ytd_h: "Waiting for your OK: nothing goes to YouTube until you tap Upload.", ytd_title: "Title", ytd_desc: "Description",
   ytd_priv: "Who can see it on YouTube", ytd_at: "Publish at (India time, optional)", ytd_at_p: "Leave empty to use the choice above as soon as it uploads. With a time, YouTube keeps it private until then and makes it Public at that time.",
@@ -364,7 +365,8 @@ Object.assign(T.hi, {
   ev_yt_no: "YouTube के लिए Video Studio (YouTube और वीडियो टैब) में अपना चैनल जोड़ें।",
   td_yt: "YouTube वीडियो आपकी मंज़ूरी के इंतज़ार में ({n})",
   mk_msg_fold: "कॉपी के लिए तैयार, खोलने के लिए टैप करें",
-  pw_h: "कहाँ शेयर करें:", pw_ig: "Instagram के लिए फ़ोटो चाहिए: मंज़ूरी से पहले Today में ड्राफ़्ट में फ़ोटो जोड़ें।", pw_none: "शेयर के लिए कम से कम एक जगह चुनें।",
+  pw_h: "कहाँ शेयर करें:", pw_ig: "हर पोस्ट के लिए चित्र कार्ड बनता है, और Instagram का कैप्शन अलग बनता है। Today में अपनी फ़ोटो भी लगा सकते हैं।",
+  pc_make: "🎨 चित्र कार्ड", pc_busy: "कार्ड बन रहा है…", pc_ig_added: "अलग कैप्शन वाला Instagram ड्राफ़्ट नीचे जुड़ गया।", pw_none: "शेयर के लिए कम से कम एक जगह चुनें।",
   pw_done: "{w} के लिए ड्राफ़्ट बन गए। Today में आपकी मंज़ूरी का इंतज़ार है।", pw_part: "{w} के लिए बना, पर बाकी नहीं बना:", mk_vfilm: "ख़ुद फ़िल्म करें", mk_vfilm_p: "ऐप दिखाते हुए ख़ुद फ़िल्म करने की 20–30 सेकंड की तैयार स्क्रिप्ट", mk_vmore: "वीडियो के और टूल", mk_vmore_p: "एक-टैप YouTube Short, AI से शब्द, डेमो स्क्रिप्ट, वीडियो आइडिया",
   ytd_h: "आपकी मंज़ूरी का इंतज़ार: जब तक आप अपलोड नहीं दबाते, YouTube पर कुछ नहीं जाता।", ytd_title: "शीर्षक", ytd_desc: "विवरण",
   ytd_priv: "YouTube पर कौन देख सकता है", ytd_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", ytd_at_p: "ख़ाली छोड़ें तो अपलोड होते ही ऊपर वाला विकल्प लगेगा। समय डालें तो YouTube तब तक private रखकर उसी समय Public करेगा।",
@@ -767,6 +769,27 @@ async function qUpd(id, patch) {
   const i = mkQ.findIndex(x => String(x.id) === String(id)); if (i >= 0) mkQ[i] = r.data;
   return r.data;
 }
+/* a post's picture card (studio.js vsCard), made from the words the AI wrote for it (result.draft) or its topic */
+const qDraftOf = x => (x && x.result && x.result.draft) || {};
+async function qCard(x) {
+  if (!x || typeof vsCard !== "function") return x;
+  const d = qDraftOf(x), first = String(x.text || "").split("\n").map(l => l.trim()).filter(Boolean)[0] || "";
+  const bl = await vsCard({ title: d.card_title || x.topic || first.slice(0, 60), sub: d.card_sub || "", art: d.art || "apple" });
+  if (!bl) return x;
+  const url = await mkUpload(bl, "jpg", "image/jpeg");
+  return qUpd(x.id, { text: x.text, image_url: url });
+}
+/* before a post goes out: a picture card if it has no photo (Instagram needs one; Facebook shows it bigger) */
+async function qReady(x) { return x && qKind(x) === "post" && !x.image_url && (x.fb || x.ig) ? qCard(x) : x; }
+/* Instagram gets its own draft with its own caption (no links, more hashtags), an hour after Facebook */
+async function qAddIg(x) {
+  const d = qDraftOf(x);
+  const a = await sb.from("social_queue").insert({ kind: "post", status: "draft", text: d.ig || x.text, topic: x.topic, image_url: x.image_url || null, fb: false, ig: true,
+    post_at: x.post_at ? new Date(Date.parse(x.post_at) + 3600000).toISOString() : new Date().toISOString(), result: { draft: Object.assign({}, d, { ig: "" }) } }).select().single();
+  if (a.error) throw a.error;
+  mkQ.push(a.data);
+  return a.data;
+}
 function qApprovePatch(x) {
   const p = { status: "scheduled" };
   if (x.ig && !x.image_url && !x.video_url) p.ig = false;
@@ -780,7 +803,7 @@ const qWaText = x => String(x.text || "").replace(/([?&])src=wa\b(?!-)/g, "$1src
 const qYtLock = x => x.result && x.result.yt && x.result.yt.locked ? ' · <span class="mkwarn">🔒 ' + tr("yt_lock_tag") + "</span>" : "";
 const qTag = x => '<span class="mkkind k-' + qKind(x) + '">' + tr("cq_k_" + qKind(x)) + "</span>";
 const qWhere = x => qKind(x) === "yt" ? "YouTube" : qKind(x) === "wa" ? "WhatsApp" : (x.fb ? "Facebook" : "") + (x.fb && x.ig ? " + " : "") + (x.ig ? "Instagram" : "");
-let mkNowId = null;   /* the item being posted now */
+let mkNowId = null, mkCardBusy = "";   /* the item being posted now; the draft getting a picture card */
 const qNowBtn = x => mkSoc && mkSoc.ok ? '<button class="btn-s add" type="button" data-mkq="now" data-id="' + x.id + '"' + (mkNowId ? " disabled" : "") + ">" + tr(mkNowId === String(x.id) ? "mk_post_busy" : "cq_now") + "</button>" : "";
 /* post one item from the list straight away; it is marked "posting" first so the timer can't post it too */
 async function qPostNow(id) {
@@ -789,9 +812,10 @@ async function qPostNow(id) {
   const was = x.status;
   mkNowId = String(id); mkQMsg = ""; renderMk();
   try {
-    await qUpd(id, { text: x.text, status: "posting" });
+    const y = await qReady(x);   /* a picture card first, if it has no photo */
+    await qUpd(id, { text: y.text, status: "posting" });
     const r = await fetch("/api/social?fn=post", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() },
-      body: JSON.stringify({ text: x.text, image_url: x.image_url || "", video_url: x.video_url || "", fb: !!x.fb, ig: !!x.ig && !!(x.image_url || x.video_url), qid: x.id }) });
+      body: JSON.stringify({ text: y.text, image_url: y.image_url || "", video_url: y.video_url || "", fb: !!y.fb, ig: !!y.ig && !!(y.image_url || y.video_url), qid: y.id }) });
     const j = await r.json().catch(() => ({})), R = j.result || {};
     const ok = !!((R.fb && R.fb.ok) || (R.ig && R.ig.ok));
     if (!j.result) { await qUpd(id, { status: was }); mkQMsg = tr("mk_q_err").replace("{m}", j.error || r.status); }
@@ -859,6 +883,7 @@ function qDraftHtml(x, hasIg) {
     (x.video_url ? '<div class="mkrow"><button class="btn-s add" type="button" data-mkq="every" data-id="' + x.id + '"' + (mkEvBusy ? " disabled" : "") + ">" + tr(mkEvBusy === String(x.id) ? "ev_busy" : "ev_go") + "</button>" +
       (typeof spWaVidBtn === "function" ? spWaVidBtn(x) : "") + '<span class="fine">' + tr("ev_p") + "</span></div>" : "");
   else h += '<div class="mkrow">' + (x.image_url ? '<img class="mkprev" src="' + esc(x.image_url) + '" alt="">' : "") +
+    (x.image_url ? "" : '<button class="btn-s" type="button" data-mkq="card" data-id="' + x.id + '"' + (mkCardBusy ? " disabled" : "") + ">" + tr(mkCardBusy === String(x.id) ? "pc_busy" : "pc_make") + "</button>") +
     '<label class="btn-s mkfile">' + tr(x.image_url ? "mk_post_photo_ch" : "mk_post_photo") + '<input type="file" accept="image/*" data-qimg="' + x.id + '" hidden></label>' +
     (x.image_url ? '<button class="btn-s" type="button" data-mkq="rmimg" data-id="' + x.id + '">' + tr("mk_post_rm") + "</button>" : "") + "</div>";
   const media = !!(x.image_url || x.video_url);
@@ -927,7 +952,15 @@ async function askPost(want) {
   try {
     if (W.fb || W.ig) {
       const j = await call("custom");
-      for (const d of j.drafts || []) { try { await sb.from("social_queue").update({ fb: !!W.fb, ig: !!W.ig }).eq("id", d.id); } catch (e) {} }
+      if (!mkQ) mkQ = [];
+      for (const d0 of j.drafts || []) {
+        if (!mkQ.some(y => String(y.id) === String(d0.id))) mkQ.push(d0);
+        let d = d0;
+        try { d = await qCard(d0); } catch (e) {}   /* the picture card, so Instagram can take it */
+        if (W.fb && W.ig) { d = await qUpd(d.id, { fb: true, ig: false }); await qAddIg(d); }
+        else if (W.ig) await qUpd(d.id, { fb: false, ig: true, text: qDraftOf(d).ig || d.text });
+        else await qUpd(d.id, { fb: true, ig: false });
+      }
       made.push([W.fb ? "Facebook" : "", W.ig ? "Instagram" : ""].filter(Boolean).join(" + "));
     }
     if (W.wa) { await call("wamsg"); made.push("WhatsApp"); }
@@ -1526,6 +1559,7 @@ W.addEventListener("change", async e => {
   const id = t.dataset.id;
   if (f === "text") return qAct(() => qUpd(id, { text: t.value.slice(0, 2200) }));
   if (f === "post_at") { if (t.value) return qAct(() => qUpd(id, { post_at: qUtc(t.value) })); return; }
+  if (f === "ig" && t.checked) { const x = qGet(id); if (x && x.fb && qKind(x) === "post" && qDraftOf(x).ig) return qAct(async () => { const y = await qReady(x); await qAddIg(y); mkQMsg = tr("pc_ig_added"); }); }
   if (f === "fb" || f === "ig") return qAct(() => qUpd(id, { [f]: t.checked }));
   if (f === "ytt") return qAct(() => qUpd(id, { topic: t.value.replace(/[<>]/g, "").slice(0, 100) }));
   if (f === "ytp" || f === "yta" || f === "ytai") {
@@ -1615,10 +1649,10 @@ W.addEventListener("click", async e => {
   if (a === "wadraft") return qDraft("wa");
   if (a === "approve" && x && qKind(x) !== "yt") {
     if (!String(x.text || "").trim() && !x.image_url && !x.video_url) { mkQMsg = tr("mk_q_empty"); renderMk(); return; }
-    return qAct(() => qUpd(id, Object.assign({ text: x.text }, qApprovePatch(x))));
+    return qAct(async () => { const y = await qReady(x); await qUpd(id, Object.assign({ text: y.text }, qApprovePatch(y))); });
   }
   if (a === "approveall") return qAct(async () => {
-    for (const d of mkQ.filter(y => y.status === "draft" && qKind(y) !== "wa" && qKind(y) !== "yt" && (String(y.text || "").trim() || y.image_url || y.video_url))) await qUpd(d.id, Object.assign({ text: d.text }, qApprovePatch(d)));
+    for (const d0 of mkQ.filter(y => y.status === "draft" && qKind(y) !== "wa" && qKind(y) !== "yt" && (String(y.text || "").trim() || y.image_url || y.video_url))) { const d = await qReady(d0); await qUpd(d.id, Object.assign({ text: d.text }, qApprovePatch(d))); }
   });
   if (a === "wacopy" && x) { if (await mkClip(qWaText(x))) { mkCopied["q" + id] = true; renderMk(); setTimeout(() => { delete mkCopied["q" + id]; renderMk(); }, 2000); } return; }
   if (a === "wasent" && x) return qAct(() => qUpd(id, { text: x.text, status: "posted", post_at: new Date().toISOString() }));
@@ -1628,6 +1662,7 @@ W.addEventListener("click", async e => {
     return qAct(async () => { const r = await sb.from("social_queue").delete().eq("id", id); if (r.error) throw r.error; mkQ = mkQ.filter(y => String(y.id) !== String(id)); });
   }
   if (a === "rmimg") return qAct(() => qUpd(id, { image_url: null, ig: false }));
+  if (a === "card" && x) return qAct(async () => { mkCardBusy = String(id); renderMk(); try { await qCard(x); } finally { mkCardBusy = ""; } });
   if (a === "unsched") return qAct(() => qUpd(id, { status: "draft" }));
   /* try again: keep what already went out, so only the part that failed is posted again (api/social-cron.js) */
   if (a === "retry") return qAct(() => qUpd(id, { status: "scheduled", post_at: new Date().toISOString() }));
