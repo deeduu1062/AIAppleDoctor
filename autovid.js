@@ -4,7 +4,7 @@
    3. The Video Studio below draws and records it (studio.js + vsart.js), then it can go to Facebook/Instagram or YouTube.
    Sits at the top of the Video Studio (Social handler → YouTube & videos). */
 Object.assign(T.en, {
-  av_h: "🎬 Create a video for me", av_p: "Choose the options, tap Create video, and it is made for you: words, pictures, voice and the end card. Keep this tab open and in front while it records.",
+  av_h: "🎬 Create a video for me", av_p: "Pick a topic and tap Create video. Keep this tab open while it records.",
   av_type: "1. What kind of video?", av_t_alert: "Disease alert", av_t_tip: "Orchard tip", av_t_season: "This month's jobs", av_t_feat: "Show a Seb Saathi feature", av_t_money: "Profit and selling", av_t_q: "Answer growers' questions", av_t_own: "My own topic",
   av_topic: "2. Topic", av_topic_ph: "Or type your own topic, e.g. \"How to spot scab early after rain\"", av_q_load: "Loading what growers ask Saathi…", av_q_none: "No Saathi questions yet — type a topic.",
   av_lang: "3. Language", av_voice: "4. Voice-over", av_v_f: "Woman's voice", av_v_m: "Man's voice", av_v_no: "No voice",
@@ -21,7 +21,7 @@ Object.assign(T.en, {
   av_facts: "Facts to get exactly right", av_facts_ph: "Doses, dates, places, numbers. Used exactly as you write them, nothing made up.",
   av_lines: "My own lines (spoken word for word)", av_lines_ph: "One line per row. Each one is spoken exactly as written, in this order.",
   av_style: "Style", av_st_: "AI chooses", av_st_alert: "Serious alert", av_st_friend: "Friendly neighbour", av_st_story: "Story", av_st_fun: "Funny", av_st_expert: "Expert", av_style_ph: "Anything else about the style, e.g. \"talk like an old bagwan, slow and calm\"",
-  av_check: "Let me check the script before the video is made", av_music: "Background music", av_mu_auto: "Yes, to suit the video", av_mu_none: "No music",
+  av_opts: "Settings", av_check: "Let me check the script before the video is made", av_music: "Background music", av_mu_auto: "Yes, to suit the video", av_mu_none: "No music",
   av_sc_h: "Check the script", av_sc_p: "Read every line and change anything. Nothing is voiced or made until you tap Make video.",
   av_sc_title: "Video title", av_sc_n: "Scene {n}", av_sc_screen: "Words on screen", av_sc_sub: "Second line on screen", av_sc_say: "Spoken", av_sc_end: "End card", av_sc_cta: "Words on the end card", av_sc_cta_say: "Spoken at the end",
   av_sc_up: "Move up", av_sc_del: "Remove scene", av_sc_make: "🎬 Make video from this script", av_sc_redo: "Write it again", av_sc_drop: "Start over", av_sc_ready: "Script ready below: check it, then tap Make video.",
@@ -32,7 +32,7 @@ Object.assign(T.en, {
   av_edit: "You can still change any words, pictures or timings below and tap Make video again."
 });
 Object.assign(T.hi, {
-  av_h: "🎬 मेरे लिए वीडियो बनाएँ", av_p: "विकल्प चुनें, वीडियो बनाएँ दबाएँ, और वीडियो आपके लिए बन जाएगा: शब्द, चित्र, आवाज़ और आख़िरी स्क्रीन। रिकॉर्डिंग के दौरान यह टैब खुला और सामने रखें।",
+  av_h: "🎬 मेरे लिए वीडियो बनाएँ", av_p: "विषय चुनें और \"वीडियो बनाएँ\" दबाएँ। बनते समय यह टैब खुला रखें।",
   av_type: "1. कैसा वीडियो?", av_t_alert: "बीमारी चेतावनी", av_t_tip: "बाग़ की सलाह", av_t_season: "इस महीने के काम", av_t_feat: "सेब साथी की सुविधा दिखाएँ", av_t_money: "मुनाफ़ा और बिक्री", av_t_q: "बाग़वानों के सवालों के जवाब", av_t_own: "मेरा अपना विषय",
   av_topic: "2. विषय", av_topic_ph: "या अपना विषय लिखें", av_q_load: "साथी से पूछे सवाल लोड हो रहे हैं…", av_q_none: "अभी कोई सवाल नहीं — विषय लिखें।",
   av_lang: "3. भाषा", av_voice: "4. आवाज़", av_v_f: "महिला की आवाज़", av_v_m: "पुरुष की आवाज़", av_v_no: "आवाज़ नहीं",
@@ -49,7 +49,7 @@ Object.assign(T.hi, {
   av_facts: "जो बातें बिल्कुल सही चाहिए", av_facts_ph: "मात्रा, तारीख़, जगह, नंबर। जैसे लिखेंगे वैसे ही इस्तेमाल होंगे, कुछ बनाया नहीं जाएगा।",
   av_lines: "मेरी अपनी लाइनें (हूबहू बोली जाएँगी)", av_lines_ph: "हर पंक्ति में एक लाइन। हर लाइन जैसी लिखी वैसी, इसी क्रम में बोली जाएगी।",
   av_style: "अंदाज़", av_st_: "AI चुने", av_st_alert: "गंभीर चेतावनी", av_st_friend: "दोस्ताना पड़ोसी", av_st_story: "कहानी", av_st_fun: "मज़ेदार", av_st_expert: "जानकार", av_style_ph: "अंदाज़ के बारे में और कुछ, जैसे \"पुराने बागवान की तरह, धीरे और शांत\"",
-  av_check: "वीडियो बनने से पहले स्क्रिप्ट मुझे दिखाएँ", av_music: "बैकग्राउंड म्यूज़िक", av_mu_auto: "हाँ, वीडियो के हिसाब से", av_mu_none: "म्यूज़िक नहीं",
+  av_opts: "सेटिंग", av_check: "वीडियो बनने से पहले स्क्रिप्ट मुझे दिखाएँ", av_music: "बैकग्राउंड म्यूज़िक", av_mu_auto: "हाँ, वीडियो के हिसाब से", av_mu_none: "म्यूज़िक नहीं",
   av_sc_h: "स्क्रिप्ट जाँचें", av_sc_p: "हर लाइन पढ़ें और जो चाहें बदलें। 'वीडियो बनाएँ' दबाने तक न आवाज़ बनेगी न वीडियो।",
   av_sc_title: "वीडियो का शीर्षक", av_sc_n: "सीन {n}", av_sc_screen: "स्क्रीन पर शब्द", av_sc_sub: "स्क्रीन पर दूसरी लाइन", av_sc_say: "बोला जाएगा", av_sc_end: "आख़िरी कार्ड", av_sc_cta: "आख़िरी कार्ड के शब्द", av_sc_cta_say: "आख़िर में बोला जाएगा",
   av_sc_up: "ऊपर करें", av_sc_del: "सीन हटाएँ", av_sc_make: "🎬 इस स्क्रिप्ट से वीडियो बनाएँ", av_sc_redo: "फिर से लिखें", av_sc_drop: "शुरू से", av_sc_ready: "स्क्रिप्ट नीचे तैयार है: जाँचें, फिर 'वीडियो बनाएँ' दबाएँ।",
@@ -94,26 +94,35 @@ const avFbTab = () => typeof mkSub !== "undefined" && mkSub === "fb";
 const avCreateTab = () => typeof mkSub !== "undefined" && mkSub === "create";   /* the new Create tab: "Where should it go?" ticks */
 const avTick = (k, label) => '<button type="button" class="btn-s sm avchip" data-avw="' + k + '" aria-pressed="' + !!AV.where[k] + '">' + (AV.where[k] ? "☑ " : "☐ ") + esc(label) + "</button>";
 let avFbSet = false;
+const avL = t => esc(String(t).replace(/^\d+\.\s*/, ""));
+/* the settings folded into one line: what is chosen now */
+function avSumm() {
+  const L = { hi: "हिंदी", hn: "Hinglish", en: "English" }, out = [L[AV.lang] || AV.lang, tr("av_v_" + AV.voice), AV.music === "none" ? tr("av_mu_none") : "♪",
+    tr("av_l_" + AV.len).replace(/\s*\(.*\)$/, ""), tr("vs_f_" + AV.fmt).replace(/\s*\(.*\)$/, ""), tr("av_p_" + AV.pics)];
+  if (avCreateTab()) out.push(["fb", "wa", "yt"].filter(k => AV.where[k]).map(k => ({ fb: "Facebook", wa: "WhatsApp", yt: "YouTube" })[k]).join(" + ") || "—");
+  return out.join(" · ");
+}
 function avHtml() {
   if (avFbTab() && !avFbSet) { avFbSet = true; if (AV.after !== "none") AV.after = "fb"; }
   if (avFbTab() && AV.after === "yt") AV.after = "fb";
   const tps = avTopics(), dis = AV.busy ? " disabled" : "";
   return '<div class="avbox"><h5>' + esc(tr("av_h")) + '</h5><p class="fine">' + esc(tr("av_p")) + "</p>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_type")) + "</legend><div class=\"avchips\">" + ["alert", "tip", "season", "feat", "money", "q", "own"].map(k => avChip("type", k, tr("av_t_" + k))).join("") + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_topic")) + '</legend><div class="avchips">' +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_type")) + "</legend><div class=\"avchips\">" + ["alert", "tip", "season", "feat", "money", "q", "own"].map(k => avChip("type", k, tr("av_t_" + k))).join("") + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_topic")) + '</legend><div class="avchips">' +
       (tps === null ? '<span class="fine">' + esc(tr("av_q_load")) + "</span>" : AV.type === "q" && !tps.length ? '<span class="fine">' + esc(tr("av_q_none")) + "</span>" : tps.map(x => avChip("topic", x, x)).join("")) + "</div>" +
       '<input class="avin" id="avOwn" maxlength="200" placeholder="' + esc(tr("av_topic_ph")) + '" value="' + esc(AV.own) + '"></fieldset>' +
     avBriefHtml(dis) +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_lang")) + '</legend><div class="avchips">' + avChip("lang", "hi", "हिंदी") + avChip("lang", "hn", "Hinglish") + avChip("lang", "en", "English") + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_voice")) + '</legend><div class="avchips">' + avChip("voice", "f", tr("av_v_f")) + avChip("voice", "m", tr("av_v_m")) + avChip("voice", "no", tr("av_v_no")) + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_music")) + '</legend><div class="avchips">' + avChip("music", "auto", tr("av_mu_auto")) + avChip("music", "none", tr("av_mu_none")) + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_len")) + '</legend><div class="avchips">' + avChip("len", "s", tr("av_l_s")) + avChip("len", "m", tr("av_l_m")) + avChip("len", "l", tr("av_l_l")) + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_size")) + '</legend><div class="avchips">' + avChip("fmt", "916", tr("vs_f_916")) + avChip("fmt", "11", tr("vs_f_11")) + avChip("fmt", "45", tr("vs_f_45")) + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
+    '<details class="avfold" data-avd="opts"' + (AV.optsOpen ? " open" : "") + '><summary><b>' + esc(tr("av_opts")) + '</b> <span class="fine">' + esc(avSumm()) + "</span></summary>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_lang")) + '</legend><div class="avchips">' + avChip("lang", "hi", "हिंदी") + avChip("lang", "hn", "Hinglish") + avChip("lang", "en", "English") + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_voice")) + '</legend><div class="avchips">' + avChip("voice", "f", tr("av_v_f")) + avChip("voice", "m", tr("av_v_m")) + avChip("voice", "no", tr("av_v_no")) + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_music")) + '</legend><div class="avchips">' + avChip("music", "auto", tr("av_mu_auto")) + avChip("music", "none", tr("av_mu_none")) + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_len")) + '</legend><div class="avchips">' + avChip("len", "s", tr("av_l_s")) + avChip("len", "m", tr("av_l_m")) + avChip("len", "l", tr("av_l_l")) + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_size")) + '</legend><div class="avchips">' + avChip("fmt", "916", tr("vs_f_916")) + avChip("fmt", "11", tr("vs_f_11")) + avChip("fmt", "45", tr("vs_f_45")) + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
       (AV.pics === "mine" ? '<p><label class="btn-s sm vsfile">' + esc(tr("av_p_add")) + '<input type="file" accept="image/*" multiple id="avPhotos" hidden></label> <span class="fine">' + (AV.photos.length ? esc(tr("av_p_n").replace("{n}", AV.photos.length)) : "") + "</span></p>" : "") + "</fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_end")) + '</legend><div class="avchips">' + ["site", "dx", "share", "join"].map(k => avChip("end", k, tr("av_e_" + k))).join("") + "</div></fieldset>" +
-    (avCreateTab() ? '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_where")) + '</legend><div class="avchips">' + avTick("fb", "Facebook + Instagram") + avTick("wa", "WhatsApp") + avTick("yt", "YouTube Short") + '</div><p class="fine">' + esc(tr("av_where_p")) + "</p></fieldset>"
-      : '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>") +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_end")) + '</legend><div class="avchips">' + ["site", "dx", "share", "join"].map(k => avChip("end", k, tr("av_e_" + k))).join("") + "</div></fieldset>" +
+    (avCreateTab() ? '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_where")) + '</legend><div class="avchips">' + avTick("fb", "Facebook + Instagram") + avTick("wa", "WhatsApp") + avTick("yt", "YouTube Short") + '</div><p class="fine">' + esc(tr("av_where_p")) + "</p></fieldset>"
+      : '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>") + "</details>" +
     '<p><button type="button" class="btn-s add avgo" id="avGo"' + dis + ">" + esc(AV.busy ? AV.step : VS.out && AV.done ? tr("av_again") : tr("av_go")) + "</button></p>" +
     (AV.step && !AV.busy ? '<p class="fine" role="status">' + esc(AV.step) + "</p>" : "") +
     (AV.note ? '<p class="fine">' + esc(AV.note) + "</p>" : "") + (AV.err ? '<p class="autherr" role="alert">' + esc(AV.err) + "</p>" : "") + avScriptHtml() + "</div>";
@@ -121,11 +130,13 @@ function avHtml() {
 /* the brief: must-say points, exact facts, own lines, style (sent to the AI with the topic) */
 const avTa = (id, k, label, ph, rows) => '<label class="fine avlab" for="' + id + '">' + esc(tr(label)) + '</label><textarea class="avin avta" id="' + id + '" data-avb="' + k + '" rows="' + rows + '" maxlength="700" placeholder="' + esc(tr(ph)) + '">' + esc(AV[k]) + "</textarea>";
 function avBriefHtml(dis) {
-  return '<fieldset class="avgrp"' + dis + "><legend>" + esc(tr("av_brief")) + '</legend><p class="fine">' + esc(tr("av_brief_p")) + "</p>" +
+  const used = [AV.must, AV.facts, AV.lines, AV.styleOwn].some(x => String(x || "").trim()) || !!AV.style;
+  return '<details class="avfold" data-avd="brief"' + (AV.briefOpen || used ? " open" : "") + '><summary><b>' + esc(tr("av_brief")) + '</b> <span class="fine">' + esc(tr("av_brief_p")) + "</span></summary>" +
+    '<fieldset class="avgrp"' + dis + ">" +
     avTa("avMust", "must", "av_must", "av_must_ph", 3) + avTa("avFacts", "facts", "av_facts", "av_facts_ph", 3) + avTa("avLines", "lines", "av_lines", "av_lines_ph", 3) +
     '<span class="fine avlab">' + esc(tr("av_style")) + '</span><div class="avchips">' + ["", "alert", "friend", "story", "fun", "expert"].map(k => avChip("style", k, tr("av_st_" + k))).join("") + "</div>" +
     '<input class="avin" id="avStyleOwn" data-avb="styleOwn" maxlength="200" placeholder="' + esc(tr("av_style_ph")) + '" value="' + esc(AV.styleOwn) + '">' +
-    '<p><button type="button" class="btn-s sm avchip" data-avcheck="1" aria-pressed="' + AV.check + '">' + (AV.check ? "☑ " : "☐ ") + esc(tr("av_check")) + "</button></p></fieldset>";
+    '<p><button type="button" class="btn-s sm avchip" data-avcheck="1" aria-pressed="' + AV.check + '">' + (AV.check ? "☑ " : "☐ ") + esc(tr("av_check")) + "</button></p></fieldset></details>";
 }
 const avMood = () => AV.style === "alert" || (AV.type === "alert" && !AV.style) ? "alert" : AV.style === "fun" || AV.type === "feat" || AV.type === "money" ? "happy" : "calm";
 const AV_STYLE = { alert: "a serious, urgent alert", friend: "a friendly neighbour chatting over the fence", story: "a short story about a grower, with a beginning, a problem and what he did", fun: "light and funny, with a small joke, but the advice stays correct", expert: "a calm expert explaining clearly" };
@@ -307,6 +318,10 @@ document.addEventListener("click", e => {
   if (w && !AV.busy) { AV.where[w.dataset.avw] = !AV.where[w.dataset.avw]; avSave(); avRender(); return; }
   if (e.target.closest && e.target.closest("#avGo")) avCreate();
 });
+document.addEventListener("toggle", e => {
+  const d = e.target; if (!d || !d.dataset || !d.dataset.avd) return;
+  if (d.dataset.avd === "opts") AV.optsOpen = d.open; else AV.briefOpen = d.open;
+}, true);
 document.addEventListener("input", e => {
   const t = e.target; if (!t || !t.dataset) return;
   if (t.dataset.avb) { AV[t.dataset.avb] = t.value; return; }

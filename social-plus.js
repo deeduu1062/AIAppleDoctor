@@ -401,7 +401,7 @@ function spDraw() {
   if (mkSub === "create") {
     const mk = top.querySelector(".mkmake");
     if (mkMake === "week" || SP.wk.busy) ins(mk, "afterend", spWeekHtml());
-    else if (mkMake === "video") ins(mk, "afterend", spYpHtml());
+    else if (mkMake === "video") { if (!ins(top.querySelector("#mkVmore") || bot.querySelector("#mkVmore"), "afterend", spYpHtml())) ins(mk, "afterend", spYpHtml()); }   /* folded in "More video tools" */
   } else if (mkSub === "results") {
     ins(top.querySelector(".mksub"), "afterend", mkSec("wins", tr("wn_h"), spWinsSub(), spWinsHtml()));
     spLoadHist();

@@ -11,13 +11,14 @@ Object.assign(T.en, {
   yt_when: "Publish at (India time, optional)", yt_when_p: "Leave empty to publish straight away. With a time, YouTube keeps it private until then and publishes it by itself.",
   yt_sched_ok: "Scheduled on YouTube for {d}.",
   vs_h: "Video Studio",
-  vs_p: "Make short videos for Reels, YouTube Shorts and WhatsApp Status. Pick a template, add photos or clips from your own orchards, change the words, then make the video and download it.",
+  vs_p: "Short videos for Reels, YouTube Shorts and WhatsApp Status.",
   vs_tpl: "Template", vs_t_tip: "Orchard tip", vs_t_feat: "App feature", vs_t_alert: "Disease alert", vs_t_season: "Season jobs",
   vs_vlang: "Video language", vs_fmt: "Size", vs_f_916: "Reel / Status 9:16", vs_f_11: "Square 1:1", vs_f_45: "Post 4:5",
   vs_scene: "Scene {n}", vs_label: "Small tag", vs_title: "Main words", vs_sub: "Second line", vs_dur: "Seconds",
   vs_media: "Add photo or clip", vs_media_ch: "Change photo/clip", vs_media_rm: "Remove", vs_nomedia: "No photo: brand colours are used.",
   vs_up: "Move up", vs_del: "Delete", vs_add: "+ Add scene", vs_max: "Up to 8 scenes.",
   vs_end: "Last screen", vs_cta: "Call to action",
+  vs_edit_h: "Edit the video by hand", vs_edit_p: "scenes, words, pictures, captions, music, timing", vs_yt_off: "not connected",
   vs_caps: "Captions that follow the voice", vs_caps_p: "The spoken words appear on screen as they are said, so people watching without sound still get it.",
   vs_music: "Background music (optional)", vs_music_add: "Add music file", vs_music_rm: "Remove music", vs_vol: "Volume",
   vs_music_note: "Use only music you have the right to use, or Instagram may mute the video. You can also add music later inside Instagram.",
@@ -63,13 +64,14 @@ Object.assign(T.hi, {
   yt_when: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", yt_when_p: "ख़ाली छोड़ें तो तुरंत पब्लिश होगा। समय डालें तो YouTube उस समय तक प्राइवेट रखेगा और फिर अपने-आप पब्लिश करेगा।",
   yt_sched_ok: "YouTube पर {d} के लिए शेड्यूल हुआ।",
   vs_h: "वीडियो स्टूडियो",
-  vs_p: "Reels, YouTube Shorts और WhatsApp स्टेटस के लिए छोटे वीडियो बनाएँ। टेम्पलेट चुनें, अपने बाग़ की फ़ोटो या क्लिप जोड़ें, शब्द बदलें, फिर वीडियो बनाकर डाउनलोड करें।",
+  vs_p: "Reels, YouTube Shorts और WhatsApp स्टेटस के लिए छोटे वीडियो।",
   vs_tpl: "टेम्पलेट", vs_t_tip: "बाग़ टिप", vs_t_feat: "ऐप फ़ीचर", vs_t_alert: "बीमारी अलर्ट", vs_t_season: "मौसम के काम",
   vs_vlang: "वीडियो की भाषा", vs_fmt: "साइज़", vs_f_916: "Reel / स्टेटस 9:16", vs_f_11: "चौकोर 1:1", vs_f_45: "पोस्ट 4:5",
   vs_scene: "सीन {n}", vs_label: "छोटा टैग", vs_title: "मुख्य शब्द", vs_sub: "दूसरी लाइन", vs_dur: "सेकंड",
   vs_media: "फ़ोटो या क्लिप जोड़ें", vs_media_ch: "फ़ोटो/क्लिप बदलें", vs_media_rm: "हटाएँ", vs_nomedia: "फ़ोटो नहीं: ब्रांड के रंग लगेंगे।",
   vs_up: "ऊपर करें", vs_del: "हटाएँ", vs_add: "+ सीन जोड़ें", vs_max: "ज़्यादा से ज़्यादा 8 सीन।",
   vs_end: "आख़िरी स्क्रीन", vs_cta: "बुलावा (CTA)",
+  vs_edit_h: "वीडियो ख़ुद बदलें", vs_edit_p: "सीन, शब्द, चित्र, कैप्शन, म्यूज़िक, समय", vs_yt_off: "जुड़ा नहीं",
   vs_caps: "आवाज़ के साथ चलते कैप्शन", vs_caps_p: "जो बोला जा रहा है वह उसी समय स्क्रीन पर आता है, ताकि बिना आवाज़ देखने वाले भी समझ लें।",
   vs_music: "बैकग्राउंड म्यूज़िक (ज़रूरी नहीं)", vs_music_add: "म्यूज़िक फ़ाइल जोड़ें", vs_music_rm: "म्यूज़िक हटाएँ", vs_vol: "आवाज़",
   vs_music_note: "सिर्फ़ वही म्यूज़िक लगाएँ जिसका आपको हक़ है, वरना Instagram वीडियो की आवाज़ बंद कर सकता है। म्यूज़िक बाद में Instagram में भी जोड़ सकते हैं।",
@@ -704,9 +706,10 @@ function renderStudio() {
       '<label class="btn-s vsfile">' + tr(m ? "vs_media_ch" : "vs_media") + '<input type="file" accept="image/*,video/*" data-vsmedia="' + i + '" hidden></label>' +
       (m ? '<button type="button" class="btn-s vsmini" data-vsrm="' + i + '">' + tr("vs_media_rm") + "</button>" : "") + "</div></div>";
   }).join("");
-  const o = VS.out;
+  const o = VS.out, showPrev = busy || !!o || !!VS.editOpen;   /* the preview shows while making, once a video is made, or while editing by hand */
+  const ytSum = !YT ? tr("yt_checking") : YT.connected && YT.channel ? "✓ " + YT.channel.title : tr("vs_yt_off");
   box.innerHTML =
-    '<div class="vsgrid"><div class="vsprev"><div id="vsSlot"></div>' +
+    '<div class="vsgrid' + (showPrev ? "" : " noprev") + '"><div class="vsprev"' + (showPrev ? "" : " hidden") + '><div id="vsSlot"></div>' +
     '<div class="vsctl"><button type="button" class="btn-s" id="vsPlay"' + (rec ? " disabled" : "") + ">" + tr(busy && !rec ? "vs_stop" : "vs_play") + '</button>' +
     '<button type="button" class="btn-s vsgo" id="vsMake"' + (busy ? " disabled" : "") + ">" + tr("vs_make") + "</button>" +
     '<span class="fine" style="margin:0">' + tr("vs_total").replace("{s}", Math.round(vsTotal())) + "</span></div>" +
@@ -716,6 +719,7 @@ function renderStudio() {
       (o.ext !== "mp4" ? '<p class="autherr">' + tr("vs_webm") + "</p>" : "") + (o.hidden ? '<p class="autherr">' + tr("vs_hidden") + "</p>" : "") + vsQueueHtml() + ytOutHtml() + "</div>" : "") +
     "</div>" +
     '<div class="vsform"' + (busy ? ' inert' : "") + '>' +
+    '<details class="vsfold" id="vsEdit"' + (VS.editOpen ? " open" : "") + '><summary><b>' + tr("vs_edit_h") + '</b> <span class="fine">' + tr("vs_edit_p") + "</span></summary>" +
     '<div class="vsgrp"><span class="vsl">' + tr("vs_tpl") + '</span><div class="vschips">' + ["tip", "feat", "alert", "season"].map(k => vsChip("tpl", k, VS.tpl, tr("vs_t_" + k))).join("") + "</div></div>" +
     '<div class="vsgrp"><span class="vsl">' + tr("vs_vlang") + '</span><div class="vschips">' + vsChip("lang", "hi", VS.vlang, "हिंदी") + vsChip("lang", "hl", VS.vlang, "Hinglish") + vsChip("lang", "en", VS.vlang, "English") + "</div></div>" +
     '<div class="vsgrp"><span class="vsl">' + tr("vs_fmt") + '</span><div class="vschips">' + vsChip("fmt", "916", VS.fmt, tr("vs_f_916")) + vsChip("fmt", "11", VS.fmt, tr("vs_f_11")) + vsChip("fmt", "45", VS.fmt, tr("vs_f_45")) + "</div></div>" +
@@ -729,10 +733,11 @@ function renderStudio() {
       '<label class="vsdur">' + tr("vs_vol") + ' <input type="range" id="vsVol" min="0" max="1" step="0.05" value="' + VS.vol + '"></label>'
       : '<label class="btn-s vsfile">' + tr("vs_music_add") + '<input type="file" accept="audio/*" id="vsMusic" hidden></label>') + "</div>" +
     '<p class="fine">' + tr("vs_music_note") + "</p>" + (typeof muHtml === "function" ? muHtml() : "") + "</div>" +
-    ytCardHtml() +
     '<div class="vsf"><label for="vsCap">' + tr("vs_cap") + '</label><textarea id="vsCap" rows="7" readonly>' + esc(vsCaption()) + '</textarea></div>' +
     '<div class="vsctl"><button type="button" class="btn-s" id="vsCopy">' + tr("vs_copy") + "</button></div>" +
-    '<p class="fine">' + tr("vs_how") + "</p></div></div>";
+    '<p class="fine">' + tr("vs_how") + "</p></details>" +
+    '<details class="vsfold" id="vsYtBox"' + (VS.ytOpen ? " open" : "") + '><summary><b>' + tr("yt_h") + '</b> <span class="fine">' + esc(ytSum) + "</span></summary>" + ytCardHtml() + "</details>" +
+    "</div></div>";
   /* the canvas is made once and moved back in: a recording keeps working through any re-render */
   if (!vsCv) { vsCv = document.createElement("canvas"); vsCv.id = "vsCanvas"; vsCtx = vsCv.getContext("2d"); }
   vsCv.setAttribute("aria-label", tr("vs_h")); $("vsSlot").replaceWith(vsCv); vsSize();
@@ -771,6 +776,11 @@ function vsLoadFile(file, i) {
   sec.innerHTML = '<div class="admbar"><h4 id="vsH" data-i18n="vs_h" style="margin:0"></h4></div><p class="fine" data-i18n="vs_p"></p><div id="vsBody"></div>';
   ap.appendChild(sec);
   const body = $("vsBody");
+  body.addEventListener("toggle", e => {
+    const d = e.target;
+    if (d.id === "vsEdit" && !!VS.editOpen !== d.open) { VS.editOpen = d.open; renderStudio(); }
+    else if (d.id === "vsYtBox") VS.ytOpen = d.open;
+  }, true);
   body.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     const d = b.dataset;

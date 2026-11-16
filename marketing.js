@@ -309,6 +309,7 @@ Object.assign(T.en, {
   ev_done: "Drafts made: {w}. Check them below.", ev_yt: "The YouTube Short is ready in the Video Studio (YouTube & videos tab) with its title: tap Upload.",
   ev_yt_no: "For YouTube, connect your channel in the Video Studio (YouTube & videos tab).",
   td_yt: "YouTube videos waiting for your OK ({n})",
+  mk_msg_fold: "ready to copy, tap to open", mk_vmore: "More video tools", mk_vmore_p: "one-tap YouTube Short, write words with the AI, demo script, video ideas",
   ytd_h: "Waiting for your OK: nothing goes to YouTube until you tap Upload.", ytd_title: "Title", ytd_desc: "Description",
   ytd_priv: "Who can see it on YouTube", ytd_at: "Publish at (India time, optional)", ytd_at_p: "Leave empty to use the choice above as soon as it uploads. With a time, YouTube keeps it private until then and makes it Public at that time.",
   ytd_go: "Upload to YouTube: {p}", ytd_pub_at: "goes Public on {d}", ytd_busy: "Uploading to YouTube…", ytd_del: "Discard", ytd_ok: "✓ Sent to YouTube. It's in the YouTube list.",
@@ -334,6 +335,7 @@ Object.assign(T.hi, {
   ev_done: "ड्राफ़्ट बन गए: {w}। नीचे जाँचें।", ev_yt: "YouTube Short टाइटल के साथ Video Studio (YouTube और वीडियो टैब) में तैयार है: अपलोड दबाएँ।",
   ev_yt_no: "YouTube के लिए Video Studio (YouTube और वीडियो टैब) में अपना चैनल जोड़ें।",
   td_yt: "YouTube वीडियो आपकी मंज़ूरी के इंतज़ार में ({n})",
+  mk_msg_fold: "कॉपी के लिए तैयार, खोलने के लिए टैप करें", mk_vmore: "वीडियो के और टूल", mk_vmore_p: "एक-टैप YouTube Short, AI से शब्द, डेमो स्क्रिप्ट, वीडियो आइडिया",
   ytd_h: "आपकी मंज़ूरी का इंतज़ार: जब तक आप अपलोड नहीं दबाते, YouTube पर कुछ नहीं जाता।", ytd_title: "शीर्षक", ytd_desc: "विवरण",
   ytd_priv: "YouTube पर कौन देख सकता है", ytd_at: "कब पब्लिश करें (भारत का समय, ज़रूरी नहीं)", ytd_at_p: "ख़ाली छोड़ें तो अपलोड होते ही ऊपर वाला विकल्प लगेगा। समय डालें तो YouTube तब तक private रखकर उसी समय Public करेगा।",
   ytd_go: "YouTube पर अपलोड करें: {p}", ytd_pub_at: "{d} को Public होगा", ytd_busy: "YouTube पर अपलोड हो रहा है…", ytd_del: "हटाएँ", ytd_ok: "✓ YouTube पर भेज दिया। YouTube सूची में है।",
@@ -1259,11 +1261,12 @@ function renderMk() {
       const chips = '<div class="mkmake" role="group" aria-label="' + esc(tr("mk_make_q")) + '"><b>' + tr("mk_make_q") + '</b><div class="avchips">' +
         [["week", "mk_m_week"], ["post", "mk_m_post"], ["video", "mk_m_video"], ["wa", "mk_m_wa"]].map(x => '<button type="button" class="btn-s sm avchip" data-mkmake="' + x[0] + '" aria-pressed="' + (mkMake === x[0]) + '">' + tr(x[1]) + "</button>").join("") + "</div></div>";
       let A = "", B = "";
-      if (mkMake === "post") A = askHtml("fb") + qHtml("fbmake") + mkSec("msg", tr("mk_msg_h"), "", msgOf("fb"));
-      else if (mkMake === "wa") A = askHtml("wa") + qHtml("wamake") + mkSec("msg", tr("mk_msg_h"), "", '<p class="fine">' + tr("mk_msg_p") + "</p>" + msgOf("wa"));
+      /* kept short: the ready-made messages and the extra video tools stay folded until you open them */
+      if (mkMake === "post") A = askHtml("fb") + qHtml("fbmake") + mkSec("cmsg", tr("mk_msg_h"), tr("mk_msg_fold"), msgOf("fb"));
+      else if (mkMake === "wa") A = askHtml("wa") + qHtml("wamake") + mkSec("cmsg", tr("mk_msg_h"), tr("mk_msg_fold"), '<p class="fine">' + tr("mk_msg_p") + "</p>" + msgOf("wa"));
       else if (mkMake === "video") {
         const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
-        B = mkSec("askyt", tr("mk_ask_words"), "", askHtml("yt")) + mkSec("demo", tr("demo_h"), "", demoHtml()) + mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml());
+        B = mkSec("vmore", tr("mk_vmore"), tr("mk_vmore_p"), '<div id="mkVmore"></div>' + mkSec("askyt", tr("mk_ask_words"), "", askHtml("yt")) + mkSec("demo", tr("demo_h"), "", demoHtml()) + mkSec("vid", tr("mk_vid_h"), tr("mk_done_n").replace("{d}", vd).replace("{n}", va.length), vidHtml()));
       }
       top.innerHTML = h + bar2 + chips + A; bot.innerHTML = B;
     } else if (mkSub === "results") {

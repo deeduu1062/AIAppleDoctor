@@ -1672,6 +1672,14 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 .vsbox{margin-top:18px}
 .vsgrid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;align-items:start;margin-top:12px}
 .vsprev{position:sticky;top:12px}
+.vsgrid.noprev{grid-template-columns:1fr}.vsprev[hidden]{display:none}
+.vsfold,.avfold{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:10px 0 0;padding:0 12px}
+.vsfold>summary,.avfold>summary{cursor:pointer;padding:12px 0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.vsfold>summary::-webkit-details-marker,.avfold>summary::-webkit-details-marker{display:none}
+.vsfold>summary::before,.avfold>summary::before{content:"▸";color:var(--brand);font-weight:700}
+.vsfold[open]>summary::before,.avfold[open]>summary::before{content:"▾"}
+.vsfold>summary .fine,.avfold>summary .fine{margin:0}
+.vsfold[open],.avfold[open]{padding-bottom:12px}
 #vsCanvas{display:block;width:100%;max-height:70vh;object-fit:contain;border-radius:14px;background:#0E2418;box-shadow:0 6px 24px rgba(0,0,0,.18)}
 .vsctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
 .btn-s.vsgo{background:var(--brand);color:var(--on-brand);border-color:var(--brand);text-decoration:none;display:inline-flex;align-items:center}
@@ -1933,17 +1941,17 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 <script src="/admin.js?v=33"></script>
 <script src="/aicost.js?v=2"></script>
 <script src="/qr.js?v=1"></script>
-<script src="/marketing.js?v=20"></script>
+<script src="/marketing.js?v=21"></script>
 <script src="/vsart.js?v=1"></script>
-<script src="/studio.js?v=12"></script>
+<script src="/studio.js?v=13"></script>
 <script src="/vsmusic.js?v=1"></script>
 <script src="/growers.js?v=1"></script>
 <script src="/quality.js?v=1"></script>
 <script src="/ops.js?v=1"></script>
 <script src="/money.js?v=1"></script>
 <script src="/ytstudio.js?v=2"></script>
-<script src="/autovid.js?v=7"></script>
-<script src="/social-plus.js?v=5"></script>
+<script src="/autovid.js?v=8"></script>
+<script src="/social-plus.js?v=6"></script>
 <script src="/today.js?v=1"></script>
 <script src="/broadcast.js?v=1"></script>
 </body>
