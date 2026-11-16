@@ -337,7 +337,7 @@ Object.assign(T.en, {
   td_yt: "YouTube videos waiting for your OK ({n})",
   mk_msg_fold: "ready to copy, tap to open",
   pw_h: "Share on:", pw_ig: "A picture card is made for every post, and Instagram gets its own caption. You can swap in your own photo in Today.",
-  pc_make: "🎨 Picture card", pc_busy: "Making the card…", pc_ig_added: "An Instagram draft with its own caption was added below.", pw_none: "Tick at least one place to share it.",
+  pc_make: "🎨 Picture card", pc_busy: "Making the card…", pc_ig_added: "An Instagram draft with its own caption was added below.", pw_none: "Tick at least one place to share it.", pw_ready: "Your post is ready. Read it, then tick where it should go:", pw_share: "Share on ticked places", pw_drop: "Discard", pw_dropped: "Post discarded.", pw_busy: "Working…",
   pw_done: "Drafts made for {w}. They wait in Today for your OK.", pw_part: "Made for {w}, but the rest failed:", mk_vfilm: "Film it yourself", mk_vfilm_p: "a ready 20–30 second script to film yourself showing the app", mk_vmore: "More video tools", mk_vmore_p: "one-tap YouTube Short, write words with the AI, demo script, video ideas",
   ytd_h: "Waiting for your OK: nothing goes to YouTube until you tap Upload.", ytd_title: "Title", ytd_desc: "Description",
   ytd_priv: "Who can see it on YouTube", ytd_at: "Publish at (India time, optional)", ytd_at_p: "Leave empty to use the choice above as soon as it uploads. With a time, YouTube keeps it private until then and makes it Public at that time.",
@@ -365,7 +365,7 @@ Object.assign(T.hi, {
   ev_yt_no: "YouTube के लिए Video Studio (YouTube और वीडियो टैब) में अपना चैनल जोड़ें।",
   td_yt: "YouTube वीडियो आपकी मंज़ूरी के इंतज़ार में ({n})",
   mk_msg_fold: "कॉपी के लिए तैयार, खोलने के लिए टैप करें",
-  pw_h: "कहाँ शेयर करें:", pw_ig: "हर पोस्ट के लिए चित्र कार्ड बनता है, और Instagram का कैप्शन अलग बनता है। Today में अपनी फ़ोटो भी लगा सकते हैं।",
+  pw_none: "शेयर करने के लिए कम से कम एक जगह चुनें।", pw_ready: "आपकी पोस्ट तैयार है। पढ़ें, फिर चुनें कि कहाँ जाए:", pw_share: "चुनी जगहों पर शेयर करें", pw_drop: "हटाएँ", pw_dropped: "पोस्ट हटा दी गई।", pw_busy: "काम चल रहा है…", pw_h: "कहाँ शेयर करें:", pw_ig: "हर पोस्ट के लिए चित्र कार्ड बनता है, और Instagram का कैप्शन अलग बनता है। Today में अपनी फ़ोटो भी लगा सकते हैं।",
   pc_make: "🎨 चित्र कार्ड", pc_busy: "कार्ड बन रहा है…", pc_ig_added: "अलग कैप्शन वाला Instagram ड्राफ़्ट नीचे जुड़ गया।", pw_none: "शेयर के लिए कम से कम एक जगह चुनें।",
   pw_done: "{w} के लिए ड्राफ़्ट बन गए। Today में आपकी मंज़ूरी का इंतज़ार है।", pw_part: "{w} के लिए बना, पर बाकी नहीं बना:", mk_vfilm: "ख़ुद फ़िल्म करें", mk_vfilm_p: "ऐप दिखाते हुए ख़ुद फ़िल्म करने की 20–30 सेकंड की तैयार स्क्रिप्ट", mk_vmore: "वीडियो के और टूल", mk_vmore_p: "एक-टैप YouTube Short, AI से शब्द, डेमो स्क्रिप्ट, वीडियो आइडिया",
   ytd_h: "आपकी मंज़ूरी का इंतज़ार: जब तक आप अपलोड नहीं दबाते, YouTube पर कुछ नहीं जाता।", ytd_title: "शीर्षक", ytd_desc: "विवरण",
@@ -900,9 +900,9 @@ function qDraftHtml(x, hasIg) {
 }
 /* ---- "Ask the AI": say what you want, the AI writes it (api/_social-draft.js kinds custom / video / wamsg) ---- */
 const mkAsk = { fb: "", yt: "", wa: "" };
-/* Create post: where it should go (Facebook, Instagram, WhatsApp), remembered on this device */
-const mkPostW = { fb: true, ig: true, wa: false };
-try { const o = JSON.parse(localStorage.getItem("mk-postw") || "null"); if (o) ["fb", "ig", "wa"].forEach(k => { mkPostW[k] = !!o[k]; }); } catch (e) {}
+/* Create post: the AI writes it first; then you tick where it should go (Facebook, Instagram, WhatsApp). Nothing is ticked to start with. */
+const mkPostW = { fb: false, ig: false, wa: false };
+let mkPostNew = null;   /* the post just written: { ids: [...], want, busy } — waits here until you choose where it goes */
 const mkPostWHtml = () => '<div class="mkrow mkwhere"><span class="fine" style="margin:0"><b>' + tr("pw_h") + "</b></span>" +
   [["fb", "Facebook"], ["ig", "Instagram"], ["wa", "WhatsApp"]].map(x => '<button type="button" class="btn-s sm avchip" data-postw="' + x[0] + '" aria-pressed="' + mkPostW[x[0]] + '">' + (mkPostW[x[0]] ? "☑ " : "☐ ") + x[1] + "</button>").join("") +
   "</div>" + (mkPostW.ig ? '<p class="fine">' + tr("pw_ig") + "</p>" : "");
@@ -911,11 +911,24 @@ function askHtml(mode) {
   const busy = mkAskBusy === mode;
   return '<div class="mkask"><label for="mkAsk-' + mode + '"><b>' + tr("ask_h_" + mode) + "</b></label>" +
     '<textarea class="mkin mkta" id="mkAsk-' + mode + '" data-ask="' + mode + '" rows="3" maxlength="800" placeholder="' + esc(tr("ask_ph_" + mode)) + '">' + esc(mkAsk[mode]) + "</textarea>" +
-    (mode === "fb" && mkSub === "create" ? mkPostWHtml() : "") +
     '<div class="mkrow"><select class="mkin mksel" id="mkqLang-' + mode + '" data-asklang="1" aria-label="Language">' + ["hn", "hi", "en"].map(l => '<option value="' + l + '"' + (l === mkQLang ? " selected" : "") + ">" + tr("mk_q_l_" + l) + "</option>").join("") + "</select>" +
     '<button class="btn-s add" type="button" data-askgo="' + mode + '"' + (mkAskBusy ? " disabled" : "") + ">" + tr(busy ? "ask_busy" : "ask_go") + "</button></div>" +
     '<p class="fine">' + esc(tr("ask_ctx") + (mkBest().length ? " " + tr("ask_ctx_best").replace("{n}", mkBest().length) : "")) + "</p>" +
-    (mkAskMsg[mode] ? '<p class="fine" role="status">' + mkAskMsg[mode] + "</p>" : "") + "</div>";
+    (mkAskMsg[mode] ? '<p class="fine" role="status">' + mkAskMsg[mode] + "</p>" : "") +
+    (mode === "fb" && mkSub === "create" ? mkPostNewHtml() : "") + "</div>";
+}
+/* the post just written, with "where should it go?" ticks under it */
+function mkPostNewHtml() {
+  const N = mkPostNew; if (!N || !N.ids.length) return "";
+  const rows = N.ids.map(qGet).filter(Boolean);
+  if (!rows.length) return "";
+  return '<div class="mkres"><p><b>' + esc(tr("pw_ready")) + "</b></p>" +
+    rows.map(x => (x.image_url ? '<img src="' + esc(x.image_url) + '" alt="" style="max-width:160px;border-radius:8px;display:block;margin:6px 0">' : "") +
+      '<p style="white-space:pre-wrap">' + esc(String(x.text || "")) + "</p>").join("") +
+    mkPostWHtml() +
+    '<div class="mklinks"><button class="btn-s add" type="button" data-pwgo="1"' + (N.busy ? " disabled" : "") + ">" + esc(tr(N.busy ? "pw_busy" : "pw_share")) + "</button>" +
+    '<button class="btn-s" type="button" data-pwdrop="1"' + (N.busy ? " disabled" : "") + ">" + esc(tr("pw_drop")) + "</button></div>" +
+    (N.msg ? '<p class="fine" role="status">' + N.msg + "</p>" : "") + "</div>";
 }
 async function askGo(mode) {
   const want = String(mkAsk[mode] || "").trim();
@@ -942,36 +955,59 @@ async function askGo(mode) {
   mkAskBusy = ""; renderMk();
 }
 
-/* Create post: one ask makes a Facebook/Instagram draft and, if ticked, a WhatsApp version; all wait in Today */
+/* Create post, step 1: the AI writes the post (with its picture card). It goes nowhere yet: it waits below the box for you to choose. */
+const mkDraftCall = async (kind, want) => {
+  const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ kind, ask: want, lang: mkQLang, best: mkBestTexts() }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error === "not_setup" ? tr("mk_q_setup") : j.error === "not_setup_v2" ? tr("mk_v2_setup") : j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : tr("mk_q_err").replace("{m}", j.error || r.status));
+  return j;
+};
 async function askPost(want) {
-  const W = mkPostW;
-  if (!W.fb && !W.ig && !W.wa) { mkAskMsg.fb = '<span class="mkwarn">' + esc(tr("pw_none")) + "</span>"; renderMk(); return; }
   mkAskBusy = "fb"; mkAskMsg.fb = ""; renderMk();
-  const call = async kind => {
-    const r = await fetch("/api/social?fn=draft", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await mkTok() }, body: JSON.stringify({ kind, ask: want, lang: mkQLang, best: mkBestTexts() }) });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(j.error === "not_setup" ? tr("mk_q_setup") : j.error === "not_setup_v2" ? tr("mk_v2_setup") : j.error === "ai" || j.error === "no_ai_key" ? tr("mk_q_ai_err") : tr("mk_q_err").replace("{m}", j.error || r.status));
-    return j;
-  };
+  try {
+    const j = await mkDraftCall("custom", want);
+    if (!mkQ) mkQ = [];
+    const ids = [];
+    for (const d0 of j.drafts || []) {
+      if (!mkQ.some(y => String(y.id) === String(d0.id))) mkQ.push(d0);
+      let d = d0;
+      try { d = await qUpd(d0.id, { fb: false, ig: false }); } catch (e) {}
+      try { d = await qCard(d); } catch (e) {}   /* the picture card, so Instagram can take it */
+      ids.push(d.id);
+    }
+    mkPostW.fb = mkPostW.ig = mkPostW.wa = false;
+    mkPostNew = { ids, want, busy: false, msg: "" };
+    mkAsk.fb = "";
+  } catch (e) { mkAskMsg.fb = '<span class="mkwarn">' + esc(String(e.message || e)) + "</span>"; }
+  mkAskBusy = ""; renderMk();
+}
+/* Create post, step 2: send it to the places you ticked; everything still waits in Today for your OK */
+async function mkPostShare() {
+  const N = mkPostNew, W = mkPostW; if (!N || N.busy) return;
+  if (!W.fb && !W.ig && !W.wa) { N.msg = '<span class="mkwarn">' + esc(tr("pw_none")) + "</span>"; renderMk(); return; }
+  N.busy = true; N.msg = ""; renderMk();
   const made = [];
   try {
-    if (W.fb || W.ig) {
-      const j = await call("custom");
-      if (!mkQ) mkQ = [];
-      for (const d0 of j.drafts || []) {
-        if (!mkQ.some(y => String(y.id) === String(d0.id))) mkQ.push(d0);
-        let d = d0;
-        try { d = await qCard(d0); } catch (e) {}   /* the picture card, so Instagram can take it */
-        if (W.fb && W.ig) { d = await qUpd(d.id, { fb: true, ig: false }); await qAddIg(d); }
-        else if (W.ig) await qUpd(d.id, { fb: false, ig: true, text: qDraftOf(d).ig || d.text });
-        else await qUpd(d.id, { fb: true, ig: false });
-      }
-      made.push([W.fb ? "Facebook" : "", W.ig ? "Instagram" : ""].filter(Boolean).join(" + "));
+    for (const id of N.ids) {
+      const d = qGet(id); if (!d) continue;
+      if (W.fb && W.ig) { const y = await qUpd(id, { fb: true, ig: false }); await qAddIg(y); }
+      else if (W.ig) await qUpd(id, { fb: false, ig: true, text: qDraftOf(d).ig || d.text });
+      else if (W.fb) await qUpd(id, { fb: true, ig: false });
+      else { await sb.from("social_queue").delete().eq("id", id); mkQ = mkQ.filter(y => String(y.id) !== String(id)); }   /* WhatsApp only: the Facebook draft isn't needed */
     }
-    if (W.wa) { await call("wamsg"); made.push("WhatsApp"); }
-    mkAsk.fb = ""; mkAskMsg.fb = "✓ " + esc(tr("pw_done").replace("{w}", made.join(", ")));
-  } catch (e) { mkAskMsg.fb = '<span class="mkwarn">' + esc((made.length ? tr("pw_part").replace("{w}", made.join(", ")) + " " : "") + String(e.message || e)) + "</span>"; }
-  mkAskBusy = ""; await loadQ();
+    if (W.fb || W.ig) made.push([W.fb ? "Facebook" : "", W.ig ? "Instagram" : ""].filter(Boolean).join(" + "));
+    if (W.wa) { await mkDraftCall("wamsg", N.want); made.push("WhatsApp"); }
+    mkPostNew = null; mkAskMsg.fb = "✓ " + esc(tr("pw_done").replace("{w}", made.join(", ")));
+  } catch (e) { N.busy = false; N.msg = '<span class="mkwarn">' + esc((made.length ? tr("pw_part").replace("{w}", made.join(", ")) + " " : "") + String(e.message || e)) + "</span>"; }
+  mkPostW.fb = mkPostW.ig = mkPostW.wa = false;
+  await loadQ();
+}
+async function mkPostDrop() {
+  const N = mkPostNew; if (!N || N.busy) return;
+  N.busy = true; renderMk();
+  try { for (const id of N.ids) { await sb.from("social_queue").delete().eq("id", id); mkQ = mkQ.filter(y => String(y.id) !== String(id)); } mkPostNew = null; mkAskMsg.fb = esc(tr("pw_dropped")); }
+  catch (e) { N.busy = false; N.msg = '<span class="mkwarn">' + esc(String(e.message || e)) + "</span>"; }
+  renderMk();
 }
 
 /* one list per tab: fb = posts + videos (Facebook/Instagram), wa = WhatsApp tips, yt = YouTube uploads */
@@ -1617,7 +1653,9 @@ W.addEventListener("click", async e => {
     return;
   }
   const pw = e.target.closest("[data-postw]");
-  if (pw) { mkPostW[pw.dataset.postw] = !mkPostW[pw.dataset.postw]; try { localStorage.setItem("mk-postw", JSON.stringify(mkPostW)); } catch (x) {} renderMk(); return; }
+  if (pw) { mkPostW[pw.dataset.postw] = !mkPostW[pw.dataset.postw]; if (mkPostNew) mkPostNew.msg = ""; renderMk(); return; }
+  if (e.target.closest("[data-pwgo]")) { mkPostShare(); return; }
+  if (e.target.closest("[data-pwdrop]")) { mkPostDrop(); return; }
   const ag = e.target.closest("[data-askgo]");
   if (ag) { askGo(ag.dataset.askgo); return; }
   const sb2 = e.target.closest("[data-mksub]");
