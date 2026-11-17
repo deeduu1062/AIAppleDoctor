@@ -1194,6 +1194,10 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 .lgmain .authcard > h3{display:none}
 .lgmain #authEmailBox > p:first-child{display:none}
 .lgswitch{max-width:560px;margin:16px auto 0;color:var(--muted);text-align:center}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:52px;margin-top:14px;padding:10px 16px;border:1px solid #DADCE0;border-radius:12px;background:#fff;color:#1F1F1F;font-family:inherit;font-size:1.05rem;font-weight:600;line-height:1.2;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.gbtn:hover{background:#F8FAFF;border-color:#C6CBD2}.gbtn:disabled{opacity:.6;cursor:wait}
+.gor{display:flex;align-items:center;gap:12px;margin:16px 0 0;color:var(--muted);font-size:.92rem}
+.gor::before,.gor::after{content:"";flex:1;border-top:1px solid var(--line)}
 .lgswitch a{color:var(--brand);font-weight:600}
 .lgback{display:block;max-width:560px;margin:14px auto 0;text-align:center;color:var(--muted)}
 .lgback:hover{color:var(--fg)}
@@ -1215,6 +1219,12 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
   </div>
       <div class="authcard" id="authCard">
         <h3 data-i18n="auth_h"></h3>
+        <div id="gBox" hidden>
+          <button class="gbtn" type="button" id="gGo"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span data-i18n="g_btn"></span></button>
+          <p class="fine" id="gNote" hidden data-i18n="g_inapp"></p>
+          <p class="autherr" id="gErr" role="alert"></p>
+          <p class="gor"><span data-i18n="g_or"></span></p>
+        </div>
         <div class="tabs authtabs" role="tablist" id="authTabs">
           <button class="tab" role="tab" id="authM-phone" type="button" aria-selected="false" data-i18n="ph_tab"></button>
           <button class="tab" role="tab" id="authM-email" type="button" aria-selected="true" data-i18n="em_tab"></button>
@@ -1337,6 +1347,8 @@ const T = {
 }
 };
 Object.assign(T.en, {
+  g_btn:"Continue with Google", g_or:"or", g_err:"Google sign-in could not start: {m}",
+  g_inapp:"Google sign-in doesn't work inside the Facebook or Instagram app. Tap ⋮ and choose Open in Chrome, or use your mobile number or email below.",
   lg_kicker:"Seb Saathi account", lg_back:"← Back to Seb Saathi",
   lg_h_login:"Log in", lg_p_login:"Log in with your email and password, or ask for a login link by email.",
   lg_h_signup:"Create your free account", lg_p_signup:"Enter your email and choose a password (at least 8 characters), then tap Create account. Your orchards and records stay private to you.",
@@ -1344,6 +1356,8 @@ Object.assign(T.en, {
   lg_sw_signup:"Already have an account?", lg_sw_signup_a:"Log in"
 });
 Object.assign(T.hi, {
+  g_btn:"Google से लॉग इन करें", g_or:"या", g_err:"Google से लॉग इन शुरू नहीं हो सका: {m}",
+  g_inapp:"Facebook या Instagram ऐप के अंदर Google से लॉग इन नहीं चलता। ⋮ दबाकर Chrome में खोलें चुनें, या नीचे मोबाइल नंबर या ईमेल से लॉग इन करें।",
   lg_kicker:"सेब साथी खाता", lg_back:"← सेब साथी पर वापस",
   lg_h_login:"लॉग इन", lg_p_login:"अपने ईमेल और पासवर्ड से लॉग इन करें, या ईमेल पर लॉग इन लिंक मँगवाएँ।",
   lg_h_signup:"अपना मुफ़्त खाता बनाएँ", lg_p_signup:"अपना ईमेल डालें और पासवर्ड चुनें (कम से कम 8 अक्षर), फिर खाता बनाएँ दबाएँ। आपके बाग़ और रिकॉर्ड सिर्फ़ आपके लिए रहेंगे।",
@@ -1352,7 +1366,7 @@ Object.assign(T.hi, {
 });
 const $ = id => document.getElementById(id);
 const set = (id, t) => { $(id).textContent = t; };
-T.hn = {"hdr_signin": "Login", "auth_h": "Login karein ya account banayein", "auth_p": "Email aur password se login karein. Naye hain? Password chunein aur Account banayein dabayein. Password ki jagah email par login link bhi maang sakte hain.", "auth_email": "Email address", "auth_send": "Iske bajaye mujhe login link email karein", "auth_pw": "Password", "auth_signin": "Login", "auth_create": "Account banayein", "auth_forgot": "Password bhool gaye?", "auth_err_pw": "Kam se kam 8 akshar ka password likhein.", "auth_err_cred": "Email ya password galat hai.", "auth_confirm": "Agar {e} naya hai, to humne confirmation email bheja hai: use kholein, link dabayein, phir login karein. Agar is email se pehle se account hai, to Login dabayein, ya password set karne ke liye Password bhool gaye? dabayein.", "auth_reset_sent": "Agar {e} ka account hai, to humne password reset ka link bheja hai.", "auth_sent": "Humne {e} par email bheja hai. Use isi phone par kholein aur link dabayein. Agar usmein 6 ankon ka code hai, to code neeche likhein.", "auth_code": "6 ankon ka code (agar email mein hai)", "auth_verify": "Code se login karein", "auth_other": "Doosra email use karein", "auth_err_email": "Sahi email address likhein.", "auth_err_lib": "Login load nahi ho saka. Internet check karein aur page refresh karein.", "auth_err_send": "Email nahi bhej sake: {m}", "auth_err_net": "Login service tak nahi pahunch sake. Internet check karein. Login sirf live website par chalta hai, Claude ke preview mein nahi.", "auth_err_code": "Ye code nahi chala. Check karke dobara try karein, ya naya email maangein.", "auth_as": "{e}", "auth_out": "Logout", "lang_btn": "Hinglish", "lg_kicker": "Seb Saathi account", "lg_back": "← Seb Saathi par wapas", "lg_h_login": "Login", "lg_p_login": "Email aur password se login karein, ya email par login link maangein.", "lg_h_signup": "Apna free account banayein", "lg_p_signup": "Apna email daalein aur password chunein (kam se kam 8 akshar), phir Account banayein dabayein. Aapke bagiche aur record sirf aapke rehte hain.", "lg_sw_login": "Seb Saathi par naye hain?", "lg_sw_login_a": "Apna free account banayein", "lg_sw_signup": "Pehle se account hai?", "lg_sw_signup_a": "Login", "ph_tab": "Mobile number", "em_tab": "Email", "ph_p": "Apne mobile number se login karein. Hum {c} par 6 ankon ka code bhejte hain. Naye hain? Yahi kadam aapka account bana dete hain.", "ph_c_whatsapp": "WhatsApp", "ph_c_sms": "SMS", "ph_num": "Mobile number", "ph_send": "SMS se code bhejein", "ph_wa": "WhatsApp par code bhejein", "ph_sent": "Humne {p} par 6 ankon ka code bheja hai. Neeche likhein. Aane mein ek minute lag sakta hai.", "ph_sent_wa": "Humne WhatsApp par {p} ko 6 ankon ka code bheja hai. Neeche likhein.", "ph_code": "6 ankon ka code", "ph_verify": "Login", "ph_resend": "Phir se bhejein", "ph_resend_in": "{n}s mein phir se bhejein", "ph_other": "Doosra number use karein", "ph_e_num": "10 ankon ka mobile number likhein, jaise 98765 43210.", "ph_e_code": "Ye code nahi chala. Check karke dobara try karein, ya Phir se bhejein dabayein.", "ph_e_wait": "Naya code maangne se pehle ek minute rukein.", "ph_e_off": "Mobile se login abhi chalu nahi hai. Abhi Email use karein.", "ph_e_send": "Code nahi bhej sake: {m}"};  /* Hinglish */
+T.hn = {"hdr_signin": "Login", "auth_h": "Login karein ya account banayein", "auth_p": "Email aur password se login karein. Naye hain? Password chunein aur Account banayein dabayein. Password ki jagah email par login link bhi maang sakte hain.", "auth_email": "Email address", "auth_send": "Iske bajaye mujhe login link email karein", "auth_pw": "Password", "auth_signin": "Login", "auth_create": "Account banayein", "auth_forgot": "Password bhool gaye?", "auth_err_pw": "Kam se kam 8 akshar ka password likhein.", "auth_err_cred": "Email ya password galat hai.", "auth_confirm": "Agar {e} naya hai, to humne confirmation email bheja hai: use kholein, link dabayein, phir login karein. Agar is email se pehle se account hai, to Login dabayein, ya password set karne ke liye Password bhool gaye? dabayein.", "auth_reset_sent": "Agar {e} ka account hai, to humne password reset ka link bheja hai.", "auth_sent": "Humne {e} par email bheja hai. Use isi phone par kholein aur link dabayein. Agar usmein 6 ankon ka code hai, to code neeche likhein.", "auth_code": "6 ankon ka code (agar email mein hai)", "auth_verify": "Code se login karein", "auth_other": "Doosra email use karein", "auth_err_email": "Sahi email address likhein.", "auth_err_lib": "Login load nahi ho saka. Internet check karein aur page refresh karein.", "auth_err_send": "Email nahi bhej sake: {m}", "auth_err_net": "Login service tak nahi pahunch sake. Internet check karein. Login sirf live website par chalta hai, Claude ke preview mein nahi.", "auth_err_code": "Ye code nahi chala. Check karke dobara try karein, ya naya email maangein.", "auth_as": "{e}", "auth_out": "Logout", "lang_btn": "Hinglish", "lg_kicker": "Seb Saathi account", "lg_back": "← Seb Saathi par wapas", "lg_h_login": "Login", "lg_p_login": "Email aur password se login karein, ya email par login link maangein.", "lg_h_signup": "Apna free account banayein", "lg_p_signup": "Apna email daalein aur password chunein (kam se kam 8 akshar), phir Account banayein dabayein. Aapke bagiche aur record sirf aapke rehte hain.", "lg_sw_login": "Seb Saathi par naye hain?", "lg_sw_login_a": "Apna free account banayein", "lg_sw_signup": "Pehle se account hai?", "lg_sw_signup_a": "Login", "g_btn": "Google se login karein", "g_or": "ya", "g_err": "Google se login shuru nahi ho saka: {m}", "g_inapp": "Facebook ya Instagram app ke andar Google se login nahi chalta. ⋮ dabakar Open in Chrome chunein, ya neeche mobile number ya email se login karein.", "ph_tab": "Mobile number", "em_tab": "Email", "ph_p": "Apne mobile number se login karein. Hum {c} par 6 ankon ka code bhejte hain. Naye hain? Yahi kadam aapka account bana dete hain.", "ph_c_whatsapp": "WhatsApp", "ph_c_sms": "SMS", "ph_num": "Mobile number", "ph_send": "SMS se code bhejein", "ph_wa": "WhatsApp par code bhejein", "ph_sent": "Humne {p} par 6 ankon ka code bheja hai. Neeche likhein. Aane mein ek minute lag sakta hai.", "ph_sent_wa": "Humne WhatsApp par {p} ko 6 ankon ka code bheja hai. Neeche likhein.", "ph_code": "6 ankon ka code", "ph_verify": "Login", "ph_resend": "Phir se bhejein", "ph_resend_in": "{n}s mein phir se bhejein", "ph_other": "Doosra number use karein", "ph_e_num": "10 ankon ka mobile number likhein, jaise 98765 43210.", "ph_e_code": "Ye code nahi chala. Check karke dobara try karein, ya Phir se bhejein dabayein.", "ph_e_wait": "Naya code maangne se pehle ek minute rukein.", "ph_e_off": "Mobile se login abhi chalu nahi hai. Abhi Email use karein.", "ph_e_send": "Code nahi bhej sake: {m}"};  /* Hinglish */
 let lang = "hn";   /* Hinglish by default; a saved choice (this phone, or the grower's account) wins */
 try {
   const s = localStorage.getItem("ad-lang");
@@ -1654,6 +1668,28 @@ $("langBtn").addEventListener("change", () => {
   try { localStorage.setItem("ad-lang", lang); } catch (e) {}
   applyLang();
 });
+
+/* "Continue with Google": shown only when Google sign-in is switched on in Supabase (Authentication → Providers → Google).
+   A new account gets its language, invite code and source after it lands on the main page (index.html). */
+const inApp = /FBAN|FBAV|FB_IAB|Instagram/i.test(navigator.userAgent || "");
+async function gCheck() {
+  try {
+    const r = await fetch(SB_URL + "/auth/v1/settings", { headers: { apikey: SB_KEY } });
+    const j = await r.json();
+    if (j && j.external && j.external.google) { $("gBox").hidden = false; $("gNote").hidden = !inApp; }
+  } catch (e) {}
+}
+$("gGo").addEventListener("click", async () => {
+  set("gErr", "");
+  if (!sb) { set("gErr", tr("auth_err_lib")); return; }
+  try { localStorage.setItem("ss-newacct", JSON.stringify(Object.assign(refData(), { at: Date.now() }))); } catch (e) {}
+  $("gGo").disabled = true;
+  try {
+    const r = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: HOME, queryParams: { prompt: "select_account" } } });
+    if (r && r.error) throw r.error;
+  } catch (e) { $("gGo").disabled = false; set("gErr", tr("g_err").replace("{m}", String((e && e.message) || e))); }
+});
+if (sb) gCheck();
 
 /* logged in (now or already) → back to the main page, Dashboard open */
 if (sb) {

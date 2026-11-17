@@ -3713,8 +3713,24 @@ function langFromAccount(u) {
   setTimeout(saveLangToAccount, 0);   /* older accounts: remember the language they use now */
   return false;
 }
+/* a new account made with Google: the sign-in page kept the grower's language, invite code and source on this phone;
+   they are saved on the account once, in the first 30 minutes (other ways of signing up save them straight away) */
+function saveNewAcctData(u) {
+  let d = null; try { d = JSON.parse(localStorage.getItem("ss-newacct") || "null"); } catch (e) {}
+  if (!d || !u || !sb) return;
+  try { localStorage.removeItem("ss-newacct"); } catch (e) {}
+  const m = u.user_metadata || {}, made = Date.parse(u.created_at || "") || 0;
+  if (Date.now() - made > 30 * 60000 || Date.now() - (+d.at || 0) > 30 * 60000) return;
+  const add = {};
+  if (!m.ref && d.ref) add.ref = String(d.ref).slice(0, 40);
+  if (!m.src && d.src && /^[a-z0-9-]{1,40}$/.test(d.src)) add.src = d.src;
+  if (!m.lang && LANGS.indexOf(d.lang) >= 0) add.lang = d.lang;
+  if (!Object.keys(add).length) return;
+  try { sb.auth.updateUser({data: add}).then(r => { if (r && r.data && r.data.user && user && user.id === r.data.user.id) user = r.data.user; }, () => {}); } catch (e) {}
+}
 async function applyUser(u) {
   if (isAdminOnly(u)) { location.replace("/admin.html"); return; }
+  if (u && !window.SHOTS) saveNewAcctData(u);
   const langChanged = u ? langFromAccount(u) : false;
   const changed = (u ? u.id : null) !== (user ? user.id : null);
   user = u;
