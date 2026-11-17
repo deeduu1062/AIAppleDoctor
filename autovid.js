@@ -7,6 +7,7 @@ Object.assign(T.en, {
   av_h: "🎬 Create a video for me", av_p: "Pick a topic and tap Create video. Keep this tab open while it records.",
   av_type: "1. What kind of video?", av_t_alert: "Disease alert", av_t_tip: "Orchard tip", av_t_season: "This month's jobs", av_t_feat: "Show a Seb Saathi feature", av_t_money: "Profit and selling", av_t_q: "Answer growers' questions", av_t_own: "My own topic", av_t_idea: "💡 My video ideas",
   av_topic: "2. Topic", av_topic_ph: "Or type your own topic, e.g. \"How to spot scab early after rain\"", av_q_load: "Loading what growers ask Saathi…", av_q_none: "No Saathi questions yet — type a topic.",
+  av_u_use: "⭐ Use my usual settings", av_u_on: "⭐ My usual settings are on", av_u_save: "⭐ Save these as my usual", av_u_saved: "✓ Saved as your usual settings",
   av_eng: "Voice from:", av_eng_g: "Google", av_eng_s: "Sarvam (more expression)", av_eng_s_p: "Pick a voice, then tap ▶ Listen on a line in the script check to hear it. Each video costs about ₹2 from your Sarvam credit.", av_sarvam_fb: "Sarvam voice didn't work ({m}), so the Google voice was used.", av_no_sarvam: "Sarvam isn't set up yet: add SARVAM_API_KEY in Vercel (Settings → Environment Variables), then Redeploy.",
   av_lang: "3. Language", av_voice: "4. Voice-over", av_v_f: "Woman's voice", av_v_m: "Man's voice", av_v_no: "No voice",
   av_len: "5. Length", av_l_s: "Short ~20 sec (3 scenes)", av_l_m: "Medium ~30 sec (4–5 scenes)", av_l_l: "Long ~45 sec (6 scenes)",
@@ -36,6 +37,7 @@ Object.assign(T.hi, {
   av_h: "🎬 मेरे लिए वीडियो बनाएँ", av_p: "विषय चुनें और \"वीडियो बनाएँ\" दबाएँ। बनते समय यह टैब खुला रखें।",
   av_type: "1. कैसा वीडियो?", av_t_alert: "बीमारी चेतावनी", av_t_tip: "बाग़ की सलाह", av_t_season: "इस महीने के काम", av_t_feat: "सेब साथी की सुविधा दिखाएँ", av_t_money: "मुनाफ़ा और बिक्री", av_t_q: "बाग़वानों के सवालों के जवाब", av_t_own: "मेरा अपना विषय", av_t_idea: "💡 मेरे वीडियो आइडिया",
   av_topic: "2. विषय", av_topic_ph: "या अपना विषय लिखें", av_q_load: "साथी से पूछे सवाल लोड हो रहे हैं…", av_q_none: "अभी कोई सवाल नहीं — विषय लिखें।",
+  av_u_use: "⭐ मेरी आम सेटिंग लगाएँ", av_u_on: "⭐ आपकी आम सेटिंग लगी है", av_u_save: "⭐ इन्हें मेरी आम सेटिंग बनाएँ", av_u_saved: "✓ आपकी आम सेटिंग सेव हुई",
   av_eng: "आवाज़ कहाँ से:", av_eng_g: "Google", av_eng_s: "Sarvam (ज़्यादा भाव)", av_eng_s_p: "एक आवाज़ चुनें, फिर स्क्रिप्ट जाँच में किसी लाइन पर ▶ सुनें दबाएँ। हर वीडियो पर Sarvam क्रेडिट से लगभग ₹2 लगते हैं।", av_sarvam_fb: "Sarvam की आवाज़ नहीं चली ({m}), इसलिए Google की आवाज़ लगाई गई।", av_no_sarvam: "Sarvam अभी सेट नहीं है: Vercel में SARVAM_API_KEY डालें (Settings → Environment Variables), फिर Redeploy करें।",
   av_lang: "3. भाषा", av_voice: "4. आवाज़", av_v_f: "महिला की आवाज़", av_v_m: "पुरुष की आवाज़", av_v_no: "आवाज़ नहीं",
   av_len: "5. लंबाई", av_l_s: "छोटा ~20 सेकंड", av_l_m: "मध्यम ~30 सेकंड", av_l_l: "लंबा ~45 सेकंड",
@@ -77,6 +79,29 @@ const avSpk = () => { const L = AV_SPK[AV.voice] || AV_SPK.f; return L.indexOf(A
 const avSpkName = k => k.charAt(0).toUpperCase() + k.slice(1);
 const avEngineBody = () => AV.engine === "sarvam" ? { engine: "sarvam", speaker: avSpk() } : { engine: "google" };
 const avFellBack = m => m === "no_key" ? tr("av_no_sarvam") : tr("av_sarvam_fb").replace("{m}", m);
+/* ⭐ My usual: your favourite settings, kept with the admin settings so they follow you to any phone or laptop */
+const AV_USUAL_KEYS = ["lang", "voice", "engine", "spk", "len", "fmt", "pics", "music", "style", "end"];
+const avUsual = () => { try { const v = typeof MK !== "undefined" && MK["av:usual"] && MK["av:usual"].value; return v ? JSON.parse(v) : null; } catch (e) { return null; } };
+const avUsualOn = u => !!u && AV_USUAL_KEYS.every(k => u[k] === undefined || AV[k] === u[k]);
+function avUsualHtml(dis) {
+  const u = avUsual(); if (!u) return "";
+  const on = avUsualOn(u);
+  return '<p class="avusual"><button type="button" class="btn-s ' + (on ? "" : "add") + '" data-avusual="use"' + dis + (on ? " disabled" : "") + ">" + esc(tr(on ? "av_u_on" : "av_u_use")) + "</button></p>";
+}
+async function avUsualSave() {
+  const u = {}; AV_USUAL_KEYS.forEach(k => { u[k] = AV[k]; });
+  if (typeof mkSave === "function") await mkSave("av:usual", { value: JSON.stringify(u) });
+  AV.usualMsg = "saved"; avRender(); setTimeout(() => { AV.usualMsg = ""; avRender(); }, 2500);
+}
+function avUsualUse() {
+  const u = avUsual(); if (!u) return;
+  AV_USUAL_KEYS.forEach(k => { if (u[k] !== undefined) AV[k] = u[k]; });
+  avSave(); avRender();
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-avusual]"); if (!b || b.disabled) return;
+  if (b.dataset.avusual === "save") avUsualSave(); else avUsualUse();
+});
 function avEngineHtml() {
   if (AV.voice === "no") return "";
   return '<div class="avchips" role="group" aria-label="' + esc(tr("av_eng")) + '"><span class="fine" style="margin:0">' + esc(tr("av_eng")) + "</span>" +
@@ -125,19 +150,21 @@ function avHtml() {
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_topic")) + '</legend><div class="avchips">' +
       (tps === null ? '<span class="fine">' + esc(tr("av_q_load")) + "</span>" : AV.type === "q" && !tps.length ? '<span class="fine">' + esc(tr("av_q_none")) + "</span>" : tps.map(x => avChip("topic", x, x)).join("")) + "</div>" +
       '<input class="avin" id="avOwn" maxlength="200" placeholder="' + esc(tr("av_topic_ph")) + '" value="' + esc(AV.own) + '"></fieldset>' +
-    avBriefHtml(dis) +
+    avBriefHtml(dis) + avUsualHtml(dis) +
     '<details class="avfold" data-avd="opts"' + (AV.optsOpen ? " open" : "") + '><summary><b>' + esc(tr("av_opts")) + '</b> <span class="fine">' + esc(avSumm()) + "</span></summary>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_lang")) + '</legend><div class="avchips">' + avChip("lang", "hi", "हिंदी") + avChip("lang", "hn", "Hinglish") + avChip("lang", "en", "English") + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_voice")) + '</legend><div class="avchips">' + avChip("voice", "f", tr("av_v_f")) + avChip("voice", "m", tr("av_v_m")) + avChip("voice", "no", tr("av_v_no")) + "</div>" + avEngineHtml() + "</fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_music")) + '</legend><div class="avchips">' + avChip("music", "auto", tr("av_mu_auto")) + avChip("music", "none", tr("av_mu_none")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_len")) + '</legend><div class="avchips">' + avChip("len", "s", tr("av_l_s")) + avChip("len", "m", tr("av_l_m")) + avChip("len", "l", tr("av_l_l")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_size")) + '</legend><div class="avchips">' + avChip("fmt", "916", tr("vs_f_916")) + avChip("fmt", "11", tr("vs_f_11")) + avChip("fmt", "45", tr("vs_f_45")) + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "screens", tr("av_p_screens")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "screens", tr("av_p_screens")) + avChip("pics", "clips", tr("av_p_clips")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
+      (AV.pics === "clips" && typeof clLibHtml === "function" ? clLibHtml() : "") +
       (AV.pics === "screens" ? '<p class="fine">' + esc(tr("av_p_screens_p")) + "</p>" : "") +
       (AV.pics === "mine" ? '<p><label class="btn-s sm vsfile">' + esc(tr("av_p_add")) + '<input type="file" accept="image/*" multiple id="avPhotos" hidden></label> <span class="fine">' + (AV.photos.length ? esc(tr("av_p_n").replace("{n}", AV.photos.length)) : "") + "</span></p>" : "") + "</fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_end")) + '</legend><div class="avchips">' + ["site", "dx", "share", "join"].map(k => avChip("end", k, tr("av_e_" + k))).join("") + "</div></fieldset>" +
     (avCreateTab() ? ""
-      : '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>") + "</details>" +
+      : '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_after")) + '</legend><div class="avchips">' + (avFbTab() ? ["none", "fb"] : ["none", "fb", "yt"]).map(k => avChip("after", k, tr("av_a_" + k))).join("") + "</div></fieldset>") +
+      '<p><button type="button" class="btn-s sm" data-avusual="save"' + dis + ">" + esc(tr(AV.usualMsg === "saved" ? "av_u_saved" : "av_u_save")) + "</button></p></details>" +
     (avCreateTab() ? '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_where")) + '</legend><div class="avchips">' + avTick("fb", "Facebook") + avTick("ig", "Instagram") + avTick("yt", "YouTube") + avTick("wa", "WhatsApp") + '</div><p class="fine">' + esc(tr("av_where_p")) + "</p></fieldset>" : "") +
     '<p><button type="button" class="btn-s add avgo" id="avGo"' + dis + ">" + esc(AV.busy ? AV.step : VS.out && AV.done ? tr("av_again") : tr("av_go")) + "</button></p>" +
     (AV.step && !AV.busy ? '<p class="fine" role="status">' + esc(AV.step) + "</p>" : "") +
@@ -242,7 +269,7 @@ async function avWrite(topic) {
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.video) throw new Error(j.error === "no_ai_key" || j.error === "ai" ? tr("mk_q_ai_err") : j.error === "not_setup" ? tr("mk_q_setup") : (j.error || "HTTP " + r.status));
   const v = j.video;
-  v.scenes = v.scenes.map(x => ({ label: x.label || "", title: x.title || "", sub: x.sub || "", say: x.say || "", art: x.art || "apple", screen: x.screen || "" }));
+  v.scenes = v.scenes.map(x => ({ label: x.label || "", title: x.title || "", sub: x.sub || "", say: x.say || "", art: x.art || "apple", screen: x.screen || "", look: x.look || "" }));
   v.title = v.title || ""; v.cta = v.cta || ""; v.cta_say = v.cta_say || ""; v.caption = v.caption || "";
   return v;
 }
@@ -299,7 +326,8 @@ async function avBuild(v) {
     /* pictures and scenes */
     avStep("av_s3");
     const media = AV.pics === "mine" ? (await Promise.all(AV.photos.map(avLoadImg))).filter(Boolean)
-      : AV.pics === "screens" && typeof scrForScenes === "function" ? await scrForScenes(v.scenes, AV.lang) : [];   /* real site screens (screens.js) */
+      : AV.pics === "screens" && typeof scrForScenes === "function" ? await scrForScenes(v.scenes, AV.lang)
+      : AV.pics === "clips" && typeof clForScenes === "function" ? await clForScenes(v.scenes, AV.lang, AV.fmt) : [];   /* your clips + free stock (clips.js) */   /* real site screens (screens.js) */
     (VS.scenes || []).forEach(s => { if (s.media && media.indexOf(s.media) < 0 && s.media.url) URL.revokeObjectURL(s.media.url); });
     VS.tpl = AV_THEME[AV.type] || "tip"; VS.vlang = AV.lang === "hi" ? "hi" : AV.lang === "en" ? "en" : "hl"; VS.fmt = AV.fmt;
     VS.scenes = v.scenes.map((s, i) => {
