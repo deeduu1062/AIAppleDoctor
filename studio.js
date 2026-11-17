@@ -254,13 +254,37 @@ function vsMedia(ctx, W, H, m, p, i) {
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   return true;
 }
+/* a real Seb Saathi screen (screens.js): the site's top bar stays put while the page below it scrolls slowly, inside a phone */
+function vsPhone(ctx, W, H, m, p, local, caps) {
+  const el = m.el, iw = el.naturalWidth, ih = el.naturalHeight; if (!iw || !ih) return 0;
+  const k = W / 1080, tall = H / W > 1.5;
+  let cw = W * (tall ? 0.84 : 0.62), ch = H * (tall ? (caps ? 0.48 : 0.56) : caps ? 0.5 : 0.58);
+  const e = vsEase(local / 0.5), x = (W - cw) / 2, y = H * (tall ? 0.035 : 0.04) + (1 - e) * 60 * k, bz = 14 * k, r = 46 * k;
+  ctx.save(); ctx.globalAlpha = e;
+  ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 50 * k; ctx.shadowOffsetY = 18 * k;
+  ctx.fillStyle = "#15171A"; vsRound(ctx, x - bz, y - bz, cw + 2 * bz, ch + 2 * bz, r + bz); ctx.fill();
+  ctx.shadowColor = "transparent";
+  ctx.save(); vsRound(ctx, x, y, cw, ch, r); ctx.clip();
+  ctx.fillStyle = "#F6F4EE"; ctx.fillRect(x, y, cw, ch);
+  const s = cw / iw, bar = Math.min(m.bar || 0, ih * 0.4), barD = bar * s;
+  const visSrc = (ch - barD) / s, maxOff = Math.max(0, ih - bar - visSrc);
+  const off = Math.min(maxOff, visSrc * 0.6) * vsEase((p - 0.35) / 0.6);
+  try {
+    ctx.drawImage(el, 0, bar + off, iw, Math.min(visSrc, ih - bar - off), x, y + barD, cw, Math.min(visSrc, ih - bar - off) * s);
+    if (bar) { ctx.drawImage(el, 0, 0, iw, bar, x, y, cw, barD); ctx.fillStyle = "rgba(0,0,0,.08)"; ctx.fillRect(x, y + barD, cw, 3 * k); }
+  } catch (err) {}
+  ctx.restore(); ctx.restore();
+  return y + ch + bz;
+}
 function vsScene(ctx, W, H, sc, i, local, th) {
   const k = W / 1080, tall = H / W > 1.5, hi = VS.vlang === "hi";
   const p = vsClamp(local / sc.dur);
-  const media = sc.media && vsMedia(ctx, W, H, sc.media, p, i);
-  const art = !media && sc.art && typeof vsArt === "function";
+  const scr = !!(sc.media && sc.media.type === "scr");
+  const media = !scr && sc.media && vsMedia(ctx, W, H, sc.media, p, i);
+  const art = !media && !scr && sc.art && typeof vsArt === "function";
   if (!media) vsBg(ctx, W, H, th, local + i);
   const caps = vsCapsOn(sc);
+  const phoneB = scr ? vsPhone(ctx, W, H, sc.media, p, local, caps) : 0;
   if (art) {   /* built-in drawn picture (vsart.js), with a slow push-in */
     const z = (1 + 0.08 * vsEase(p * 0.9)) * (caps ? 0.84 : 1), cy = H * (tall ? 0.36 : 0.32), oy = caps ? -H * 0.05 : 0;
     ctx.save(); ctx.translate(W / 2, cy + oy); ctx.scale(z, z); ctx.translate(-W / 2, -cy); vsArt(ctx, W, H, sc.art, local, th); ctx.restore();
@@ -268,8 +292,10 @@ function vsScene(ctx, W, H, sc, i, local, th) {
   const maxW = W - 150 * k;
   /* measure */
   let tpx = (tall ? 104 : 88) * k, lines;
-  for (;;) { ctx.font = vsFont("700", tpx, hi); lines = vsWrap(ctx, sc.title, maxW); if (lines.length <= 4 || tpx < 56 * k) break; tpx *= 0.9; }
-  const spx = (tall ? 46 : 40) * k; ctx.font = vsBody("500", spx); const subs = caps ? [] : vsWrap(ctx, sc.sub, maxW).slice(0, 3);
+  if (scr) tpx = (caps ? 66 : tall ? 84 : 64) * k;   /* under a screen the words are smaller, so the screen stays big */
+  for (;;) { ctx.font = vsFont("700", tpx, hi); lines = vsWrap(ctx, sc.title, maxW); if (lines.length <= (scr ? 2 : 4) || tpx < (scr ? 44 : 56) * k) break; tpx *= 0.9; }
+  if (scr) lines = lines.slice(0, caps ? 2 : 3);
+  const spx = (tall ? 46 : 40) * k; ctx.font = vsBody("500", spx); const subs = caps || (scr && !tall) ? [] : vsWrap(ctx, sc.sub, maxW).slice(0, scr ? 2 : 3);
   const lpx = 40 * k, lh = tpx * (hi ? 1.18 : 1.06), slh = spx * 1.35;
   const isNum = /^\d{1,2}$/.test(sc.label.trim());
   const labH = sc.label.trim() ? (isNum ? 112 * k : lpx * 1.9) + 26 * k : 0;
@@ -277,6 +303,7 @@ function vsScene(ctx, W, H, sc, i, local, th) {
   let y = (media || art ? H * (tall ? 0.70 : 0.68) : H * 0.52) - blockH / 2;
   if (caps) y = (media || art ? H * (tall ? 0.6 : 0.5) : H * 0.42) - blockH / 2;
   y = Math.min(y, H - blockH - (caps ? vsCapRoom(W, H) : (tall ? 190 : 90) * k));
+  if (scr) y = Math.max(y, phoneB + 34 * k);
   const x = 75 * k;
   const pop = (d) => vsEase((local - d) / 0.55);
   /* label */
@@ -701,7 +728,7 @@ function renderStudio() {
       '<div class="vsrow"><div class="vsf vslab"><label for="vs-label-' + i + '">' + tr("vs_label") + '</label><input id="vs-label-' + i + '" data-vsf="label" maxlength="30" value="' + esc(s.label) + '"></div>' +
       '<div class="vsf"><label for="vs-sub-' + i + '">' + tr("vs_sub") + '</label><input id="vs-sub-' + i + '" data-vsf="sub" maxlength="90" value="' + esc(s.sub) + '"></div></div>' +
       '<div class="vsf"><label for="vs-title-' + i + '">' + tr("vs_title") + '</label><textarea id="vs-title-' + i + '" data-vsf="title" rows="2" maxlength="90">' + esc(s.title) + "</textarea></div>" +
-      '<div class="vsmedia">' + (m ? '<span class="vsthumb">' + (m.type === "img" ? "🖼 " : "🎬 ") + esc(m.name) + "</span>" : typeof vsArtSelect === "function" ? vsArtSelect(s, i) : '<span class="fine" style="margin:0">' + tr("vs_nomedia") + "</span>") +
+      '<div class="vsmedia">' + (m ? '<span class="vsthumb">' + (m.type === "img" ? "🖼 " : m.type === "scr" ? "📱 " : "🎬 ") + esc(m.name) + "</span>" : typeof vsArtSelect === "function" ? vsArtSelect(s, i) : '<span class="fine" style="margin:0">' + tr("vs_nomedia") + "</span>") +
       (s.voice ? '<span class="vsthumb">🔊 ' + tr("vs_voice_on") + '</span><button type="button" class="btn-s vsmini" data-vsvrm="' + i + '">' + tr("vs_media_rm") + "</button>" : "") +
       '<label class="btn-s vsfile">' + tr(m ? "vs_media_ch" : "vs_media") + '<input type="file" accept="image/*,video/*" data-vsmedia="' + i + '" hidden></label>' +
       (m ? '<button type="button" class="btn-s vsmini" data-vsrm="' + i + '">' + tr("vs_media_rm") + "</button>" : "") + "</div></div>";

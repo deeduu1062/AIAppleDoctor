@@ -53,6 +53,7 @@ const SEASON = [
   "December: dormancy, snow; pruning starts in some areas; planting pits; close the year's orchard records."
 ];
 
+const SCREEN_KEYS = ["home", "orchard", "profit", "sales", "expenses", "diagnose", "spray", "calendar", "none"];
 const ART_KEYS = ["apple", "leaf", "leaf_spots", "tree", "spray", "phone", "calendar", "money", "rain", "mountain", "camera", "crate", "chart", "bug", "shears", "family", "check", "soil", "snow", "flower"];
 const BRIEF = `You write social media posts for "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand. Tagline: "Your Orchard Manager". It helps growers keep an orchard record, work out real profit per peti (box) after all costs, compare mandi vs ladhani, check apple diseases from a photo, follow the season calendar and spray stages, and ask "Saathi", the chatbot, in Hindi or Hinglish.
 
@@ -114,6 +115,7 @@ Make 4 to 6 scenes. The first scene is a strong hook (a question or a problem gr
 - "sub": second line on screen, at most 10 words (can be empty)
 - "say": what the voice says for this scene, one or two short spoken sentences, 8 to 22 words, adding a little more than the screen words. It must sound like a bagwan from upper Shimla (Rohru, Kotkhai, Jubbal) talking to a neighbour over the fence, not like a TV announcer or a government notice: everyday spoken Hindi, short sentences, plain words, a warm "bhai", "bagwan bhaiyo" or "dekho" now and then (not every line). Use the words growers really use: bagicha, bagwan, peti, dawai, spray, mandi, aadhti, kiraya, tudaan, bharaan, grading, packing, phool aana, phal lagna, ola, paala, barf. Avoid heavy Sanskrit words (say "dawai" not "rasayan", "bagicha" not "udyan", "fayda" not "labh", "kaam" not "karya").
 - "art": the picture, exactly one of: ${ART_KEYS.join(", ")}  (leaf_spots = diseased leaf, spray = sprayer, phone = the Seb Saathi app, crate = apple box, money = rupees/profit, chart = profit or records, shears = pruning, soil = soil and manure, snow = winter/chilling, flower = flowering)
+- "screen": the real Seb Saathi screen that can be shown on a phone behind this scene, exactly one of: ${SCREEN_KEYS.join(", ")}  (home = signed-in home with the one-tap disease check and this season's profit per box; orchard = Orchard Record with trees by variety; profit = profit (munafa) by harvest year and by orchard; sales = season sales record, lot by lot; expenses = expenses (kharche) by orchard and year; diagnose = a photo check result for a diseased apple; spray = the spray schedule by tree stage; calendar = the season calendar month by month; none = no screen fits, e.g. general orchard advice, weather or the hook). Pick a screen whenever the scene talks about something the website does.
 The admin may add a brief. Follow it exactly:
 - MUST SAY: every point must come through clearly, in the screen words or the voice.
 - FACTS FROM THE ADMIN: these are the admin's own checked facts. Use them exactly as written (same numbers, names, dates, doses); never change, round or add to them. They may be used even where the safety rules below would stop you; the safety rules still apply to everything else.
@@ -123,7 +125,7 @@ Then "cta" (end card call to action, at most 8 words) and "cta_say" (the voice f
 What the website does today: orchard record, spray and work diary with expenses, season sales record (Mandi, Adani per kilo, Theka), real profit per box, disease check from one photo, Saathi chatbot (also by voice), spray schedule and season calendar, family sharing, invite friends.
 Safety rules: never name a chemical, brand or dose (for sprays say follow the state spray schedule and the label); never quote prices; no made-up growers, numbers or testimonials; never promise results.
 Reply with ONLY a JSON array with one item, no other text:
-[{"title": "YouTube title, at most 70 characters", "scenes": [{"label": "...", "title": "...", "sub": "...", "say": "...", "art": "..."}], "cta": "...", "cta_say": "...", "caption": "post caption for Reels/YouTube, 40-90 words, ending with 4-6 hashtags"}]`;
+[{"title": "YouTube title, at most 70 characters", "scenes": [{"label": "...", "title": "...", "sub": "...", "say": "...", "art": "...", "screen": "..."}], "cta": "...", "cta_say": "...", "caption": "post caption for Reels/YouTube, 40-90 words, ending with 4-6 hashtags"}]`;
 
 /* one finished video → a caption for each place it will go */
 const REPURPOSE_BRIEF = `You prepare one finished short phone video from "Seb Saathi" (सेब साथी), a free website (sebsaathi.com) for apple growers in Himachal Pradesh, Kashmir and Uttarakhand, made by an apple grower from Rohru, to go out in four places. You are given what the video shows (its caption or words).
@@ -223,7 +225,7 @@ module.exports = async (req, res) => {
   }
   if (kind === "autovideo") {   /* one-tap video: words, voice lines and pictures; returned, not saved */
     const v = posts[0] || {}, t = (x, m) => String(x || "").replace(/\s+/g, " ").trim().slice(0, m);
-    const scenes = (Array.isArray(v.scenes) ? v.scenes : []).slice(0, 6).map(x => ({ label: t(x.label, 30), title: t(x.title, 90), sub: t(x.sub, 90), say: t(x.say, 300), art: ART_KEYS.indexOf(String(x.art || "")) >= 0 ? String(x.art) : "apple" })).filter(x => x.title);
+    const scenes = (Array.isArray(v.scenes) ? v.scenes : []).slice(0, 6).map(x => ({ label: t(x.label, 30), title: t(x.title, 90), sub: t(x.sub, 90), say: t(x.say, 300), art: ART_KEYS.indexOf(String(x.art || "")) >= 0 ? String(x.art) : "apple", screen: SCREEN_KEYS.indexOf(String(x.screen || "")) >= 0 ? String(x.screen) : "" })).filter(x => x.title);
     if (!scenes.length) return send(res, 502, { error: "ai" });
     return send(res, 200, { video: { title: t(v.title, 90), scenes, cta: t(v.cta, 80), cta_say: t(v.cta_say, 200), caption: String(v.caption || "").slice(0, 2000) } });
   }

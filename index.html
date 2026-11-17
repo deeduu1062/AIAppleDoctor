@@ -14,6 +14,19 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Seb Saathi">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>/* screens mode: the admin page's video maker opens the site in a hidden frame (?shots=1) to show real screens with
+   example records. It never signs in, saves or sends anything, and never touches this phone's saved settings. */
+(function () {
+  var q = location.search; if (!/[?&]shots=1\b/.test(q) || window.parent === window) return;
+  var L = (q.match(/[?&]lang=(hi|en|hn)\b/) || [])[1] || "hi";
+  window.SHOTS = { lang: L };
+  Storage.prototype.getItem = function (k) { return k === "ad-lang" ? L : null; };
+  Storage.prototype.setItem = function () {}; Storage.prototype.removeItem = function () {};
+  var f0 = window.fetch;
+  window.fetch = function (u) { var s = String((u && u.url) || u); if (/\/api\/|supabase\.co/.test(s)) return Promise.resolve(new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } })); return f0.apply(this, arguments); };
+  try { navigator.sendBeacon = function () { return true; }; } catch (e) {}
+  document.documentElement.classList.add("shots");
+})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Khand:wght@500;600;700&family=Hind:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
@@ -3374,6 +3387,41 @@ function makeSample() {
         {id:"exl6", name:"Lot 1", lines:[ln("A",100,1800,420), ln("B",30,1000,420)]}]}
     ]};
 }
+/* screens mode (?shots=1, inside the admin video maker): example records that look like a real grower's */
+function shotsLedger() {
+  const D = makeSample(), hy = hYear(new Date().toISOString().slice(0, 10)), y1 = hy - 1, y0 = hy - 2;
+  const nm = {hi: ["घर वाला बगीचा", "ऊपर वाला बगीचा"], hn: ["Ghar wala bagicha", "Upar wala bagicha"], en: ["Home orchard", "Upper orchard"]}[window.SHOTS.lang] || ["Ghar wala bagicha", "Upar wala bagicha"];
+  D.orchards = [
+    {id:"ex1", name:nm[0], trees:300, profile:{village:"Rohru", alt:2100, area:12}, varTrees:[{v:"Royal Delicious", n:180}, {v:"Gala", n:80}, {v:"Scarlet Spur", n:40}]},
+    {id:"ex2", name:nm[1], trees:150, profile:{village:"Chirgaon", alt:2400, area:6}, varTrees:[{v:"Royal Delicious", n:110}, {v:"Super Chief", n:40}]}];
+  D.seasons.forEach(se => { se.year = se.year === 2024 ? y0 : y1; });
+  const d = (y, m, day) => (m >= 11 ? y - 1 : y) + "-" + String(m).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+  D.orchards[0].diary = [
+    {id:"exd1", date:d(y1, 3, 12), kind:"spray", cost:6500, text:"", stage:""}, {id:"exd2", date:d(y1, 4, 20), kind:"spray", cost:7200, text:"", stage:""},
+    {id:"exd3", date:d(y1, 2, 8), kind:"fert", cost:9000, text:"", stage:""}, {id:"exd4", date:d(y1, 12, 15), kind:"prune", cost:12000, text:"", stage:""},
+    {id:"exd5", date:d(y1, 6, 5), kind:"labour", cost:8000, text:"", stage:""}];
+  return D;
+}
+function shotsSb() {
+  const user = {id:"shots", phone:"919800000000", email:"", user_metadata:{name:"", lang:window.SHOTS.lang}, app_metadata:{}};
+  const session = {user, access_token:"shots"};
+  const q = table => {
+    let one = false;
+    const res = () => table === "ledgers" ? {data: one ? {data:shotsLedger(), updated_at:new Date().toISOString()} : [{data:shotsLedger()}], error:null} : {data: one ? null : [], error:null, count:0};
+    const api = new Proxy({}, {get: (t, k) => {
+      if (k === "then") return (ok, bad) => Promise.resolve(res()).then(ok, bad);
+      if (k === "maybeSingle" || k === "single") return () => { one = true; return api; };
+      return () => api;
+    }});
+    return api;
+  };
+  return {
+    from: q, rpc: () => q("rpc"), channel: () => ({on() { return this; }, subscribe() { return this; }}), removeChannel() {},
+    storage: {from: () => ({upload: async () => ({error:{message:"shots"}}), getPublicUrl: () => ({data:{publicUrl:""}})})},
+    auth: {getSession: async () => ({data:{session}}), getUser: async () => ({data:{user}}), onAuthStateChange: () => ({data:{subscription:{unsubscribe() {}}}}),
+      signOut: async () => ({}), updateUser: async () => ({data:{user}, error:null}), signInWithOtp: async () => ({error:{message:"shots"}}), verifyOtp: async () => ({error:{message:"shots"}})}
+  };
+}
 function lineCalc(n) {
   const b = +n.boxes || 0, r = +n.rate || 0;
   const e = (+n.tod || 0) + (+n.grd || 0) + (+n.car || 0) + (+n.exp || 0);
@@ -3446,6 +3494,7 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo";
 let sb = null;
 try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { sb = null; }
+if (window.SHOTS) sb = shotsSb();   /* screens mode: a pretend grower with example records, nothing real is read or saved */
 /* your social media pages, saved on the admin page; until then the site says "coming soon" */
 if (sb) sb.rpc("public_social_links").then(r => {
   const d = r && !r.error && r.data; if (!d) return;
@@ -8293,6 +8342,115 @@ if (window.ADFeedback) ADFeedback.init({
 applyLang();
 </script>
 <script src="/dx.js?v=9"></script>
+<script>
+/* screens mode (?shots=1): the admin video maker asks for a real screen (shotsShow) and gets a picture of it (shotsGrab).
+   The picture is drawn by the browser itself (the page put inside an SVG), so it looks exactly like the site. */
+if (window.SHOTS) (function () {
+  const st = document.createElement("style");
+  st.textContent = "#acctBar,#instBar,#chatFab,#fbBtn,.ticker{display:none!important}#tools~*:not(script):not(style){display:none!important}.tabbar{scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}*{animation:none!important;transition:none!important;caret-color:transparent!important}";
+  document.head.appendChild(st);
+  const DXS = {
+    hi: { summary: "फल पर गोल, कत्थई-काले धब्बे दिख रहे हैं। यह स्कैब (सेब का धब्बा रोग) जैसा लग रहा है।",
+      m: [["scab", "high", "धब्बे गोल हैं, किनारे साफ़ हैं और सतह खुरदरी है।"], ["sooty", "low", "हल्की काली परत भी हो सकती है, पर धब्बे गहरे हैं।"]],
+      steps: ["गिरे हुए पत्ते और फल इकट्ठा करके नष्ट करें।", "स्प्रे के लिए राज्य की स्प्रे सूची और दवा का लेबल ही मानें।", "बारिश के बाद 2-3 दिन में पेड़ दोबारा देखें।"] },
+    hn: { summary: "Phal par gol, kathai-kaale dhabbe dikh rahe hain. Yeh scab (seb ka dhabba rog) jaisa lag raha hai.",
+      m: [["scab", "high", "Dhabbe gol hain, kinare saaf hain aur upar se khurdure hain."], ["sooty", "low", "Halki kaali parat bhi ho sakti hai, par dhabbe gehre hain."]],
+      steps: ["Gire hue patte aur phal ikattha karke nasht karein.", "Spray ke liye state ki spray schedule aur dawai ka label hi maanein.", "Baarish ke baad 2-3 din mein ped dobara dekhein."] },
+    en: { summary: "Round brown-black spots on the fruit. This looks like apple scab.",
+      m: [["scab", "high", "The spots are round with clear edges and a rough surface."], ["sooty", "low", "It could also be a light sooty layer, but the spots are deep."]],
+      steps: ["Collect and destroy fallen leaves and fruit.", "For sprays, follow the state spray schedule and the label.", "Check the trees again 2-3 days after rain."] }
+  };
+  const go = (t, sub) => { showTool(t, false, false); if (sub && typeof showSub === "function") showSub(sub); };
+  const SHOW = {
+    home: () => { go("home"); return $("tools"); },
+    orchard: () => { go("orch"); return $("tools"); },
+    profit: () => { go("calc", "year"); return $("tools"); },
+    sales: () => { go("calc", "orch"); return $("tools"); },
+    expenses: () => { go("calc", "exp"); return $("tools"); },
+    spray: () => { go("spray"); return $("tools"); },
+    calendar: () => { go("cal"); return $("tools"); },
+    diagnose: () => {
+      go("diag");
+      const D = DXS[window.SHOTS.lang] || DXS.hi;
+      const th = $("dxThumbs"); if (th) th.innerHTML = '<span class="dxth"><img alt="" src="/img/example-scab-fruit.jpg"></span>';
+      renderDiagAi(null, { photo_ok: true, summary: D.summary, matches: D.m.map(x => ({ id: x[0], confidence: x[1], why: x[2] })), next_steps: D.steps, see_expert: false });
+      return $("dxAi") || $("tools");
+    }
+  };
+  window.shotsKeys = Object.keys(SHOW);
+  window.shotsShow = key => { const el = (SHOW[key] || SHOW.home)(); window.scrollTo(0, 0); return el; };
+
+  /* ---- drawing the page into a picture ---- */
+  const cache = {};
+  const dataUrl = async url => {
+    if (!url || /^data:/.test(url)) return url;
+    if (cache[url]) return cache[url];
+    try {
+      const b = await (await fetch(url)).blob();
+      cache[url] = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => res(url); r.readAsDataURL(b); });
+    } catch (e) { cache[url] = url; }
+    return cache[url];
+  };
+  let fontCss = null;
+  async function fonts() {
+    if (fontCss != null) return fontCss;
+    fontCss = "";
+    try {
+      const href = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.href).find(h => /fonts\.googleapis/.test(h));
+      if (!href) return fontCss;
+      const css = await (await fetch(href)).text(), out = [];
+      const re = /\/\*\s*([\w-]+)\s*\*\/\s*@font-face\s*\{([^}]*)\}/g; let m;
+      while ((m = re.exec(css))) {
+        if (["latin", "devanagari"].indexOf(m[1]) < 0) continue;
+        let body = m[2]; const u = (body.match(/url\(([^)]+)\)/) || [])[1];
+        if (u) body = body.replace(u, await dataUrl(u.replace(/["']/g, "")));
+        out.push("@font-face{" + body + "}");
+      }
+      fontCss = out.join("\n");
+    } catch (e) { fontCss = ""; }
+    return fontCss;
+  }
+  async function pageSvg() {
+    const W = document.documentElement.clientWidth, H = Math.min(document.documentElement.scrollHeight, 9000);
+    /* form values become attributes, so the copy shows them */
+    document.querySelectorAll("input").forEach(i => { if (i.type === "checkbox" || i.type === "radio") { if (i.checked) i.setAttribute("checked", ""); else i.removeAttribute("checked"); } else if (i.type !== "file") i.setAttribute("value", i.value); });
+    document.querySelectorAll("select").forEach(s => Array.from(s.options).forEach((o, k) => { if (k === s.selectedIndex) o.setAttribute("selected", ""); else o.removeAttribute("selected"); }));
+    document.querySelectorAll("textarea").forEach(t => { t.textContent = t.value; });
+    const c = document.documentElement.cloneNode(true);
+    c.querySelectorAll("script,noscript,iframe,link,dialog:not([open])").forEach(x => x.remove());
+    for (const im of c.querySelectorAll("img")) { const src = im.getAttribute("src"); if (src) im.setAttribute("src", await dataUrl(new URL(src, location.href).href)); im.removeAttribute("loading"); im.removeAttribute("srcset"); }
+    for (const sv of c.querySelectorAll("style")) {
+      let t = sv.textContent; const urls = t.match(/url\((["']?)(\/[^)"']+)\1\)/g) || [];
+      for (const u of urls) { const p = u.replace(/^url\((["']?)|["']?\)$/g, ""); t = t.split(u).join("url(" + await dataUrl(new URL(p, location.href).href) + ")"); }
+      sv.textContent = t;
+    }
+    const f = document.createElement("style"); f.textContent = await fonts(); c.querySelector("head").appendChild(f);
+    c.style.width = W + "px"; c.classList.remove("booting");
+    const html = new XMLSerializer().serializeToString(c);
+    return { W, H, svg: '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '"><foreignObject x="0" y="0" width="' + W + '" height="' + H + '">' + html + "</foreignObject></svg>" };
+  }
+  /* the picture: the top of the site (bar + tabs) and then the part of the page that starts at the chosen screen */
+  window.shotsGrab = async function (key, o) {
+    o = o || {};
+    const el = window.shotsShow(key);
+    await new Promise(r => setTimeout(r, 400));
+    if (document.fonts && document.fonts.ready) await document.fonts.ready.catch(() => {});
+    const bar = document.querySelector(".topbar"), barH = bar ? Math.ceil(bar.getBoundingClientRect().bottom + window.scrollY) : 0;
+    const top = el ? Math.max(barH, Math.floor(el.getBoundingClientRect().top + window.scrollY) - 8) : barH;
+    const P = await pageSvg(), sc = o.scale || 2, bodyH = Math.min(o.h || 1400, P.H - top);
+    const img = new Image();
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(P.svg);
+    await img.decode();
+    const cv = document.createElement("canvas"); cv.width = P.W * sc; cv.height = (barH + bodyH) * sc;
+    const x = cv.getContext("2d"); x.fillStyle = getComputedStyle(document.body).backgroundColor || "#fff"; x.fillRect(0, 0, cv.width, cv.height);
+    x.drawImage(img, 0, 0, P.W, barH, 0, 0, P.W * sc, barH * sc);
+    x.drawImage(img, 0, top, P.W, bodyH, 0, barH * sc, P.W * sc, bodyH * sc);
+    return await new Promise(res => cv.toBlob(b => res({ blob: b, barH: barH * sc, w: cv.width, h: cv.height }), "image/jpeg", 0.9));
+  };
+  window.shotsOk = () => typeof user !== "undefined" && !!user && typeof loaded !== "undefined" && loaded;   /* the example records are on screen */
+  window.shotsReady = true;
+})();
+</script>
 
 <p class="shtoast" id="shToast" role="status" hidden></p>
 </body>

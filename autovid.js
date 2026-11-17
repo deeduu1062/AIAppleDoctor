@@ -118,7 +118,8 @@ function avHtml() {
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_music")) + '</legend><div class="avchips">' + avChip("music", "auto", tr("av_mu_auto")) + avChip("music", "none", tr("av_mu_none")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_len")) + '</legend><div class="avchips">' + avChip("len", "s", tr("av_l_s")) + avChip("len", "m", tr("av_l_m")) + avChip("len", "l", tr("av_l_l")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_size")) + '</legend><div class="avchips">' + avChip("fmt", "916", tr("vs_f_916")) + avChip("fmt", "11", tr("vs_f_11")) + avChip("fmt", "45", tr("vs_f_45")) + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_pics")) + '</legend><div class="avchips">' + avChip("pics", "draw", tr("av_p_draw")) + avChip("pics", "screens", tr("av_p_screens")) + avChip("pics", "mine", tr("av_p_mine")) + "</div>" +
+      (AV.pics === "screens" ? '<p class="fine">' + esc(tr("av_p_screens_p")) + "</p>" : "") +
       (AV.pics === "mine" ? '<p><label class="btn-s sm vsfile">' + esc(tr("av_p_add")) + '<input type="file" accept="image/*" multiple id="avPhotos" hidden></label> <span class="fine">' + (AV.photos.length ? esc(tr("av_p_n").replace("{n}", AV.photos.length)) : "") + "</span></p>" : "") + "</fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_end")) + '</legend><div class="avchips">' + ["site", "dx", "share", "join"].map(k => avChip("end", k, tr("av_e_" + k))).join("") + "</div></fieldset>" +
     (avCreateTab() ? ""
@@ -226,7 +227,7 @@ async function avWrite(topic) {
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.video) throw new Error(j.error === "no_ai_key" || j.error === "ai" ? tr("mk_q_ai_err") : j.error === "not_setup" ? tr("mk_q_setup") : (j.error || "HTTP " + r.status));
   const v = j.video;
-  v.scenes = v.scenes.map(x => ({ label: x.label || "", title: x.title || "", sub: x.sub || "", say: x.say || "", art: x.art || "apple" }));
+  v.scenes = v.scenes.map(x => ({ label: x.label || "", title: x.title || "", sub: x.sub || "", say: x.say || "", art: x.art || "apple", screen: x.screen || "" }));
   v.title = v.title || ""; v.cta = v.cta || ""; v.cta_say = v.cta_say || ""; v.caption = v.caption || "";
   return v;
 }
@@ -281,7 +282,8 @@ async function avBuild(v) {
 
     /* pictures and scenes */
     avStep("av_s3");
-    const media = AV.pics === "mine" ? (await Promise.all(AV.photos.map(avLoadImg))).filter(Boolean) : [];
+    const media = AV.pics === "mine" ? (await Promise.all(AV.photos.map(avLoadImg))).filter(Boolean)
+      : AV.pics === "screens" && typeof scrForScenes === "function" ? await scrForScenes(v.scenes, AV.lang) : [];   /* real site screens (screens.js) */
     (VS.scenes || []).forEach(s => { if (s.media && media.indexOf(s.media) < 0 && s.media.url) URL.revokeObjectURL(s.media.url); });
     VS.tpl = AV_THEME[AV.type] || "tip"; VS.vlang = AV.lang === "hi" ? "hi" : AV.lang === "en" ? "en" : "hl"; VS.fmt = AV.fmt;
     VS.scenes = v.scenes.map((s, i) => {
