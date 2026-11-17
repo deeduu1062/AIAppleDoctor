@@ -7,6 +7,7 @@ Object.assign(T.en, {
   av_h: "🎬 Create a video for me", av_p: "Pick a topic and tap Create video. Keep this tab open while it records.",
   av_type: "1. What kind of video?", av_t_alert: "Disease alert", av_t_tip: "Orchard tip", av_t_season: "This month's jobs", av_t_feat: "Show a Seb Saathi feature", av_t_money: "Profit and selling", av_t_q: "Answer growers' questions", av_t_own: "My own topic", av_t_idea: "💡 My video ideas",
   av_topic: "2. Topic", av_topic_ph: "Or type your own topic, e.g. \"How to spot scab early after rain\"", av_q_load: "Loading what growers ask Saathi…", av_q_none: "No Saathi questions yet — type a topic.",
+  av_eng: "Voice from:", av_eng_g: "Google", av_eng_s: "Sarvam (more expression)", av_eng_s_p: "Pick a voice, then tap ▶ Listen on a line in the script check to hear it. Each video costs about ₹2 from your Sarvam credit.", av_sarvam_fb: "Sarvam voice didn't work ({m}), so the Google voice was used.", av_no_sarvam: "Sarvam isn't set up yet: add SARVAM_API_KEY in Vercel (Settings → Environment Variables), then Redeploy.",
   av_lang: "3. Language", av_voice: "4. Voice-over", av_v_f: "Woman's voice", av_v_m: "Man's voice", av_v_no: "No voice",
   av_len: "5. Length", av_l_s: "Short ~20 sec (3 scenes)", av_l_m: "Medium ~30 sec (4–5 scenes)", av_l_l: "Long ~45 sec (6 scenes)",
   av_size: "6. Size", av_pics: "7. Pictures", av_p_draw: "Drawn pictures (built in)", av_p_mine: "My photos", av_p_add: "Choose photos", av_p_n: "{n} photos chosen — used in order, drawings fill the rest.",
@@ -35,6 +36,7 @@ Object.assign(T.hi, {
   av_h: "🎬 मेरे लिए वीडियो बनाएँ", av_p: "विषय चुनें और \"वीडियो बनाएँ\" दबाएँ। बनते समय यह टैब खुला रखें।",
   av_type: "1. कैसा वीडियो?", av_t_alert: "बीमारी चेतावनी", av_t_tip: "बाग़ की सलाह", av_t_season: "इस महीने के काम", av_t_feat: "सेब साथी की सुविधा दिखाएँ", av_t_money: "मुनाफ़ा और बिक्री", av_t_q: "बाग़वानों के सवालों के जवाब", av_t_own: "मेरा अपना विषय", av_t_idea: "💡 मेरे वीडियो आइडिया",
   av_topic: "2. विषय", av_topic_ph: "या अपना विषय लिखें", av_q_load: "साथी से पूछे सवाल लोड हो रहे हैं…", av_q_none: "अभी कोई सवाल नहीं — विषय लिखें।",
+  av_eng: "आवाज़ कहाँ से:", av_eng_g: "Google", av_eng_s: "Sarvam (ज़्यादा भाव)", av_eng_s_p: "एक आवाज़ चुनें, फिर स्क्रिप्ट जाँच में किसी लाइन पर ▶ सुनें दबाएँ। हर वीडियो पर Sarvam क्रेडिट से लगभग ₹2 लगते हैं।", av_sarvam_fb: "Sarvam की आवाज़ नहीं चली ({m}), इसलिए Google की आवाज़ लगाई गई।", av_no_sarvam: "Sarvam अभी सेट नहीं है: Vercel में SARVAM_API_KEY डालें (Settings → Environment Variables), फिर Redeploy करें।",
   av_lang: "3. भाषा", av_voice: "4. आवाज़", av_v_f: "महिला की आवाज़", av_v_m: "पुरुष की आवाज़", av_v_no: "आवाज़ नहीं",
   av_len: "5. लंबाई", av_l_s: "छोटा ~20 सेकंड", av_l_m: "मध्यम ~30 सेकंड", av_l_l: "लंबा ~45 सेकंड",
   av_size: "6. साइज़", av_pics: "7. चित्र", av_p_draw: "बने हुए चित्र", av_p_mine: "मेरी फ़ोटो", av_p_add: "फ़ोटो चुनें", av_p_n: "{n} फ़ोटो चुनीं — क्रम से लगेंगी, बाकी में चित्र।",
@@ -67,9 +69,21 @@ const AV_TOPICS = {
 };
 const AV_THEME = { alert: "alert", tip: "tip", season: "season", feat: "feat", money: "tip", q: "tip", own: "tip" };
 const AV_END = { site: "Visit sebsaathi.com, it is free", dx: "Try the free disease check on sebsaathi.com", share: "Share this video with your grower friends", join: "Join Seb Saathi free today at sebsaathi.com" };
-const AV = { where: { fb: false, ig: false, wa: false, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null, music: "auto" };
-try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "style", "music"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; }   /* where it goes ("after", "where") is never remembered: every new video starts with nothing ticked, and you choose */ } catch (e) {}
-const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after, where: AV.where, style: AV.style, music: AV.music, check: AV.check })); } catch (e) {} };
+const AV = { where: { fb: false, ig: false, wa: false, yt: false }, oneTap: false, type: "alert", topic: "", own: "", lang: "hi", voice: "f", len: "m", fmt: "916", pics: "draw", photos: [], end: "site", after: "none", busy: false, step: "", note: "", err: "", must: "", facts: "", lines: "", style: "", styleOwn: "", check: true, script: null, music: "auto", engine: "google", spk: "" };
+try { const o = JSON.parse(localStorage.getItem("av-opts") || "null"); if (o) { ["type", "lang", "voice", "len", "fmt", "pics", "end", "style", "music", "engine", "spk"].forEach(k => { if (o[k]) AV[k] = o[k]; }); if (o.check === false) AV.check = false; }   /* where it goes ("after", "where") is never remembered: every new video starts with nothing ticked, and you choose */ } catch (e) {}
+/* who speaks: Google (built in) or Sarvam (more expression; needs SARVAM_API_KEY in Vercel). Sarvam has several voices of each kind. */
+const AV_SPK = { f: ["priya", "ritu", "neha", "kavya", "shreya", "simran"], m: ["shubh", "aditya", "rahul", "kabir", "varun", "rohan"] };
+const avSpk = () => { const L = AV_SPK[AV.voice] || AV_SPK.f; return L.indexOf(AV.spk) >= 0 ? AV.spk : L[0]; };
+const avSpkName = k => k.charAt(0).toUpperCase() + k.slice(1);
+const avEngineBody = () => AV.engine === "sarvam" ? { engine: "sarvam", speaker: avSpk() } : { engine: "google" };
+const avFellBack = m => m === "no_key" ? tr("av_no_sarvam") : tr("av_sarvam_fb").replace("{m}", m);
+function avEngineHtml() {
+  if (AV.voice === "no") return "";
+  return '<div class="avchips" role="group" aria-label="' + esc(tr("av_eng")) + '"><span class="fine" style="margin:0">' + esc(tr("av_eng")) + "</span>" +
+    avChip("engine", "google", tr("av_eng_g")) + avChip("engine", "sarvam", tr("av_eng_s")) + "</div>" +
+    (AV.engine === "sarvam" ? '<div class="avchips" role="group">' + (AV_SPK[AV.voice] || AV_SPK.f).map(k => avChip("spk", k, avSpkName(k))).join("") + '</div><p class="fine">' + esc(tr("av_eng_s_p")) + "</p>" : "");
+}
+const avSave = () => { try { localStorage.setItem("av-opts", JSON.stringify({ type: AV.type, lang: AV.lang, voice: AV.voice, len: AV.len, fmt: AV.fmt, pics: AV.pics, end: AV.end, after: AV.after, where: AV.where, style: AV.style, music: AV.music, check: AV.check, engine: AV.engine, spk: AV.spk })); } catch (e) {} };
 
 function avQuestions() {   /* top Saathi topics from the AI quality tab (quality.js), loaded when needed */
   if (typeof AQ !== "undefined" && AQ && typeof aqTopic === "function") {
@@ -99,7 +113,7 @@ const avTick = (k, label) => '<button type="button" class="btn-s sm avchip" data
 const avL = t => esc(String(t).replace(/^\d+\.\s*/, ""));
 /* the settings folded into one line: what is chosen now */
 function avSumm() {
-  const L = { hi: "हिंदी", hn: "Hinglish", en: "English" }, out = [L[AV.lang] || AV.lang, tr("av_v_" + AV.voice), AV.music === "none" ? tr("av_mu_none") : "♪",
+  const L = { hi: "हिंदी", hn: "Hinglish", en: "English" }, out = [L[AV.lang] || AV.lang, tr("av_v_" + AV.voice) + (AV.voice !== "no" && AV.engine === "sarvam" ? " (Sarvam · " + avSpkName(avSpk()) + ")" : ""), AV.music === "none" ? tr("av_mu_none") : "♪",
     tr("av_l_" + AV.len).replace(/\s*\(.*\)$/, ""), tr("vs_f_" + AV.fmt).replace(/\s*\(.*\)$/, ""), tr("av_p_" + AV.pics)];
   return out.join(" · ");
 }
@@ -114,7 +128,7 @@ function avHtml() {
     avBriefHtml(dis) +
     '<details class="avfold" data-avd="opts"' + (AV.optsOpen ? " open" : "") + '><summary><b>' + esc(tr("av_opts")) + '</b> <span class="fine">' + esc(avSumm()) + "</span></summary>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_lang")) + '</legend><div class="avchips">' + avChip("lang", "hi", "हिंदी") + avChip("lang", "hn", "Hinglish") + avChip("lang", "en", "English") + "</div></fieldset>" +
-    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_voice")) + '</legend><div class="avchips">' + avChip("voice", "f", tr("av_v_f")) + avChip("voice", "m", tr("av_v_m")) + avChip("voice", "no", tr("av_v_no")) + "</div></fieldset>" +
+    '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_voice")) + '</legend><div class="avchips">' + avChip("voice", "f", tr("av_v_f")) + avChip("voice", "m", tr("av_v_m")) + avChip("voice", "no", tr("av_v_no")) + "</div>" + avEngineHtml() + "</fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_music")) + '</legend><div class="avchips">' + avChip("music", "auto", tr("av_mu_auto")) + avChip("music", "none", tr("av_mu_none")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_len")) + '</legend><div class="avchips">' + avChip("len", "s", tr("av_l_s")) + avChip("len", "m", tr("av_l_m")) + avChip("len", "l", tr("av_l_l")) + "</div></fieldset>" +
     '<fieldset class="avgrp"' + dis + "><legend>" + avL(tr("av_size")) + '</legend><div class="avchips">' + avChip("fmt", "916", tr("vs_f_916")) + avChip("fmt", "11", tr("vs_f_11")) + avChip("fmt", "45", tr("vs_f_45")) + "</div></fieldset>" +
@@ -164,15 +178,16 @@ async function avHearGo(k) {
   avHearStop();
   const text = String(k === "end" ? v.cta_say || v.cta : (v.scenes[+k] || {}).say || "").trim();
   if (!text) return;
-  const key = AV.lang + "|" + AV.voice + "|" + text;
+  const key = AV.lang + "|" + AV.voice + "|" + AV.engine + "|" + avSpk() + "|" + text;
   avHear.busy = String(k); AV.err = ""; avRender();
   try {
     let b64 = avHear.cache[key];
     if (!b64) {
-      const r = await fetch("/api/social?fn=tts", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await avTok() }, body: JSON.stringify({ texts: [text], lang: AV.lang === "en" ? "en" : "hi", voice: AV.voice }) });
+      const r = await fetch("/api/social?fn=tts", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await avTok() }, body: JSON.stringify(Object.assign({ texts: [text], lang: AV.lang === "en" ? "en" : "hi", voice: AV.voice }, avEngineBody())) });
       const j = await r.json().catch(() => ({}));
       if (j.error === "no_tts_key") throw new Error(tr("av_no_tts"));
       if (j.error || !Array.isArray(j.audio) || !j.audio[0]) throw new Error(tr("av_tts_err").replace("{m}", j.detail || j.error || ("HTTP " + r.status)));
+      AV.note = j.fell_back ? avFellBack(j.fell_back) : "";
       b64 = avHear.cache[key] = j.audio[0];
     }
     const el = new Audio("data:audio/mpeg;base64," + b64);
@@ -272,11 +287,12 @@ async function avBuild(v) {
       avStep("av_s2");
       const texts = v.scenes.map(s => s.say || [s.title, s.sub].filter(Boolean).join(". ")).concat(v.cta_say || v.cta || "");
       try {
-        const t = await fetch("/api/social?fn=tts", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await avTok() }, body: JSON.stringify({ texts, lang: AV.lang === "en" ? "en" : "hi", voice: AV.voice }) });
+        const t = await fetch("/api/social?fn=tts", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + await avTok() }, body: JSON.stringify(Object.assign({ texts, lang: AV.lang === "en" ? "en" : "hi", voice: AV.voice }, avEngineBody())) });
         const tj = await t.json().catch(() => ({}));
         if (tj.error === "no_tts_key") AV.note = tr("av_no_tts");
         else if (tj.error || !Array.isArray(tj.audio)) AV.note = tr("av_tts_err").replace("{m}", tj.detail || tj.error || ("HTTP " + t.status));
         else { const ac = vsEnsureAC(); bufs = await Promise.all(tj.audio.map(b => b ? ac.decodeAudioData(avB64(b)).catch(() => null) : null)); }
+        if (tj.fell_back) AV.note = (AV.note ? AV.note + " " : "") + avFellBack(tj.fell_back);
       } catch (e) { AV.note = tr("av_tts_err").replace("{m}", String(e.message || e)); }
     }
 
