@@ -1402,7 +1402,7 @@ async function connGo(k, act) {
 const mkOpen = new Set(["content", "src", "msg", "ytlist", "watips", "vid", "demo"]);   /* which sections are open */
 /* tabs by job: Today, Create, Results, Settings (remembered on this device); the old tabs by platform (fb, yt, wa, more) stay as the "classic view" */
 let mkSub = "today", mkMake = "week";
-try { const v = localStorage.getItem("mk-sub2"); if (/^(today|create|results|settings|fb|yt|wa|more)$/.test(v || "")) mkSub = v; const m = localStorage.getItem("mk-make"); if (/^(week|post|video|wa)$/.test(m || "")) mkMake = m === "wa" ? "post" : m; } catch (e) {}
+try { const v = localStorage.getItem("mk-sub2"); if (/^(today|create|results|settings|fb|yt|wa|more)$/.test(v || "")) mkSub = v; const m = localStorage.getItem("mk-make"); if (/^(week|post|video|wa|saved)$/.test(m || "")) mkMake = m === "wa" ? "post" : m; } catch (e) {}
 const mkNewView = () => ["today", "create", "results", "settings"].indexOf(mkSub) >= 0;
 const mkOpenTab = x => mkNewView() ? "today" : qTab(x);
 const mkGoMake = m => { mkMake = m; try { localStorage.setItem("mk-make", m); } catch (e) {} mkGo("create"); };
@@ -1480,7 +1480,7 @@ function renderMk() {
       bot.innerHTML = "";
     } else if (mkSub === "create") {
       const chips = '<div class="mkmake" role="group" aria-label="' + esc(tr("mk_make_q")) + '"><b>' + tr("mk_make_q") + '</b><div class="avchips">' +
-        [["post", "mk_m_post"], ["video", "mk_m_video"]].map(x => '<button type="button" class="btn-s avchip mkbig" data-mkmake="' + x[0] + '" aria-pressed="' + (mkMake === x[0]) + '">' + tr(x[1]) + "</button>").join("") + "</div>" +
+        [["post", "mk_m_post"], ["video", "mk_m_video"], ["saved", "mk_m_saved"]].map(x => '<button type="button" class="btn-s avchip mkbig" data-mkmake="' + x[0] + '" aria-pressed="' + (mkMake === x[0]) + '">' + tr(x[1]) + "</button>").join("") + "</div>" +
         '<button type="button" class="link mkplan" data-mkmake="' + (mkMake === "week" ? "post" : "week") + '">' + tr(mkMake === "week" ? "mk_m_back" : "mk_m_plan") + "</button></div>";
       let A = "", B = "";
       /* kept short: the ready-made messages and the extra video tools stay folded until you open them */
@@ -1489,6 +1489,7 @@ function renderMk() {
         const va = mkViAll(), vd = va.filter(v => mkDone(v.key)).length;
         B = mkSec("vfilm", tr("mk_vfilm"), tr("mk_vfilm_p"), demoHtml());   /* the video ideas are now topics in "Create a video for me" */
       }
+      else if (mkMake === "saved") A = '<div id="svBox"></div>';   /* the Saved library (saved.js) */
       top.innerHTML = h + bar2 + chips + A; bot.innerHTML = B;
     } else if (mkSub === "results") {
       top.innerHTML = h + bar2 + score + (typeof ysHtml === "function" ? ysHtml() : "") +
