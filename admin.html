@@ -1737,6 +1737,33 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 #prevBody img{max-width:100%;border-radius:8px;margin-top:10px}
 #prevBody .libbody{margin-top:10px;line-height:1.55}
 #prevBody .libbody h4{margin-top:14px}
+/* wide screens (computer, tablet): tabs as a menu on the left, sections as cards side by side (wide.js). Phones unchanged. */
+@media (min-width:1100px){
+  .wrap{max-width:1480px}
+  #adminApp:not([hidden]){display:grid;grid-template-columns:212px minmax(0,1fr);column-gap:28px;align-items:start}
+  #adminApp > .admtabs{grid-column:1;grid-row:1 / span 60;position:sticky;top:14px;display:flex;flex-direction:column;gap:6px;margin-top:16px!important;padding:12px;border-radius:16px;clip-path:none;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+  #adminApp > .admtabs .tab{font-size:.95rem;min-height:42px;padding:8px 14px;text-align:left}
+  #adminApp > .admtabs + *{margin-top:0}
+  #adminApp > .adm{grid-column:2;min-width:0}
+  .admtop{padding-bottom:12px}
+  .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:16px 20px;align-items:start}
+  .wgrid > .wpre,.wgrid > .wfull{grid-column:1/-1}
+  .wcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:2px 16px 14px;min-width:0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .wcard > h5.ovsub:first-child,.wcard > details:first-child > summary{margin-top:12px}
+  .wcard .tablewrap{margin-bottom:0}
+  #ovSoc.wcard{background:none;border:0;padding:0;box-shadow:none}
+  /* Social handler: Today, Results, Settings in two columns */
+  #mkWrap:is([data-sub="today"],[data-sub="results"],[data-sub="settings"]) #mkTop{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 22px;align-items:start}
+  #mkWrap:is([data-sub="today"],[data-sub="results"],[data-sub="settings"]) #mkTop > :is(.mkhead,.mkconn,.mkwarn,.mkres,p,.mksub){grid-column:1/-1}
+  /* Create: what you make on the left, your Saved library on the right */
+  #mkWrap.wside{display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:24px;align-items:start}
+  #mkWrap.wside > #mkTop,#mkWrap.wside > #mkStudio,#mkWrap.wside > #mkBot{grid-column:1;min-width:0}
+  #wideSide{grid-column:2;grid-row:1 / span 3;position:sticky;top:14px;max-height:calc(100vh - 28px);overflow:auto;margin-top:12px}
+  #wideSide .svlib{margin:0}
+  /* the Saved library on its own: items side by side */
+  #svBox .svlib{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));column-gap:24px;align-items:start}
+  #svBox .svlib > :not(.svitem){grid-column:1/-1}
+}
 </style>
 </head>
 <body>
@@ -1968,5 +1995,6 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 <script src="/saved.js?v=1"></script>
 <script src="/today.js?v=1"></script>
 <script src="/broadcast.js?v=1"></script>
+<script src="/wide.js?v=1"></script>
 </body>
 </html>
