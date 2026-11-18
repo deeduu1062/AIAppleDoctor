@@ -2001,10 +2001,11 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 /* header logo lockup: apple badge + two-line wordmark */
 .brand2{gap:10px;color:inherit}
 .brand2 i{width:42px!important;height:42px!important;border-radius:13px!important;background:url(/icons/mark.svg) center/27px no-repeat,linear-gradient(145deg,#FFF8EC,#F3E6CF)!important;box-shadow:0 0 0 1.5px rgba(184,50,31,.22),0 4px 10px -4px rgba(120,40,20,.35)}
-.brand2 .bw{display:grid;line-height:1.05;min-width:0}
-.brand2 .bn{font:800 1.45rem/1.05 var(--display);letter-spacing:-.015em;color:#B8321F;white-space:nowrap}
+/* English name and Hindi line kept apart: Devanagari needs extra height above and below, so each line gets its own room */
+.brand2 .bw{display:grid;gap:2px;line-height:1.2;min-width:0}
+.brand2 .bn{display:block;font:800 1.45rem/1.15 var(--display);letter-spacing:-.015em;color:#B8321F;white-space:nowrap}
 .brand2 .bn b{font-weight:800;color:#1B5E2B}
-.brand2 small{margin-top:3px;font:600 .72rem/1.1 var(--body);color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand2 small{display:block;margin-top:0;padding-top:1px;font:600 .72rem/1.55 var(--body);color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:480px){.brand2 .bn{font-size:1.3rem}.brand2 i{width:38px!important;height:38px!important;background-size:24px,auto!important}.brand2 small{font-size:.66rem}}
 @media (max-width:370px){.brand2 small{display:none}}
 
@@ -9114,7 +9115,7 @@ html.shro .qxnav .plus{visibility:hidden}
     '<button type="button" data-nv="home">' + sv('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>') + '<span data-i18n="nv_home"></span></button>' +
     '<button type="button" data-nv="orch"><span class="ntree" aria-hidden="true">' + treeArt("Seb Saathi") + '</span><span data-i18n="nv_orch"></span></button>' +
     '<button type="button" data-nv="add" class="plus"><span class="c">' + sv('<path d="M12 5v14"/><path d="M5 12h14"/>').replace('stroke-width="2"', 'stroke-width="3"') + '</span><span data-i18n="nv_add"></span></button>' +
-    '<button type="button" data-nv="mun">' + sv('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>') + '<span data-i18n="nv_mun"></span></button>' +
+    '<button type="button" data-nv="mun">' + sv('<path d="M14 3H5.5A1.5 1.5 0 0 0 4 4.5v15A1.5 1.5 0 0 0 5.5 21H16a1.5 1.5 0 0 0 1.5-1.5V14"/><path d="M7.5 3v18"/><path d="M10.5 8h2"/><path d="M10.5 12h2"/><path d="M19.5 3.5l1.5 1.5-7 7-2.5.8.8-2.5z"/>')   /* Hisaab: register (bahi-khata) with a pen */ + '<span data-i18n="nv_mun"></span></button>' +
     '<button type="button" data-nv="more">' + sv('<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>') + '<span data-i18n="nv_more"></span></button>';
   document.body.appendChild(nav);
   /* Saathi button in the top bar (phone app), opens the same chat as the round Saathi button */
