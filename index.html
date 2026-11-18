@@ -7259,12 +7259,7 @@ function renderHome() {
     blk("exp", "exp", tr("hb_exp"), esc(tr("hb_exp_s").replace("{x}", inr(spent)))) +
     blk("spray", "spray", tr("hm_go_spray"), tr("hb_spray_s")) +
     blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
-  let tip = null; try { tip = homeTip(); } catch (e) {}
-  const m = new Date(Date.now() + 5.5 * 3600e3).getUTCMonth() + 1;
-  const watch = (typeof DX_MONTH !== "undefined" && DX_MONTH[m] || []).slice(0, 4).filter(id => DX[id]).map(id => "<span>" + esc(dxL(DX[id])) + "</span>").join("");
-  h += '<div class="hmcard hmtip"><span class="k">' + tr("hm_tip") + (tip && tip.now ? " · " + esc(tip.now) : "") + "</span>" +
-    (tip ? (tip.noloc ? '<button class="link" type="button" data-hm="loc">' + esc(tip.t) + "</button>" : "<b>" + esc(tip.t) + "</b>") : "") +
-    (watch ? '<span class="k" style="margin-top:6px">' + tr("hm_month") + '</span><div class="hmchips">' + watch + "</div>" : "") + "</div></div>";
+  h += "</div>";   /* the "Today in the orchard" tip card was taken off Home */
   el.innerHTML = h;
 }
 $("homeBody").addEventListener("click", e => {
