@@ -8633,7 +8633,17 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
 .hmblk{display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:104px;padding:12px;text-align:left;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:16px;cursor:pointer}
 .hmblk b{display:block;font-size:1.05rem}
 .hmblk span span{font-size:.88rem;color:var(--muted)}
-.hb-orch svg{color:#3E8A3A}.hb-mun svg{color:#1B5E2B}.hb-sales svg{color:#8A5A12}.hb-exp svg{color:var(--apple)}.hb-spray svg{color:#2C6E8F}.hb-news svg{color:var(--muted)}
+.hmblk{--c:#3E8A3A;background:linear-gradient(rgba(62,138,58,.10),rgba(62,138,58,.10)),var(--surface);border-color:rgba(62,138,58,.28)}
+.hmblk svg{width:44px;height:44px;padding:9px;box-sizing:border-box;border-radius:12px;background:var(--c);color:#fff;flex:none}
+.hb-orch{--c:#3E8A3A;background:linear-gradient(rgba(62,138,58,.11),rgba(62,138,58,.11)),var(--surface);border-color:rgba(62,138,58,.30)}
+.hb-mun{--c:#1B5E2B;background:linear-gradient(rgba(27,94,43,.11),rgba(27,94,43,.11)),var(--surface);border-color:rgba(27,94,43,.30)}
+.hb-sales{--c:#A86A12;background:linear-gradient(rgba(214,146,36,.15),rgba(214,146,36,.15)),var(--surface);border-color:rgba(214,146,36,.40)}
+.hb-exp{--c:#B8321F;background:linear-gradient(rgba(184,50,31,.09),rgba(184,50,31,.09)),var(--surface);border-color:rgba(184,50,31,.28)}
+.hb-spray{--c:#2C6E8F;background:linear-gradient(rgba(44,110,143,.11),rgba(44,110,143,.11)),var(--surface);border-color:rgba(44,110,143,.30)}
+.hb-news{--c:#5A4FA0;background:linear-gradient(rgba(90,79,160,.10),rgba(90,79,160,.10)),var(--surface);border-color:rgba(90,79,160,.28)}
+.hb-dx{--c:#C2410C;background:linear-gradient(rgba(194,65,12,.10),rgba(194,65,12,.10)),var(--surface);border-color:rgba(194,65,12,.28)}
+.hb-chat{--c:#1B5E2B;background:linear-gradient(rgba(246,239,227,.9),rgba(246,239,227,.9)),var(--surface);border-color:rgba(27,94,43,.25)}
+.hmblk:hover{filter:brightness(.98)}
 /* bottom bar + Aur page (phone, logged in) */
 .qxnav,.hdrsaathi{display:none}
 .more{display:grid;gap:10px;max-width:640px;margin:0 auto}
@@ -8879,7 +8889,7 @@ function renderGBlocks() {
     spray: '<path d="M5 20l5-5"/><path d="M10 15l4-9 4 4-9 4"/><path d="M16 4l4 4"/>',
     chat: '<path d="M4 5h16v11H8l-4 4z"/>'
   };
-  const cls = {orch: "hb-orch", mun: "hb-mun", exp: "hb-exp", dx: "hb-exp", spray: "hb-spray", chat: "hb-mun"};
+  const cls = {orch: "hb-orch", mun: "hb-mun", exp: "hb-exp", dx: "hb-dx", spray: "hb-spray", chat: "hb-chat"};
   const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" data-gb="' + k + '"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
     "</svg><span><b>" + title + "</b><span>" + sub + "</span>" + (see ? '<span class="see">' + tr("gb_see") + "</span>" : "") + "</span></button>";
   el.innerHTML = "<h3>" + tr("gb_h") + '</h3><div class="grid">' +
