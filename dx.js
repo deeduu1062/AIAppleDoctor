@@ -521,9 +521,12 @@ function healthOf(o) {
   const rk = riskOf(o);
   if (rk.level === "high") score -= 15; else if (rk.level === "medium") score -= 7;
   score = Math.max(0, Math.min(100, Math.round(score)));
-  return { score, band: score >= 80 ? "good" : score >= 60 ? "watch" : "bad", why, rows, rk };
+  return { score, band: score >= 80 ? "good" : score >= 60 ? "watch" : "bad", why, rows, rk, nodata: !rows.length };
 }
+Object.assign(T.en, { hs_nodata: "Do a photo check to get a score" }); Object.assign(T.hi, { hs_nodata: "स्कोर पाने के लिए फ़ोटो जाँच करें" }); if (T.hn) Object.assign(T.hn, { hs_nodata: "Score paane ke liye photo jaanch karein" });
 function scoreBadge(hs) {
+  /* no photo checks yet: don't show a made-up 100/100 */
+  if (hs.nodata) return '<span class="hsnone">📷 ' + tr("hs_nodata") + "</span>";
   return '<span class="hscore hs-' + hs.band + '"><b>' + hs.score + "</b><small>/100</small></span><span class=\"hsband hs-" + hs.band + '">' + tr("hs_" + hs.band) + "</span>";
 }
 /* card inside an opened orchard (Overview / Saar) */

@@ -2196,6 +2196,20 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 .hmname .later{justify-self:start;font-size:.85rem;color:var(--muted)}
 .hmname .autherr,.hmname .sentmsg{margin:0}
 .acname{display:grid;gap:6px;margin-top:8px}.acname input{flex-basis:100%!important}.acname label{font-size:.85rem;color:var(--muted)}
+
+/* ---- Bagicha page fixes ---- */
+/* 1. sticky orchard name bar: solid background so it doesn't sit on top of the text */
+.detrows > .yrow.open > .yhead{background:var(--surface)!important;box-shadow:0 6px 10px -8px rgba(0,0,0,.35)!important}
+.detrows > .yrow.open .otabs{background:var(--surface)!important}
+/* 2. no score yet */
+.hsnone{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--surface-2);border:1px dashed var(--line);color:var(--muted);font-weight:600;font-size:.9rem}
+/* 3. delete lives inside Bagicha badlein */
+.odelin{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}
+.odelin .del{color:#B8321F;font-weight:700}
+/* 4. orchard rows: one info line */
+.dtitle{display:grid;gap:1px;min-width:0}.dtitle .orsub{font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 5. trimmed intro */
+.tsum > p.fine{display:none}
 </style>
 </head>
 <body>
@@ -5253,6 +5267,14 @@ document.addEventListener("click", e => {
   if (card) window.scrollTo({top: Math.max(0, card.getBoundingClientRect().top + window.scrollY - (tb ? tb.offsetHeight : 0) - 8)});
 });
 /* opened orchard: back to all orchards, then three key numbers (trees, this harvest year's spending, latest season's net per peti) */
+/* one short line under each orchard name in the list: trees · place · this harvest year's spend */
+function orowSub(o) {
+  const V = vtList(o), trees = +o.trees || V.reduce((a, x) => a + +x.n, 0), P = o.profile || {}, bits = [];
+  if (trees) bits.push(tr("d_treesn").replace("{n}", fmtN(trees)));
+  if (P.village) bits.push(esc(String(P.village).split(",")[0]));
+  bits.push(esc(tr("orow_spent").replace("{x}", inr(expTotals(o, curHYear()).total))));
+  return '<small class="orsub">' + bits.join(" · ") + "</small>";
+}
 function ohdrHtml(o) {
   const V = vtList(o), trees = +o.trees || V.reduce((a, x) => a + +x.n, 0), cy = curHYear(), spent = expTotals(o, cy).total;
   let ppb = null, py = null;
@@ -5270,7 +5292,7 @@ function detailsHtml() {
   let tt = 0, ta = 0; S.orchards.forEach(x => { tt += +x.trees || 0; ta += +((x.profile || {}).area) || 0; });
   /* All my orchards card first, then + Add orchard and + Add expense below it */
   h = '<section class="osec' + (dashView && S.orchards.some(x => x.id === dashView) ? " has-open" : "") + '" id="detSec" aria-label="' + esc(tr("det_h")) + '">' + treeSumHtml() + '<div class="dethead">' + (dashAdd ? "" : '<button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button>") +
-    (dashExp ? "" : '<button class="btn-s add dexbtn" type="button" data-dex="open">＋ ' + tr("ex_add") + "</button>") + "</div>";
+    "</div>";   /* + Kharcha is on the bottom bar ＋ */
   if (dashAdd) h += addForm;
   if (dashExp && !(dashView && otab === "work")) h += dashExpHtml();
   h += '<p class="hint">' + tr("det_tap") + "</p>";
@@ -5281,7 +5303,7 @@ function detailsHtml() {
     const show = (k, pre) => { const v = get(k); if (k === "alt") return +v ? tr("p_m").replace("{n}", fmtN(+v)) : ""; if (k === "area") return +v ? tr("p_bigha").replace("{n}", fmtD(+v)) : "";
       if (k === "trees") return +v ? fmtN(+v) : ""; if (k === "planted") return +v ? v + " (" + tr("p_age").replace("{n}", Math.max(0, thisYear() - +v)) + ")" : ""; return pre ? (v ? tr(pre + v) : "") : esc(v || ""); };
     let r = '<div class="yrow' + (open ? " open" : "") + '" id="det-' + esc(o.id) + '"><button class="yhead" type="button" data-xact="dettoggle" data-o="' + esc(o.id) + '" aria-expanded="' + open + '">' +
-      '<span class="dname"><span class="dthumb" aria-hidden="true">' + (o.photo ? '<img src="' + o.photo + '" alt="">' : treeArt(o.id + (o.name || ""))) + '</span><span class="dtitle"><b>' + esc(o.name || tr("orchard_fallback")) + "</b>" +
+      '<span class="dname"><span class="dthumb" aria-hidden="true">' + (o.photo ? '<img src="' + o.photo + '" alt="">' : treeArt(o.id + (o.name || ""))) + '</span><span class="dtitle"><b>' + esc(o.name || tr("orchard_fallback")) + "</b>" + orowSub(o) +
       "</span></span>" + detWxChip(o) +
       '<span class="ychev" aria-hidden="true"></span></button>';
     if (!open) return r + "</div>";
@@ -5296,7 +5318,8 @@ function detailsHtml() {
             : '<input id="' + id + '" type="' + t + '"' + (t === "number" ? ' inputmode="decimal" min="0" step="any"' : ' maxlength="120"') + (k === "var" ? ' placeholder="' + esc(tr("p_var_ph")) + '"' : "") + ' value="' + esc(+v || (t !== "number" && v) ? v : "") + '">';
           return '<div class="field' + (k === "var" ? " wide" : "") + '"><label for="' + id + '">' + tr(lab) + "</label>" + inner + "</div>";
         }).join("") + vtEditor(o) +
-        '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-xact="detcancel" data-o="' + esc(o.id) + '">' + tr("d_cancel") + "</button></div></form>";
+        '<div class="dels wide"><button class="btn-s add" type="submit">' + tr("d_save") + '</button><button class="btn-s" type="button" data-xact="detcancel" data-o="' + esc(o.id) + '">' + tr("d_cancel") + "</button></div>" +
+        '<div class="wide odelin"><button class="link del" type="button" data-delo="ask" data-o="' + esc(o.id) + '">🗑 ' + tr("d_del") + "</button></div></form>";
     } else {
       const nt = nextTodo(o), lsp = lastSpray(o);
       const groups = (function () {
@@ -5321,7 +5344,7 @@ function detailsHtml() {
       r += otabsHtml(o);
       if (otab === "det") r += detWxHtml(o) + groups + (typeof dxHealthCardHtml === "function" ? dxHealthCardHtml(o) : "") +
         '<div class="dgroups dcards">' + soilCardHtml(o) + (locMode ? locCardHtml(o) : "") + "</div>" +
-        '<div class="odel odel2"><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + '</button><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>";
+        '<div class="odel odel2"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>";
       else if (otab === "work") r += otKharchHtml(o);
       else r += '<section class="osec omoney" id="oMoney">' + (typeof hzOrchCard === "function" ? hzOrchCard(o) : "") + otMoneyHtml(o) + "</section>";
     }
@@ -8442,6 +8465,7 @@ Object.assign(T.hn, { hw_today:"Aaj {p} mein:", hb_spray_next:"Agla spray: {d}",
 Object.assign(T.en, { nm_q:"What is your name?", nm_p:"So Seb Saathi can greet you by name.", nm_ph:"e.g. Ramesh Thakur", nm_save:"Save", nm_err:"Please type your name.", nm_fail:"Could not save. Check your internet and try again.", nm_ok:"Name saved.", nm_add:"Add your name", nm_chg:"Change name", nm_lbl:"Your name" });
 Object.assign(T.hi, { nm_q:"आपका नाम क्या है?", nm_p:"ताकि सेब साथी आपको नाम से बुलाए।", nm_ph:"जैसे रमेश ठाकुर", nm_save:"सेव करें", nm_err:"कृपया अपना नाम लिखें।", nm_fail:"सेव नहीं हो सका। इंटरनेट देखें और दोबारा कोशिश करें।", nm_ok:"नाम सेव हो गया।", nm_add:"अपना नाम जोड़ें", nm_chg:"नाम बदलें", nm_lbl:"आपका नाम" });
 Object.assign(T.hn, { nm_q:"Aapka naam kya hai?", nm_p:"Taaki Seb Saathi aapko naam se bulaye.", nm_ph:"Jaise Ramesh Thakur", nm_save:"Save karein", nm_err:"Kripya apna naam likhein.", nm_fail:"Save nahi ho saka. Internet dekhein aur dobara koshish karein.", nm_ok:"Naam save ho gaya.", nm_add:"Apna naam jodein", nm_chg:"Naam badlein", nm_lbl:"Aapka naam" });
+Object.assign(T.en, { orow_spent:"This year {x}" }); Object.assign(T.hi, { orow_spent:"इस साल {x}" }); Object.assign(T.hn, { orow_spent:"Is saal {x}" });
 Object.assign(T.en, { ac_who_s:"Logged in as" }); Object.assign(T.hi, { ac_who_s:"लॉग इन:" }); Object.assign(T.hn, { ac_who_s:"Login hain" });
 Object.assign(T.en, { ac_who:"You are logged in as", ac_via_g:"Logged in with Google", ac_via_p:"Logged in with mobile (WhatsApp code)", ac_via_e:"Logged in with email" });
 Object.assign(T.hi, { ac_who:"आप इस खाते से लॉग इन हैं", ac_via_g:"Google से लॉग इन", ac_via_p:"मोबाइल (WhatsApp कोड) से लॉग इन", ac_via_e:"ईमेल से लॉग इन" });
@@ -9343,7 +9367,7 @@ if (window.ADFeedback) ADFeedback.init({
 });
 applyLang();
 </script>
-<script src="/dx.js?v=9"></script>
+<script src="/dx.js?v=10"></script>
 <script>
 /* screens mode (?shots=1): the admin video maker asks for a real screen (shotsShow) and gets a picture of it (shotsGrab).
    The picture is drawn by the browser itself (the page put inside an SVG), so it looks exactly like the site. */
