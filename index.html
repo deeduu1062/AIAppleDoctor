@@ -2207,7 +2207,8 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 .odelin{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line)}
 .odelin .del{color:#B8321F;font-weight:700}
 /* 4. orchard rows: one info line */
-.dtitle{display:grid;gap:1px;min-width:0}.dtitle .orsub{font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dtitle{display:grid;gap:1px;min-width:0}.dtitle .orsub .pos{color:#1B5E2B;font-weight:700}.dtitle .orsub .neg{color:#B8321F;font-weight:700}
+.dtitle .orsub{font-size:.8rem;font-weight:500;color:var(--muted)}
 /* 5. trimmed intro */
 .tsum > p.fine{display:none}
 
@@ -5279,8 +5280,9 @@ document.addEventListener("click", e => {
 function orowSub(o) {
   const V = vtList(o), trees = +o.trees || V.reduce((a, x) => a + +x.n, 0), P = o.profile || {}, bits = [];
   if (trees) bits.push(tr("d_treesn").replace("{n}", fmtN(trees)));
-  if (P.village) bits.push(esc(String(P.village).split(",")[0]));
-  bits.push(esc(tr("orow_spent").replace("{x}", inr(expTotals(o, curHYear()).total))));
+  /* net profit of the latest season with sales (normally last year) */
+  const cy = curHYear();
+  for (let y = cy; y >= cy - 15; y--) { const se = seFor(o.id, y); if (!se) continue; const r = seasonCalc(se); if (r.rev > 0) { bits.push(esc(tr("orow_box").replace("{n}", fmtN(r.boxes)))); bits.push('<span class="' + (r.profit < 0 ? "neg" : "pos") + '">' + esc(tr("orow_net").replace("{y}", y)).replace("{x}", mny(r.profit)) + "</span>"); break; } }
   return '<small class="orsub">' + bits.join(" · ") + "</small>";
 }
 function ohdrHtml(o) {
@@ -8475,7 +8477,7 @@ Object.assign(T.hn, { hw_today:"Aaj {p} mein:", hb_spray_next:"Agla spray: {d}",
 Object.assign(T.en, { nm_q:"What is your name?", nm_p:"So Seb Saathi can greet you by name.", nm_ph:"e.g. Ramesh Thakur", nm_save:"Save", nm_err:"Please type your name.", nm_fail:"Could not save. Check your internet and try again.", nm_ok:"Name saved.", nm_add:"Add your name", nm_chg:"Change name", nm_lbl:"Your name" });
 Object.assign(T.hi, { nm_q:"आपका नाम क्या है?", nm_p:"ताकि सेब साथी आपको नाम से बुलाए।", nm_ph:"जैसे रमेश ठाकुर", nm_save:"सेव करें", nm_err:"कृपया अपना नाम लिखें।", nm_fail:"सेव नहीं हो सका। इंटरनेट देखें और दोबारा कोशिश करें।", nm_ok:"नाम सेव हो गया।", nm_add:"अपना नाम जोड़ें", nm_chg:"नाम बदलें", nm_lbl:"आपका नाम" });
 Object.assign(T.hn, { nm_q:"Aapka naam kya hai?", nm_p:"Taaki Seb Saathi aapko naam se bulaye.", nm_ph:"Jaise Ramesh Thakur", nm_save:"Save karein", nm_err:"Kripya apna naam likhein.", nm_fail:"Save nahi ho saka. Internet dekhein aur dobara koshish karein.", nm_ok:"Naam save ho gaya.", nm_add:"Apna naam jodein", nm_chg:"Naam badlein", nm_lbl:"Aapka naam" });
-Object.assign(T.en, { orow_spent:"This year {x}" }); Object.assign(T.hi, { orow_spent:"इस साल {x}" }); Object.assign(T.hn, { orow_spent:"Is saal {x}" });
+Object.assign(T.en, { orow_net:"{y} net profit {x}", orow_box:"{n} boxes" }); Object.assign(T.hi, { orow_net:"{y} शुद्ध मुनाफ़ा {x}", orow_box:"{n} पेटियाँ" }); Object.assign(T.hn, { orow_net:"{y} net munafa {x}", orow_box:"{n} petiyan" });
 Object.assign(T.en, { ac_who_s:"Logged in as" }); Object.assign(T.hi, { ac_who_s:"लॉग इन:" }); Object.assign(T.hn, { ac_who_s:"Login hain" });
 Object.assign(T.en, { ac_who:"You are logged in as", ac_via_g:"Logged in with Google", ac_via_p:"Logged in with mobile (WhatsApp code)", ac_via_e:"Logged in with email" });
 Object.assign(T.hi, { ac_who:"आप इस खाते से लॉग इन हैं", ac_via_g:"Google से लॉग इन", ac_via_p:"मोबाइल (WhatsApp कोड) से लॉग इन", ac_via_e:"ईमेल से लॉग इन" });
