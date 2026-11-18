@@ -2238,6 +2238,8 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 @media (max-width:700px){#yearTable .tablewrap{display:none}.ycards{display:grid}}
 .ynotebtn{margin:8px 0 0}.ynotebtn .link{font-size:.9rem;color:var(--muted)}
 #exTop .btn-s.add{display:flex;width:100%;justify-content:center;min-height:48px;font-size:1.02rem;border-radius:12px;margin-bottom:8px}
+
+.yrow.hzone > .yhead{display:none!important}.yrow.hzone > .ybody{border-top:0;margin-top:0}
 </style>
 </head>
 <body>
@@ -9368,7 +9370,7 @@ function renderHzTop() {
   }
   el.innerHTML = '<div class="hzchips" role="group">' + ys.map(y => '<button type="button" data-hzy="' + y + '" aria-pressed="' + (y === hzY) + '">' + esc(y === cy ? tr("hz_cur").replace("{y}", y) : String(y)) + "</button>").join("") + "</div>" + ochips + card;
   setTimeout(() => { try { hzFilterLists(); } catch (e) {} }, 0);
-  el.hidden = false;
+  el.hidden = curSub === "year";
 }
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-hzy]"); if (!b) return;
@@ -9384,11 +9386,17 @@ document.addEventListener("click", e => {
   if (!hzO) { renderEditor(); if (typeof renderExp === "function") renderExp(); }
 });
 /* the season picked in the chips is the only season listed under Bikri and Kharche (Saal dar saal keeps every year) */
+let hzOpening = false;
 function hzFilterLists() {
   if (!(user && loaded) || hzY === null) return;
   document.querySelectorAll("#rp-orch .splist > .yrow, #exList .exlist > .yrow, #hzOrch .yrow[id], #hzOrch .kxempty").forEach(r => {
     const b = r.querySelector("[data-y]"), m = r.id && r.id.match(/(\d{4})$/), y = b ? +b.dataset.y : m ? +m[1] : null;
-    if (y !== null) r.hidden = y !== hzY;
+    if (y === null) return;
+    r.hidden = y !== hzY;
+    /* the picked season opens straight away, without its own year row on top */
+    const hd = r.querySelector(":scope > .yhead");
+    if (!r.hidden && hd && hd.tagName === "BUTTON" && !r.classList.contains("open") && !hzOpening) { hzOpening = true; try { hd.click(); } finally { hzOpening = false; } return; }
+    r.classList.toggle("hzone", !r.hidden && r.classList.contains("open"));
   });
   /* the picked season has no rows: say so instead of an empty space */
   document.querySelectorAll("#rp-orch .splist, #exList .exlist, #hzOrch .ylist").forEach(l => {
@@ -9429,7 +9437,7 @@ let hzWantQuick = false;
   const base = showTool;
   showTool = function (w, focus, scroll) { base(w, focus, scroll); if (w === "calc" && user && loaded && curSub === "quick" && !hzWantQuick) showSub("orch"); hzWantQuick = false; };
   /* switching Bikri / Kharche / Saal dar saal also redraws the one-orchard view */
-  const bs = showSub; showSub = function (w) { bs(w); try { renderHzO(); } catch (e) {} };
+  const bs = showSub; showSub = function (w) { bs(w); try { renderHzO(); } catch (e) {} const t = $("hzTop"); if (t && t.innerHTML) t.hidden = curSub === "year"; };
   /* the orchard page no longer has money tabs: anything that asks for an orchard's Bikri or Kharche opens Hisaab with that orchard picked */
   const rd = renderDash;
   renderDash = function () {
