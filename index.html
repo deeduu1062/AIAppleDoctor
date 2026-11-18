@@ -7574,11 +7574,9 @@ function renderHome() {
   h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
     '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
     "</button>";   /* only this season's spend here; net per peti lives in Hisaab */
-  h += '<div class="hmcam2' + (hmDxOpen ? " open" : "") + '"><button class="hd" type="button" data-hm="dxpick" aria-expanded="' + hmDxOpen + '"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span><b>' +
-    tr("hm_cam") + "</b><span>" + tr("hm_cam_s2") + '</span></span><span class="chv" aria-hidden="true">›</span></button>' + (!hmDxOpen ? "</div>" : '<p class="ask">' + tr("hm_cam_ask") + '</p><div class="two">' +
-    '<button class="btn-s" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
-    '<button class="btn-s" type="button" data-hm="gal"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>' + tr("hm_cam_gal") + "</button></div></div>");
   const ic = {
+    dx: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 16c0-3.2 2-4.8 5-4.8 0 3.2-2 4.8-5 4.8z"/><path d="M9.5 16l2.6-2.6"/>',
+    his: '<path d="M14 3H5.5A1.5 1.5 0 0 0 4 4.5v15A1.5 1.5 0 0 0 5.5 21H16a1.5 1.5 0 0 0 1.5-1.5V14"/><path d="M7.5 3v18"/><path d="M10.5 8h2"/><path d="M10.5 12h2"/><path d="M19.5 3.5l1.5 1.5-7 7-2.5.8.8-2.5z"/>',
     orch: '<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>',
     mun: '<path d="M4 19h16"/><path d="M7 15v-4"/><path d="M12 15V7"/><path d="M17 15v-6"/>',
     sales: '<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><path d="M8 7V5h8v2"/>',
@@ -7588,10 +7586,15 @@ function renderHome() {
   };
   const o0 = S.orchards[0], tree = '<span class="dthumb hbtree" aria-hidden="true">' + (o0 && o0.photo ? '<img src="' + o0.photo + '" alt="">' : treeArt(o0 ? o0.id + (o0.name || "") : "Seb Saathi")) + "</span>";
   const blk = (act, k, title, sub) => '<button class="hmblk hb-' + k + '" type="button" data-hm="' + act + '">' + (k === "orch" ? tree : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] + "</svg>") + "<span><b>" + title + "</b><span>" + sub + "</span></span></button>";
-  h += '<div class="hmblocks">' +
-    blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
-    blk("munafa", "mun", tr("pt_year"), p ? esc(tr("hb_mun_s").replace("{y}", p.y).replace("{x}", inr(p.net))) : tr("hb_mun_0")) +
-    blk("sales", "sales", tr("hb_sales"), p ? esc(tr("hb_sales_s").replace("{y}", p.y).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none")) +
+  /* disease check is the first block; tapping it opens Photo lein / Gallery se right under it (full row) */
+  const dxAsk = !hmDxOpen ? "" : '<div class="hmcam2 open hmdxask"><p class="ask">' + tr("hm_cam_ask") + '</p><div class="two">' +
+    '<button class="btn-s" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
+    '<button class="btn-s" type="button" data-hm="gal"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>' + tr("hm_cam_gal") + "</button></div></div>";
+  h += '<div class="hmblocks' + (hmDxOpen ? " dxopen" : "") + '">' +
+    blk("dxpick", "dx", tr("hm_cam"), tr("hm_cam_s2")).replace('type="button"', 'type="button" aria-expanded="' + hmDxOpen + '"') +
+    blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) + dxAsk +
+    /* one money block: Munafa and Season bikri both opened Hisaab, so they are one block now */
+    blk("sales", "his", tr("nv_mun"), p ? esc(tr("hb_his_s").replace("{y}", p.y).replace("{x}", inr(p.net)).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none")) +
     blk("spray", "spray", tr("hm_go_spray"), hmSpraySub()) +
     blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
   h += "</div>";   /* the "Today in the orchard" tip card was taken off Home */
@@ -7604,7 +7607,7 @@ $("homeBody").addEventListener("click", e => {
   if (a === "nmlater") { try { localStorage.setItem("nmLater_" + user.id, "1"); } catch (x) {} renderHome(); return; }
   if (a === "wx") { const o = S.orchards.find(x => hasLoc(x)); if (o) { dashView = o.id; otab = "det"; renderDash(); } showTool("orch", false, true); return; }
   if (a === "dxpick" && isIOS) { hmDxOpen = false; goDiag("gal"); return; }
-  if (a === "dxpick") { hmDxOpen = !hmDxOpen; renderHome(); const c = document.querySelector("#homeBody .hmcam2"); if (hmDxOpen && c && c.scrollIntoView) c.scrollIntoView({block: "nearest"}); return; }
+  if (a === "dxpick") { hmDxOpen = !hmDxOpen; renderHome(); const c = document.querySelector("#homeBody .hmdxask"); if (hmDxOpen && c && c.scrollIntoView) c.scrollIntoView({block: "nearest"}); return; }
   if (a === "cam") { hmDxOpen = false; goDiag("cam"); renderHome(); }
   else if (a === "gal") { hmDxOpen = false; goDiag("gal"); renderHome(); }
   else if (a === "sales") { showTool("calc", false, true); showSub("orch"); }
@@ -9051,7 +9054,12 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
 .hb-exp{--c:#B8321F;background:linear-gradient(rgba(184,50,31,.09),rgba(184,50,31,.09)),var(--surface);border-color:rgba(184,50,31,.28)}
 .hb-spray{--c:#2C6E8F;background:linear-gradient(rgba(44,110,143,.11),rgba(44,110,143,.11)),var(--surface);border-color:rgba(44,110,143,.30)}
 .hb-news{--c:#5A4FA0;background:linear-gradient(rgba(90,79,160,.10),rgba(90,79,160,.10)),var(--surface);border-color:rgba(90,79,160,.28)}
+.hb-his{--c:#1B5E2B;background:linear-gradient(rgba(27,94,43,.11),rgba(27,94,43,.11)),var(--surface);border-color:rgba(27,94,43,.30)}
+.hmblocks .hmdxask{grid-column:1/-1}
+.hmblocks.dxopen .hmblk:last-child{grid-column:1/-1;min-height:0}
 .hb-dx{--c:#C2410C;background:linear-gradient(rgba(194,65,12,.10),rgba(194,65,12,.10)),var(--surface);border-color:rgba(194,65,12,.28)}
+.home .hb-dx{--c:#B8321F;background:linear-gradient(135deg,rgba(232,120,40,.16),rgba(184,50,31,.12)),var(--surface);border:1.5px solid rgba(184,50,31,.35)}
+.home .hb-dx svg{background:linear-gradient(135deg,#E8782A,var(--apple))}
 .hb-chat{--c:#1B5E2B;background:linear-gradient(rgba(246,239,227,.9),rgba(246,239,227,.9)),var(--surface);border-color:rgba(27,94,43,.25)}
 .hmblk:hover{filter:brightness(.98)}
 .hmblk .hbtree{width:48px;height:48px;border-radius:12px}
@@ -9370,6 +9378,9 @@ Object.assign(T.hi, { hz_tab:"हिसाब", hz_bikri:"बिक्री", h
   hz_cur:"{y} चालू", hz_ppb:"{x} प्रति पेटी · {b} पेटियाँ", hz_end:"मुनाफ़ा सीज़न के अंत में निकलेगा", nv_mun:"हिसाब", hb_sales:"बिक्री" });
 Object.assign(T.hn, { hz_tab:"Hisaab", hz_bikri:"Bikri", hz_kharche:"Kharche", hz_saal:"Saal dar saal", hz_mun:"Munafa", hz_card:"Season {y} · sabhi bagiche", hz_ocard:"{o} · season {y}",
   hz_cur:"{y} chalu", hz_ppb:"{x} per peti · {b} petiyan", hz_end:"Munafa season ke ant mein nikalega", nv_mun:"Hisaab", hb_sales:"Bikri" });
+Object.assign(T.en, { hb_his_s:"{y}: {x} net · {b} boxes" });
+Object.assign(T.hi, { hb_his_s:"{y}: {x} शुद्ध · {b} पेटियाँ" });
+Object.assign(T.hn, { hb_his_s:"{y}: {x} net · {b} petiyan" });
 /* orchard page: Saar · Bikri · Kharche (the money tab is the orchard's sales and profit) */
 T.en.ot_hisab = "Sales"; T.hi.ot_hisab = "बिक्री"; T.hn.ot_hisab = "Bikri";
 OTABS.splice(0, OTABS.length, "det", "hisab", "work");
