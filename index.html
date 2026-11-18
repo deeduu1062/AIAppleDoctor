@@ -8691,14 +8691,30 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
   html.app .qxtoast{bottom:calc(160px + env(safe-area-inset-bottom,0px))}
 }
 @media print{.qxnav{display:none!important}}
-html.shro .qxnav .plus{visibility:hidden}`;
+html.shro .qxnav .plus{visibility:hidden}
+/* colourful bottom bars: each button in its own colour (same as the Home blocks); the open page gets a soft pill behind its icon */
+.qxnav [data-nv="home"],.qxnavg [data-gn="home"]{--nc:#1B5E2B;--nb:rgba(27,94,43,.14)}
+.qxnav [data-nv="orch"]{--nc:#3E8A3A;--nb:rgba(62,138,58,.16)}
+.qxnav [data-nv="mun"]{--nc:#A86A12;--nb:rgba(214,146,36,.20)}
+.qxnav [data-nv="more"]{--nc:#5A4FA0;--nb:rgba(90,79,160,.15)}
+.qxnavg [data-gn="dx"]{--nc:#C2410C;--nb:rgba(194,65,12,.14)}
+.qxnavg [data-gn="calc"]{--nc:#A86A12;--nb:rgba(214,146,36,.20)}
+.qxnavg [data-gn="spray"]{--nc:#2C6E8F;--nb:rgba(44,110,143,.15)}
+.qxnav button:not(.plus) svg,.qxnavg button:not(.plus) svg{color:var(--nc);box-sizing:content-box;padding:3px 14px;border-radius:999px;transition:background .15s}
+.qxnav button:not(.plus)[aria-current="page"] svg,.qxnavg button:not(.plus)[aria-current="page"] svg{background:var(--nb)}
+.qxnav button:not(.plus)[aria-current="page"],.qxnavg button:not(.plus)[aria-current="page"]{color:var(--nc)!important}
+.qxnav .ntree{display:block;width:30px;height:30px;border-radius:9px;overflow:hidden;margin:0 0 0;border:2px solid transparent;background:#F6EFE3;box-sizing:border-box}
+.qxnav .ntree svg{display:block;width:100%;height:100%;padding:0!important;background:none!important;border-radius:0}
+.qxnav [data-nv="orch"][aria-current="page"] .ntree{border-color:#3E8A3A;box-shadow:0 0 0 3px rgba(62,138,58,.18)}
+.qxnav .plus .c{background:linear-gradient(135deg,#D9542F,#B8321F)!important}
+.qxnavg .plus .c{background:linear-gradient(135deg,#D9542F,#B8321F)!important}`;
   document.head.appendChild(css);
   const sv = p => '<svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + "</svg>";
   const nav = document.createElement("nav");
   nav.className = "qxnav"; nav.id = "qxNav"; nav.setAttribute("aria-label", "Main");
   nav.innerHTML =
     '<button type="button" data-nv="home">' + sv('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>') + '<span data-i18n="nv_home"></span></button>' +
-    '<button type="button" data-nv="orch">' + sv('<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>') + '<span data-i18n="nv_orch"></span></button>' +
+    '<button type="button" data-nv="orch"><span class="ntree" aria-hidden="true">' + treeArt("Seb Saathi") + '</span><span data-i18n="nv_orch"></span></button>' +
     '<button type="button" data-nv="add" class="plus"><span class="c">' + sv('<path d="M12 5v14"/><path d="M5 12h14"/>').replace('stroke-width="2"', 'stroke-width="3"') + '</span><span data-i18n="nv_add"></span></button>' +
     '<button type="button" data-nv="mun">' + sv('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>') + '<span data-i18n="nv_mun"></span></button>' +
     '<button type="button" data-nv="more">' + sv('<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>') + '<span data-i18n="nv_more"></span></button>';
