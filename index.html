@@ -2082,7 +2082,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
   <div class="sharebar" id="shareBar" hidden></div>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-home" aria-selected="false" aria-controls="tp-home" type="button" data-i18n="tt_home" hidden></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-home" aria-selected="false" aria-controls="tp-home" type="button" data-i18n="tt_home" hidden></button><button class="tab" role="tab" id="tt-more" aria-selected="false" aria-controls="tp-more" type="button" data-i18n="tt_more" hidden></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -2380,6 +2380,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <div class="tpanel" id="tp-home" role="tabpanel" aria-labelledby="tt-home" hidden>
       <div id="homeBody"></div>
     </div>
+    <div class="tpanel" id="tp-more" role="tabpanel" aria-labelledby="tt-more" hidden><div id="moreBody"></div></div>
     <div class="tpanel" id="tp-orch" role="tabpanel" aria-labelledby="tt-orch" hidden>
       <div class="thead" id="orchHead"><h3 data-i18n="tab_orch"></h3><span class="pill" id="orchPill"></span></div>
       <div class="promo" id="promo"></div>
@@ -7206,21 +7207,39 @@ function homeTip() {
   return { t: w.length ? w[0].t : tr("wx_ok"), now, kind: w.length ? w[0].c : "ok" };
 }
 function renderHome() {
+  /* Home = big blocks: season card, one-tap disease check, then a block per section (each with one useful number), then today's tip */
   const el = $("homeBody"); if (!el || !user) return;
-  let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>";
-  h += '<button class="btn primary hmcam" type="button" data-hm="cam"><span aria-hidden="true">📷</span> ' + tr("hm_cam") + "</button>";
   let p = null; try { p = S.orchards.length ? homePpb() : null; } catch (e) {}
-  h += p
-    ? '<button class="hmcard" type="button" data-hm="sales"><span class="k">' + tr("hm_ppb").replace("{y}", p.y) + '</span><span class="hmbig' + (p.ppb < 0 ? " neg" : "") + '">' + inr(p.ppb) + '</span><span class="s">' + tr("hm_ppb_s").replace("{s}", inr(p.sales)).replace("{b}", fmtN(p.boxes)) + "</span></button>"
-    : '<button class="hmcard" type="button" data-hm="addsale"><span class="k">' + tr("hm_ppb").replace("{y}", curHYear() - 1) + '</span><span class="hmbig">+ ' + tr("hm_ppb_none") + '</span><span class="s">' + tr("hm_ppb_none_s") + "</span></button>";
+  const cy = curHYear(), spent = S.orchards.reduce((a, o) => a + expTotals(o, cy).total, 0);
+  const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
+  let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>";
+  h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hs_cur").replace("{y}", cy)) + "</span>" +
+    '<span><span class="k">' + tr("hs_exp") + '</span><b>' + inr(spent) + "</b></span>" +
+    (p ? '<span><span class="k">' + esc(tr("hs_ppb").replace("{y}", p.y)) + '</span><b' + (p.ppb < 0 ? ' class="neg"' : "") + ">" + inr(p.ppb) + "</b></span>" : '<span><span class="k">' + tr("hm_ppb_none") + "</span><b>＋</b></span>") + "</button>";
+  h += '<button class="hmcam2" type="button" data-hm="cam"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span><b>' +
+    tr("hm_cam") + "</b><span>" + tr("hm_cam_s") + "</span></span></button>";
+  const ic = {
+    orch: '<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>',
+    mun: '<path d="M4 19h16"/><path d="M7 15v-4"/><path d="M12 15V7"/><path d="M17 15v-6"/>',
+    sales: '<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><path d="M8 7V5h8v2"/>',
+    exp: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>',
+    spray: '<path d="M5 20l5-5"/><path d="M10 15l4-9 4 4-9 4"/><path d="M16 4l4 4"/>',
+    news: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/>'
+  };
+  const blk = (act, k, title, sub) => '<button class="hmblk hb-' + k + '" type="button" data-hm="' + act + '"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] + "</svg><span><b>" + title + "</b><span>" + sub + "</span></span></button>";
+  h += '<div class="hmblocks">' +
+    blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
+    blk("munafa", "mun", tr("pt_year"), p ? esc(tr("hb_mun_s").replace("{y}", p.y).replace("{x}", inr(p.net))) : tr("hb_mun_0")) +
+    blk("sales", "sales", tr("hb_sales"), p ? esc(tr("hb_sales_s").replace("{y}", p.y).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none")) +
+    blk("exp", "exp", tr("hb_exp"), esc(tr("hb_exp_s").replace("{x}", inr(spent)))) +
+    blk("spray", "spray", tr("hm_go_spray"), tr("hb_spray_s")) +
+    blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
   let tip = null; try { tip = homeTip(); } catch (e) {}
   const m = new Date(Date.now() + 5.5 * 3600e3).getUTCMonth() + 1;
   const watch = (typeof DX_MONTH !== "undefined" && DX_MONTH[m] || []).slice(0, 4).filter(id => DX[id]).map(id => "<span>" + esc(dxL(DX[id])) + "</span>").join("");
   h += '<div class="hmcard hmtip"><span class="k">' + tr("hm_tip") + (tip && tip.now ? " · " + esc(tip.now) : "") + "</span>" +
     (tip ? (tip.noloc ? '<button class="link" type="button" data-hm="loc">' + esc(tip.t) + "</button>" : "<b>" + esc(tip.t) + "</b>") : "") +
-    (watch ? '<span class="k" style="margin-top:6px">' + tr("hm_month") + '</span><div class="hmchips">' + watch + "</div>" : "") + "</div>";
-  h += '<div class="hmgo"><button class="btn-s" type="button" data-hm="orch">' + tr("hm_go_orch") + '</button><button class="btn-s" type="button" data-hm="sales">' + tr("hm_go_sales") + "</button>" +
-    '<button class="btn-s" type="button" data-hm="spray">' + tr("hm_go_spray") + '</button><button class="btn-s" type="button" data-hm="chat">' + tr("hm_go_chat") + "</button></div></div>";
+    (watch ? '<span class="k" style="margin-top:6px">' + tr("hm_month") + '</span><div class="hmchips">' + watch + "</div>" : "") + "</div></div>";
   el.innerHTML = h;
 }
 $("homeBody").addEventListener("click", e => {
@@ -7231,6 +7250,9 @@ $("homeBody").addEventListener("click", e => {
   else if (a === "addsale") { const o = S.orchards[0]; if (o) goSeason(o.id, curHYear() - 1); else showTool("orch", false, true); }
   else if (a === "orch" || a === "loc") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
   else if (a === "spray") showTool("spray", false, true);
+  else if (a === "munafa") { showTool("calc", false, true); showSub("year"); }
+  else if (a === "exp") { showTool("calc", false, true); showSub("exp"); if (typeof renderExp === "function") renderExp(); }
+  else if (a === "news") showTool("news", false, true);
   else if (a === "chat") { const f = $("chatFab"); if (f) f.click(); }
 });
 
@@ -8338,7 +8360,7 @@ document.addEventListener("submit", async e => {
 /* every 2 minutes, and when the phone comes back to the site: pick up shares added, removed or changed */
 setInterval(() => { if (user && shReady && !document.hidden) shLoad(); }, 120000);
 document.addEventListener("visibilitychange", () => { if (user && shReady && !document.hidden) shLoad(); });
-const TT = ["home","orch","rec","calc","diag","spray","news","cal","acct"];  /* Library tab removed from the site; its articles still feed Saathi */
+const TT = ["home","orch","rec","calc","diag","spray","news","cal","acct","more"];  /* Library tab removed from the site; its articles still feed Saathi */
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -8445,6 +8467,9 @@ function qxSync() {
   const f = $("qxFab"); if (!f) return;
   f.innerHTML = '<span class="pl" aria-hidden="true">＋</span>' + esc(tr("qx_fab")); f.setAttribute("aria-label", tr("qx_fab_l"));
   f.hidden = !(user && loaded) || shRO() || isAdminOnly(user);
+  document.documentElement.classList.toggle("app", !!(user && loaded) && !isAdminOnly(user));
+  if (typeof qxNavSync === "function") qxNavSync();
+  if ($("tp-more") && !$("tp-more").hidden && typeof renderMore === "function") renderMore();
 }
 function qxOpen(mode, oid) {
   const last = (() => { try { return localStorage.getItem("qxO") || ""; } catch (e) { return ""; } })();
@@ -8541,6 +8566,131 @@ document.addEventListener("change", e => {
   else if (t.id === "qx_osel") { qx.o = t.value; if (qx.mode === "sale" && qx.o) qxSale(qx.o); else qxRender(); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target && (e.target.id === "qx_cost" || e.target.id === "qx_text")) { e.preventDefault(); qxSave(); } });
+/* ---------- Phone app layout (logged-in growers on a phone): bottom bar Home · Bagicha · ＋ · Munafa · Aur, a simple top bar
+   with Saathi, and an "Aur" page for everything used less often. Computers and visitors keep the tabs at the top. ---------- */
+Object.assign(T.en, { tt_more:"More", nv_home:"Home", nv_orch:"Orchards", nv_add:"Add", nv_mun:"Profit", nv_more:"More", mr_farm:"Farming", mr_acct:"Account", mr_checks:"My photo checks",
+  mr_acctplan:"My account and plan", mr_help:"Help and feedback", mr_admin:"Admin page",
+  hs_cur:"{y} season · current", hs_exp:"Spent so far", hs_ppb:"Net per peti, {y}", hm_cam_s:"Take a photo of a leaf or fruit",
+  hb_orch_s:"{n} orchards · {t} trees", hb_mun_s:"{y}: {x} net", hb_mun_0:"See your profit", hb_sales:"Season sales", hb_sales_s:"{y}: {b} boxes",
+  hb_exp:"Expenses", hb_exp_s:"This year {x}", hb_spray_s:"By tree stage", hb_news_s:"Apple news" });
+Object.assign(T.hi, { tt_more:"और", nv_home:"होम", nv_orch:"बाग़", nv_add:"जोड़ें", nv_mun:"मुनाफ़ा", nv_more:"और", mr_farm:"खेती", mr_acct:"खाता", mr_checks:"मेरी फ़ोटो जाँच",
+  mr_acctplan:"मेरा खाता और प्लान", mr_help:"मदद और सुझाव", mr_admin:"एडमिन पेज",
+  hs_cur:"{y} सीज़न · चालू", hs_exp:"अब तक ख़र्च", hs_ppb:"प्रति पेटी शुद्ध, {y}", hm_cam_s:"पत्ते या फल की फ़ोटो लें",
+  hb_orch_s:"{n} बाग़ · {t} पेड़", hb_mun_s:"{y}: {x} शुद्ध", hb_mun_0:"अपना मुनाफ़ा देखें", hb_sales:"सीज़न बिक्री", hb_sales_s:"{y}: {b} पेटियाँ",
+  hb_exp:"ख़र्चे", hb_exp_s:"इस साल {x}", hb_spray_s:"पेड़ की अवस्था के हिसाब से", hb_news_s:"सेब की ख़बरें" });
+Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"Jodein", nv_mun:"Munafa", nv_more:"Aur", mr_farm:"Kheti", mr_acct:"Account", mr_checks:"Meri photo checks",
+  mr_acctplan:"Mera account aur plan", mr_help:"Madad aur feedback", mr_admin:"Admin page",
+  hs_cur:"{y} season · chalu", hs_exp:"Ab tak kharcha", hs_ppb:"Net per peti, {y}", hm_cam_s:"Patte ya phal ki photo lein",
+  hb_orch_s:"{n} bagiche · {t} ped", hb_mun_s:"{y}: {x} net", hb_mun_0:"Apna munafa dekhein", hb_sales:"Season bikri", hb_sales_s:"{y}: {b} petiyan",
+  hb_exp:"Kharche", hb_exp_s:"Is saal {x}", hb_spray_s:"Ped ki avastha ke hisaab se", hb_news_s:"Seb ki khabrein" });
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+/* Home blocks (all screens) */
+.hmseason{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;text-align:left;border:0;border-radius:16px;padding:14px 16px;background:#1B5E2B;color:#fff;font:inherit;cursor:pointer;width:100%}
+.hmseason .k{display:block;font-size:.85rem;opacity:.88}
+.hmseason .wide{grid-column:1/-1;font-weight:600;opacity:.95}
+.hmseason b{font-size:1.45rem;line-height:1.2}
+.hmseason b.neg{color:#ffd2c9}
+.hmcam2{display:flex;align-items:center;gap:14px;width:100%;text-align:left;font:inherit;color:var(--fg);background:var(--surface);border:2px solid var(--apple);border-radius:16px;padding:12px 14px;min-height:68px;cursor:pointer}
+.hmcam2 .ic{width:48px;height:48px;border-radius:14px;background:var(--apple);color:var(--on-apple);display:grid;place-items:center;flex:none}
+.hmcam2 b{display:block;font-size:1.15rem}
+.hmcam2 span span{font-size:.9rem;color:var(--muted)}
+.hmblocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:700px){.hmblocks{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.hmblk{display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:104px;padding:12px;text-align:left;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:16px;cursor:pointer}
+.hmblk b{display:block;font-size:1.05rem}
+.hmblk span span{font-size:.88rem;color:var(--muted)}
+.hb-orch svg{color:#3E8A3A}.hb-mun svg{color:#1B5E2B}.hb-sales svg{color:#8A5A12}.hb-exp svg{color:var(--apple)}.hb-spray svg{color:#2C6E8F}.hb-news svg{color:var(--muted)}
+/* bottom bar + Aur page (phone, logged in) */
+.qxnav,.hdrsaathi{display:none}
+.more{display:grid;gap:10px;max-width:640px;margin:0 auto}
+.more h2{margin:0;font-size:1.5rem}
+.more .who{margin:0;color:var(--muted);font-size:.95rem;word-break:break-all}
+.more .grp{margin:8px 0 0;font-size:.85rem;font-weight:700;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+.more ul{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.more li+li{border-top:1px solid var(--line)}
+.more li button,.more li a{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:0 14px;border:0;background:none;font:600 1.05rem var(--body);color:var(--fg);text-align:left;text-decoration:none;cursor:pointer}
+.more li .t{flex:1}
+.more li .chev{opacity:.6}
+.more .mpill{font-size:.8rem;font-weight:700;color:#1B5E2B;background:#E6F0E1;padding:2px 10px;border-radius:999px}
+.more .out{justify-self:center;border:0;background:none;color:var(--apple);font:700 1.05rem var(--body);min-height:44px;padding:0 16px;cursor:pointer}
+@media (max-width:700px){
+  html.app body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  html.app .qxrow0,html.app #acctBar,html.app #shareBtn,html.app #signBtn,html.app #chatFab,html.app #fbBtn,html.app .qxfab{display:none!important}
+  html.app .hdrsaathi{display:inline-flex;align-items:center;gap:6px;border:0;background:#1B5E2B;color:#fff;border-radius:999px;padding:0 12px 0 5px;min-height:38px;font:600 .9rem var(--body);cursor:pointer}
+  html.app .hdrsaathi .av{width:28px;height:28px;border-radius:50%;background:#F6EFE3;display:grid;place-items:center}
+  html.app .qxnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:22;
+    padding:6px 4px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px -14px rgba(0,0,0,.4)}
+  html.app .qxnav button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--muted);font:600 .8rem var(--body);min-height:50px;padding:0;cursor:pointer}
+  html.app .qxnav button[aria-current="page"]{color:var(--apple);font-weight:700}
+  html.app .qxnav .plus{color:var(--apple);font-weight:700}
+  html.app .qxnav .plus .c{width:58px;height:58px;margin-top:-24px;border-radius:50%;background:var(--apple);color:var(--on-apple);display:grid;place-items:center;border:4px solid var(--surface);box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+  html.app .qxtoast{bottom:calc(98px + env(safe-area-inset-bottom,0px))}
+}
+@media print{.qxnav{display:none!important}}
+html.shro .qxnav .plus{visibility:hidden}`;
+  document.head.appendChild(css);
+  const sv = p => '<svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + "</svg>";
+  const nav = document.createElement("nav");
+  nav.className = "qxnav"; nav.id = "qxNav"; nav.setAttribute("aria-label", "Main");
+  nav.innerHTML =
+    '<button type="button" data-nv="home">' + sv('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>') + '<span data-i18n="nv_home"></span></button>' +
+    '<button type="button" data-nv="orch">' + sv('<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>') + '<span data-i18n="nv_orch"></span></button>' +
+    '<button type="button" data-nv="add" class="plus"><span class="c">' + sv('<path d="M12 5v14"/><path d="M5 12h14"/>').replace('stroke-width="2"', 'stroke-width="3"') + '</span><span data-i18n="nv_add"></span></button>' +
+    '<button type="button" data-nv="mun">' + sv('<path d="M4 19h16"/><path d="M7 15v-4"/><path d="M12 15V7"/><path d="M17 15v-6"/>') + '<span data-i18n="nv_mun"></span></button>' +
+    '<button type="button" data-nv="more">' + sv('<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>') + '<span data-i18n="nv_more"></span></button>';
+  document.body.appendChild(nav);
+  /* Saathi button in the top bar (phone app), opens the same chat as the round Saathi button */
+  const lang = document.querySelector("header.top .nav");
+  if (lang) {
+    const sb2 = document.createElement("button");
+    sb2.type = "button"; sb2.className = "hdrsaathi"; sb2.id = "hdrSaathi";
+    sb2.innerHTML = '<span class="av"><svg aria-hidden="true" viewBox="0 0 200 200" width="18" height="18"><path d="M100 62 C 84 48, 42 48, 36 94 C 30 140, 62 178, 100 168 C 138 178, 170 140, 164 94 C 158 48, 116 48, 100 62 Z" fill="#B8321F"/></svg></span>Saathi';
+    sb2.addEventListener("click", () => { const f = $("chatFab"); if (f) f.click(); });
+    lang.appendChild(sb2);
+  }
+  nav.addEventListener("click", e => {
+    const b = e.target.closest("[data-nv]"); if (!b) return;
+    const a = b.dataset.nv; tabPicked = true;
+    if (a === "add") { qxOpen(); return; }
+    if (a === "home") showTool("home", false, true);
+    else if (a === "orch") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
+    else if (a === "mun") { showTool("calc", false, true); showSub("year"); }
+    else if (a === "more") showTool("more", false, true);
+    window.scrollTo({top: 0});
+  });
+})();
+function qxNavSync() {
+  const vis = TT.find(n => !$("tp-" + n).hidden);
+  const cur = vis === "home" ? "home" : vis === "orch" ? "orch" : vis === "calc" ? "mun" : vis === "more" || vis === "spray" || vis === "cal" || vis === "news" || vis === "acct" ? "more" : "";
+  document.querySelectorAll("#qxNav [data-nv]").forEach(b => { if (b.dataset.nv === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+}
+function renderMore() {
+  const el = $("moreBody"); if (!el || !user) return;
+  const chev = '<span class="chev" aria-hidden="true">›</span>';
+  const st = typeof myPlanState === "function" ? myPlanState() : {paid: null}, pn = k => (typeof plName === "function" ? plName(k) : k);
+  const who = user.email && !(typeof isPinUser === "function" && isPinUser(user)) ? user.email : user.phone ? (typeof fmtPhone === "function" ? fmtPhone(user.phone) : user.phone) : "";
+  const it = (act, label, extra) => '<li><button type="button" data-mr="' + act + '"><span class="t">' + label + "</span>" + (extra || chev) + "</button></li>";
+  el.innerHTML = '<div class="more"><h2>' + tr("nv_more") + "</h2>" + (who ? '<p class="who">' + esc(who) + "</p>" : "") +
+    '<p class="grp">' + tr("mr_farm") + "</p><ul>" + it("spray", tr("hm_go_spray")) + it("cal", tr("tt_cal")) + it("checks", tr("mr_checks")) + it("news", tr("tt_news")) + "</ul>" +
+    '<p class="grp">' + tr("mr_acct") + "</p><ul>" + it("acct", tr("mr_acctplan"), '<span class="mpill">' + esc(pn(st.paid || "free")) + "</span>") + it("invite", tr("sh_invite")) + it("help", tr("mr_help")) +
+    (typeof isAdmin === "function" && isAdmin() ? '<li><a href="/admin.html"><span class="t">' + tr("mr_admin") + "</span>" + chev + "</a></li>" : "") + "</ul>" +
+    '<button class="out" type="button" data-mr="out">' + tr("auth_out") + "</button></div>";
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-mr]"); if (!b) return;
+  const a = b.dataset.mr; tabPicked = true;
+  if (a === "spray" || a === "cal" || a === "news" || a === "acct") { showTool(a, false, true); window.scrollTo({top: 0}); }
+  else if (a === "checks") { goDiag(); const m = $("dxMine"); if (m && !m.hidden && m.scrollIntoView) m.scrollIntoView({block: "start"}); }
+  else if (a === "invite") shareOpen();
+  else if (a === "help") { const f = $("fbBtn"); if (f) f.click(); }
+  else if (a === "out") { const o = $("signOut"); if (o) o.click(); }
+});
+(function () {
+  const base = showTool;
+  showTool = function (w, focus, scroll) { base(w, focus, scroll); if (w === "more") renderMore(); qxNavSync(); };
+})();
 showTool("orch");
 libWant = null;
 if (window.ADFeedback) ADFeedback.init({
