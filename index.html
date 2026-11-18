@@ -7298,6 +7298,8 @@ function renderHome() {
 $("homeBody").addEventListener("click", e => {
   const b = e.target.closest("[data-hm]"); if (!b) return;
   const a = b.dataset.hm; tabPicked = true;
+  /* iPhone shows its own menu (Photo Library / Take Photo / Choose File) for any photo picker, so open that straight away */
+  if (a === "dxpick" && isIOS) { hmDxOpen = false; goDiag("gal"); return; }
   if (a === "dxpick") { hmDxOpen = !hmDxOpen; renderHome(); const c = document.querySelector("#homeBody .hmcam2"); if (hmDxOpen && c && c.scrollIntoView) c.scrollIntoView({block: "nearest"}); return; }
   if (a === "cam") { hmDxOpen = false; goDiag("cam"); renderHome(); }
   else if (a === "gal") { hmDxOpen = false; goDiag("gal"); renderHome(); }
