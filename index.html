@@ -7260,6 +7260,7 @@ function homeTip() {
   const now = cur && cur.temperature_2m != null ? Math.round(cur.temperature_2m) + "°C, " + wcWord(cur.weather_code) : "";
   return { t: w.length ? w[0].t : tr("wx_ok"), now, kind: w.length ? w[0].c : "ok" };
 }
+let hmDxOpen = false;   /* Home disease card: one tap opens the choice Photo lein / Gallery se */
 function renderHome() {
   /* Home = big blocks: season card, one-tap disease check, then a block per section (each with one useful number), then today's tip */
   const el = $("homeBody"); if (!el || !user) return;
@@ -7270,10 +7271,10 @@ function renderHome() {
   h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
     '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
     (p ? '<span><span class="k">' + esc(tr("hms_ppb").replace("{y}", p.y)) + '</span><b' + (p.ppb < 0 ? ' class="neg"' : "") + ">" + inr(p.ppb) + "</b></span>" : '<span><span class="k">' + tr("hm_ppb_none") + "</span><b>＋</b></span>") + "</button>";
-  h += '<div class="hmcam2"><div class="hd"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span><b>' +
-    tr("hm_cam") + "</b><span>" + tr("hm_cam_s2") + '</span></span></div><div class="two">' +
+  h += '<div class="hmcam2' + (hmDxOpen ? " open" : "") + '"><button class="hd" type="button" data-hm="dxpick" aria-expanded="' + hmDxOpen + '"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span><b>' +
+    tr("hm_cam") + "</b><span>" + tr("hm_cam_s2") + '</span></span><span class="chv" aria-hidden="true">›</span></button>' + (!hmDxOpen ? "</div>" : '<p class="ask">' + tr("hm_cam_ask") + '</p><div class="two">' +
     '<button class="btn primary" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
-    '<button class="btn-s" type="button" data-hm="gal"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>' + tr("hm_cam_gal") + "</button></div></div>";
+    '<button class="btn-s" type="button" data-hm="gal"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>' + tr("hm_cam_gal") + "</button></div></div>");
   const ic = {
     orch: '<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>',
     mun: '<path d="M4 19h16"/><path d="M7 15v-4"/><path d="M12 15V7"/><path d="M17 15v-6"/>',
@@ -7297,8 +7298,9 @@ function renderHome() {
 $("homeBody").addEventListener("click", e => {
   const b = e.target.closest("[data-hm]"); if (!b) return;
   const a = b.dataset.hm; tabPicked = true;
-  if (a === "cam") goDiag("cam");
-  else if (a === "gal") goDiag("gal");
+  if (a === "dxpick") { hmDxOpen = !hmDxOpen; renderHome(); const c = document.querySelector("#homeBody .hmcam2"); if (hmDxOpen && c && c.scrollIntoView) c.scrollIntoView({block: "nearest"}); return; }
+  if (a === "cam") { hmDxOpen = false; goDiag("cam"); renderHome(); }
+  else if (a === "gal") { hmDxOpen = false; goDiag("gal"); renderHome(); }
   else if (a === "sales") { showTool("calc", false, true); showSub("orch"); }
   else if (a === "addsale") { const o = S.orchards[0]; if (o) goSeason(o.id, curHYear() - 1); else showTool("orch", false, true); }
   else if (a === "orch" || a === "loc") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
@@ -8662,17 +8664,17 @@ document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target &&
    with Saathi, and an "Aur" page for everything used less often. Computers and visitors keep the tabs at the top. ---------- */
 Object.assign(T.en, { tt_more:"More", nv_home:"Home", nv_orch:"Orchards", nv_add:"Add", nv_mun:"Profit", nv_more:"More", mr_farm:"Farming", mr_acct:"Account", mr_checks:"My photo checks",
   mr_acctplan:"My account and plan", mr_help:"Help and feedback", mr_admin:"Admin page",
-  hms_cur:"{y} season · current", hms_exp:"Spent so far", hms_ppb:"Net per peti, {y}", hm_cam_s:"Take a photo of a leaf or fruit", hm_cam_s2:"Photo of a leaf, fruit or branch", hm_cam_take:"Take photo", hm_cam_gal:"From gallery",
+  hms_cur:"{y} season · current", hms_exp:"Spent so far", hms_ppb:"Net per peti, {y}", hm_cam_s:"Take a photo of a leaf or fruit", hm_cam_s2:"Photo of a leaf, fruit or branch", hm_cam_take:"Take photo", hm_cam_ask:"How do you want to add the photo?", hm_cam_gal:"From gallery",
   hb_orch_s:"{n} orchards · {t} trees", hb_mun_s:"{y}: {x} net", hb_mun_0:"See your profit", hb_sales:"Season sales", hb_sales_s:"{y}: {b} boxes",
   hb_exp:"Expenses", hb_exp_s:"This year {x}", hb_spray_s:"By tree stage", hb_news_s:"Apple news" });
 Object.assign(T.hi, { tt_more:"और", nv_home:"होम", nv_orch:"बाग़", nv_add:"जोड़ें", nv_mun:"मुनाफ़ा", nv_more:"और", mr_farm:"खेती", mr_acct:"खाता", mr_checks:"मेरी फ़ोटो जाँच",
   mr_acctplan:"मेरा खाता और प्लान", mr_help:"मदद और सुझाव", mr_admin:"एडमिन पेज",
-  hms_cur:"{y} सीज़न · चालू", hms_exp:"अब तक ख़र्च", hms_ppb:"प्रति पेटी शुद्ध, {y}", hm_cam_s:"पत्ते या फल की फ़ोटो लें", hm_cam_s2:"पत्ते, फल या टहनी की फ़ोटो", hm_cam_take:"फ़ोटो खींचें", hm_cam_gal:"गैलरी से",
+  hms_cur:"{y} सीज़न · चालू", hms_exp:"अब तक ख़र्च", hms_ppb:"प्रति पेटी शुद्ध, {y}", hm_cam_s:"पत्ते या फल की फ़ोटो लें", hm_cam_s2:"पत्ते, फल या टहनी की फ़ोटो", hm_cam_take:"फ़ोटो खींचें", hm_cam_ask:"फ़ोटो कैसे देना चाहते हैं?", hm_cam_gal:"गैलरी से",
   hb_orch_s:"{n} बाग़ · {t} पेड़", hb_mun_s:"{y}: {x} शुद्ध", hb_mun_0:"अपना मुनाफ़ा देखें", hb_sales:"सीज़न बिक्री", hb_sales_s:"{y}: {b} पेटियाँ",
   hb_exp:"ख़र्चे", hb_exp_s:"इस साल {x}", hb_spray_s:"पेड़ की अवस्था के हिसाब से", hb_news_s:"सेब की ख़बरें" });
 Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"Jodein", nv_mun:"Munafa", nv_more:"Aur", mr_farm:"Kheti", mr_acct:"Account", mr_checks:"Meri photo checks",
   mr_acctplan:"Mera account aur plan", mr_help:"Madad aur feedback", mr_admin:"Admin page",
-  hms_cur:"{y} season · chalu", hms_exp:"Ab tak kharcha", hms_ppb:"Net per peti, {y}", hm_cam_s:"Patte ya phal ki photo lein", hm_cam_s2:"Patte, phal ya tehni ki photo", hm_cam_take:"Photo lein", hm_cam_gal:"Gallery se",
+  hms_cur:"{y} season · chalu", hms_exp:"Ab tak kharcha", hms_ppb:"Net per peti, {y}", hm_cam_s:"Patte ya phal ki photo lein", hm_cam_s2:"Patte, phal ya tehni ki photo", hm_cam_take:"Photo lein", hm_cam_ask:"Photo kaise dena chahte hain?", hm_cam_gal:"Gallery se",
   hb_orch_s:"{n} bagiche · {t} ped", hb_mun_s:"{y}: {x} net", hb_mun_0:"Apna munafa dekhein", hb_sales:"Season bikri", hb_sales_s:"{y}: {b} petiyan",
   hb_exp:"Kharche", hb_exp_s:"Is saal {x}", hb_spray_s:"Ped ki avastha ke hisaab se", hb_news_s:"Seb ki khabrein" });
 (function () {
@@ -8685,7 +8687,11 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
 .hmseason b{font-size:1.45rem;line-height:1.2}
 .hmseason b.neg{color:#ffd2c9}
 .hmcam2{display:grid;gap:10px;color:var(--fg);background:linear-gradient(135deg,rgba(232,120,40,.16),rgba(184,50,31,.12)),var(--surface);border:1.5px solid rgba(184,50,31,.35);border-radius:16px;padding:10px 12px}
-.hmcam2 .hd{display:flex;align-items:center;gap:10px}
+.hmcam2 .hd{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:4px 0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.hmcam2 .hd>span:nth-child(2){flex:1}
+.hmcam2 .chv{font-size:1.6rem;line-height:1;color:var(--apple);transition:transform .15s}
+.hmcam2.open .chv{transform:rotate(90deg)}
+.hmcam2 .ask{margin:0;font-size:.9rem;font-weight:600;color:var(--muted)}
 .hmcam2 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .hmcam2 .two button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;font-size:.95rem;width:100%;padding:0 8px;border-radius:10px}
 .hmcam2 .two .btn-s{background:var(--surface);border:1.5px solid rgba(184,50,31,.45);color:#8F2516;font-weight:700}
