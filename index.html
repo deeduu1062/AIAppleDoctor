@@ -358,6 +358,17 @@ dd{margin:0;font:500 1rem var(--mono);font-variant-numeric:tabular-nums;text-ali
 .acctrow{display:flex;flex-wrap:wrap;align-items:center;gap:0 14px;padding-block:2px;font-size:.85rem;color:var(--muted)}
 .acctrow span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--fg)}
 .acctrow .link{flex:none;font-size:.85rem;padding:8px 0;white-space:nowrap}
+/* nicer logged-in strip: soft green bar, avatar chip, Log out as a pill */
+.acctstrip{background:linear-gradient(90deg,rgba(27,94,43,.10),rgba(27,94,43,.04))}
+.acctrow{padding-block:6px}
+#acct_email{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;overflow:visible;white-space:normal}
+.acav2{flex:none;width:30px;height:30px;border-radius:50%;background:#1B5E2B;color:#fff;display:grid;place-items:center;font:700 .95rem var(--display);font-style:normal;box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(27,94,43,.35)}
+.acwho2{display:grid;min-width:0;line-height:1.15}
+.acwho2 small{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.acwho2 b{font-size:.92rem;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#signOut{display:inline-flex;align-items:center;gap:6px;padding:6px 14px!important;border:1.5px solid rgba(184,50,31,.45);border-radius:999px;background:var(--surface);color:#8F2516!important;font-weight:700;text-decoration:none!important;min-height:34px}
+#signOut::before{content:"";width:15px;height:15px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/%3E%3Cpath d='M16 17l5-5-5-5'/%3E%3Cpath d='M21 12H9'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/%3E%3Cpath d='M16 17l5-5-5-5'/%3E%3Cpath d='M21 12H9'/%3E%3C/svg%3E") center/contain no-repeat}
+#signOut:hover{background:#FBEDEA}
 .lotbox > .btn-s{margin-top:10px}
 fieldset > .btn-s.add{margin-bottom:12px}
 .lotsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:10px 14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
@@ -3664,7 +3675,11 @@ function renderAcct() {
   if (typeof renderPromo === "function") try { renderPromo(); } catch (e) {}
   set("signBtn", tr(user ? "hdr_mine" : "hdr_signin"));
   if (typeof renderChat === "function" && $("chatDlg") && T.en.ch_fab) { if (!user) { CHAT = []; chatLoadedFor = null; chatLeft = null; chatErr = ""; } renderChat(); }
-  if (user) set("acct_email", tr("auth_as").replace("{e}", userLabel(user)));
+  if (user) {   /* "logged in as" chip: round initial + name/email */
+    const md = user.user_metadata || {}, lb = userLabel(user), nm = String(md.full_name || md.name || "").trim();
+    const ini = /^[a-z\u0900-\u097f]/i.test(nm || lb) ? (nm || lb)[0].toUpperCase() : "👤";
+    $("acct_email").innerHTML = '<i class="acav2" aria-hidden="true">' + esc(ini) + '</i><span class="acwho2"><small>' + esc(tr("ac_who_s")) + "</small><b>" + esc(nm || lb) + "</b></span>";
+  }
 }
 let recovering = false, pwOpen = false;
 
@@ -8272,6 +8287,7 @@ document.addEventListener("submit", async e => {
   let err = null; try { const r = await sb.auth.updateUser({password: pin ? pinPw(p1) : p1}); err = r.error; } catch (x) { err = x; }
   acBusy = false; acMsg.pw = err ? {t: String((err && err.message) || err), err: true} : {t: tr(pin ? "ac_pin_ok" : "ac_pw_ok")}; if (!err) acPwOpen = false; renderAcctTab();
 });
+Object.assign(T.en, { ac_who_s:"Logged in as" }); Object.assign(T.hi, { ac_who_s:"लॉग इन:" }); Object.assign(T.hn, { ac_who_s:"Login hain" });
 Object.assign(T.en, { ac_who:"You are logged in as", ac_via_g:"Logged in with Google", ac_via_p:"Logged in with mobile (WhatsApp code)", ac_via_e:"Logged in with email" });
 Object.assign(T.hi, { ac_who:"आप इस खाते से लॉग इन हैं", ac_via_g:"Google से लॉग इन", ac_via_p:"मोबाइल (WhatsApp कोड) से लॉग इन", ac_via_e:"ईमेल से लॉग इन" });
 Object.assign(T.hn, { ac_who:"Aap is account se login hain", ac_via_g:"Google se login", ac_via_p:"Mobile (WhatsApp code) se login", ac_via_e:"Email se login" });
@@ -8738,8 +8754,6 @@ html{touch-action:manipulation}  /* no double-tap zoom when tapping buttons quic
   html.app body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   html.app #acctBar .acctplan,html.app #acctBar #adminLink{display:none!important}
   html.app #acctBar .acctrow{flex-wrap:nowrap;gap:10px}
-  html.app #acct_email::before{content:"👤 "}
-  html.app #signOut{color:var(--apple);font-weight:700}
   html.app .qxrow0,html.app #shareBtn,html.app #signBtn,html.app #fbBtn,html.app .qxfab,html.app .hdrsaathi{display:none!important}
   html.app #chatFab{bottom:calc(92px + env(safe-area-inset-bottom,0px));padding:0;width:58px;height:58px;min-height:58px;justify-content:center;border:3px solid var(--surface)}
   html.app #chatFab .av{width:42px;height:42px}
