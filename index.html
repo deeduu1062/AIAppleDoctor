@@ -8494,6 +8494,9 @@ function qxSync() {
   if (typeof qxNavSync === "function") qxNavSync();
   if ($("tp-more") && !$("tp-more").hidden && typeof renderMore === "function") renderMore();
   if (typeof renderMunCard === "function") renderMunCard();
+  document.documentElement.classList.toggle("gapp", !user && !window.SHOTS);
+  if (typeof renderGBlocks === "function") renderGBlocks();
+  if (typeof qxNavGSync === "function") qxNavGSync();
 }
 function qxOpen(mode, oid) {
   const last = (() => { try { return localStorage.getItem("qxO") || ""; } catch (e) { return ""; } })();
@@ -8792,6 +8795,103 @@ function renderMunCard() {
     '<span class="f">' + esc(tr("mc_boxes").replace("{b}", fmtN(p.boxes))) + (cmp ? " · " + esc(cmp) : "") + "</span>";
   el.hidden = false;
 }
+/* ---------- Visitors on a phone: same app look. Top bar with logo + language, a bottom bar (Home · Bimari · Calculator · Spray · Login),
+   and "what you get" blocks on Home that open the example pages. Computers keep the tabs. ---------- */
+Object.assign(T.en, { gn_dx:"Disease", gn_calc:"Calculator", gn_spray:"Spray", gb_h:"What you get, free", gb_see:"See example ›",
+  gb_orch:"Every orchard's trees, soil and work in one place", gb_mun:"Real profit on every peti", gb_exp:"Note every expense in seconds",
+  gb_dx:"Find a disease from a photo", gb_spray:"What to spray and when", gb_chat:"Ask anything about apples" });
+Object.assign(T.hi, { gn_dx:"रोग जाँच", gn_calc:"कैलकुलेटर", gn_spray:"स्प्रे", gb_h:"आपको मुफ़्त में क्या मिलता है", gb_see:"उदाहरण देखें ›",
+  gb_orch:"हर बाग़ के पेड़, मिट्टी और काम एक जगह", gb_mun:"हर पेटी पर असली मुनाफ़ा", gb_exp:"हर ख़र्च सेकंडों में लिखें",
+  gb_dx:"फ़ोटो से रोग पहचानें", gb_spray:"कब और क्या स्प्रे करें", gb_chat:"सेब के बारे में कुछ भी पूछें" });
+Object.assign(T.hn, { gn_dx:"Bimari", gn_calc:"Calculator", gn_spray:"Spray", gb_h:"Aapko free mein kya milta hai", gb_see:"Example dekhein ›",
+  gb_orch:"Har bagiche ke ped, mitti aur kaam ek jagah", gb_mun:"Har peti par asli munafa", gb_exp:"Har kharcha seconds mein likhein",
+  gb_dx:"Photo se bimari pehchaanein", gb_spray:"Kab aur kya spray karein", gb_chat:"Seb ke baare mein kuch bhi poochhein" });
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+.qxnavg,.gblocks{display:none}
+@media (max-width:700px){
+  html.gapp body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  html.gapp .qxrow0,html.gapp #shareBtn,html.gapp #signBtn,html.gapp #fbBtn,html.gapp .qxfab{display:none!important}
+  html.gapp #chatFab{bottom:calc(92px + env(safe-area-inset-bottom,0px));padding:0;width:58px;height:58px;min-height:58px;justify-content:center;border:3px solid var(--surface)}
+  html.gapp #chatFab .av{width:42px;height:42px}
+  html.gapp #chatFab #chatFabT{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  html.gapp .qxnavg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:22;
+    padding:6px 4px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px -14px rgba(0,0,0,.4)}
+  html.gapp .qxnavg button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--muted);font:600 .8rem var(--body);min-height:50px;padding:0;cursor:pointer}
+  html.gapp .qxnavg button[aria-current="page"]{color:var(--apple);font-weight:700}
+  html.gapp .qxnavg .plus{color:var(--apple);font-weight:700}
+  html.gapp .qxnavg .plus .c{width:58px;height:58px;margin-top:-24px;border-radius:50%;background:var(--apple);color:var(--on-apple);display:grid;place-items:center;border:4px solid var(--surface);box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+  html.gapp .gblocks{display:grid;gap:10px;margin:14px 0 16px}
+  html.gapp .tabs.pctabs{display:flex;gap:6px;background:#E3E8DE;border:0;border-radius:999px;padding:4px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+  html.gapp .tabs.pctabs::-webkit-scrollbar{display:none}
+  html.gapp .pctabs .tab{flex:none;border:0;border-radius:999px;min-height:40px;padding:0 14px;color:var(--muted);font-weight:600}
+  html.gapp .pctabs .tab[aria-selected="true"]{background:var(--surface);color:var(--fg);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  html.gapp .gblocks h3{margin:0;font-size:1.3rem}
+  html.gapp .gblocks .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  html.gapp .gblocks .hmblk .see{font-size:.85rem;font-weight:700;color:var(--brand,#1B5E2B);margin-top:4px;display:block}
+}`;
+  document.head.appendChild(css);
+  const sv = p => '<svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + "</svg>";
+  const nav = document.createElement("nav");
+  nav.className = "qxnavg"; nav.id = "qxNavG"; nav.setAttribute("aria-label", "Main");
+  nav.innerHTML =
+    '<button type="button" data-gn="home">' + sv('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>') + '<span data-i18n="nv_home"></span></button>' +
+    '<button type="button" data-gn="dx">' + sv('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>') + '<span data-i18n="gn_dx"></span></button>' +
+    '<button type="button" data-gn="login" class="plus"><span class="c">' + sv('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>') + '</span><span data-i18n="hdr_signin"></span></button>' +
+    '<button type="button" data-gn="calc">' + sv('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 12h2"/><path d="M14 12h2"/><path d="M8 16h2"/><path d="M14 16h2"/>') + '<span data-i18n="gn_calc"></span></button>' +
+    '<button type="button" data-gn="spray">' + sv('<path d="M5 20l5-5"/><path d="M10 15l4-9 4 4-9 4"/><path d="M16 4l4 4"/>') + '<span data-i18n="gn_spray"></span></button>';
+  document.body.appendChild(nav);
+  nav.addEventListener("click", e => {
+    const b = e.target.closest("[data-gn]"); if (!b) return;
+    const a = b.dataset.gn; tabPicked = true;
+    if (a === "login") { goLogin(false); return; }
+    if (a === "home") { showTool("orch"); window.scrollTo({top: 0}); return; }
+    if (a === "dx") showTool("diag", false, true);
+    else if (a === "calc") { showTool("calc", false, true); showSub("quick"); }
+    else if (a === "spray") showTool("spray", false, true);
+  });
+  /* "what you get" blocks at the top of the visitor Home (phones) */
+  const tp = $("tp-orch");
+  if (tp) { const g = document.createElement("section"); g.className = "gblocks"; g.id = "gBlocks"; tp.insertBefore(g, tp.firstChild); }
+  document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("[data-gb]"); if (!b) return;
+    const a = b.dataset.gb; tabPicked = true;
+    if (a === "orch") showTool("rec", false, true);
+    else if (a === "mun") { showTool("calc", false, true); showSub("year"); }
+    else if (a === "exp") { showTool("calc", false, true); showSub("exp"); }
+    else if (a === "dx") showTool("diag", false, true);
+    else if (a === "spray") showTool("spray", false, true);
+    else if (a === "chat") { const f = $("chatFab"); if (f) f.click(); }
+  });
+})();
+function renderGBlocks() {
+  const el = $("gBlocks"); if (!el) return;
+  if (user) { el.innerHTML = ""; return; }
+  const ic = {
+    orch: '<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>',
+    mun: '<path d="M4 19h16"/><path d="M7 15v-4"/><path d="M12 15V7"/><path d="M17 15v-6"/>',
+    exp: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>',
+    dx: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+    spray: '<path d="M5 20l5-5"/><path d="M10 15l4-9 4 4-9 4"/><path d="M16 4l4 4"/>',
+    chat: '<path d="M4 5h16v11H8l-4 4z"/>'
+  };
+  const cls = {orch: "hb-orch", mun: "hb-mun", exp: "hb-exp", dx: "hb-exp", spray: "hb-spray", chat: "hb-mun"};
+  const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" data-gb="' + k + '"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
+    "</svg><span><b>" + title + "</b><span>" + sub + "</span>" + (see ? '<span class="see">' + tr("gb_see") + "</span>" : "") + "</span></button>";
+  el.innerHTML = "<h3>" + tr("gb_h") + '</h3><div class="grid">' +
+    blk("orch", tr("tt_rec"), tr("gb_orch"), true) + blk("mun", tr("pt_year"), tr("gb_mun"), true) + blk("exp", tr("hb_exp"), tr("gb_exp"), true) +
+    blk("dx", tr("hm_cam"), tr("gb_dx")) + blk("spray", tr("hm_go_spray"), tr("gb_spray")) + blk("chat", "Saathi", tr("gb_chat")) + "</div>";
+}
+function qxNavGSync() {
+  const vis = TT.find(n => !$("tp-" + n).hidden);
+  const cur = vis === "orch" || vis === "rec" ? "home" : vis === "diag" ? "dx" : vis === "calc" ? "calc" : vis === "spray" ? "spray" : "";
+  document.querySelectorAll("#qxNavG [data-gn]").forEach(b => { if (b.dataset.gn === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+}
+(function () {
+  const base = showTool;
+  showTool = function (w, focus, scroll) { base(w, focus, scroll); qxNavGSync(); };
+})();
 showTool("orch");
 libWant = null;
 if (window.ADFeedback) ADFeedback.init({
