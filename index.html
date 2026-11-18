@@ -5107,6 +5107,15 @@ document.addEventListener("click", e => {
   const card = dashView && $("det-" + dashView), tb = document.querySelector(".topbar");
   if (card) window.scrollTo({top: Math.max(0, card.getBoundingClientRect().top + window.scrollY - (tb ? tb.offsetHeight : 0) - 8)});
 });
+/* opened orchard: back to all orchards, then three key numbers (trees, this harvest year's spending, latest season's net per peti) */
+function ohdrHtml(o) {
+  const V = vtList(o), trees = +o.trees || V.reduce((a, x) => a + +x.n, 0), cy = curHYear(), spent = expTotals(o, cy).total;
+  let ppb = null, py = null;
+  for (let y = cy; y >= cy - 15; y--) { const se = seFor(o.id, y); if (!se) continue; const r = seasonCalc(se); if (r.eq > 0 && r.rev > 0) { ppb = r.profit / r.eq; py = y; break; } }
+  const t = (k, v, c) => '<div class="ost"><span>' + k + '</span><b' + (c ? ' class="' + c + '"' : "") + ">" + v + "</b></div>";
+  return '<div class="ohdr"><button class="obk" type="button" data-xact="dettoggle" data-o="' + esc(o.id) + '">‹ ' + tr("ob_all") + '</button><div class="ostats">' +
+    t(tr("d_trees"), trees ? fmtN(trees) : "–") + t(tr("ob_spent"), inr(spent), "neg") + t(py ? tr("ob_ppb").replace("{y}", py) : tr("ob_ppb0"), ppb === null ? "–" : inr(ppb), ppb !== null && ppb < 0 ? "neg" : "pos") + "</div></div>";
+}
 function detailsHtml() {
   let h = '<section class="osec" id="detSec"><h4>' + tr("det_h") + "</h4>";
   const addForm = '<form class="detcard editing addform" data-dform="add"><div class="field"><label for="dn_new">' + tr("f_oname") + '</label><input id="dn_new" type="text" maxlength="60"></div>' +
@@ -5115,7 +5124,7 @@ function detailsHtml() {
   if (!S.orchards.length) return h + "<p>" + tr("d_first") + "</p>" + addForm + "</section>";
   let tt = 0, ta = 0; S.orchards.forEach(x => { tt += +x.trees || 0; ta += +((x.profile || {}).area) || 0; });
   /* All my orchards card first, then + Add orchard and + Add expense below it */
-  h = '<section class="osec" id="detSec" aria-label="' + esc(tr("det_h")) + '">' + treeSumHtml() + '<div class="dethead">' + (dashAdd ? "" : '<button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button>") +
+  h = '<section class="osec' + (dashView && S.orchards.some(x => x.id === dashView) ? " has-open" : "") + '" id="detSec" aria-label="' + esc(tr("det_h")) + '">' + treeSumHtml() + '<div class="dethead">' + (dashAdd ? "" : '<button class="btn-s add" type="button" data-dact="add">' + tr("d_add") + "</button>") +
     (dashExp ? "" : '<button class="btn-s add dexbtn" type="button" data-dex="open">＋ ' + tr("ex_add") + "</button>") + "</div>";
   if (dashAdd) h += addForm;
   if (dashExp && !(dashView && otab === "work")) h += dashExpHtml();
@@ -5131,7 +5140,7 @@ function detailsHtml() {
       "</span></span>" + detWxChip(o) +
       '<span class="ychev" aria-hidden="true"></span></button>';
     if (!open) return r + "</div>";
-    r += '<div class="ybody">';
+    r += '<div class="ybody">' + ohdrHtml(o);
     if (delAsk === o.id) r += delAskHtml(o);
     else if (detEdit === o.id) {
       otab = "det";
@@ -7224,9 +7233,9 @@ function renderHome() {
   const cy = curHYear(), spent = S.orchards.reduce((a, o) => a + expTotals(o, cy).total, 0);
   const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
   let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>";
-  h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hs_cur").replace("{y}", cy)) + "</span>" +
-    '<span><span class="k">' + tr("hs_exp") + '</span><b>' + inr(spent) + "</b></span>" +
-    (p ? '<span><span class="k">' + esc(tr("hs_ppb").replace("{y}", p.y)) + '</span><b' + (p.ppb < 0 ? ' class="neg"' : "") + ">" + inr(p.ppb) + "</b></span>" : '<span><span class="k">' + tr("hm_ppb_none") + "</span><b>＋</b></span>") + "</button>";
+  h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
+    '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
+    (p ? '<span><span class="k">' + esc(tr("hms_ppb").replace("{y}", p.y)) + '</span><b' + (p.ppb < 0 ? ' class="neg"' : "") + ">" + inr(p.ppb) + "</b></span>" : '<span><span class="k">' + tr("hm_ppb_none") + "</span><b>＋</b></span>") + "</button>";
   h += '<div class="hmcam2"><div class="hd"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span><b>' +
     tr("hm_cam") + "</b><span>" + tr("hm_cam_s2") + '</span></span></div><div class="two">' +
     '<button class="btn primary" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
@@ -8484,6 +8493,7 @@ function qxSync() {
   document.documentElement.classList.toggle("app", !!(user && loaded) && !isAdminOnly(user));
   if (typeof qxNavSync === "function") qxNavSync();
   if ($("tp-more") && !$("tp-more").hidden && typeof renderMore === "function") renderMore();
+  if (typeof renderMunCard === "function") renderMunCard();
 }
 function qxOpen(mode, oid) {
   const last = (() => { try { return localStorage.getItem("qxO") || ""; } catch (e) { return ""; } })();
@@ -8584,17 +8594,17 @@ document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target &&
    with Saathi, and an "Aur" page for everything used less often. Computers and visitors keep the tabs at the top. ---------- */
 Object.assign(T.en, { tt_more:"More", nv_home:"Home", nv_orch:"Orchards", nv_add:"Add", nv_mun:"Profit", nv_more:"More", mr_farm:"Farming", mr_acct:"Account", mr_checks:"My photo checks",
   mr_acctplan:"My account and plan", mr_help:"Help and feedback", mr_admin:"Admin page",
-  hs_cur:"{y} season · current", hs_exp:"Spent so far", hs_ppb:"Net per peti, {y}", hm_cam_s:"Take a photo of a leaf or fruit", hm_cam_s2:"Photo of a leaf, fruit or branch", hm_cam_take:"Take photo", hm_cam_gal:"From gallery",
+  hms_cur:"{y} season · current", hms_exp:"Spent so far", hms_ppb:"Net per peti, {y}", hm_cam_s:"Take a photo of a leaf or fruit", hm_cam_s2:"Photo of a leaf, fruit or branch", hm_cam_take:"Take photo", hm_cam_gal:"From gallery",
   hb_orch_s:"{n} orchards · {t} trees", hb_mun_s:"{y}: {x} net", hb_mun_0:"See your profit", hb_sales:"Season sales", hb_sales_s:"{y}: {b} boxes",
   hb_exp:"Expenses", hb_exp_s:"This year {x}", hb_spray_s:"By tree stage", hb_news_s:"Apple news" });
 Object.assign(T.hi, { tt_more:"और", nv_home:"होम", nv_orch:"बाग़", nv_add:"जोड़ें", nv_mun:"मुनाफ़ा", nv_more:"और", mr_farm:"खेती", mr_acct:"खाता", mr_checks:"मेरी फ़ोटो जाँच",
   mr_acctplan:"मेरा खाता और प्लान", mr_help:"मदद और सुझाव", mr_admin:"एडमिन पेज",
-  hs_cur:"{y} सीज़न · चालू", hs_exp:"अब तक ख़र्च", hs_ppb:"प्रति पेटी शुद्ध, {y}", hm_cam_s:"पत्ते या फल की फ़ोटो लें", hm_cam_s2:"पत्ते, फल या टहनी की फ़ोटो", hm_cam_take:"फ़ोटो खींचें", hm_cam_gal:"गैलरी से",
+  hms_cur:"{y} सीज़न · चालू", hms_exp:"अब तक ख़र्च", hms_ppb:"प्रति पेटी शुद्ध, {y}", hm_cam_s:"पत्ते या फल की फ़ोटो लें", hm_cam_s2:"पत्ते, फल या टहनी की फ़ोटो", hm_cam_take:"फ़ोटो खींचें", hm_cam_gal:"गैलरी से",
   hb_orch_s:"{n} बाग़ · {t} पेड़", hb_mun_s:"{y}: {x} शुद्ध", hb_mun_0:"अपना मुनाफ़ा देखें", hb_sales:"सीज़न बिक्री", hb_sales_s:"{y}: {b} पेटियाँ",
   hb_exp:"ख़र्चे", hb_exp_s:"इस साल {x}", hb_spray_s:"पेड़ की अवस्था के हिसाब से", hb_news_s:"सेब की ख़बरें" });
 Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"Jodein", nv_mun:"Munafa", nv_more:"Aur", mr_farm:"Kheti", mr_acct:"Account", mr_checks:"Meri photo checks",
   mr_acctplan:"Mera account aur plan", mr_help:"Madad aur feedback", mr_admin:"Admin page",
-  hs_cur:"{y} season · chalu", hs_exp:"Ab tak kharcha", hs_ppb:"Net per peti, {y}", hm_cam_s:"Patte ya phal ki photo lein", hm_cam_s2:"Patte, phal ya tehni ki photo", hm_cam_take:"Photo lein", hm_cam_gal:"Gallery se",
+  hms_cur:"{y} season · chalu", hms_exp:"Ab tak kharcha", hms_ppb:"Net per peti, {y}", hm_cam_s:"Patte ya phal ki photo lein", hm_cam_s2:"Patte, phal ya tehni ki photo", hm_cam_take:"Photo lein", hm_cam_gal:"Gallery se",
   hb_orch_s:"{n} bagiche · {t} ped", hb_mun_s:"{y}: {x} net", hb_mun_0:"Apna munafa dekhein", hb_sales:"Season bikri", hb_sales_s:"{y}: {b} petiyan",
   hb_exp:"Kharche", hb_exp_s:"Is saal {x}", hb_spray_s:"Ped ki avastha ke hisaab se", hb_news_s:"Seb ki khabrein" });
 (function () {
@@ -8711,6 +8721,77 @@ document.addEventListener("click", e => {
   const base = showTool;
   showTool = function (w, focus, scroll) { base(w, focus, scroll); if (w === "more") renderMore(); qxNavSync(); };
 })();
+/* ---------- App-style inner pages: orchard header, pill switchers, green Munafa season card, big add buttons, fewer long notes on phones ---------- */
+Object.assign(T.en, { ob_all:"All orchards", ob_spent:"Spent this year", ob_ppb:"Net/peti {y}", ob_ppb0:"Net per peti", mc_h:"{y} season · all orchards", mc_net:"Net profit", mc_ppb:"Net per peti", mc_boxes:"{b} boxes", mc_up:"{x} more than {y}", mc_down:"{x} less than {y}" });
+Object.assign(T.hi, { ob_all:"सभी बाग़", ob_spent:"इस साल ख़र्च", ob_ppb:"शुद्ध/पेटी {y}", ob_ppb0:"प्रति पेटी शुद्ध", mc_h:"{y} सीज़न · सभी बाग़", mc_net:"शुद्ध मुनाफ़ा", mc_ppb:"प्रति पेटी शुद्ध", mc_boxes:"{b} पेटियाँ", mc_up:"{y} से {x} ज़्यादा", mc_down:"{y} से {x} कम" });
+Object.assign(T.hn, { ob_all:"Sabhi bagiche", ob_spent:"Is saal kharcha", ob_ppb:"Net/peti {y}", ob_ppb0:"Net per peti", mc_h:"{y} season · sabhi bagiche", mc_net:"Net munafa", mc_ppb:"Net per peti", mc_boxes:"{b} petiyan", mc_up:"{y} se {x} zyada", mc_down:"{y} se {x} kam" });
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+.ohdr{display:grid;gap:10px;margin:0 0 12px}
+.obk{justify-self:start;border:0;background:none;color:var(--brand,#1B5E2B);font:700 1rem var(--body);min-height:36px;padding:0;cursor:pointer}
+.ostats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ost{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 10px;display:grid;gap:2px}
+.ost span{font-size:.8rem;color:var(--muted);line-height:1.2}
+.ost b{font-size:1.15rem}
+.ost b.neg{color:var(--apple)}.ost b.pos{color:#1B5E2B}
+.mcard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;border-radius:16px;padding:14px 16px;background:#1B5E2B;color:#fff;margin:0 0 12px}
+.mcard .k{font-size:.85rem;opacity:.88}
+.mcard .w{grid-column:1/-1;font-weight:600;font-size:.92rem;opacity:.95}
+.mcard b{display:block;font-size:1.5rem;line-height:1.2}
+.mcard b.neg{color:#ffd2c9}
+.mcard .f{grid-column:1/-1;font-size:.9rem;opacity:.9}
+.mcard[hidden]{display:none}
+@media (max-width:700px){
+  html.app .detrows > .yrow.open > .yhead .ychev,html.app #detSec.has-open > :not(.detrows),html.app #detSec.has-open .detrows > .yrow:not(.open){display:none!important}
+  html.app #detSec.has-open .detrows > .yrow.open{border:0;background:none;box-shadow:none}
+  html.app #detSec.has-open .detrows > .yrow.open > .yhead{pointer-events:none;padding-inline:0;background:none}
+  html.app #detSec.has-open .detrows > .yrow.open > .yhead b{font-size:1.6rem}
+  html.app #detSec.has-open .detrows > .yrow.open > .ybody{padding-inline:0}
+  html.app #tp-orch .qxhide{display:none!important}
+  html.app #detSec.has-open .detrows > .yrow.open{position:relative;padding-top:38px}
+  html.app #detSec.has-open .detrows > .yrow.open .obk{position:absolute;top:0;left:0}
+  html.app .otabs{display:flex;gap:6px;background:#E3E8DE;border-radius:999px;padding:4px;margin:0 0 12px;border:0}
+  html.app .otabs .tab{flex:1;border:0;border-radius:999px;background:transparent;color:var(--muted);font-weight:600;min-height:40px;font-size:.95rem}
+  html.app .otabs .tab[aria-selected="true"]{background:var(--surface);color:var(--fg);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  html.app .detrows > .yrow.open .otabs{position:static;box-shadow:none;margin-top:0}
+  html.app .kxhead .btn-s.add,html.app #saleTop > .btn-s.add{display:flex;width:100%;justify-content:center;min-height:50px;font-size:1.05rem;border-radius:12px}
+  html.app .kxhead .btn-s.add{background:var(--apple);border-color:var(--apple);color:var(--on-apple)}
+  html.app .tabs.pctabs{display:flex;gap:6px;background:#E3E8DE;border:0;border-radius:999px;padding:4px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+  html.app .tabs.pctabs::-webkit-scrollbar{display:none}
+  html.app .pctabs .tab{flex:none;border:0;border-radius:999px;min-height:40px;padding:0 14px;color:var(--muted);font-weight:600}
+  html.app .pctabs .tab[aria-selected="true"]{background:var(--surface);color:var(--fg);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  html.app #tp-calc .hynote,html.app #rp-year .hint,html.app #rp-orch .hint,html.app #rp-exp > .hint,html.app #detSec > .hint{display:none}
+}`;
+  document.head.appendChild(css);
+  const ry = $("rp-year");
+  if (ry) { const d = document.createElement("div"); d.className = "mcard"; d.id = "munCard"; d.hidden = true; ry.insertBefore(d, ry.firstChild); }
+})();
+/* phone app: an opened orchard shows as its own page, so everything else on the Orchard Record page is hidden while it is open */
+function oPageSync() {
+  const tp = $("tp-orch"); if (!tp) return;
+  tp.querySelectorAll(".qxhide").forEach(n => n.classList.remove("qxhide"));
+  const sec = $("detSec"); if (!sec || !sec.classList.contains("has-open")) return;
+  let n = sec;
+  while (n && n !== tp) { const par = n.parentElement; if (!par) break; Array.from(par.children).forEach(c => { if (c !== n && c.tagName !== "SCRIPT" && c.tagName !== "STYLE") c.classList.add("qxhide"); }); n = par; }
+}
+(function () {
+  const base = renderDash;
+  renderDash = function () { const r = base.apply(this, arguments); try { oPageSync(); } catch (e) {} return r; };
+})();
+/* green season card at the top of Munafa: the latest season with sales, all orchards together */
+function renderMunCard() {
+  const el = $("munCard"); if (!el) return;
+  let p = null; try { p = user && S.orchards.length ? homePpb() : null; } catch (e) {}
+  if (!p) { el.hidden = true; el.innerHTML = ""; return; }
+  let cmp = "";
+  try { const prev = yearSummary(p.y - 1).tot; if (prev && (prev.sales > 0)) { const d = p.net - prev.net; cmp = tr(d >= 0 ? "mc_up" : "mc_down").replace("{x}", shortInr(Math.abs(d))).replace("{y}", p.y - 1); } } catch (e) {}
+  el.innerHTML = '<span class="w">' + esc(tr("mc_h").replace("{y}", p.y)) + "</span>" +
+    '<span><span class="k">' + tr("mc_net") + "</span><b" + (p.net < 0 ? ' class="neg"' : "") + ">" + shortInr(p.net) + "</b></span>" +
+    '<span><span class="k">' + tr("mc_ppb") + "</span><b" + (p.ppb < 0 ? ' class="neg"' : "") + ">" + inr(p.ppb) + "</b></span>" +
+    '<span class="f">' + esc(tr("mc_boxes").replace("{b}", fmtN(p.boxes))) + (cmp ? " · " + esc(cmp) : "") + "</span>";
+  el.hidden = false;
+}
 showTool("orch");
 libWant = null;
 if (window.ADFeedback) ADFeedback.init({
