@@ -2173,6 +2173,21 @@ body.guest main,body.guest section:last-of-type{scroll-padding-bottom:80px}
 body.guest footer{padding-bottom:96px}
 @media (max-width:700px){body.guest .mgnews{padding-right:58px!important}}
 @media (max-width:700px){body.guest .card,body.guest .hmblk,body.guest .ann{margin-right:0}body.guest #chatFab{transform:scale(.8);transform-origin:bottom right}}
+
+/* ---- logged-in Home polish ---- */
+body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
+#plans.inacct,#contact.inacct{padding-block:18px 8px;background:none}
+#plans.inacct .wrap,#contact.inacct .wrap{padding-inline:0}
+#plans.inacct h2,#contact.inacct h2{font-size:1.15rem}
+.hmwx{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;margin:0 0 10px;padding:10px 14px;border:1px solid rgba(44,110,143,.28);border-radius:14px;background:linear-gradient(rgba(44,110,143,.08),rgba(44,110,143,.08)),var(--surface);font:inherit;color:var(--fg);text-align:left;cursor:pointer}
+.hmwx .hwt{flex:1;font-size:.95rem;border:0;padding:0;margin:0}.hmwx .hww{flex-basis:100%;order:3;font-size:.85rem;font-weight:700;color:#9A3412;border:0;padding:0;margin:0;background:none}
+.hmwx .chv,.fgslim .chv{font-size:1.4rem;line-height:1;color:var(--muted)}
+.hmwx.hwarn{border-color:rgba(194,65,12,.4)}
+.fgslim{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;width:100%;margin:0 0 10px;padding:10px 14px;border:1.5px solid #3E8A3A;border-radius:14px;background:var(--surface);font:inherit;color:var(--fg);text-align:left;cursor:pointer}
+.fgslim .bar{grid-column:1/-1;height:6px;border-radius:99px;background:#E3E8E0;overflow:hidden}.fgslim .bar span{display:block;height:100%;background:#3E8A3A;border-radius:99px}
+.fgslim .t{font-size:.92rem}.fgslim b{color:#1B5E2B}
+.hmblocks .hmblk:last-child:nth-child(odd){grid-column:1/-1;min-height:0}
+@media (max-width:700px){html.app .hmcam2 .hd{padding-right:46px}}
 </style>
 </head>
 <body>
@@ -2635,7 +2650,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 
 <dialog class="instdlg paydlg" id="payDlg" aria-labelledby="payH"></dialog>
 
-<section class="section">
+<section class="section" id="trust">
   <div class="wrap">
     <h2 data-i18n="trust_h"></h2>
     <div class="three trust">
@@ -3724,7 +3739,22 @@ async function flush() {
 window.addEventListener("online", () => { if (isDirty()) flush(); });
 window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
 
+/* logged-in growers: Plans and Contact us live inside Mera account (not under every page); visitors keep them on the landing page */
+let lpMarks = null;
+function placeForUser() {
+  const pl = $("plans"), ct = $("contact"), ac = $("tp-acct"); if (!pl || !ct || !ac) return;
+  if (!lpMarks) { lpMarks = {pl: document.createComment("plans"), ct: document.createComment("contact")}; pl.before(lpMarks.pl); ct.before(lpMarks.ct); }
+  if (user) { if (pl.parentNode !== ac) ac.append(pl, ct); }
+  else if (pl.parentNode === ac) { lpMarks.pl.after(pl); lpMarks.ct.after(ct); }
+  pl.classList.toggle("inacct", !!user); ct.classList.toggle("inacct", !!user);
+}
+document.addEventListener("click", e => {   /* "Contact us" links: logged in, open Mera account at the contact form */
+  const a = e.target.closest && e.target.closest('a[href="#contact"],[data-mr="contact"]'); if (!a || !user) return;
+  e.preventDefault(); if (typeof showTool === "function") showTool("acct", false, true);
+  setTimeout(() => { const c = $("contact"); if (c) c.scrollIntoView({block: "start"}); }, 30);
+});
 function renderAcct() {
+  try { placeForUser(); } catch (e) {}
   if ($("tt-acct")) { $("tt-acct").hidden = !user; if (!user && !$("tp-acct").hidden) showTool("calc"); else if (user && !$("tp-acct").hidden) renderAcctTab(); }
   $("acctBar").hidden = !user; $("orIntro").hidden = true; $("top").hidden = !!user;
   $("adminLink").hidden = !isAdmin();
@@ -7333,6 +7363,23 @@ function homeTip() {
   const now = cur && cur.temperature_2m != null ? Math.round(cur.temperature_2m) + "°C, " + wcWord(cur.weather_code) : "";
   return { t: w.length ? w[0].t : tr("wx_ok"), now, kind: w.length ? w[0].c : "ok" };
 }
+/* Home: today's weather for the first orchard with a location (one line, with the first warning if any) */
+function hmWxHtml() {
+  const o = S.orchards.find(x => typeof hasLoc === "function" && hasLoc(x)); if (!o || typeof wxGet !== "function") return "";
+  const c = wxGet(o), d = c && c.d; if (!d || !d.time) return "";
+  const hi = Math.round(d.temperature_2m_max[0]), lo = Math.round(d.temperature_2m_min[0]), w = (wxWarn(o, d) || [])[0];
+  const place = (o.profile && o.profile.village) || o.name;
+  return '<button class="hmwx' + (w ? " hwarn" : "") + '" type="button" data-hm="wx"><span class="hwt"><b>' + esc(tr("hw_today").replace("{p}", place)) + "</b> " +
+    esc(wcWord(d.weather_code[0])) + " · " + hi + "° / " + lo + "°</span>" + (w ? '<span class="hww">⚠ ' + esc(w.t) + "</span>" : "") + '<span class="chv" aria-hidden="true">›</span></button>';
+}
+/* Home Spray block: the grower's own next planned spray, else the last one, else the general line */
+function hmSpraySub() {
+  let nx = null, ls = null;
+  S.orchards.forEach(o => { const n = nextTodo(o, "spray"), l = lastSpray(o); if (n && (!nx || n.due < nx.due)) nx = n; if (l && (!ls || l.date > ls.date)) ls = l; });
+  if (nx) return esc(tr("hb_spray_next").replace("{d}", fmtDay(nx.due, true)));
+  if (ls) return esc(tr("hb_spray_last").replace("{n}", fmtN(dayDiff(ls.date, todayIso()))));
+  return tr("hb_spray_s");
+}
 let hmDxOpen = false;   /* Home disease card: one tap opens the choice Photo lein / Gallery se */
 function renderHome() {
   /* Home = big blocks: season card, one-tap disease check, then a block per section (each with one useful number), then today's tip */
@@ -7340,7 +7387,8 @@ function renderHome() {
   let p = null; try { p = S.orchards.length ? homePpb() : null; } catch (e) {}
   const cy = curHYear(), spent = S.orchards.reduce((a, o) => a + expTotals(o, cy).total, 0);
   const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
-  let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>" + (typeof fgHtml === "function" ? fgHtml() : "");
+  const md = user.user_metadata || {}, fn = String(md.full_name || md.name || "").trim().split(/\s+/)[0];
+  let h = '<div class="home"><p class="hmhi">' + (fn ? esc(tr("hm_hi").replace(/\s*🙏/, ", " + fn + " 🙏")) : tr("hm_hi")) + "</p>" + hmWxHtml() + (typeof fgHtml === "function" ? fgHtml() : "");
   h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
     '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
     "</button>";   /* only this season's spend here; net per peti lives in Hisaab */
@@ -7362,8 +7410,7 @@ function renderHome() {
     blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
     blk("munafa", "mun", tr("pt_year"), p ? esc(tr("hb_mun_s").replace("{y}", p.y).replace("{x}", inr(p.net))) : tr("hb_mun_0")) +
     blk("sales", "sales", tr("hb_sales"), p ? esc(tr("hb_sales_s").replace("{y}", p.y).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none")) +
-    blk("exp", "exp", tr("hb_exp"), esc(tr("hb_exp_s").replace("{x}", inr(spent)))) +
-    blk("spray", "spray", tr("hm_go_spray"), tr("hb_spray_s")) +
+    blk("spray", "spray", tr("hm_go_spray"), hmSpraySub()) +
     blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
   h += "</div>";   /* the "Today in the orchard" tip card was taken off Home */
   el.innerHTML = h;
@@ -7372,6 +7419,7 @@ $("homeBody").addEventListener("click", e => {
   const b = e.target.closest("[data-hm]"); if (!b) return;
   const a = b.dataset.hm; tabPicked = true;
   /* iPhone shows its own menu (Photo Library / Take Photo / Choose File) for any photo picker, so open that straight away */
+  if (a === "wx") { const o = S.orchards.find(x => hasLoc(x)); if (o) { dashView = o.id; otab = "det"; renderDash(); } showTool("orch", false, true); return; }
   if (a === "dxpick" && isIOS) { hmDxOpen = false; goDiag("gal"); return; }
   if (a === "dxpick") { hmDxOpen = !hmDxOpen; renderHome(); const c = document.querySelector("#homeBody .hmcam2"); if (hmDxOpen && c && c.scrollIntoView) c.scrollIntoView({block: "nearest"}); return; }
   if (a === "cam") { hmDxOpen = false; goDiag("cam"); renderHome(); }
@@ -8345,6 +8393,9 @@ document.addEventListener("submit", async e => {
   let err = null; try { const r = await sb.auth.updateUser({password: pin ? pinPw(p1) : p1}); err = r.error; } catch (x) { err = x; }
   acBusy = false; acMsg.pw = err ? {t: String((err && err.message) || err), err: true} : {t: tr(pin ? "ac_pin_ok" : "ac_pw_ok")}; if (!err) acPwOpen = false; renderAcctTab();
 });
+Object.assign(T.en, { ac_who_s:"Logged in as", hw_today:"Today in {p}:", hb_spray_next:"Next spray: {d}", hb_spray_last:"Last spray {n} days ago", fg_nx:"Next:" });
+Object.assign(T.hi, { hw_today:"आज {p} में:", hb_spray_next:"अगला स्प्रे: {d}", hb_spray_last:"पिछला स्प्रे {n} दिन पहले", fg_nx:"अगला:" });
+Object.assign(T.hn, { hw_today:"Aaj {p} mein:", hb_spray_next:"Agla spray: {d}", hb_spray_last:"Aakhri spray {n} din pehle", fg_nx:"Agla:" });
 Object.assign(T.en, { ac_who_s:"Logged in as" }); Object.assign(T.hi, { ac_who_s:"लॉग इन:" }); Object.assign(T.hn, { ac_who_s:"Login hain" });
 Object.assign(T.en, { ac_who:"You are logged in as", ac_via_g:"Logged in with Google", ac_via_p:"Logged in with mobile (WhatsApp code)", ac_via_e:"Logged in with email" });
 Object.assign(T.hi, { ac_who:"आप इस खाते से लॉग इन हैं", ac_via_g:"Google से लॉग इन", ac_via_p:"मोबाइल (WhatsApp कोड) से लॉग इन", ac_via_e:"ईमेल से लॉग इन" });
@@ -8888,7 +8939,7 @@ function renderMore() {
   const it = (act, label, extra) => '<li><button type="button" data-mr="' + act + '"><span class="t">' + label + "</span>" + (extra || chev) + "</button></li>";
   el.innerHTML = '<div class="more"><h2>' + tr("nv_more") + "</h2>" + (who ? '<p class="who">' + esc(who) + "</p>" : "") +
     '<p class="grp">' + tr("mr_farm") + "</p><ul>" + it("spray", tr("hm_go_spray")) + it("cal", tr("tt_cal")) + it("checks", tr("mr_checks")) + it("quick", tr("pt_quick")) + it("news", tr("tt_news")) + "</ul>" +
-    '<p class="grp">' + tr("mr_acct") + "</p><ul>" + it("acct", tr("mr_acctplan"), '<span class="mpill">' + esc(pn(st.paid || "free")) + "</span>") + it("invite", tr("sh_invite")) + it("help", tr("mr_help")) +
+    '<p class="grp">' + tr("mr_acct") + "</p><ul>" + it("acct", tr("mr_acctplan"), '<span class="mpill">' + esc(pn(st.paid || "free")) + "</span>") + it("invite", tr("sh_invite")) + it("contact", tr("ct_h")) + it("help", tr("mr_help")) +
     (typeof isAdmin === "function" && isAdmin() ? '<li><a href="/admin.html"><span class="t">' + tr("mr_admin") + "</span>" + chev + "</a></li>" : "") + "</ul>" +
     '<button class="out" type="button" data-mr="out">' + tr("auth_out") + "</button></div>";
 }
@@ -9222,6 +9273,8 @@ function fgHtml() {
   try { if (localStorage.getItem("fgLater_" + user.id)) return ""; } catch (e) {}
   const st = fgSteps(), n = st.filter(Boolean).length; if (n === 3) return "";
   const nx = st.indexOf(false), keys = [["fg_1", "fg_1s"], ["fg_2", "fg_2s"], ["fg_3", "fg_3s"]];
+  if (n >= 1) return '<button class="fgslim" type="button" data-fg="' + (nx + 1) + '"><span class="bar"><span style="width:' + Math.round(n / 3 * 100) + '%"></span></span>' +
+    '<span class="t"><b>' + esc(tr("fg_n").replace("{n}", n)) + "</b> · " + esc(tr("fg_nx")) + " " + esc(tr(keys[nx][0])) + '</span><span class="chv" aria-hidden="true">›</span></button>';
   return '<section class="fguide"><div class="hd"><h3>' + tr("fg_h") + '</h3><span class="n">' + esc(tr("fg_n").replace("{n}", n)) + '</span></div><div class="bar"><span style="width:' + Math.round(n / 3 * 100) + '%"></span></div><ol>' +
     keys.map((k, i) => '<li class="' + (st[i] ? "done" : i === nx ? "next" : "") + '"><span class="dot" aria-hidden="true">' + (st[i] ? "✓" : i + 1) + '</span><span class="t"><b>' + tr(k[0]) + "</b><span>" + tr(k[1]) + "</span></span>" +
       (i === nx ? '<button class="go" type="button" data-fg="' + (i + 1) + '">' + tr("fg_go") + "</button>" : "") + "</li>").join("") +
