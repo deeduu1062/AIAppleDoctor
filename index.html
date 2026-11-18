@@ -8909,6 +8909,16 @@ Object.assign(T.hn, { gn_dx:"Bimari", gn_calc:"Calculator", gn_spray:"Spray", gb
   html.gapp .gblocks h3{margin:0;font-size:1.3rem}
   html.gapp .gblocks .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   html.gapp .gblocks .hmblk .see{font-size:.85rem;font-weight:700;color:var(--brand,#1B5E2B);margin-top:4px;display:block}
+  /* compact: all six blocks on one screen, 3 across, icon + name only (the whole tile is the link) */
+  html.gapp .gblocks{gap:8px;margin:10px 0 12px}
+  html.gapp .gblocks h3{font-size:1.12rem}
+  html.gapp .gblocks .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  html.gapp .gblocks .hmblk{min-height:0;padding:10px 6px;gap:6px;align-items:center;justify-content:flex-start;text-align:center;border-radius:14px}
+  html.gapp .gblocks .hmblk svg{width:38px;height:38px;padding:8px;border-radius:11px}
+  html.gapp .gblocks .hmblk .hbtree{width:38px;height:38px;border-radius:11px}
+  html.gapp .gblocks .hmblk .hbtree svg{width:100%;height:100%;padding:0}
+  html.gapp .gblocks .hmblk b{font-size:.9rem;line-height:1.2}
+  html.gapp .gblocks .hmblk span span,html.gapp .gblocks .hmblk .see{display:none}
 }`;
   document.head.appendChild(css);
   const sv = p => '<svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + "</svg>";
