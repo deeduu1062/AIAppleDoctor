@@ -2270,6 +2270,32 @@ body:not(.guest) #rt-year{display:none!important}
 .hzsel.sm.on select{background:#1B5E2B;border-color:#1B5E2B}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hzscroll:has(> .hzsel)::after{display:none}
+
+/* lots as cards on phones (no sideways scroll); computers keep the table */
+.lcards{display:none;gap:10px}
+@media (max-width:700px){.olotswrap{display:none}.lcards{display:grid}}
+.lcard{border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden;box-shadow:0 3px 10px -8px rgba(60,40,20,.4)}
+.lchd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:#F7F2E8;border-bottom:1px solid var(--line)}
+.lct{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lct b{font:700 1.05rem var(--display)}.lct small{color:var(--muted);font-size:.85rem}
+.lchd .lacts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.lchd .lacts.led{flex-basis:100%}
+.lcline{padding:10px 12px;display:grid;gap:4px;border-bottom:1px solid #EFE8DC}
+.lcline.tapedit{cursor:pointer}.lcline.tapedit:hover,.lcline.tapedit:focus-visible{background:#FBF4EC}
+.lcline.editing{background:#FFF7E6}
+.lcr1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.lcg{font-weight:700;font-size:1rem;padding:2px 10px;border-radius:999px;background:#EEF4EA;color:#1B5E2B}
+.lcg.olg-b{background:#EEF2F8;color:#2C5282}.lcg.olg-rg{background:#FBEDEA;color:#9B2C1F}.lcg.olg-gift{background:#F5EEFA;color:#6B3FA0}
+.lcq{font-weight:600;font-size:.98rem;white-space:nowrap}
+.lcr2{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}.lcr2 b{color:var(--fg);font-weight:600}
+.lcr3{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.95rem}
+.lcr3 .pos{color:#1B5E2B}.lcr3 .neg{color:#B8321F}.lcr3 small{color:var(--muted);font-weight:500}
+.lcpay{margin-left:auto;font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:999px}
+.lcpay.ok{background:#E6F0E1;color:#1B5E2B}.lcpay.due{background:#FFF1D6;color:#8A5A00}
+.lcr3 .tapgo,.lcr3 .ed{color:var(--apple);font-size:.85rem}
+.lcft{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:9px 12px;background:#FBF8F2;font-size:.9rem;color:var(--muted)}
+.lcft .pos{color:#1B5E2B}.lcft .neg{color:#B8321F}.lcft b{font-size:1rem}
+.lcnone{margin:0;padding:12px;color:var(--muted)}
+.lcotot{display:grid;gap:2px;padding:10px 12px;border-radius:12px;background:#F1F6EE;border:1px solid rgba(62,138,58,.3);font-size:.9rem}
+.lcotot span{font-weight:700;color:#1B5E2B}.lcotot .neg{color:#B8321F}
 </style>
 </head>
 <body>
@@ -4429,7 +4455,8 @@ function orchLotsTable(se, only) {
   const cls = n => (n < 0 ? "neg" : "pos"), nl = se.lots.length;
   const gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
   const head = ["dl_lot", "ne_col", "f_type", "ls_boxes", "ls_gross", "ls_exp", "ls_net", "ls_ppb"];
-  let h = '<div class="tablewrap"><table class="ledger sm lottable olots"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th scope="col" class="acts"></th></tr></thead>';
+  let cards = "";
+  let h = '<div class="tablewrap olotswrap"><table class="ledger sm lottable olots"><thead><tr>' + head.map(k => '<th scope="col">' + tr(k) + "</th>").join("") + '<th scope="col" class="acts"></th></tr></thead>';
   se.lots.forEach((l, i) => {
     if (only && l.id !== only) return;
     const shown = l.lines.filter(n => +n.boxes || +n.rate || (editLine && editLine.line === n.id)), lc = lotCalc(l);
@@ -4444,6 +4471,7 @@ function orchLotsTable(se, only) {
       '<button class="lbtn ldel" type="button" data-act="rmlot" data-id="' + esc(l.id) + '">🗑 ' + tr("lot_remove") + "</button>" +
       '<small class="taphint">' + tr("lot_taphint") + "</small>" +
       '<button class="btn-s add lotdone" type="button" data-act="lotdone">✓ ' + tr("ne_done") + "</button></span>";
+    cards += lotCardHtml(se, l, i, shown, lotEd, lotActs);
     const lotCell = '<th scope="rowgroup" rowspan="' + (Math.max(shown.length, 1) + 1) + '" class="lotc"><b>' + lotNo(i) + "</b>" + stChip(l) + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + lotActs + "</th>";
     h += '<tbody class="lotgrp">';
     if (!shown.length) h += "<tr>" + lotCell + '<td colspan="7" class="t none">' + tr("ne_none_lot") + '</td><td class="acts"></td></tr>';
@@ -4460,8 +4488,27 @@ function orchLotsTable(se, only) {
     const r = seasonCalc(se), net = r.rev - r.lotExp;
     h += '<tfoot><tr><th scope="row" colspan="3">' + tr("sp_otot") + "</th><td>" + fmtN(r.boxes) + "</td><td>" + inr(r.rev) + "</td><td>" + inr(r.lotExp) + '</td><td class="' + cls(net) + '">' + inr(net) +
       "</td><td>" + inr(r.eq ? net / r.eq : 0) + '</td><td class="acts"></td></tr></tfoot>';
+    cards += '<div class="lcotot"><span>' + tr("sp_otot") + "</span><b>" + fmtN(r.boxes) + " " + tr("lc_box") + " · " + tr("lc_bikri") + " " + inr(r.rev) + '</b><b class="' + cls(net) + '">' + tr("lc_mun") + " " + inr(net) + "</b></div>";
   }
-  return h + "</table></div>";
+  /* phones get the cards (no sideways scrolling), computers keep the table */
+  return h + '</table></div><div class="lcards">' + cards + "</div>";
+}
+/* one lot as a card: each grade line is "120 petiyan × ₹1,600", then bikri · kharcha, then munafa and paid/due */
+function lotCardHtml(se, l, i, shown, lotEd, lotActs) {
+  const cls = n => (n < 0 ? "neg" : "pos"), lc = lotCalc(l), gname = g => (GRADE_KEY[g] ? tr(GRADE_KEY[g]) : g) || "–";
+  let h = '<article class="lcard"><header class="lchd"><div class="lct"><b>' + lotNo(i) + "</b>" + stChip(l) + (autoName(l.name) ? "" : "<small>" + esc(l.name) + "</small>") + "</div>" + lotActs + "</header>";
+  if (!shown.length) h += '<p class="lcnone">' + tr("ne_none_lot") + "</p>";
+  shown.forEach(n => {
+    const c = lineCalc(n), ed = !!(editLine && editLine.line === n.id);
+    const qty = +n.lump > 0 ? (c.b ? "≈ " + fmtN(c.b) + " " + tr("lc_box") + " · " : "") + tr("lc_lump") : isKg(n) ? fmtN(+n.kg || 0) + " kg × " + inr(+n.rkg || 0) : fmtN(c.b) + " " + tr("lc_box") + " × " + inr(+n.rate || 0);
+    h += '<div class="lcline' + (ed ? " editing" : lotEd ? " tapedit" : "") + '"' + (!ed && lotEd ? ' data-act="sedit" data-lot="' + esc(l.id) + '" data-id="' + esc(n.id) + '" role="button" tabindex="0"' : "") + ">" +
+      '<div class="lcr1"><span class="lcg olg-' + gradeKey(n.grade) + '">' + esc(gname(n.grade)) + '</span><span class="lcq">' + qty + "</span></div>" +
+      '<div class="lcr2"><span>' + tr("lc_bikri") + " <b>" + inr(c.gross) + "</b></span><span>" + tr("lc_kh") + " <b>" + inr(c.exp) + "</b></span></div>" +
+      '<div class="lcr3"><span class="' + cls(c.net) + '">' + tr("lc_mun") + " <b>" + inr(c.net) + "</b>" + (c.eq ? ' <small>(' + inr(c.net / c.eq) + " " + tr("lc_pp") + ")</small>" : "") + "</span>" +
+      '<span class="lcpay ' + (n.paid ? "ok" : "due") + '">' + (n.paid ? "✓ " + tr("lc_paid") : "⏳ " + tr("lc_due")) + "</span>" + (ed ? '<span class="ed">' + tr("ne_editing") + "</span>" : lotEd ? '<span class="tapgo" aria-hidden="true">✎</span>' : "") + "</div></div>";
+  });
+  h += '<footer class="lcft"><span>' + tr("ne_tot") + ": " + fmtN(lc.b) + " " + tr("lc_box") + '</span><span class="' + cls(lc.net) + '">' + tr("lc_mun") + " <b>" + inr(lc.net) + "</b>" + (lc.eq ? " · " + inr(lc.nppb) + " " + tr("lc_pp") : "") + "</span></footer></article>";
+  return h;
 }
 function editBoxFor(se) {
   if (!editLine) return "";
@@ -8554,6 +8601,9 @@ Object.assign(T.hi, { by_gross:"बिक्री", by_net:"पेटी ख़
 Object.assign(T.hn, { by_gross:"Bikri", by_net:"Peti kharche ke baad", y_gp:"Peti kharche ke baad", r_profit:"Munafa", k_net:"Munafa", ls_net:"Munafa", by_npb:"Munafa per peti", hc_ppb:"Munafa per peti", ls_ppb:"Munafa per peti", mc_ppb:"Munafa per peti",
   y_sum:"Harvest saal ke hisaab se munafa", y_note:"Munafa = bikri − peti ke kharche − saal ke kharche (ek-musht rakam aur diary ke kharche bhi). Per peti hisaab mein aadhi peti aadhi gini jaati hai.",
   hz_split:"Peti ke kharche {a} + saal ke kharche {b}", ex_lumpm:"ek-musht rakam" });
+Object.assign(T.en, { lc_box:"boxes", lc_bikri:"Sales", lc_kh:"Expenses", lc_mun:"Profit", lc_pp:"per box", lc_paid:"Paid", lc_due:"Due", lc_lump:"lump sum" });
+Object.assign(T.hi, { lc_box:"पेटियाँ", lc_bikri:"बिक्री", lc_kh:"ख़र्च", lc_mun:"मुनाफ़ा", lc_pp:"प्रति पेटी", lc_paid:"मिला", lc_due:"बाक़ी", lc_lump:"एकमुश्त" });
+Object.assign(T.hn, { lc_box:"petiyan", lc_bikri:"Bikri", lc_kh:"Kharcha", lc_mun:"Munafa", lc_pp:"per peti", lc_paid:"Mila", lc_due:"Baaki", lc_lump:"ek-musht" });
 Object.assign(T.en, { hz_ally:"All years", hz_season:"Season", hz_now:"current", hz_older:"Older ▾" }); Object.assign(T.hi, { hz_ally:"सभी साल", hz_season:"सीज़न", hz_now:"चालू", hz_older:"पुराने ▾" }); Object.assign(T.hn, { hz_ally:"Sabhi saal", hz_season:"Season", hz_now:"chalu", hz_older:"Purane ▾" });
 Object.assign(T.en, { hz_none:"Nothing recorded for season {y} yet." }); Object.assign(T.hi, { hz_none:"सीज़न {y} का अभी कोई रिकॉर्ड नहीं।" }); Object.assign(T.hn, { hz_none:"Season {y} ka abhi koi record nahi." });
 Object.assign(T.en, { hz_due:"{x} still to come from buyers", hz_how:"How is profit worked out?" });
