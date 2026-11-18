@@ -2223,6 +2223,8 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 #tp-calc.hzo #rp-orch,#tp-calc.hzo #rp-exp,#tp-calc.hzo #rp-year,#tp-calc.hzo #rt-year,#tp-calc.hzo #status{display:none!important}
 .hzorch{margin-top:12px}
 .ohzgo{margin:12px 0 4px}.ohzgo .btn-s{width:100%;min-height:46px;font-weight:700;border:1.5px solid #3E8A3A;color:#1B5E2B;background:#F1F6EE}
+
+.hzsplit{font-size:.82rem;opacity:.85;margin-top:-2px}
 </style>
 </head>
 <body>
@@ -6163,7 +6165,7 @@ function renderExpList() {
   let h = '<h4>' + tr("ex_years") + '</h4><p class="hint">' + tr("ex_years_hint") + '</p><div class="ylist exlist figrows">';
   years.forEach(y => {
     const d = data[y], open = exOpen.has(y);
-    const ent = tr(d.ents === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(d.ents));
+    const ent = !d.ents && d.total ? tr("ex_lumpm") : tr(d.ents === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(d.ents));
     const top = Object.keys(d.cat).sort((a, b) => d.cat[b] - d.cat[a])[0];
     const who = y >= curHYear() ? tr("ex_sofar") : !d.total ? tr("ex_zero") : tr(d.n === 1 ? "ex_ymeta1" : "ex_ymeta").replace("{n}", d.n).replace("{e}", ent);
     h += '<div class="yrow' + (open ? " open" : "") + '" id="exy-' + y + '"><button class="yhead" type="button" data-exact="ytoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
@@ -6180,7 +6182,7 @@ function renderExpList() {
       }
       d.rows.forEach(r => {
         const o = r.o, t = r.t, trees = +o.trees, se = seFor(o.id, y), hasL = se && COST_KEYS.some(k => +se.costs[k] > 0);
-        const om = !t.total ? "" : tr(t.ents.length === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(t.ents.length)) + (trees && t.total ? ", " + tr("ex_ptree").replace("{x}", inr(t.total / trees)) : "") +
+        const om = !t.total ? "" : (!t.ents.length ? tr("ex_lumpm") : tr(t.ents.length === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(t.ents.length))) + (trees && t.total ? ", " + tr("ex_ptree").replace("{x}", inr(t.total / trees)) : "") +
           (t.lump ? ", " + tr("ex_pluslump").replace("{x}", inr(t.lump)) : "");
         const ok = spoKey(o.id, y), oopen = exoOpen.has(ok) || !!(exEdit && t.ents.some(e => e.id === exEdit));
         h += '<section class="spo exo yrow orow' + (oopen ? " open" : "") + '" id="exo-' + esc(o.id) + "-" + y + '"><button class="yhead" type="button" data-exact="otoggle" data-o="' + esc(o.id) + '" data-y="' + y + '" aria-expanded="' + oopen + '">' +
@@ -8488,6 +8490,16 @@ Object.assign(T.en, { orow_net:"{y} net profit {x}", orow_box:"{n} boxes" }); Ob
 Object.assign(T.en, { hz_ogo:"This orchard's accounts (Hisaab) →", hz_oall:"All orchards", hz_opick:"Orchard" });
 Object.assign(T.hi, { hz_ogo:"इस बाग़ का हिसाब →", hz_oall:"सभी बाग़", hz_opick:"बाग़" });
 Object.assign(T.hn, { hz_ogo:"Is bagiche ka hisaab →", hz_oall:"Sabhi bagiche", hz_opick:"Bagicha" });
+/* Hisaab words: Bikri (sales) − peti ke kharche = "after box costs"; minus saal ke kharche = Munafa. Same words on every tab. */
+Object.assign(T.en, { by_gross:"Sales", by_net:"After box costs", y_gp:"After box costs", r_profit:"Profit", k_net:"Profit", ls_net:"Profit", by_npb:"Profit per box", hc_ppb:"Profit per box", ls_ppb:"Profit per box", mc_ppb:"Profit per box",
+  y_sum:"Profit by harvest year", y_note:"Profit = sales − box costs − the year's expenses (lump sums and diary costs too). Half boxes count as half per box.",
+  hz_split:"Box costs {a} + year's expenses {b}", ex_lumpm:"lump sum" });
+Object.assign(T.hi, { by_gross:"बिक्री", by_net:"पेटी ख़र्च के बाद", y_gp:"पेटी ख़र्च के बाद", r_profit:"मुनाफ़ा", k_net:"मुनाफ़ा", ls_net:"मुनाफ़ा", by_npb:"प्रति पेटी मुनाफ़ा", hc_ppb:"प्रति पेटी मुनाफ़ा", ls_ppb:"प्रति पेटी मुनाफ़ा", mc_ppb:"प्रति पेटी मुनाफ़ा",
+  y_sum:"फ़सल वर्ष के हिसाब से मुनाफ़ा", y_note:"मुनाफ़ा = बिक्री − पेटी के ख़र्चे − साल के ख़र्चे (एकमुश्त रक़म और डायरी के ख़र्चे भी)। प्रति पेटी हिसाब में आधी पेटी आधी गिनी जाती है।",
+  hz_split:"पेटी के ख़र्चे {a} + साल के ख़र्चे {b}", ex_lumpm:"एकमुश्त रक़म" });
+Object.assign(T.hn, { by_gross:"Bikri", by_net:"Peti kharche ke baad", y_gp:"Peti kharche ke baad", r_profit:"Munafa", k_net:"Munafa", ls_net:"Munafa", by_npb:"Munafa per peti", hc_ppb:"Munafa per peti", ls_ppb:"Munafa per peti", mc_ppb:"Munafa per peti",
+  y_sum:"Harvest saal ke hisaab se munafa", y_note:"Munafa = bikri − peti ke kharche − saal ke kharche (ek-musht rakam aur diary ke kharche bhi). Per peti hisaab mein aadhi peti aadhi gini jaati hai.",
+  hz_split:"Peti ke kharche {a} + saal ke kharche {b}", ex_lumpm:"ek-musht rakam" });
 Object.assign(T.en, { ac_who_s:"Logged in as" }); Object.assign(T.hi, { ac_who_s:"लॉग इन:" }); Object.assign(T.hn, { ac_who_s:"Login hain" });
 Object.assign(T.en, { ac_who:"You are logged in as", ac_via_g:"Logged in with Google", ac_via_p:"Logged in with mobile (WhatsApp code)", ac_via_e:"Logged in with email" });
 Object.assign(T.hi, { ac_who:"आप इस खाते से लॉग इन हैं", ac_via_g:"Google से लॉग इन", ac_via_p:"मोबाइल (WhatsApp कोड) से लॉग इन", ac_via_e:"ईमेल से लॉग इन" });
@@ -9285,8 +9297,8 @@ const hzOrch = () => (hzO && S.orchards.find(o => o.id === hzO)) || null;
 /* one orchard's money for a season: same numbers as the all-orchards card */
 function hzOYear(o, y) {
   const se = seFor(o.id, y);
-  if (se) { const r = seasonCalc(se); return {sales: r.rev, kh: r.lotExp + r.yearly, net: r.profit, eq: r.eq, boxes: r.boxes}; }
-  const k = expTotals(o, y).total; return {sales: 0, kh: k, net: -k, eq: 0, boxes: 0};
+  if (se) { const r = seasonCalc(se); return {sales: r.rev, kh: r.lotExp + r.yearly, net: r.profit, eq: r.eq, boxes: r.boxes, pbe: r.lotExp, yearly: r.yearly}; }
+  const k = expTotals(o, y).total; return {sales: 0, kh: k, net: -k, eq: 0, boxes: 0, pbe: 0, yearly: k};
 }
 function renderHzO() {
   const el = $("hzOrch"), pc = $("tp-calc"); if (!el || !pc) return;
@@ -9298,11 +9310,13 @@ function renderHzO() {
   el.hidden = false;
   el.innerHTML = curSub === "exp" ? otKharchHtml(o) : '<section class="osec omoney" id="oMoney">' + otMoneyHtml(o) + "</section>";
 }
-function hzCardHtml(y, sales, kharche, net, eq, boxes, label, cur) {
+function hzCardHtml(y, sales, kharche, net, eq, boxes, label, cur, split) {
   const m = cur && !sales ? '<span class="m"><span class="k">' + tr("hz_mun") + "</span><b>…</b></span>" : '<span class="m"><span class="k">' + tr("hz_mun") + '</span><b' + (net < 0 ? ' class="neg"' : "") + ">" + shortInr(net) + "</b></span>";
   const foot = cur && !sales ? tr("hz_end") : eq > 0 ? tr("hz_ppb").replace("{x}", inr(net / eq)).replace("{b}", fmtN(boxes)) : "";
   return '<div class="hzcard"><span class="w">' + esc(label) + '</span><div class="hzeq"><span><span class="k">' + tr("hz_bikri") + "</span><b>" + shortInr(sales) + '</b></span><span class="op">−</span>' +
-    '<span><span class="k">' + tr("hz_kharche") + "</span><b>" + shortInr(kharche) + '</b></span><span class="op">=</span>' + m + "</div>" + (foot ? '<span class="f">' + esc(foot) + "</span>" : "") + "</div>";
+    '<span><span class="k">' + tr("hz_kharche") + "</span><b>" + shortInr(kharche) + '</b></span><span class="op">=</span>' + m + "</div>" +
+    (split && split[0] > 0 && kharche > 0 ? '<span class="hzsplit">' + esc(tr("hz_split").replace("{a}", shortInr(split[0])).replace("{b}", shortInr(split[1]))) + "</span>" : "") +
+    (foot ? '<span class="f">' + esc(foot) + "</span>" : "") + "</div>";
 }
 function hzYears() {
   const cy = curHYear(), ys = new Set([cy]); try { glYears().forEach(y => ys.add(y)); } catch (e) {}
@@ -9317,11 +9331,11 @@ function renderHzTop() {
   const ochips = S.orchards.length > 1 || oo ? '<div class="hzchips hzochips" role="group" aria-label="' + esc(tr("hz_opick")) + '"><button type="button" data-hzo="" aria-pressed="' + !oo + '">' + tr("hz_oall") + "</button>" +
     S.orchards.map(o => '<button type="button" data-hzo="' + esc(o.id) + '" aria-pressed="' + (!!oo && oo.id === o.id) + '">' + esc(o.name || tr("orchard_fallback")) + "</button>").join("") + "</div>" : "";
   let card;
-  if (oo) { const t = hzOYear(oo, hzY); card = hzCardHtml(hzY, t.sales, t.kh, t.net, t.eq, t.boxes, tr("hz_ocard").replace("{o}", oo.name || tr("orchard_fallback")).replace("{y}", hzY), hzY === cy); }
+  if (oo) { const t = hzOYear(oo, hzY); card = hzCardHtml(hzY, t.sales, t.kh, t.net, t.eq, t.boxes, tr("hz_ocard").replace("{o}", oo.name || tr("orchard_fallback")).replace("{y}", hzY), hzY === cy, [t.pbe, t.yearly]); }
   else {
     const d = yearSummary(hzY), t = d.tot;
     const eq = S.orchards.reduce((a, o) => { const se = seFor(o.id, hzY); return a + (se ? seasonCalc(se).eq : 0); }, 0);
-    card = hzCardHtml(hzY, t.sales, t.pbe + t.yearly, t.net, eq, t.boxes, tr("hz_card").replace("{y}", hzY), hzY === cy);
+    card = hzCardHtml(hzY, t.sales, t.pbe + t.yearly, t.net, eq, t.boxes, tr("hz_card").replace("{y}", hzY), hzY === cy, [t.pbe, t.yearly]);
   }
   el.innerHTML = '<div class="hzchips" role="group">' + ys.map(y => '<button type="button" data-hzy="' + y + '" aria-pressed="' + (y === hzY) + '">' + esc(y === cy ? tr("hz_cur").replace("{y}", y) : String(y)) + "</button>").join("") + "</div>" + ochips + card;
   el.hidden = false;
