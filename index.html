@@ -7248,7 +7248,8 @@ function renderHome() {
     spray: '<path d="M5 20l5-5"/><path d="M10 15l4-9 4 4-9 4"/><path d="M16 4l4 4"/>',
     news: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/>'
   };
-  const blk = (act, k, title, sub) => '<button class="hmblk hb-' + k + '" type="button" data-hm="' + act + '"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] + "</svg><span><b>" + title + "</b><span>" + sub + "</span></span></button>";
+  const o0 = S.orchards[0], tree = '<span class="dthumb hbtree" aria-hidden="true">' + (o0 && o0.photo ? '<img src="' + o0.photo + '" alt="">' : treeArt(o0 ? o0.id + (o0.name || "") : "Seb Saathi")) + "</span>";
+  const blk = (act, k, title, sub) => '<button class="hmblk hb-' + k + '" type="button" data-hm="' + act + '">' + (k === "orch" ? tree : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] + "</svg>") + "<span><b>" + title + "</b><span>" + sub + "</span></span></button>";
   h += '<div class="hmblocks">' +
     blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
     blk("munafa", "mun", tr("pt_year"), p ? esc(tr("hb_mun_s").replace("{y}", p.y).replace("{x}", inr(p.net))) : tr("hb_mun_0")) +
@@ -8644,6 +8645,9 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
 .hb-dx{--c:#C2410C;background:linear-gradient(rgba(194,65,12,.10),rgba(194,65,12,.10)),var(--surface);border-color:rgba(194,65,12,.28)}
 .hb-chat{--c:#1B5E2B;background:linear-gradient(rgba(246,239,227,.9),rgba(246,239,227,.9)),var(--surface);border-color:rgba(27,94,43,.25)}
 .hmblk:hover{filter:brightness(.98)}
+.hmblk .hbtree{width:48px;height:48px;border-radius:12px}
+.hmblk .hbtree svg{width:100%;height:100%;padding:0;background:none;border-radius:0}
+.hmblk .hbtree img{width:100%;height:100%;object-fit:cover;display:block}
 /* bottom bar + Aur page (phone, logged in) */
 .qxnav,.hdrsaathi{display:none}
 .more{display:grid;gap:10px;max-width:640px;margin:0 auto}
@@ -8890,8 +8894,8 @@ function renderGBlocks() {
     chat: '<path d="M4 5h16v11H8l-4 4z"/>'
   };
   const cls = {orch: "hb-orch", mun: "hb-mun", exp: "hb-exp", dx: "hb-dx", spray: "hb-spray", chat: "hb-chat"};
-  const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" data-gb="' + k + '"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
-    "</svg><span><b>" + title + "</b><span>" + sub + "</span>" + (see ? '<span class="see">' + tr("gb_see") + "</span>" : "") + "</span></button>";
+  const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" data-gb="' + k + '">' + (k === "orch" ? '<span class="dthumb hbtree" aria-hidden="true">' + treeArt("Seb Saathi") + "</span>" : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
+    "</svg>") + "<span><b>" + title + "</b><span>" + sub + "</span>" + (see ? '<span class="see">' + tr("gb_see") + "</span>" : "") + "</span></button>";
   el.innerHTML = "<h3>" + tr("gb_h") + '</h3><div class="grid">' +
     blk("orch", tr("tt_rec"), tr("gb_orch"), true) + blk("mun", tr("pt_year"), tr("gb_mun"), true) + blk("exp", tr("hb_exp"), tr("gb_exp"), true) +
     blk("dx", tr("hm_cam"), tr("gb_dx")) + blk("spray", tr("hm_go_spray"), tr("gb_spray")) + blk("chat", "Saathi", tr("gb_chat")) + "</div>";
