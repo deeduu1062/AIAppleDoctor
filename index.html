@@ -2500,29 +2500,37 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     </div>
 
     <div class="tpanel" id="tp-diag" role="tabpanel" aria-labelledby="tt-diag" hidden>
-      <div class="thead"><h3 data-i18n="dx_h"></h3><span class="pill live" data-i18n="s_live"></span></div>
-      <p data-i18n="dx_p"></p>
+      <div class="thead"><h3 data-i18n="dx_h"></h3></div>
+      <p class="sub2" data-i18n="dxs_p"></p>
       <div id="dxRes" aria-live="polite"></div>
 
-      <section class="dxsec" aria-labelledby="dxPhH">
-        <div class="thead"><h4 id="dxPhH" data-i18n="dx_ph_h"></h4><span class="pill" data-i18n="dx_ph_pill"></span></div>
-        <p class="sub2" data-i18n="dx_ph_p"></p>
+      <section class="dxsec dxs" aria-labelledby="dxPhH">
         <div id="dxGate" class="dxgate" hidden><p data-i18n="dx_gate"></p><button class="btn-s add" type="button" id="dxSign" data-i18n="hdr_signin"></button></div>
         <div id="dxForm" class="dxform" hidden>
-          <div hidden aria-hidden="true"><!-- part buttons and sign ticks taken out: only the photo upload is shown -->
+          <div hidden aria-hidden="true"><!-- part buttons and sign ticks taken out: only the photo is asked for -->
             <div class="dxparts" id="dxParts"></div>
             <div id="dxSymWrap"><div class="dxsyms" id="dxSyms"></div></div>
+            <input id="dxFile" type="file" accept="image/*" multiple tabindex="-1">
           </div>
           <select id="dxPart" hidden aria-hidden="true" tabindex="-1"></select>
-          <div class="field"><label for="dxOrch" data-i18n="dx_orch"></label><select id="dxOrch"></select><p class="fine" data-i18n="dx_orch_p" style="margin:4px 0 0"></p></div>
-          <div class="field"><label for="dxStage" data-i18n="dx_stage"></label><select id="dxStage"></select><p class="fine" data-i18n="dx_stage_p" style="margin:4px 0 0"></p></div>
-          <div class="field"><label for="dxFile" data-i18n="dx_file"></label><p class="fine" data-i18n="dx_shots" style="margin:0 0 6px"></p><input id="dxFile" type="file" accept="image/*" multiple><input id="dxCam" type="file" accept="image/*" capture="environment" aria-hidden="true" tabindex="-1" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"><input id="dxGal" type="file" accept="image/*" multiple aria-hidden="true" tabindex="-1" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></div>
+          <!-- step 1: the photo -->
+          <h4 class="dxsq" id="dxPhH"><span>1</span><b data-i18n="dxs_s1"></b></h4>
+          <div class="dxs2b"><button class="btn-s" type="button" id="dxsCam"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-i18n="hm_cam_take"></span></button><button class="btn-s" type="button" id="dxsGal"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg><span data-i18n="hm_cam_gal"></span></button></div>
+          <p class="fine dxshots" data-i18n="dxs_shots"></p>
+          <input id="dxCam" type="file" accept="image/*" capture="environment" aria-hidden="true" tabindex="-1" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"><input id="dxGal" type="file" accept="image/*" multiple aria-hidden="true" tabindex="-1" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
           <div class="dxthumbs" id="dxThumbs"></div>
-          <div class="field"><label for="dxNote" data-i18n="dx_note"></label><div class="microw"><textarea id="dxNote" rows="2" maxlength="400"></textarea><button class="micbtn" type="button" data-mic="dxNote" hidden></button></div><p class="fine micst" id="dxNoteMic" role="status"></p></div>
-          <label class="chk dxkeep"><input type="checkbox" id="dxKeep"><span><b data-i18n="dx_keep"></b><br><small class="fine" data-i18n="dx_keep_p"></small></span></label>
-          <label class="chk dxkeep"><input type="checkbox" id="dxSpeak"><span><b data-i18n="dx_speak"></b></span></label>
+          <!-- step 2 shows only once a photo is in: which orchard, then Check -->
+          <div class="dxstep2" id="dxStep2">
+            <div class="field dxofield"><h4 class="dxsq"><span>2</span><b data-i18n="dxs_s2"></b></h4><div class="dxochips" id="dxOrchChips"></div><select id="dxOrch" hidden aria-hidden="true" tabindex="-1"></select></div>
+            <details class="dxmore"><summary data-i18n="dxs_more"></summary>
+              <div class="field"><label for="dxStage" data-i18n="dx_stage"></label><select id="dxStage"></select></div>
+              <div class="field"><label for="dxNote" data-i18n="dx_note"></label><div class="microw"><textarea id="dxNote" rows="2" maxlength="400"></textarea><button class="micbtn" type="button" data-mic="dxNote" hidden></button></div><p class="fine micst" id="dxNoteMic" role="status"></p></div>
+              <label class="chk dxkeep"><input type="checkbox" id="dxSpeak"><span><b data-i18n="dx_speak"></b></span></label>
+              <label class="chk dxkeep"><input type="checkbox" id="dxKeep"><span><b data-i18n="dx_keep"></b><br><small class="fine" data-i18n="dx_keep_p"></small></span></label>
+            </details>
+            <div class="linkrow"><button class="btn-s add dxgo" type="button" id="dxGo" data-i18n="dx_go"></button><span class="fine" id="dxStat" role="status"></span></div>
+          </div>
           <p class="dxseen" id="dxSeen" hidden></p>
-          <div class="linkrow"><button class="btn-s add" type="button" id="dxGo" data-i18n="dx_go"></button><span class="fine" id="dxStat" role="status"></span></div>
           <p class="autherr" id="dxErr" role="alert"></p>
         </div>
         <div id="dxAi" aria-live="polite"></div>
@@ -2544,8 +2552,8 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
         <div class="dxmap" id="dxAreaMap" hidden></div>
       </section>
 
-      <div><h4 data-i18n="d_tips_h"></h4><ul class="tlist"><li data-i18n="d_t1"></li><li data-i18n="d_t2"></li><li data-i18n="d_t3"></li><li data-i18n="d_t4"></li></ul></div>
-      <p class="tnote" data-i18n="dx_safe"></p>
+      <details class="dxtips"><summary data-i18n="dxs_tips"></summary><ul class="tlist"><li data-i18n="d_t1"></li><li data-i18n="d_t2"></li><li data-i18n="d_t3"></li><li data-i18n="d_t4"></li></ul></details>
+      <p class="tnote dxsafe" data-i18n="dx_safe"></p>
     </div>
 
     <div class="tpanel" id="tp-news" role="tabpanel" aria-labelledby="tt-news" hidden>
@@ -6994,7 +7002,15 @@ function renderDxOrch() {
   if (!dxOrchSel && L.length === 1) dxOrchSel = L[0].id;
   el.innerHTML = '<option value="">' + esc(tr("dx_orch_none")) + "</option>" + L.map(o => '<option value="' + esc(o.id) + '"' + (o.id === dxOrchSel ? " selected" : "") + ">" + esc(o.name || tr("orchard_fallback")) + "</option>").join("");
   el.closest(".field").hidden = !L.length;
+  /* orchard as big tap chips (photo first, then which orchard) */
+  const ch = $("dxOrchChips");
+  if (ch) ch.innerHTML = L.map(o => '<button type="button" class="dxochip" data-dxo="' + esc(o.id) + '" aria-pressed="' + (o.id === dxOrchSel) + '">' + esc(o.name || tr("orchard_fallback")) + "</button>").join("");
 }
+$("dxOrchChips").addEventListener("click", e => {
+  const b = e.target.closest("[data-dxo]"); if (!b) return;
+  dxOrchSel = dxOrchSel === b.dataset.dxo ? "" : b.dataset.dxo;   /* tap again to unpick */
+  $("dxOrch").value = dxOrchSel; renderDxOrch();
+});
 $("dxOrch").addEventListener("change", e => { dxOrchSel = e.target.value; });
 $("dxSign").addEventListener("click", () => goLogin(false));
 
@@ -7043,16 +7059,21 @@ $("dxFile").addEventListener("change", () => dxTakeFiles(Array.from($("dxFile").
 $("dxCam").addEventListener("change", async () => {
   const fs = Array.from($("dxCam").files || []); $("dxCam").value = "";
   if (!fs.length) return;
-  await dxTakeFiles(fs);
-  if (dxFiles.length) $("dxGo").click();
+  await dxTakeFiles(fs); dxToStep2();
 });
 /* one tap from the home screen: pick photos already on the phone (gallery), and the check starts as soon as they are chosen */
 $("dxGal").addEventListener("change", async () => {
   const fs = Array.from($("dxGal").files || []); $("dxGal").value = "";
   if (!fs.length) return;
-  await dxTakeFiles(fs);
-  if (dxFiles.length) $("dxGo").click();
+  await dxTakeFiles(fs); dxToStep2();
 });
+/* after the photo: bring "which orchard?" and the Check button into view */
+function dxToStep2() {
+  if (!dxFiles.length) return;
+  const st = $("dxStep2"); if (st && st.scrollIntoView) setTimeout(() => st.scrollIntoView({behavior: "smooth", block: "center"}), 60);
+}
+$("dxsCam").addEventListener("click", () => { set("dxErr", ""); if (isIOS) $("dxGal").click(); else $("dxCam").click(); });
+$("dxsGal").addEventListener("click", () => { set("dxErr", ""); $("dxGal").click(); });
 
 let dxQ = [], dxQualOk = false;
 $("dxGo").addEventListener("click", async () => {
@@ -9054,6 +9075,25 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
 .hb-exp{--c:#B8321F;background:linear-gradient(rgba(184,50,31,.09),rgba(184,50,31,.09)),var(--surface);border-color:rgba(184,50,31,.28)}
 .hb-spray{--c:#2C6E8F;background:linear-gradient(rgba(44,110,143,.11),rgba(44,110,143,.11)),var(--surface);border-color:rgba(44,110,143,.30)}
 .hb-news{--c:#5A4FA0;background:linear-gradient(rgba(90,79,160,.10),rgba(90,79,160,.10)),var(--surface);border-color:rgba(90,79,160,.28)}
+/* disease check: photo first (two big buttons), then orchard chips, then Check */
+.dxs{border-top:0!important;padding-top:4px}
+.dxsq{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:1.02rem}
+.dxsq span{width:24px;height:24px;border-radius:50%;background:var(--apple);color:#fff;display:grid;place-items:center;font:700 .8rem var(--body);flex:none}
+.dxs2b{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dxs2b button{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;width:100%;border-radius:14px;background:linear-gradient(135deg,rgba(232,120,40,.12),rgba(184,50,31,.08)),var(--surface);border:1.5px solid rgba(184,50,31,.40);color:#8F2516;font-weight:700;font-size:1rem}
+.dxshots{margin:8px 0 0}
+.dxthumbs:empty+.dxstep2{display:none}
+.dxstep2{display:grid;gap:12px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line,rgba(0,0,0,.12))}
+.dxstep2 .field{margin:0}
+.dxochips{display:flex;flex-wrap:wrap;gap:8px}
+.dxochip{min-height:42px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line,rgba(0,0,0,.18));background:var(--surface);font:600 .95rem var(--body);color:var(--fg);cursor:pointer}
+.dxochip[aria-pressed="true"]{background:var(--brand-bg);border-color:var(--brand-bg);color:var(--on-brand)}
+.dxmore summary,.dxtips summary{cursor:pointer;font-weight:600;color:var(--brand);padding:6px 0}
+.dxmore[open]{display:grid;gap:12px}
+.dxgo{width:100%;min-height:48px;font-size:1.05rem}
+.dxstep2 .linkrow{display:grid;gap:6px}
+.dxtips{margin-top:8px}
+.dxsafe{font-size:.85rem}
 .hb-his{--c:#1B5E2B;background:linear-gradient(rgba(27,94,43,.11),rgba(27,94,43,.11)),var(--surface);border-color:rgba(27,94,43,.30)}
 .hmblocks .hmdxask{grid-column:1/-1}
 .hmblocks.dxopen .hmblk:last-child{grid-column:1/-1;min-height:0}
@@ -9381,6 +9421,13 @@ Object.assign(T.hn, { hz_tab:"Hisaab", hz_bikri:"Bikri", hz_kharche:"Kharche", h
 Object.assign(T.en, { hb_his_s:"{y}: {x} net · {b} boxes" });
 Object.assign(T.hi, { hb_his_s:"{y}: {x} शुद्ध · {b} पेटियाँ" });
 Object.assign(T.hn, { hb_his_s:"{y}: {x} net · {b} petiyan" });
+/* simpler disease check page: photo first, then orchard, then Check */
+Object.assign(T.en, { dxs_p:"Take a photo of the problem and get the likely cause and what to do next.", dxs_s1:"Take or choose a photo", dxs_shots:"Up to 3 close, clear photos in daylight.",
+  dxs_s2:"Which orchard is it from?", dxs_more:"Add more detail (optional)", dxs_tips:"How to take a good photo" });
+Object.assign(T.hi, { dxs_p:"समस्या की फ़ोटो लें और संभावित कारण और आगे क्या करें, जानें।", dxs_s1:"फ़ोटो लें या चुनें", dxs_shots:"दिन की रोशनी में पास से ली हुई 3 तक साफ़ फ़ोटो।",
+  dxs_s2:"किस बाग़ की है?", dxs_more:"और जानकारी जोड़ें (ज़रूरी नहीं)", dxs_tips:"अच्छी फ़ोटो कैसे लें" });
+Object.assign(T.hn, { dxs_p:"Samasya ki photo lein aur sambhavit kaaran aur aage kya karein, jaanein.", dxs_s1:"Photo lein ya chunein", dxs_shots:"Din ki roshni mein paas se li hui 3 tak saaf photos.",
+  dxs_s2:"Kis bagiche ki hai?", dxs_more:"Aur jaankari jodein (zaroori nahi)", dxs_tips:"Achhi photo kaise lein" });
 /* orchard page: Saar · Bikri · Kharche (the money tab is the orchard's sales and profit) */
 T.en.ot_hisab = "Sales"; T.hi.ot_hisab = "बिक्री"; T.hn.ot_hisab = "Bikri";
 OTABS.splice(0, OTABS.length, "det", "hisab", "work");
