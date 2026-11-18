@@ -8617,16 +8617,19 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
 .more .out{justify-self:center;border:0;background:none;color:var(--apple);font:700 1.05rem var(--body);min-height:44px;padding:0 16px;cursor:pointer}
 @media (max-width:700px){
   html.app body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-  html.app .qxrow0,html.app #acctBar,html.app #shareBtn,html.app #signBtn,html.app #chatFab,html.app #fbBtn,html.app .qxfab{display:none!important}
-  html.app .hdrsaathi{display:inline-flex;align-items:center;gap:6px;border:0;background:#1B5E2B;color:#fff;border-radius:999px;padding:0 12px 0 5px;min-height:38px;font:600 .9rem var(--body);cursor:pointer}
-  html.app .hdrsaathi .av{width:28px;height:28px;border-radius:50%;background:#F6EFE3;display:grid;place-items:center}
+  html.app .qxrow0,html.app #acctBar,html.app #shareBtn,html.app #signBtn,html.app #fbBtn,html.app .qxfab,html.app .hdrsaathi{display:none!important}
+  html.app #chatFab{bottom:calc(92px + env(safe-area-inset-bottom,0px));padding:0;width:58px;height:58px;min-height:58px;justify-content:center;border:3px solid var(--surface)}
+  html.app #chatFab .av{width:42px;height:42px}
+  html.app #chatFab #chatFabT{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  html.app .hdrsaathi-x{display:inline-flex;align-items:center;gap:6px;border:0;background:#1B5E2B;color:#fff;border-radius:999px;padding:0 12px 0 5px;min-height:38px;font:600 .9rem var(--body);cursor:pointer}
+  html.app .hdrsaathi-x .av{width:28px;height:28px;border-radius:50%;background:#F6EFE3;display:grid;place-items:center}
   html.app .qxnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:22;
     padding:6px 4px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px -14px rgba(0,0,0,.4)}
   html.app .qxnav button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--muted);font:600 .8rem var(--body);min-height:50px;padding:0;cursor:pointer}
   html.app .qxnav button[aria-current="page"]{color:var(--apple);font-weight:700}
   html.app .qxnav .plus{color:var(--apple);font-weight:700}
   html.app .qxnav .plus .c{width:58px;height:58px;margin-top:-24px;border-radius:50%;background:var(--apple);color:var(--on-apple);display:grid;place-items:center;border:4px solid var(--surface);box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
-  html.app .qxtoast{bottom:calc(98px + env(safe-area-inset-bottom,0px))}
+  html.app .qxtoast{bottom:calc(160px + env(safe-area-inset-bottom,0px))}
 }
 @media print{.qxnav{display:none!important}}
 html.shro .qxnav .plus{visibility:hidden}`;
