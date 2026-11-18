@@ -493,6 +493,21 @@ html[lang="hi"] .months .now{font-family:var(--body);font-size:.85rem}
 .ctlinks{display:grid;gap:10px;margin-top:12px}
 .ctlinks a{display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);font-weight:600;text-decoration:none;overflow-wrap:anywhere}
 .ctlinks a.wa{background:#1F7A45;border-color:#1F7A45;color:#fff}
+/* compact Contact us */
+#contact{padding-block:28px}
+#contact h2{font-size:1.35rem;margin-bottom:4px}
+#contact .lede{font-size:.92rem;margin:0}
+#contact .ctgrid{gap:14px;margin-top:12px}
+.ctform{gap:8px!important;padding:12px!important;max-width:520px}
+.ctform .field{gap:3px}
+.ctform label{font-size:.82rem}
+.ctform input,.ctform textarea{min-height:38px!important;padding:7px 10px!important;font-size:.95rem!important}
+.ctform textarea{min-height:64px!important}
+.ctform .btn-s{min-height:38px!important;padding-inline:18px!important;font-size:.92rem}
+.ctform .autherr:empty,.ctform .sentmsg:empty{display:none}
+.ctother h3{font-size:.95rem!important;margin:0}
+.ctlinks{gap:6px!important;margin-top:6px!important}
+.ctlinks a{min-height:38px!important;padding:6px 12px!important;font-size:.9rem}
 .footlinks{margin-bottom:6px}.footlinks a{color:inherit;font-weight:600}
 
 /* plans + UPI payment */
@@ -2601,7 +2616,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
       <form class="ctform" id="ctForm" novalidate>
         <div class="field"><label for="ctName" data-i18n="ct_name"></label><input id="ctName" type="text" maxlength="80" autocomplete="name"></div>
         <div class="field"><label for="ctReach" data-i18n="ct_reach"></label><input id="ctReach" type="text" maxlength="120" autocomplete="tel" inputmode="email"></div>
-        <div class="field"><label for="ctMsg" data-i18n="ct_msg"></label><textarea id="ctMsg" rows="4" maxlength="1800"></textarea></div>
+        <div class="field"><label for="ctMsg" data-i18n="ct_msg"></label><textarea id="ctMsg" rows="2" maxlength="1800"></textarea></div>
         <button class="btn-s add" type="submit" id="ctSend" data-i18n="ct_send"></button>
         <p class="autherr" id="ctErr" role="alert"></p>
         <p class="sentmsg" id="ctOk" role="status"></p>
