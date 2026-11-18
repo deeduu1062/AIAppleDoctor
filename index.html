@@ -8919,7 +8919,15 @@ Object.assign(T.hn, { gn_dx:"Bimari", gn_calc:"Calculator", gn_spray:"Spray", gb
   html.gapp .gblocks .hmblk .hbtree svg{width:100%;height:100%;padding:0}
   html.gapp .gblocks .hmblk b{font-size:.9rem;line-height:1.2}
   html.gapp .gblocks .hmblk span span,html.gapp .gblocks .hmblk .see{display:none}
-}`;
+  html.gapp .gblocks .hmblk .hbsaathi{display:grid}
+  /* no big gap between the blocks and "how it works" */
+  html.gapp .gblocks{margin-bottom:4px}
+  html.gapp #landing > .lpvid:first-child{padding-top:12px}
+}
+/* Saathi block uses the same logo as the Saathi chat button */
+.hmblk .hbsaathi{flex:none;width:44px;height:44px;box-sizing:border-box;border-radius:50%;background:#F6EFE3;border:3px solid #1B5E2B;display:grid;place-items:center}
+.hmblk .hbsaathi svg{width:62%;height:62%;padding:0;background:none;border-radius:0}
+@media (max-width:700px){html.gapp .gblocks .hmblk .hbsaathi{width:38px;height:38px}}`;
   document.head.appendChild(css);
   const sv = p => '<svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + "</svg>";
   const nav = document.createElement("nav");
@@ -8966,7 +8974,7 @@ function renderGBlocks() {
     chat: '<path d="M4 5h16v11H8l-4 4z"/>'
   };
   const cls = {orch: "hb-orch", mun: "hb-mun", exp: "hb-exp", dx: "hb-dx", spray: "hb-spray", chat: "hb-chat"};
-  const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" data-gb="' + k + '">' + (k === "orch" ? '<span class="dthumb hbtree" aria-hidden="true">' + treeArt("Seb Saathi") + "</span>" : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
+  const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" data-gb="' + k + '">' + (k === "orch" ? '<span class="dthumb hbtree" aria-hidden="true">' + treeArt("Seb Saathi") + "</span>" : k === "chat" && document.querySelector("#chatFab .av") ? '<span class="hbsaathi" aria-hidden="true">' + document.querySelector("#chatFab .av").innerHTML + "</span>" : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
     "</svg>") + "<span><b>" + title + "</b><span>" + sub + "</span>" + (see ? '<span class="see">' + tr("gb_see") + "</span>" : "") + "</span></button>";
   el.innerHTML = "<h3>" + tr("gb_h") + '</h3><div class="grid">' +
     blk("orch", tr("tt_rec"), tr("gb_orch"), true) + blk("mun", tr("pt_year"), tr("gb_mun"), true) + blk("exp", tr("hb_exp"), tr("gb_exp"), true) +
