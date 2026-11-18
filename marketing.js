@@ -439,6 +439,7 @@ async function loadMk() {
     mkLocal = true;
     try { MK = JSON.parse(localStorage.getItem("mk-state") || "{}") || {}; } catch (x) { MK = {}; }
   }
+  mkUiApply();   /* view, Create choice and video-maker toggle follow the admin account, so phone and computer match */
   renderMk(); loadSoc(); loadMeta(); loadQ(); loadStats(); loadPilots(); loadCosts2(); loadYtStats();
   mkInv = null; mkInvErr = "";
   try { const r = await sb.rpc("admin_invites"); if (r.error) mkInvErr = "setup"; else mkInv = r.data || []; } catch (e) { mkInvErr = "setup"; }
@@ -1413,10 +1414,20 @@ document.addEventListener("click", e => {   /* Create tab: what to make */
 });
 document.addEventListener("click", e => {
   if (!(e.target.closest && e.target.closest("[data-mkfbvid]"))) return;
-  mkFbVid = !mkFbVid; try { localStorage.setItem("mk-fbvid", mkFbVid ? "1" : "0"); } catch (x) {}
+  mkFbVid = !mkFbVid; try { localStorage.setItem("mk-fbvid", mkFbVid ? "1" : "0"); } catch (x) {} mkUiSave();
   renderMk(); if (mkFbVid) { const el = $("mkStudio"); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }
 });
-const mkGo = t => { mkSub = t; try { localStorage.setItem("mk-sub2", t); } catch (e) {} renderMk(); };
+const mkGo = t => { mkSub = t; try { localStorage.setItem("mk-sub2", t); } catch (e) {} mkUiSave(); renderMk(); };
+/* the Social handler's view settings are saved in the admin account (admin_marketing key "ui"), not just this browser */
+function mkUiSave() { try { mkSave("ui", { value: JSON.stringify({ sub: mkSub, make: mkMake, fbvid: mkFbVid }) }); } catch (e) {} }
+function mkUiApply() {
+  let u = null; try { u = JSON.parse((MK.ui && MK.ui.value) || "null"); } catch (e) {}
+  if (!u) return;
+  if (/^(today|create|results|settings|fb|yt|wa|more)$/.test(u.sub || "")) mkSub = u.sub;
+  if (/^(week|post|video|saved)$/.test(u.make || "")) mkMake = u.make;
+  if (typeof u.fbvid === "boolean") mkFbVid = u.fbvid;
+  try { localStorage.setItem("mk-sub2", mkSub); localStorage.setItem("mk-make", mkMake); localStorage.setItem("mk-fbvid", mkFbVid ? "1" : "0"); } catch (e) {}
+}
 const mkMsgIsFb = m => /facebook/i.test(m[0]);
 const mkSec = (id, title, sub, body) => '<details class="mksec" data-mksec="' + id + '"' + (mkOpen.has(id) ? " open" : "") + '><summary><b>' + title + "</b>" + (sub ? '<span class="fine">' + sub + "</span>" : "") + "</summary>" + body + "</details>";
 function renderMk() {
@@ -1665,7 +1676,10 @@ W.addEventListener("click", async e => {
   if (use) {   /* put this message in the post box (Posts and videos), ready to post on Facebook / Instagram or schedule */
     let t = mkText(use.dataset.mkuse);
     if (/[?&]src=wa\b/.test(t)) t = t.replace(/([?&])src=wa\b/g, "$1src=fb");   /* a WhatsApp link posted on Facebook counts as Facebook */
-    mkPostText = t; mkImg = null; mkPostRes = null; mkCompose = true; mkOpen.add("content"); mkSub = "fb"; try { localStorage.setItem("mk-sub", "fb"); } catch (x) {} renderMk();
+    mkPostText = t; mkImg = null; mkPostRes = null; mkCompose = true; mkOpen.add("content");
+    /* stay in the view you are using: new view → Create › Post (its "write it myself" box); classic view → Facebook tab */
+    if (mkNewView()) { mkMake = "post"; mkSub = "create"; } else mkSub = "fb";
+    try { localStorage.setItem("mk-sub2", mkSub); localStorage.setItem("mk-make", mkMake); } catch (x) {} mkUiSave(); renderMk();
     const box = $("mkpText"); if (box) { box.scrollIntoView({ block: "center", behavior: "smooth" }); try { box.focus({ preventScroll: true }); } catch (x) {} }
     return;
   }
