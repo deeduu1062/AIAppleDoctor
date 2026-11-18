@@ -7294,7 +7294,7 @@ function renderHome() {
   let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>" + (typeof fgHtml === "function" ? fgHtml() : "");
   h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
     '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
-    (p ? '<span><span class="k">' + esc(tr("hms_ppb").replace("{y}", p.y)) + '</span><b' + (p.ppb < 0 ? ' class="neg"' : "") + ">" + inr(p.ppb) + "</b></span>" : '<span><span class="k">' + tr("hm_ppb_none") + "</span><b>＋</b></span>") + "</button>";
+    "</button>";   /* only this season's spend here; net per peti lives in Hisaab */
   h += '<div class="hmcam2' + (hmDxOpen ? " open" : "") + '"><button class="hd" type="button" data-hm="dxpick" aria-expanded="' + hmDxOpen + '"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span><b>' +
     tr("hm_cam") + "</b><span>" + tr("hm_cam_s2") + '</span></span><span class="chv" aria-hidden="true">›</span></button>' + (!hmDxOpen ? "</div>" : '<p class="ask">' + tr("hm_cam_ask") + '</p><div class="two">' +
     '<button class="btn-s" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
@@ -8708,7 +8708,7 @@ Object.assign(T.hn, { tt_more:"Aur", nv_home:"Home", nv_orch:"Bagicha", nv_add:"
   const css = document.createElement("style");
   css.textContent = `
 /* Home blocks (all screens) */
-.hmseason{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;text-align:left;border:0;border-radius:16px;padding:14px 16px;background:#1B5E2B;color:#fff;font:inherit;cursor:pointer;width:100%}
+.hmseason{display:grid;grid-template-columns:minmax(0,1fr);gap:4px 12px;text-align:left;border:0;border-radius:16px;padding:14px 16px;background:#1B5E2B;color:#fff;font:inherit;cursor:pointer;width:100%}
 .hmseason .k{display:block;font-size:.85rem;opacity:.88}
 .hmseason .wide{grid-column:1/-1;font-weight:600;opacity:.95}
 .hmseason b{font-size:1.45rem;line-height:1.2}
