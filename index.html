@@ -8876,13 +8876,13 @@ function renderMunCard() {
 }
 /* ---------- Visitors on a phone: same app look. Top bar with logo + language, a bottom bar (Home · Bimari · Calculator · Spray · Login),
    and "what you get" blocks on Home that open the example pages. Computers keep the tabs. ---------- */
-Object.assign(T.en, { gn_dx:"Disease", gn_calc:"Calculator", gn_spray:"Spray", gb_h:"What you get, free", gb_see:"See example ›",
+Object.assign(T.en, { gb_wx_h:"Weather", gb_wx:"5-day weather, frost and hail alerts", gn_dx:"Disease", gn_calc:"Calculator", gn_spray:"Spray", gb_h:"What you get, free", gb_see:"See example ›",
   gb_orch:"Every orchard's trees, soil and work in one place", gb_mun:"Real profit on every peti", gb_exp:"Note every expense in seconds",
   gb_dx:"Find a disease from a photo", gb_spray:"What to spray and when", gb_chat:"Ask anything about apples" });
-Object.assign(T.hi, { gn_dx:"रोग जाँच", gn_calc:"कैलकुलेटर", gn_spray:"स्प्रे", gb_h:"आपको मुफ़्त में क्या मिलता है", gb_see:"उदाहरण देखें ›",
+Object.assign(T.hi, { gb_wx_h:"मौसम", gb_wx:"5 दिन का मौसम, पाला और ओले की चेतावनी", gn_dx:"रोग जाँच", gn_calc:"कैलकुलेटर", gn_spray:"स्प्रे", gb_h:"आपको मुफ़्त में क्या मिलता है", gb_see:"उदाहरण देखें ›",
   gb_orch:"हर बाग़ के पेड़, मिट्टी और काम एक जगह", gb_mun:"हर पेटी पर असली मुनाफ़ा", gb_exp:"हर ख़र्च सेकंडों में लिखें",
   gb_dx:"फ़ोटो से रोग पहचानें", gb_spray:"कब और क्या स्प्रे करें", gb_chat:"सेब के बारे में कुछ भी पूछें" });
-Object.assign(T.hn, { gn_dx:"Bimari", gn_calc:"Calculator", gn_spray:"Spray", gb_h:"Aapko free mein kya milta hai", gb_see:"Example dekhein ›",
+Object.assign(T.hn, { gb_wx_h:"Mausam", gb_wx:"5 din ka mausam, paala aur ole ki chetavni", gn_dx:"Bimari", gn_calc:"Calculator", gn_spray:"Spray", gb_h:"Aapko free mein kya milta hai", gb_see:"Example dekhein ›",
   gb_orch:"Har bagiche ke ped, mitti aur kaam ek jagah", gb_mun:"Har peti par asli munafa", gb_exp:"Har kharcha seconds mein likhein",
   gb_dx:"Photo se bimari pehchaanein", gb_spray:"Kab aur kya spray karein", gb_chat:"Seb ke baare mein kuch bhi poochhein" });
 (function () {
@@ -8923,7 +8923,12 @@ Object.assign(T.hn, { gn_dx:"Bimari", gn_calc:"Calculator", gn_spray:"Spray", gb
   /* no big gap between the blocks and "how it works" */
   html.gapp .gblocks{margin-bottom:4px}
   html.gapp #landing > .lpvid:first-child{padding-top:12px}
+  html.gapp .lpmanage{display:none}
+  html.gapp .gblocks .mgnews{margin-top:0;padding:10px 12px;gap:10px}
+  html.gapp .gblocks .mgnews .mgi{width:34px;height:34px;font-size:1.05rem}
+  html.gapp .gblocks .mgnews > span:nth-child(2){font-size:.92rem;line-height:1.35}
 }
+.hb-wx{--c:#2B7BB0;background:linear-gradient(rgba(43,123,176,.10),rgba(43,123,176,.10)),var(--surface);border-color:rgba(43,123,176,.28)}
 /* Saathi block uses the same logo as the Saathi chat button */
 .hmblk .hbsaathi{flex:none;width:44px;height:44px;box-sizing:border-box;border-radius:50%;background:#F6EFE3;border:3px solid #1B5E2B;display:grid;place-items:center}
 .hmblk .hbsaathi svg{width:26px;height:26px;padding:0;margin:0;background:none;border-radius:0}
@@ -8971,14 +8976,16 @@ function renderGBlocks() {
     exp: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>',
     dx: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
     spray: '<path d="M5 20l5-5"/><path d="M10 15l4-9 4 4-9 4"/><path d="M16 4l4 4"/>',
-    chat: '<path d="M4 5h16v11H8l-4 4z"/>'
+    chat: '<path d="M4 5h16v11H8l-4 4z"/>',
+    wx: '<circle cx="8" cy="8" r="3"/><path d="M8 2v1.5M2 8h1.5M3.8 3.8l1 1M12.2 3.8l-1 1"/><path d="M8 20h9a4 4 0 0 0 0-8 5 5 0 0 0-9.6 1.5A3.3 3.3 0 0 0 8 20z"/>'
   };
-  const cls = {orch: "hb-orch", mun: "hb-mun", exp: "hb-exp", dx: "hb-dx", spray: "hb-spray", chat: "hb-chat"};
-  const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" data-gb="' + k + '">' + (k === "orch" ? '<span class="dthumb hbtree" aria-hidden="true">' + treeArt("Seb Saathi") + "</span>" : k === "chat" && document.querySelector("#chatFab .av") ? '<span class="hbsaathi" aria-hidden="true">' + document.querySelector("#chatFab .av").innerHTML + "</span>" : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
+  const cls = {orch: "hb-orch", mun: "hb-mun", exp: "hb-exp", dx: "hb-dx", spray: "hb-spray", chat: "hb-chat", wx: "hb-wx"};
+  const blk = (k, title, sub, see) => '<button class="hmblk ' + cls[k] + '" type="button" ' + (k === "wx" ? 'data-lgo="wx"' : 'data-gb="' + k + '"') + ">" + (k === "orch" ? '<span class="dthumb hbtree" aria-hidden="true">' + treeArt("Seb Saathi") + "</span>" : k === "chat" && document.querySelector("#chatFab .av") ? '<span class="hbsaathi" aria-hidden="true">' + document.querySelector("#chatFab .av").innerHTML + "</span>" : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] +
     "</svg>") + "<span><b>" + title + "</b><span>" + sub + "</span>" + (see ? '<span class="see">' + tr("gb_see") + "</span>" : "") + "</span></button>";
   el.innerHTML = "<h3>" + tr("gb_h") + '</h3><div class="grid">' +
-    blk("orch", tr("tt_rec"), tr("gb_orch"), true) + blk("mun", tr("pt_year"), tr("gb_mun"), true) + blk("exp", tr("hb_exp"), tr("gb_exp"), true) +
-    blk("dx", tr("hm_cam"), tr("gb_dx")) + blk("spray", tr("hm_go_spray"), tr("gb_spray")) + blk("chat", "Saathi", tr("gb_chat")) + "</div>";
+    blk("orch", tr("tt_rec"), tr("gb_orch"), true) + blk("mun", tr("pt_year"), tr("gb_mun"), true) + blk("wx", tr("gb_wx_h"), tr("gb_wx")) +
+    blk("dx", tr("hm_cam"), tr("gb_dx")) + blk("spray", tr("hm_go_spray"), tr("gb_spray")) + blk("chat", "Saathi", tr("gb_chat")) + "</div>" +
+    '<button class="mgnews" type="button" data-lgo="news"><span class="mgi" aria-hidden="true">📰</span><span><b>' + tr("lp_news_h") + "</b> <span>" + tr("lp_news_p") + '</span></span><span class="lpgo">' + tr("lp_open") + "</span></button>";
 }
 function qxNavGSync() {
   const vis = TT.find(n => !$("tp-" + n).hidden);
