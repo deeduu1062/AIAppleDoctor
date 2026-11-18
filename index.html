@@ -2243,6 +2243,24 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 
 body:not(.guest) #rt-year{display:none!important}
 .hzchips .hzall{border-style:dashed}
+
+/* Hisaab picker: one white card with a Season row and an Orchard row */
+.hzpick{display:grid;gap:10px;padding:12px 12px 10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 14px -10px rgba(60,40,20,.35)}
+.hzrow{display:grid;gap:6px}
+.hzlab{display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.hzscroll{position:relative;margin:0 -12px;padding:0 12px;overflow:hidden}
+.hzscroll::after{content:"";position:absolute;top:0;right:0;bottom:0;width:28px;background:linear-gradient(90deg,rgba(255,255,255,0),var(--surface));pointer-events:none}
+.hzpick .hzchips{gap:6px;padding:2px 24px 2px 0;margin:0}
+.hzpick .hzchips button{min-height:36px;padding:0 14px;border-radius:12px;border:1.5px solid #E2DACB;background:#FBF7F0;font:600 .92rem var(--body);color:var(--fg);display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s}
+.hzpick .hzchips button small{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:1px 6px;border-radius:6px;background:#E6F0E1;color:#1B5E2B}
+.hzpick .hzchips button[aria-pressed="true"]{background:#1B5E2B;border-color:#1B5E2B;color:#fff;box-shadow:0 3px 8px -4px rgba(27,94,43,.6)}
+.hzpick .hzchips button[aria-pressed="true"] small{background:rgba(255,255,255,.2);color:#fff}
+.hzpick .hzochips button{border-radius:999px}
+.hzpick .hzochips button[aria-pressed="true"]{background:#3E8A3A!important;border-color:#3E8A3A!important}
+.hzpick .hzochips button:not([data-hzo=""])::before{content:"🌳";font-size:.85rem}
+.hzpick .hzall{border-style:dashed!important;background:transparent!important}
+.hzpick .hzall[aria-pressed="true"]{background:#1B5E2B!important;border-style:solid!important}
+.hzochips{margin-top:0}
 </style>
 </head>
 <body>
@@ -8527,7 +8545,7 @@ Object.assign(T.hi, { by_gross:"बिक्री", by_net:"पेटी ख़
 Object.assign(T.hn, { by_gross:"Bikri", by_net:"Peti kharche ke baad", y_gp:"Peti kharche ke baad", r_profit:"Munafa", k_net:"Munafa", ls_net:"Munafa", by_npb:"Munafa per peti", hc_ppb:"Munafa per peti", ls_ppb:"Munafa per peti", mc_ppb:"Munafa per peti",
   y_sum:"Harvest saal ke hisaab se munafa", y_note:"Munafa = bikri − peti ke kharche − saal ke kharche (ek-musht rakam aur diary ke kharche bhi). Per peti hisaab mein aadhi peti aadhi gini jaati hai.",
   hz_split:"Peti ke kharche {a} + saal ke kharche {b}", ex_lumpm:"ek-musht rakam" });
-Object.assign(T.en, { hz_ally:"All years" }); Object.assign(T.hi, { hz_ally:"सभी साल" }); Object.assign(T.hn, { hz_ally:"Sabhi saal" });
+Object.assign(T.en, { hz_ally:"All years", hz_season:"Season", hz_now:"current" }); Object.assign(T.hi, { hz_ally:"सभी साल", hz_season:"सीज़न", hz_now:"चालू" }); Object.assign(T.hn, { hz_ally:"Sabhi saal", hz_season:"Season", hz_now:"chalu" });
 Object.assign(T.en, { hz_none:"Nothing recorded for season {y} yet." }); Object.assign(T.hi, { hz_none:"सीज़न {y} का अभी कोई रिकॉर्ड नहीं।" }); Object.assign(T.hn, { hz_none:"Season {y} ka abhi koi record nahi." });
 Object.assign(T.en, { hz_due:"{x} still to come from buyers", hz_how:"How is profit worked out?" });
 Object.assign(T.hi, { hz_due:"{x} अभी ख़रीदारों से आना बाक़ी", hz_how:"मुनाफ़ा कैसे निकलता है?" });
@@ -9373,9 +9391,13 @@ function renderHzTop() {
     card = hzCardHtml(hzY, t.sales, t.pbe + t.yearly, t.net, eq, t.boxes, tr("hz_card").replace("{y}", hzY), hzY === cy, [t.pbe, t.yearly], due);
   }
   const allY = curSub === "year";   /* "All years" chip = the year-by-year comparison (all orchards) */
-  const ychips = '<div class="hzchips" role="group">' + ys.map(y => '<button type="button" data-hzy="' + y + '" aria-pressed="' + (!allY && y === hzY) + '">' + esc(y === cy ? tr("hz_cur").replace("{y}", y) : String(y)) + "</button>").join("") +
+  const ychips = '<div class="hzchips" role="group">' + ys.map(y => '<button type="button" data-hzy="' + y + '" aria-pressed="' + (!allY && y === hzY) + '">' + (y === cy ? y + '<small>' + esc(tr("hz_now")) + "</small>" : String(y)) + "</button>").join("") +
     (ys.length > 1 ? '<button type="button" class="hzall" data-hzy="all" aria-pressed="' + allY + '">' + tr("hz_ally") + "</button>" : "") + "</div>";
-  el.innerHTML = allY ? ychips : ychips + ochips + card;
+  /* one neat picker card: Season row, then Orchard row */
+  const lab = (ic, k) => '<span class="hzlab"><span aria-hidden="true">' + ic + "</span>" + tr(k) + "</span>";
+  const pick = '<div class="hzpick"><div class="hzrow">' + lab("📅", "hz_season") + '<div class="hzscroll">' + ychips + "</div></div>" +
+    (!allY && ochips ? '<div class="hzrow">' + lab("🌳", "hz_opick") + '<div class="hzscroll">' + ochips + "</div></div>" : "") + "</div>";
+  el.innerHTML = allY ? pick : pick + card;
   setTimeout(() => { try { hzFilterLists(); } catch (e) {} }, 0);
   el.hidden = false;
 }
