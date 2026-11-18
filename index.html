@@ -417,6 +417,8 @@ table.ledger{border-collapse:collapse;width:100%;min-width:420px;font-variant-nu
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
 .topbar .top{padding-block:10px 4px}
+/* Seb Saathi logo first, then the "logged in as · Log out" strip under it */
+.topbar{display:flex;flex-direction:column}.topbar>header.wrap{width:100%;box-sizing:border-box}.topbar>#acctBar{order:2;border-bottom:0;border-top:1px solid var(--line)}.topbar>#acctBar[hidden]{display:none}
 .tabbar{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin}
 .tabbar .tab{flex:none;white-space:nowrap;border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--muted);padding:10px 14px;min-height:46px;font:600 .98rem var(--body)}
 .tabbar .tab:hover{color:var(--fg)}
