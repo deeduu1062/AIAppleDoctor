@@ -1528,6 +1528,7 @@ html.shro :is(#tp-home,#tp-orch,#tp-calc) :is(.add,.del,.danger,.lotedit,.ladd,.
 .accard{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin:10px 0;display:grid;gap:8px}
 .accard h4{margin:0;font:700 1.05rem var(--display);color:var(--apple)}
 .acwho{grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;background:linear-gradient(rgba(27,94,43,.07),rgba(27,94,43,.07)),var(--surface);border-color:rgba(27,94,43,.28)}
+.acwout{justify-self:start;margin-top:6px;padding:6px 0;color:var(--apple);font-weight:700;text-decoration:underline}
 .acav{width:52px;height:52px;border-radius:50%;background:#1B5E2B;color:#fff;display:grid;place-items:center;font:700 1.4rem var(--display)}
 .acwt{display:grid;gap:2px;min-width:0}.acwt p{margin:0}.acwn{font-weight:700;font-size:1.12rem;overflow-wrap:anywhere}.acws{color:var(--muted);overflow-wrap:anywhere}
 .acvia{justify-self:start;margin-top:4px;font-size:.8rem;font-weight:700;color:#1B5E2B;background:#E6F0E1;padding:2px 10px;border-radius:999px}
@@ -1536,6 +1537,7 @@ html.shro :is(#tp-home,#tp-orch,#tp-calc) :is(.add,.del,.danger,.lotedit,.ladd,.
 .acplan{font:700 1rem var(--display);padding:4px 12px;border-radius:999px;background:var(--surface-2)}.acplan.paid{background:color-mix(in srgb,var(--good) 15%,var(--surface));color:var(--good)}
 .acreset{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px;justify-items:start}
 .accard .fine{margin:0}
+.acout{width:100%;min-height:48px;font-size:1.05rem;font-weight:700}
 .acinc{margin:4px 0 0}
 .acfeat{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .acfeat li{position:relative;padding-left:24px;font-size:.93rem}
@@ -8222,7 +8224,7 @@ function renderAcctTab() {
   const via = prov === "google" ? "ac_via_g" : prov === "phone" ? "ac_via_p" : "ac_via_e";
   const who = '<section class="accard acwho"><span class="acav" aria-hidden="true">' + (/^[a-z\u0900-\u097f]/i.test(main) ? esc(main[0].toUpperCase()) : '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>') + '</span><div class="acwt">' +
     '<p class="fine">' + tr("ac_who") + '</p><p class="acwn">' + esc(main) + "</p>" + (sub ? '<p class="acws">' + esc(sub) + "</p>" : "") +
-    '<span class="acvia">' + tr(via) + "</span></div></section>";
+    '<span class="acvia">' + tr(via) + '</span><button class="link acwout" type="button" data-ac="out">' + tr("ac_out") + "</button></div></section>";
   el.innerHTML = who +
     '<section class="accard"><h4>' + tr("ac_me") + '</h4><dl class="acdl">' +
       (em ? "<div><dt>" + tr("ac_email") + "</dt><dd>" + esc(em) + "</dd></div>" : "") + (ph ? "<div><dt>" + tr("ac_phone") + "</dt><dd>" + esc(ph) + "</dd></div>" : "") +
@@ -8236,7 +8238,7 @@ function renderAcctTab() {
       (em ? '<div class="acreset"><p class="fine">' + tr("ac_reset_p").replace("{e}", esc(em)) + '</p><button class="btn-s" type="button" data-ac="reset"' + (acBusy ? " disabled" : "") + ">" + tr("ac_reset") + "</button>" + msg("reset") + "</div>" : "")) +
     "</section>") +   /* mobile accounts log in with a WhatsApp code: no password or PIN to change */
     shAcctHtml() +
-    '<section class="accard"><button class="btn-s danger" type="button" data-ac="out">' + tr("ac_out") + "</button></section>";
+    '<section class="accard"><button class="btn-s danger acout" type="button" data-ac="out">⎋ ' + tr("ac_out") + "</button></section>";
 }
 document.addEventListener("click", async e => {
   const b = e.target.closest && e.target.closest("[data-ac]"); if (!b) return;
@@ -8724,7 +8726,11 @@ html{touch-action:manipulation}  /* no double-tap zoom when tapping buttons quic
 .more .out{justify-self:center;border:0;background:none;color:var(--apple);font:700 1.05rem var(--body);min-height:44px;padding:0 16px;cursor:pointer}
 @media (max-width:700px){
   html.app body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-  html.app .qxrow0,html.app #acctBar,html.app #shareBtn,html.app #signBtn,html.app #fbBtn,html.app .qxfab,html.app .hdrsaathi{display:none!important}
+  html.app #acctBar .acctplan,html.app #acctBar #adminLink{display:none!important}
+  html.app #acctBar .acctrow{flex-wrap:nowrap;gap:10px}
+  html.app #acct_email::before{content:"👤 "}
+  html.app #signOut{color:var(--apple);font-weight:700}
+  html.app .qxrow0,html.app #shareBtn,html.app #signBtn,html.app #fbBtn,html.app .qxfab,html.app .hdrsaathi{display:none!important}
   html.app #chatFab{bottom:calc(92px + env(safe-area-inset-bottom,0px));padding:0;width:58px;height:58px;min-height:58px;justify-content:center;border:3px solid var(--surface)}
   html.app #chatFab .av{width:42px;height:42px}
   html.app #chatFab #chatFabT{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
