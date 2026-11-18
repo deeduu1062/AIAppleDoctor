@@ -2188,6 +2188,14 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 .fgslim .t{font-size:.92rem}.fgslim b{color:#1B5E2B}
 .hmblocks .hmblk:last-child:nth-child(odd){grid-column:1/-1;min-height:0}
 @media (max-width:700px){html.app .hmcam2 .hd{padding-right:46px}}
+
+/* ask the grower's name (mobile logins) */
+.hmname{display:grid;gap:8px;margin:0 0 10px;padding:12px 14px;border:1.5px solid #3E8A3A;border-radius:14px;background:var(--surface)}
+.hmname label{display:grid;gap:2px}.hmname label b{font-size:1rem;color:#1B5E2B}.hmname label span{font-size:.85rem;color:var(--muted)}
+.hmname .row,.acname .row{display:flex;gap:8px;flex-wrap:wrap}.hmname input,.acname input{flex:1;min-width:0;min-height:42px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--surface);color:var(--fg)}
+.hmname .later{justify-self:start;font-size:.85rem;color:var(--muted)}
+.hmname .autherr,.hmname .sentmsg{margin:0}
+.acname{display:grid;gap:6px;margin-top:8px}.acname input{flex-basis:100%!important}.acname label{font-size:.85rem;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -7380,6 +7388,36 @@ function hmSpraySub() {
   if (ls) return esc(tr("hb_spray_last").replace("{n}", fmtN(dayDiff(ls.date, todayIso()))));
   return tr("hb_spray_s");
 }
+/* grower's own name (Google gives one; mobile logins add it themselves). Saved on the account: user_metadata.full_name */
+const userName = () => { const m = (user && user.user_metadata) || {}; return String(m.full_name || m.name || "").trim(); };
+let nmMsg = null, nmBusy = false, acNmOpen = false;
+async function saveName(v) {
+  v = String(v || "").replace(/\s+/g, " ").trim().slice(0, 40);
+  if (v.length < 2) { nmMsg = {t: tr("nm_err"), err: true}; return false; }
+  if (!sb || !user || nmBusy) return false;
+  nmBusy = true; nmMsg = null;
+  let err = null; try { const r = await sb.auth.updateUser({data: {full_name: v}}); err = r.error; if (!err && r.data && r.data.user) user = r.data.user; } catch (x) { err = x; }
+  nmBusy = false;
+  if (err) { nmMsg = {t: tr("nm_fail"), err: true}; return false; }
+  user.user_metadata = Object.assign({}, user.user_metadata, {full_name: v});
+  try { renderAcct(); } catch (e) {}
+  return true;
+}
+function hmNameHtml() {
+  if (userName() || shRO()) return "";
+  try { if (localStorage.getItem("nmLater_" + user.id)) return ""; } catch (e) {}
+  return '<form class="hmname" id="hmNameForm" novalidate><label for="hmNameIn"><b>' + tr("nm_q") + "</b><span>" + tr("nm_p") + '</span></label>' +
+    '<div class="row"><input id="hmNameIn" type="text" maxlength="40" autocomplete="name" placeholder="' + esc(tr("nm_ph")) + '"><button class="btn-s add" type="submit"' + (nmBusy ? " disabled" : "") + ">" + tr("nm_save") + "</button></div>" +
+    (nmMsg ? '<p class="' + (nmMsg.err ? "autherr" : "sentmsg") + '" role="status">' + esc(nmMsg.t) + "</p>" : "") +
+    '<button class="link later" type="button" data-hm="nmlater">' + tr("fg_later") + "</button></form>";
+}
+document.addEventListener("submit", async e => {
+  const f = e.target; if (!f || (f.id !== "hmNameForm" && f.id !== "acNameForm")) return;
+  e.preventDefault();
+  const inp = f.querySelector("input"), ok = await saveName(inp && inp.value);
+  if (f.id === "acNameForm") { if (ok) { acNmOpen = false; acMsg.nm = {t: tr("nm_ok")}; } else acMsg.nm = nmMsg; renderAcctTab(); }
+  else { if (typeof renderHome === "function") renderHome(); if (!ok) { const i = $("hmNameIn"); if (i) { i.value = inp.value; i.focus(); } } }
+});
 let hmDxOpen = false;   /* Home disease card: one tap opens the choice Photo lein / Gallery se */
 function renderHome() {
   /* Home = big blocks: season card, one-tap disease check, then a block per section (each with one useful number), then today's tip */
@@ -7387,8 +7425,8 @@ function renderHome() {
   let p = null; try { p = S.orchards.length ? homePpb() : null; } catch (e) {}
   const cy = curHYear(), spent = S.orchards.reduce((a, o) => a + expTotals(o, cy).total, 0);
   const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
-  const md = user.user_metadata || {}, fn = String(md.full_name || md.name || "").trim().split(/\s+/)[0];
-  let h = '<div class="home"><p class="hmhi">' + (fn ? esc(tr("hm_hi").replace(/\s*🙏/, ", " + fn + " 🙏")) : tr("hm_hi")) + "</p>" + hmWxHtml() + (typeof fgHtml === "function" ? fgHtml() : "");
+  const fn = userName().split(/\s+/)[0];
+  let h = '<div class="home"><p class="hmhi">' + (fn ? esc(tr("hm_hi").replace(/\s*🙏/, ", " + fn + " 🙏")) : tr("hm_hi")) + "</p>" + hmNameHtml() + hmWxHtml() + (typeof fgHtml === "function" ? fgHtml() : "");
   h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
     '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
     "</button>";   /* only this season's spend here; net per peti lives in Hisaab */
@@ -7419,6 +7457,7 @@ $("homeBody").addEventListener("click", e => {
   const b = e.target.closest("[data-hm]"); if (!b) return;
   const a = b.dataset.hm; tabPicked = true;
   /* iPhone shows its own menu (Photo Library / Take Photo / Choose File) for any photo picker, so open that straight away */
+  if (a === "nmlater") { try { localStorage.setItem("nmLater_" + user.id, "1"); } catch (x) {} renderHome(); return; }
   if (a === "wx") { const o = S.orchards.find(x => hasLoc(x)); if (o) { dashView = o.id; otab = "det"; renderDash(); } showTool("orch", false, true); return; }
   if (a === "dxpick" && isIOS) { hmDxOpen = false; goDiag("gal"); return; }
   if (a === "dxpick") { hmDxOpen = !hmDxOpen; renderHome(); const c = document.querySelector("#homeBody .hmcam2"); if (hmDxOpen && c && c.scrollIntoView) c.scrollIntoView({block: "nearest"}); return; }
@@ -8347,11 +8386,13 @@ function renderAcctTab() {
   if (Array.isArray(feats) && feats.length) plan += '<p class="subhead acinc">' + esc(tr("ac_inc")) + '</p><ul class="acfeat">' + feats.map(f => "<li>" + esc(f) + "</li>").join("") + "</ul>";
   /* who is logged in: name (Google) or the email/phone, and how they logged in */
   const md = user.user_metadata || {}, prov = (user.app_metadata && user.app_metadata.provider) || (pin || (!em && ph) ? "phone" : "email");
-  const nm = String(md.full_name || md.name || "").trim(), main = nm || em || ph || "–", sub = nm ? (em || ph) : (em && ph ? ph : "");
+  const nm = userName(), main = nm || em || ph || "–", sub = nm ? (em || ph) : (em && ph ? ph : "");
   const via = prov === "google" ? "ac_via_g" : prov === "phone" ? "ac_via_p" : "ac_via_e";
   const who = '<section class="accard acwho"><span class="acav" aria-hidden="true">' + (/^[a-z\u0900-\u097f]/i.test(main) ? esc(main[0].toUpperCase()) : '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>') + '</span><div class="acwt">' +
     '<p class="fine">' + tr("ac_who") + '</p><p class="acwn">' + esc(main) + "</p>" + (sub ? '<p class="acws">' + esc(sub) + "</p>" : "") +
-    '<span class="acvia">' + tr(via) + '</span><button class="link acwout" type="button" data-ac="out">' + tr("ac_out") + "</button></div></section>";
+    '<span class="acvia">' + tr(via) + '</span><button class="link acwout" type="button" data-ac="nmopen">✏️ ' + tr(nm ? "nm_chg" : "nm_add") + "</button>" +
+    (acNmOpen ? '<form class="acname" id="acNameForm" novalidate><label for="acNameIn">' + tr("nm_lbl") + '</label><div class="row"><input id="acNameIn" type="text" maxlength="40" autocomplete="name" value="' + esc(nm) + '"><button class="btn-s add" type="submit">' + tr("nm_save") + '</button><button class="btn-s" type="button" data-ac="nmclose">' + tr("pw_cancel") + "</button></div></form>" : "") +
+    msg("nm") + '<button class="link acwout" type="button" data-ac="out">' + tr("ac_out") + "</button></div></section>";
   el.innerHTML = who +
     '<section class="accard"><h4>' + tr("ac_me") + '</h4><dl class="acdl">' +
       (em ? "<div><dt>" + tr("ac_email") + "</dt><dd>" + esc(em) + "</dd></div>" : "") + (ph ? "<div><dt>" + tr("ac_phone") + "</dt><dd>" + esc(ph) + "</dd></div>" : "") +
@@ -8373,6 +8414,8 @@ document.addEventListener("click", async e => {
   if (a === "up" || a === "plans") { const p = $("plans"); if (p && !p.hidden && p.scrollIntoView) p.scrollIntoView({block: "start"}); else if (typeof openPay === "function") openPay("basic"); return; }
   if (a === "pay") { if (typeof openPay === "function") openPay(b.dataset.p); return; }
   if (a === "pwopen") { acPwOpen = true; acMsg = {}; renderAcctTab(); const f = $("acPw1"); if (f) f.focus(); return; }
+  if (a === "nmopen") { acNmOpen = true; acMsg = {}; renderAcctTab(); const f = $("acNameIn"); if (f) f.focus(); return; }
+  if (a === "nmclose") { acNmOpen = false; acMsg = {}; renderAcctTab(); return; }
   if (a === "pwclose") { acPwOpen = false; acMsg = {}; renderAcctTab(); return; }
   if (a === "out") { try { await sb.auth.signOut(); } catch (x) {} return; }
   if (a === "reset") {
@@ -8396,6 +8439,9 @@ document.addEventListener("submit", async e => {
 Object.assign(T.en, { ac_who_s:"Logged in as", hw_today:"Today in {p}:", hb_spray_next:"Next spray: {d}", hb_spray_last:"Last spray {n} days ago", fg_nx:"Next:" });
 Object.assign(T.hi, { hw_today:"आज {p} में:", hb_spray_next:"अगला स्प्रे: {d}", hb_spray_last:"पिछला स्प्रे {n} दिन पहले", fg_nx:"अगला:" });
 Object.assign(T.hn, { hw_today:"Aaj {p} mein:", hb_spray_next:"Agla spray: {d}", hb_spray_last:"Aakhri spray {n} din pehle", fg_nx:"Agla:" });
+Object.assign(T.en, { nm_q:"What is your name?", nm_p:"So Seb Saathi can greet you by name.", nm_ph:"e.g. Ramesh Thakur", nm_save:"Save", nm_err:"Please type your name.", nm_fail:"Could not save. Check your internet and try again.", nm_ok:"Name saved.", nm_add:"Add your name", nm_chg:"Change name", nm_lbl:"Your name" });
+Object.assign(T.hi, { nm_q:"आपका नाम क्या है?", nm_p:"ताकि सेब साथी आपको नाम से बुलाए।", nm_ph:"जैसे रमेश ठाकुर", nm_save:"सेव करें", nm_err:"कृपया अपना नाम लिखें।", nm_fail:"सेव नहीं हो सका। इंटरनेट देखें और दोबारा कोशिश करें।", nm_ok:"नाम सेव हो गया।", nm_add:"अपना नाम जोड़ें", nm_chg:"नाम बदलें", nm_lbl:"आपका नाम" });
+Object.assign(T.hn, { nm_q:"Aapka naam kya hai?", nm_p:"Taaki Seb Saathi aapko naam se bulaye.", nm_ph:"Jaise Ramesh Thakur", nm_save:"Save karein", nm_err:"Kripya apna naam likhein.", nm_fail:"Save nahi ho saka. Internet dekhein aur dobara koshish karein.", nm_ok:"Naam save ho gaya.", nm_add:"Apna naam jodein", nm_chg:"Naam badlein", nm_lbl:"Aapka naam" });
 Object.assign(T.en, { ac_who_s:"Logged in as" }); Object.assign(T.hi, { ac_who_s:"लॉग इन:" }); Object.assign(T.hn, { ac_who_s:"Login hain" });
 Object.assign(T.en, { ac_who:"You are logged in as", ac_via_g:"Logged in with Google", ac_via_p:"Logged in with mobile (WhatsApp code)", ac_via_e:"Logged in with email" });
 Object.assign(T.hi, { ac_who:"आप इस खाते से लॉग इन हैं", ac_via_g:"Google से लॉग इन", ac_via_p:"मोबाइल (WhatsApp कोड) से लॉग इन", ac_via_e:"ईमेल से लॉग इन" });
