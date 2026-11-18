@@ -29,6 +29,8 @@
 })();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://rylqzyylbsephirwslce.supabase.co" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Khand:wght@500;600;700&family=Hind:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
 <style>
 /* Layout: a deep-green orchard band up top with a live example season, then a record-keeping calculator (orchards, years, lots), a yearly totals table, a plain roadmap list, and the apple year as a 12-month grid. */
@@ -3825,8 +3827,8 @@ let spOpen = new Set(), spoOpen = new Set(), saleAsk = false;
 const spoKey = (oid, y) => oid + "|" + y;
 /* gross, net (after lot costs), boxes, expense per box and net per box; a half box counts as half */
 function fig5(t) { const c = t.net < 0 ? "neg" : "pos"; return yfig(tr("by_gross"), mny(t.rev)) + yfig(tr("by_net"), mny(t.net), "ynet " + c) + yfig(tr("by_boxes"), fmtN(t.boxes)) +
-  yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0)) + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0)); }
-function seT(x) { const r = x ? seasonCalc(x) : {rev: 0, lotExp: 0, boxes: 0, eq: 0}; return {rev: r.rev, net: r.rev - r.lotExp, boxes: r.boxes, eq: r.eq, exp: r.lotExp}; }
+  yfig(tr("by_epb"), mny(t.eq ? (t.all != null ? t.all : t.exp) / t.eq : 0)) + yfig(tr("by_npb"), mny(t.eq ? (t.prof != null ? t.prof : t.net) / t.eq : 0)); }
+function seT(x) { const r = x ? seasonCalc(x) : {rev: 0, lotExp: 0, boxes: 0, eq: 0, yearly: 0, profit: 0}; return {rev: r.rev, net: r.rev - r.lotExp, boxes: r.boxes, eq: r.eq, exp: r.lotExp, all: r.lotExp + (+r.yearly || 0), prof: r.profit}; }
 function closeEditLine() {
   const se = editLine ? lotSeason(editLine.lot) : null;
   if (editLine && se) {
@@ -4127,7 +4129,7 @@ function renderEditor() {
     const cls = n => (n < 0 ? "neg" : "pos");
     const yr = {}; years.forEach(y => {
       const ss = S.orchards.map(oo => seFor(oo.id, y)).filter(Boolean);
-      const t = {net: 0, boxes: 0, eq: 0, rev: 0, exp: 0}; ss.forEach(x => { const r = seasonCalc(x); t.net += r.rev - r.lotExp; t.boxes += r.boxes; t.eq += r.eq; t.rev += r.rev; t.exp += r.lotExp; });
+      const t = {net: 0, boxes: 0, eq: 0, rev: 0, exp: 0, all: 0, prof: 0}; ss.forEach(x => { const r = seasonCalc(x); t.net += r.rev - r.lotExp; t.boxes += r.boxes; t.eq += r.eq; t.rev += r.rev; t.exp += r.lotExp; t.all += r.lotExp + (+r.yearly || 0); t.prof += r.profit; });
       yr[y] = {ss, t};
     });
     h += '<p class="hint">' + tr("sp_tap") + " " + tr("half_note") + '</p><div class="ylist splist figrows">';
@@ -4136,7 +4138,7 @@ function renderEditor() {
       h += '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="sptoggle" data-y="' + y + '" aria-expanded="' + open + '">' +
         '<span class="yy">' + y + "</span>" + (hsCur(t.boxes, y) ? hsBadge() : '<span class="yfigs five">' + yfig(tr("by_gross"), mny(t.rev), "", ' data-spyg="' + y + '"') +
         yfig(tr("by_net"), mny(t.net), "ynet " + cls(t.net), ' data-spy="' + y + '"') + yfig(tr("by_boxes"), fmtN(t.boxes), "", ' data-spyb="' + y + '"') +
-        yfig(tr("by_epb"), mny(t.eq ? t.exp / t.eq : 0), "", ' data-spye="' + y + '"') + yfig(tr("by_npb"), mny(t.eq ? t.net / t.eq : 0), "", ' data-spyp="' + y + '"') + "</span>") +
+        yfig(tr("by_epb"), mny(t.eq ? t.all / t.eq : 0), "", ' data-spye="' + y + '"') + yfig(tr("by_npb"), mny(t.eq ? t.prof / t.eq : 0), "", ' data-spyp="' + y + '"') + "</span>") +
         '<span class="ychev" aria-hidden="true"></span></button>';
       if (open) {
         h += '<div class="ybody olist">' + byTypeHtml(ss) + S.orchards.map(oo => {
@@ -4325,10 +4327,10 @@ function refreshLotBits() {
   document.querySelectorAll("[data-spo5]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spo5); if (x) el.innerHTML = fig5(seT(x)); });
   document.querySelectorAll("[data-spnet]").forEach(el => { const x = S.seasons.find(q => q.id === el.dataset.spnet); if (!x) return; const c = seasonCalc(x), v = c.rev - c.lotExp; el.textContent = inr(v); el.className = "ynet " + (v < 0 ? "neg" : "pos"); });
   document.querySelectorAll("[data-spy]").forEach(el => {
-    const y = +el.dataset.spy, t = {net: 0, rev: 0, boxes: 0, eq: 0, exp: 0};
-    S.seasons.filter(q => q.year === y).forEach(q => { const c = seasonCalc(q); t.net += c.rev - c.lotExp; t.rev += c.rev; t.boxes += c.boxes; t.eq += c.eq; t.exp += c.lotExp; });
-    const pe = document.querySelector('[data-spye="' + y + '"]'); if (pe) pe.innerHTML = mny(t.eq ? t.exp / t.eq : 0);
-    const pn = document.querySelector('[data-spyp="' + y + '"]'); if (pn) pn.innerHTML = mny(t.eq ? t.net / t.eq : 0);
+    const y = +el.dataset.spy, t = {net: 0, rev: 0, boxes: 0, eq: 0, exp: 0, all: 0, prof: 0};
+    S.seasons.filter(q => q.year === y).forEach(q => { const c = seasonCalc(q); t.net += c.rev - c.lotExp; t.rev += c.rev; t.boxes += c.boxes; t.eq += c.eq; t.exp += c.lotExp; t.all += c.lotExp + (+c.yearly || 0); t.prof += c.profit; });
+    const pe = document.querySelector('[data-spye="' + y + '"]'); if (pe) pe.innerHTML = mny(t.eq ? t.all / t.eq : 0);
+    const pn = document.querySelector('[data-spyp="' + y + '"]'); if (pn) pn.innerHTML = mny(t.eq ? t.prof / t.eq : 0);
     el.innerHTML = mny(t.net); el.parentNode.className = "yfig ynet " + (t.net < 0 ? "neg" : "pos");
     const g = document.querySelector('[data-spyg="' + y + '"]'); if (g) g.innerHTML = mny(t.rev);
     const b = document.querySelector('[data-spyb="' + y + '"]'); if (b) b.textContent = fmtN(t.boxes);
@@ -7232,7 +7234,7 @@ function renderHome() {
   let p = null; try { p = S.orchards.length ? homePpb() : null; } catch (e) {}
   const cy = curHYear(), spent = S.orchards.reduce((a, o) => a + expTotals(o, cy).total, 0);
   const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
-  let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>";
+  let h = '<div class="home"><p class="hmhi">' + tr("hm_hi") + "</p>" + (typeof fgHtml === "function" ? fgHtml() : "");
   h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
     '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
     (p ? '<span><span class="k">' + esc(tr("hms_ppb").replace("{y}", p.y)) + '</span><b' + (p.ppb < 0 ? ' class="neg"' : "") + ">" + inr(p.ppb) + "</b></span>" : '<span><span class="k">' + tr("hm_ppb_none") + "</span><b>＋</b></span>") + "</button>";
@@ -7862,6 +7864,20 @@ window.addEventListener("beforeinstallprompt", () => setTimeout(renderShare, 0))
 
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
+  /* the page opens from the phone's saved copy; when a newer version has been downloaded, offer a one-tap refresh */
+  navigator.serviceWorker.addEventListener("message", e => { if (e.data && e.data.type === "sw-updated") swUpdBar(); });
+  window.addEventListener("load", () => { setTimeout(() => { try { if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({type: "check"}); } catch (e) {} }, 1500); });
+}
+function swUpdBar() {
+  if ($("swUpd")) return;
+  const t = {en: ["A new version is ready", "Refresh"], hi: ["नया वर्ज़न तैयार है", "रीफ़्रेश करें"], hn: ["Naya version taiyaar hai", "Refresh karein"]}[typeof lang !== "undefined" && lang ? lang : "hn"] || ["A new version is ready", "Refresh"];
+  const d = document.createElement("div"); d.id = "swUpd"; d.setAttribute("role", "status");
+  d.style.cssText = "position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:12px;width:max-content;max-width:92vw;white-space:nowrap;font-family:inherit;padding:8px 8px 8px 14px;border-radius:12px;background:#1B5E2B;color:#fff;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3)";
+  const sp = document.createElement("span"); sp.textContent = t[0];
+  const b = document.createElement("button"); b.type = "button"; b.textContent = t[1];
+  b.style.cssText = "border:0;border-radius:8px;background:#fff;color:#1B5E2B;font-family:inherit;font-size:.95rem;font-weight:700;min-height:38px;padding:0 12px;cursor:pointer";
+  b.addEventListener("click", () => location.reload());
+  d.append(sp, b); document.body.appendChild(d);
 }
 
 /* ---- apple register limits by plan (keep in step with pl_f_* on the plans page) ----
@@ -8993,6 +9009,59 @@ let hzWantQuick = false;
   const base = showTool;
   showTool = function (w, focus, scroll) { base(w, focus, scroll); if (w === "calc" && user && loaded && curSub === "quick" && !hzWantQuick) showSub("orch"); hzWantQuick = false; };
 })();
+/* ---------- First-time guide on Home: 3 steps (orchard, location, first expense); goes away when done or when the grower taps Later ---------- */
+Object.assign(T.en, { fg_h:"Get started in 3 easy steps", fg_n:"{n} of 3 done", fg_1:"Add your orchard", fg_1s:"Its name and number of trees", fg_2:"Add its location", fg_2s:"For local weather and frost warnings",
+  fg_3:"Add your first expense", fg_3s:"Spray, fertiliser, labour…", fg_go:"Start", fg_later:"Later" });
+Object.assign(T.hi, { fg_h:"3 आसान क़दमों में शुरू करें", fg_n:"3 में से {n} पूरे", fg_1:"अपना बाग़ जोड़ें", fg_1s:"उसका नाम और पेड़ों की गिनती", fg_2:"उसकी जगह जोड़ें", fg_2s:"स्थानीय मौसम और पाले की चेतावनी के लिए",
+  fg_3:"पहला ख़र्च जोड़ें", fg_3s:"स्प्रे, खाद, मज़दूरी…", fg_go:"शुरू करें", fg_later:"बाद में" });
+Object.assign(T.hn, { fg_h:"3 aasaan kadam mein shuru karein", fg_n:"3 mein se {n} ho gaye", fg_1:"Apna bagicha jodein", fg_1s:"Uska naam aur pedon ki ginti", fg_2:"Uski jagah jodein", fg_2s:"Local mausam aur paale ki chetavani ke liye",
+  fg_3:"Pehla kharcha jodein", fg_3s:"Spray, khaad, mazdoori…", fg_go:"Shuru karein", fg_later:"Baad mein" });
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+.fguide{border:2px solid #1B5E2B;border-radius:16px;background:var(--surface);padding:14px;display:grid;gap:10px}
+.fguide .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.fguide h3{margin:0;font-size:1.15rem}
+.fguide .n{font-size:.85rem;font-weight:700;color:#1B5E2B;white-space:nowrap}
+.fguide .bar{height:6px;border-radius:3px;background:#E3E8DE;overflow:hidden}
+.fguide .bar span{display:block;height:100%;background:#3E8A3A;border-radius:3px}
+.fguide ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fguide li{display:flex;align-items:center;gap:12px}
+.fguide .dot{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:700;border:2px solid #C9D0C3;color:var(--muted)}
+.fguide li.done .dot{background:#3E8A3A;border-color:#3E8A3A;color:#fff}
+.fguide li.next .dot{border-color:#1B5E2B;color:#1B5E2B}
+.fguide li .t{flex:1;display:flex;flex-direction:column}
+.fguide li .t b{font-size:1rem}
+.fguide li.done .t b{text-decoration:line-through;opacity:.6}
+.fguide li .t span{font-size:.85rem;color:var(--muted)}
+.fguide li .go{min-height:40px;padding:0 14px;border-radius:10px;border:0;background:#1B5E2B;color:#fff;font:700 .95rem var(--body);cursor:pointer;white-space:nowrap}
+.fguide .later{justify-self:end;border:0;background:none;color:var(--muted);font:600 .9rem var(--body);min-height:36px;cursor:pointer}`;
+  document.head.appendChild(css);
+})();
+function fgSteps() {
+  const s1 = S.orchards.length > 0, s2 = S.orchards.some(hasLoc);
+  const s3 = S.orchards.some(o => (o.diary || []).some(d => +d.cost > 0)) || S.seasons.some(se => S.orchards.some(o => o.id === se.oid) && (se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0)));
+  return [s1, s2, s3];
+}
+function fgHtml() {
+  if (!user || !loaded || shRO()) return "";
+  try { if (localStorage.getItem("fgLater_" + user.id)) return ""; } catch (e) {}
+  const st = fgSteps(), n = st.filter(Boolean).length; if (n === 3) return "";
+  const nx = st.indexOf(false), keys = [["fg_1", "fg_1s"], ["fg_2", "fg_2s"], ["fg_3", "fg_3s"]];
+  return '<section class="fguide"><div class="hd"><h3>' + tr("fg_h") + '</h3><span class="n">' + esc(tr("fg_n").replace("{n}", n)) + '</span></div><div class="bar"><span style="width:' + Math.round(n / 3 * 100) + '%"></span></div><ol>' +
+    keys.map((k, i) => '<li class="' + (st[i] ? "done" : i === nx ? "next" : "") + '"><span class="dot" aria-hidden="true">' + (st[i] ? "✓" : i + 1) + '</span><span class="t"><b>' + tr(k[0]) + "</b><span>" + tr(k[1]) + "</span></span>" +
+      (i === nx ? '<button class="go" type="button" data-fg="' + (i + 1) + '">' + tr("fg_go") + "</button>" : "") + "</li>").join("") +
+    '</ol><button class="later" type="button" data-fg="later">' + tr("fg_later") + "</button></section>";
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-fg]"); if (!b) return;
+  const a = b.dataset.fg; tabPicked = true;
+  if (a === "later") { try { localStorage.setItem("fgLater_" + user.id, "1"); } catch (e2) {} renderHome(); return; }
+  if (a === "1") { dashView = null; dashAdd = true; dashExp = false; showTool("orch", false, true); renderDash(); const i = $("dn_new"); if (i) { i.focus(); if (i.scrollIntoView) i.scrollIntoView({block: "center"}); } return; }
+  if (a === "2") { const o = S.orchards.find(x => !hasLoc(x)) || S.orchards[0]; if (!o) return; showTool("orch", false, true);
+    dashView = o.id; otab = "det"; dashYear = null; detEdit = null; locMode = "find"; locResults = null; renderDash(); const s2 = $("locSec"); if (s2 && s2.scrollIntoView) s2.scrollIntoView({block: "start"}); return; }
+  if (a === "3") { qxOpen("exp", S.orchards[0] ? S.orchards[0].id : ""); }
+});
 showTool("orch");
 libWant = null;
 if (window.ADFeedback) ADFeedback.init({
