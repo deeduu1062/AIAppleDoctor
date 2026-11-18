@@ -94,6 +94,7 @@ function upiLink(plan, per, base) {
     "&am=" + amt.toFixed(2) + "&cu=INR&tn=" + encodeURIComponent(note);
 }
 
+Object.assign(T.en, { pl_allf: "See all {n} features" }); Object.assign(T.hi, { pl_allf: "सभी {n} सुविधाएँ देखें" }); if (T.hn) Object.assign(T.hn, { pl_allf: "Sab {n} features dekhein" });
 function renderPlans() {
   const box = document.getElementById("plCards");
   if (!box) return;
@@ -117,7 +118,9 @@ function renderPlans() {
     }
     return '<article class="plcard' + (best ? " best" : "") + '">' + (best ? '<span class="plbadge">' + tr("pl_best") + "</span>" : "") +
       "<h3>" + plName(key) + '</h3><p class="pltag">' + tr("pl_" + key + "_t") + "</p>" + price +
-      "<ul>" + feats.map(f => "<li>" + plEsc(f) + "</li>").join("") + '</ul><div class="plact">' + act + "</div></article>";
+      "<ul>" + feats.slice(0, 3).map(f => "<li>" + plEsc(f) + "</li>").join("") + "</ul>" +
+      (feats.length > 3 ? '<details class="plmore"><summary>' + tr("pl_allf").replace("{n}", feats.length) + "</summary><ul>" + feats.slice(3).map(f => "<li>" + plEsc(f) + "</li>").join("") + "</ul></details>" : "") +
+      '<div class="plact">' + act + "</div></article>";
   };
   const st = myPlanState(), sec = document.getElementById("plans"), h = document.getElementById("plH"), p = document.getElementById("plP");
   let cards, hk = "pl_h", pk = "pl_p";
