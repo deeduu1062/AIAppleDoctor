@@ -5382,18 +5382,17 @@ document.addEventListener("click", e => {
 function orowSub(o) {
   const V = vtList(o), trees = +o.trees || V.reduce((a, x) => a + +x.n, 0), P = o.profile || {}, bits = [];
   if (trees) bits.push(tr("d_treesn").replace("{n}", fmtN(trees)));
-  /* net profit of the latest season with sales (normally last year) */
+  /* petiyan of the latest season with sales (normally last year); no money on the orchard page, that lives in Hisaab */
   const cy = curHYear();
-  for (let y = cy; y >= cy - 15; y--) { const se = seFor(o.id, y); if (!se) continue; const r = seasonCalc(se); if (r.rev > 0) { bits.push(esc(tr("orow_box").replace("{n}", fmtN(r.boxes)))); bits.push('<span class="' + (r.profit < 0 ? "neg" : "pos") + '">' + esc(tr("orow_net").replace("{y}", y)).replace("{x}", mny(r.profit)) + "</span>"); break; } }
+  for (let y = cy; y >= cy - 15; y--) { const se = seFor(o.id, y); if (!se) continue; const r = seasonCalc(se); if (r.boxes > 0) { bits.push(esc(tr("orow_box").replace("{n}", fmtN(r.boxes)) + " (" + y + ")")); break; } }
   return '<small class="orsub">' + bits.join(" · ") + "</small>";
 }
 function ohdrHtml(o) {
-  const V = vtList(o), trees = +o.trees || V.reduce((a, x) => a + +x.n, 0), cy = curHYear(), spent = expTotals(o, cy).total;
-  let ppb = null, py = null;
-  for (let y = cy; y >= cy - 15; y--) { const se = seFor(o.id, y); if (!se) continue; const r = seasonCalc(se); if (r.eq > 0 && r.rev > 0) { ppb = r.profit / r.eq; py = y; break; } }
-  const t = (k, v, c) => '<div class="ost"><span>' + k + '</span><b' + (c ? ' class="' + c + '"' : "") + ">" + v + "</b></div>";
+  /* opened orchard header: trees, area, height only — no spend or profit here (all money is in Hisaab) */
+  const V = vtList(o), trees = +o.trees || V.reduce((a, x) => a + +x.n, 0), P = o.profile || {};
+  const t = (k, v) => '<div class="ost"><span>' + k + '</span><b>' + v + "</b></div>";
   return '<div class="ohdr"><button class="obk" type="button" data-xact="dettoggle" data-o="' + esc(o.id) + '">‹ ' + tr("ob_all") + '</button><div class="ostats">' +
-    t(tr("d_trees"), trees ? fmtN(trees) : "–") + t(tr("ob_spent"), inr(spent), "neg") + t(py ? tr("ob_ppb").replace("{y}", py) : tr("ob_ppb0"), ppb === null ? "–" : inr(ppb), ppb !== null && ppb < 0 ? "neg" : "pos") + "</div></div>";
+    t(tr("d_trees"), trees ? fmtN(trees) : "–") + t(tr("p_area"), +P.area ? tr("p_bigha").replace("{n}", fmtD(+P.area)) : "–") + t(tr("p_alt"), +P.alt ? tr("p_m").replace("{n}", fmtN(+P.alt)) : "–") + "</div></div>";
 }
 function detailsHtml() {
   let h = '<section class="osec" id="detSec"><h4>' + tr("det_h") + "</h4>";
@@ -5456,11 +5455,10 @@ function detailsHtml() {
         })();
       r += '<p class="ohzgo"><button class="btn-s" type="button" data-hzgo="' + esc(o.id) + '">' + tr("hz_ogo") + "</button></p>";
       const P1 = o.profile || {}, placeEmpty1 = !hasLoc(o) && !P1.village && !(+P1.alt) && !(+P1.area);
-      if (otab === "det") r += (hasLoc(o) || placeEmpty1 ? detWxHtml(o) : "") + groups + (typeof dxHealthCardHtml === "function" ? dxHealthCardHtml(o) : "") +
+      /* the orchard page shows only the orchard itself; old links that asked for its Kharche/Bikri tab land here too */
+      r += (hasLoc(o) || placeEmpty1 ? detWxHtml(o) : "") + groups + (typeof dxHealthCardHtml === "function" ? dxHealthCardHtml(o) : "") +
         '<div class="dgroups dcards">' + soilCardHtml(o) + (locMode ? locCardHtml(o) : "") + "</div>" +
         '<div class="odel odel2"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>";
-      else if (otab === "work") r += otKharchHtml(o);
-      else r += '<section class="osec omoney" id="oMoney">' + (typeof hzOrchCard === "function" ? hzOrchCard(o) : "") + otMoneyHtml(o) + "</section>";
     }
     return r + "</div></div>";
   }).join("") + "</div>";
