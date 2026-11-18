@@ -8522,6 +8522,7 @@ Object.assign(T.hi, { by_gross:"बिक्री", by_net:"पेटी ख़
 Object.assign(T.hn, { by_gross:"Bikri", by_net:"Peti kharche ke baad", y_gp:"Peti kharche ke baad", r_profit:"Munafa", k_net:"Munafa", ls_net:"Munafa", by_npb:"Munafa per peti", hc_ppb:"Munafa per peti", ls_ppb:"Munafa per peti", mc_ppb:"Munafa per peti",
   y_sum:"Harvest saal ke hisaab se munafa", y_note:"Munafa = bikri − peti ke kharche − saal ke kharche (ek-musht rakam aur diary ke kharche bhi). Per peti hisaab mein aadhi peti aadhi gini jaati hai.",
   hz_split:"Peti ke kharche {a} + saal ke kharche {b}", ex_lumpm:"ek-musht rakam" });
+Object.assign(T.en, { hz_none:"Nothing recorded for season {y} yet." }); Object.assign(T.hi, { hz_none:"सीज़न {y} का अभी कोई रिकॉर्ड नहीं।" }); Object.assign(T.hn, { hz_none:"Season {y} ka abhi koi record nahi." });
 Object.assign(T.en, { hz_due:"{x} still to come from buyers", hz_how:"How is profit worked out?" });
 Object.assign(T.hi, { hz_due:"{x} अभी ख़रीदारों से आना बाक़ी", hz_how:"मुनाफ़ा कैसे निकलता है?" });
 Object.assign(T.hn, { hz_due:"{x} abhi kharidaron se aana baaki", hz_how:"Munafa kaise nikalta hai?" });
@@ -9333,7 +9334,9 @@ function renderHzO() {
   if (!o) { el.hidden = true; el.innerHTML = ""; return; }
   if (curSub === "year" || curSub === "quick") { curSub = "orch"; try { showSub("orch"); } catch (e) {} }
   el.hidden = false;
+  if (hzY !== null) { dashYear = hzY; if (kxYear !== 0) kxYear = hzY; }   /* the picked season is the open one */
   el.innerHTML = curSub === "exp" ? otKharchHtml(o) : '<section class="osec omoney" id="oMoney">' + otMoneyHtml(o) + "</section>";
+  hzFilterLists();
 }
 function hzCardHtml(y, sales, kharche, net, eq, boxes, label, cur, split, due) {
   const m = cur && !sales ? '<span class="m"><span class="k">' + tr("hz_mun") + "</span><b>…</b></span>" : '<span class="m"><span class="k">' + tr("hz_mun") + '</span><b' + (net < 0 ? ' class="neg"' : "") + ">" + shortInr(net) + "</b></span>";
@@ -9383,9 +9386,16 @@ document.addEventListener("click", e => {
 /* the season picked in the chips is the only season listed under Bikri and Kharche (Saal dar saal keeps every year) */
 function hzFilterLists() {
   if (!(user && loaded) || hzY === null) return;
-  document.querySelectorAll("#rp-orch .splist > .yrow, #exList .exlist > .yrow").forEach(r => {
+  document.querySelectorAll("#rp-orch .splist > .yrow, #exList .exlist > .yrow, #hzOrch .yrow[id], #hzOrch .kxempty").forEach(r => {
     const b = r.querySelector("[data-y]"), m = r.id && r.id.match(/(\d{4})$/), y = b ? +b.dataset.y : m ? +m[1] : null;
     if (y !== null) r.hidden = y !== hzY;
+  });
+  /* the picked season has no rows: say so instead of an empty space */
+  document.querySelectorAll("#rp-orch .splist, #exList .exlist, #hzOrch .ylist").forEach(l => {
+    let n = l.querySelector(":scope > .hznone"); const any = [...l.children].some(c => !c.hidden && !c.classList.contains("hznone"));
+    if (any) { if (n) n.remove(); return; }
+    if (!n) { n = document.createElement("p"); n.className = "hznone hint"; l.appendChild(n); }
+    n.textContent = tr("hz_none").replace("{y}", hzY);
   });
 }
 (function () {
