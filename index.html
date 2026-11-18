@@ -8370,7 +8370,7 @@ TT.forEach((n, i) => {
   });
 });
 /* ---------- + Kharcha: one quick expense form, on every page once logged in ----------
-   A round button above Saathi opens a small form from the bottom of the screen. It saves the expense the same way as the
+   A red button at the right end of the tab row (always at the top) opens a small form from the bottom of the screen. It saves the expense the same way as the
    orchard's Kharche tab (into that orchard's diary, in the right harvest year). From August to November it first asks
    "Kharcha or Bikri?" so harvest sales are just as quick (Bikri goes to Season sales record). Editing stays in Kharche. */
 Object.assign(T.en, { qx_fab:"Expense", qx_fab_l:"Add an expense", qx_title:"Add an expense", qx_ask:"What do you want to add?", qx_exp:"Expense", qx_exp_p:"Spray, fertiliser, labour…", qx_sale:"Sale", qx_sale_p:"Boxes sold this season",
@@ -8388,9 +8388,11 @@ Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kha
 (function () {
   const css = document.createElement("style");
   css.textContent = `
-.qxfab{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:21;display:inline-flex;align-items:center;gap:6px;
-  font:700 1rem var(--body);padding:0 18px 0 14px;min-height:50px;border-radius:999px;border:0;background:var(--apple);color:var(--on-apple);cursor:pointer;box-shadow:0 8px 22px -8px rgba(0,0,0,.45)}
-.qxfab .pl{font-size:1.5rem;line-height:1;font-weight:700;margin-top:-2px}
+.qxrow0{display:flex;align-items:center;gap:8px}
+.qxrow0 .tabbar{flex:1;min-width:0}
+.qxfab{flex:none;display:inline-flex;align-items:center;gap:4px;font:700 .95rem var(--body);padding:0 14px 0 10px;min-height:38px;margin:4px 0;border-radius:999px;border:0;
+  background:var(--apple);color:var(--on-apple);cursor:pointer;box-shadow:0 4px 12px -6px rgba(0,0,0,.45);white-space:nowrap}
+.qxfab .pl{font-size:1.25rem;line-height:1;font-weight:700;margin-top:-2px}
 .qxfab:hover{filter:brightness(.94)}
 .qxfab[hidden],html.shro .qxfab{display:none}
 @media print{.qxfab,.qxtoast{display:none}}
@@ -8419,14 +8421,15 @@ Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kha
 .qxsave{width:100%;min-height:50px;font-size:1.05rem}
 .qxerr{margin:0;color:#b3261e;font-weight:600}
 .qxerr:empty{display:none}
-.qxtoast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:12px;max-width:min(92vw,440px);
+.qxtoast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:12px;max-width:min(92vw,440px);
   margin:0;padding:10px 14px;border-radius:12px;background:#1f2a1f;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.3);font-weight:600}
 .qxtoast[hidden]{display:none}
 .qxtoast button{border:0;background:none;color:#ffd7cf;font:700 1rem var(--body);cursor:pointer;padding:6px 4px;white-space:nowrap}`;
   document.head.appendChild(css);
   const fab = document.createElement("button");
   fab.type = "button"; fab.className = "qxfab"; fab.id = "qxFab"; fab.hidden = true; fab.setAttribute("aria-haspopup", "dialog");
-  document.body.appendChild(fab);
+  const tb = document.getElementById("tabbar");
+  if (tb && tb.parentElement) { tb.parentElement.classList.add("qxrow0"); tb.parentElement.appendChild(fab); } else document.body.appendChild(fab);
   const dlg = document.createElement("dialog");
   dlg.className = "qxdlg"; dlg.id = "qxDlg"; dlg.setAttribute("aria-labelledby", "qxTitle");
   document.body.appendChild(dlg);
@@ -8552,7 +8555,7 @@ applyLang();
    The picture is drawn by the browser itself (the page put inside an SVG), so it looks exactly like the site. */
 if (window.SHOTS) (function () {
   const st = document.createElement("style");
-  st.textContent = "#acctBar,#instBar,#chatFab,#fbBtn,.ticker{display:none!important}#tools~*:not(script):not(style){display:none!important}.tabbar{scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}*{animation:none!important;transition:none!important;caret-color:transparent!important}";
+  st.textContent = "#acctBar,#instBar,#chatFab,#fbBtn,#qxFab,.ticker{display:none!important}#tools~*:not(script):not(style){display:none!important}.tabbar{scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}*{animation:none!important;transition:none!important;caret-color:transparent!important}";
   document.head.appendChild(st);
   const DXS = {
     hi: { summary: "फल पर गोल, कत्थई-काले धब्बे दिख रहे हैं। यह स्कैब (सेब का धब्बा रोग) जैसा लग रहा है।",
