@@ -3657,6 +3657,7 @@ function setOrchTabs() {
   const hm = $("tt-home"); if (hm) { hm.hidden = !user; if (!user && !$("tp-home").hidden && typeof showTool === "function") showTool("calc"); }
   if (user && !$("tp-rec").hidden && typeof showTool === "function") showTool("home");
   if (!user && T.en.rc_h && !$("tp-rec").hidden) renderRec();
+  if (typeof qxSync === "function") qxSync();
 }
 function renderOrchGate() {
   const ready = !!(user && loaded) && !recovering;
@@ -3673,7 +3674,7 @@ function dropEmptySeasons() {
   const keep = se => se.lots.length || COST_KEYS.some(k => +se.costs[k] > 0) || COST_KEYS.some(k => diaryCosts(se.oid, se.year)[k] > 0);
   if (S.seasons.some(se => !keep(se))) { S.seasons = S.seasons.filter(keep); if (user && loaded && !shRO()) save(); }
 }
-function renderAll() { dropEmptySeasons(); if (typeof renderDxOrch === "function") renderDxOrch(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); if ($("tp-home") && !$("tp-home").hidden && typeof renderHome === "function") renderHome(); }
+function renderAll() { dropEmptySeasons(); if (typeof renderDxOrch === "function") renderDxOrch(); renderEditor(); renderResults(); renderSummary(); renderDash(); renderSpMore(); if (typeof renderExp === "function") renderExp(); if ($("tp-home") && !$("tp-home").hidden && typeof renderHome === "function") renderHome(); if (typeof qxSync === "function") qxSync(); }
 
 async function loadMine() {
   loaded = false; loadFailed = false; setStatus("st_loading"); renderOrchGate();
@@ -4943,6 +4944,7 @@ function dashExpHtml() {
 }
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-dex]"); if (!b) return;
+  if (b.dataset.dex === "open" && typeof qxOpen === "function") { qxOpen("exp", b.dataset.o || ""); return; }
   if (b.dataset.dex === "open") { dashExp = true; dashAdd = false; dashExpMsg = ""; dashExpEdit = null; if (S.orchards.length === 1) dashExpO = S.orchards[0].id; if (b.dataset.o) dashExpO = b.dataset.o; else if (otab === "work") otab = "det"; renderDash(); const o = $("dx_orch"); if (o && o.type !== "hidden") o.focus(); else { const k = $("dx_kind"); if (k) k.focus(); } }
   else { dashExp = false; dashExpMsg = ""; dashExpEdit = null; renderDash(); }
 });
@@ -5011,15 +5013,31 @@ function expRowsFor(o, y) {
 }
 function kxYearHtml(o, y, cur) {
   const r = expRowsFor(o, y);
-  const editing = kxEditY === y, canEdit = r.rows.some(x => x.id);
+  const editing = kxEditY === y, canEdit = true;
   let h = '<section class="rccard kxcard' + (editing ? " editing" : "") + '"><div class="kxch"><h4>' + tr("kx_title").replace("{y}", y) + (cur ? ' <span class="pill live">' + tr("dy_cur") + "</span>" : "") + "</h4>" +
     (canEdit ? '<button class="btn-s" type="button" data-kxy="' + y + '">' + tr(editing ? "ne_done" : "dy_edit") + "</button>" : "") + "</div>";
-  if (!r.rows.length) return h + '<p class="hint">' + tr("xh_cur0").replace("{y}", y) + "</p></section>";
+  if (!r.rows.length) return h + '<p class="hint">' + tr("xh_cur0").replace("{y}", y) + "</p>" + (editing ? kxLumpHtml(o, y) : "") + "</section>";
   return h + '<p class="kxtot"><span>' + tr(cur ? "kx_sofar" : "rc_tot") + " · " + tr("xh_n").replace("{n}", r.rows.length) + "</span><b>" + inr(r.total) + "</b></p>" + '<ol class="rcdiary">' + r.rows.map(x => '<li class="k-dk_' + esc(x.k || "lump") + (x.id && x.id === kxNew ? " kxnew" : "") + '"' + (x.id ? ' data-kid="' + esc(x.id) + '"' : "") + '><span class="dd">' + (x.date ? fmtDay(x.date) : "–") + "</span><span><b>" + x.kind + "</b>" +
     "<br>" + (x.text ? esc(x.text) + " · " : "") + inr(x.cost) +
     (x.id && editing ? '<span class="kxacts"><button class="link" type="button" data-kxe="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr("dy_edit") + '</button><button class="link del" type="button" data-kxd="' + esc(x.id) + '" data-o="' + esc(o.id) + '">' + tr(kxDel === x.id ? "dy_sure" : "dy_del") + "</button></span>" : "") +
-    "</span></li>").join("") + "</ol></section>";
+    "</span></li>").join("") + "</ol>" + (editing ? kxLumpHtml(o, y) : "") + "</section>";
 }
+/* yearly lump sums (when the grower only knows the year's total for a cost): entered here, in the orchard's Kharche tab, while editing a year */
+function kxLumpHtml(o, y) {
+  const se = seFor(o.id, y), hasL = se && COST_KEYS.some(k => +se.costs[k] > 0);
+  return '<details class="manage exlump kxlump"' + (hasL ? " open" : "") + "><summary>" + tr("ex_lump") + '</summary><p class="hint">' + tr("qx_lump_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
+    '<div class="field"><label for="kxl_' + esc(o.id) + "_" + y + "_" + k + '">' + tr("yc_" + k) + ' (₹)</label><input id="kxl_' + esc(o.id) + "_" + y + "_" + k + '" data-kxlump="' + k + '" data-o="' + esc(o.id) + '" data-y="' + y +
+    '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>').join("") + "</div></details>";
+}
+document.addEventListener("change", e => {
+  const t = e.target, k = t && t.dataset && t.dataset.kxlump; if (!k) return;
+  const o = S.orchards.find(x => x.id === t.dataset.o), y = +t.dataset.y; if (!o) return;
+  const v = numOf(t.value);
+  if (v && !seFor(o.id, y) && recBlockY(y)) { t.value = ""; return; }
+  if (v) ensureSeason(o.id, y).costs[k] = v;
+  else { const se = seFor(o.id, y); if (se) { se.costs[k] = 0; pruneSeason(o.id, y); } }
+  kxEditY = y; kxYear = y; expChanged(); if (typeof renderExp === "function") renderExp();
+});
 function otKharchHtml(o) {
   /* every harvest year as a dropdown (same pattern as Sales/Profit Expenses): one open at a time, current year open to start */
   const curY = hYear(todayIso()), ys = [curY].concat(expYearsAll().filter(y => y !== curY && expTotals(o, y).total > 0)).sort((a, b) => b - a);
@@ -5916,7 +5934,9 @@ function renderExpForm() {
   if (exEdit) S.orchards.forEach(o => (o.diary || []).forEach(d => { if (d.id === exEdit) { ed = d; edO = o; } }));
   if (exEdit && !ed) exEdit = null;
   /* the form shows only after + Add expense is tapped, or while editing an expense from the list below */
-  const top = $("exTop"); if (top) top.innerHTML = ed || exAdding ? "" : '<button class="btn-s add" type="button" data-exact="add">＋ ' + tr("ex_add") + "</button>";
+  /* this page is a report: expenses are added with the + Kharcha button or in the orchard's Kharche tab, and changed there */
+  exAdding = false; exEdit = null; ed = null;
+  const top = $("exTop"); if (top) top.innerHTML = "";
   if (!ed && !exAdding) { el.innerHTML = ""; return; }
   const v = ed || {date: todayIso(), kind: "", text: "", cost: "", stage: ""}, oid = edO ? edO.id : exO;
   const kinds = EXP_KINDS.slice(); if (v.kind && kinds.indexOf(v.kind) < 0) kinds.push(v.kind);
@@ -5974,13 +5994,11 @@ function renderExpList() {
         if (t.ents.length) {
           h += '<div class="tablewrap"><table class="ledger sm extab"><thead><tr>' + ["dy_date", "ex_cat", "ex_amt0", ""].map(k => '<th scope="col">' + (k ? tr(k) : "") + "</th>").join("") + "</tr></thead><tbody>" +
             t.ents.map(e => '<tr' + (e.id === exEdit ? ' class="editing"' : "") + '><th scope="row">' + fmtDay(e.date) + '</th><td class="t">' + tr("dk_" + e.kind) + (e.kind === "spray" && e.stage ? " <small>(" + tr(e.stage) + ")</small>" : "") +
-              (e.text ? '<span class="det">' + esc(e.text) + "</span>" : "") + "</td><td>" + inr(+e.cost) + '</td><td class="acts"><button class="link" type="button" data-exact="edit" data-id="' + esc(e.id) + '">' + tr("dy_edit") +
-              '</button><button class="link del" type="button" data-exact="del" data-o="' + esc(o.id) + '" data-id="' + esc(e.id) + '">' + tr("dy_del") + "</button></td></tr>").join("") + "</tbody></table></div>";
+              (e.text ? '<span class="det">' + esc(e.text) + "</span>" : "") + "</td><td>" + inr(+e.cost) + '</td><td class="acts"><button class="link" type="button" data-exact="goorch" data-o="' + esc(o.id) + '" data-y="' + y + '" data-id="' + esc(e.id) + '">' + tr("qx_inorch") + "</button></td></tr>").join("") + "</tbody></table></div>";
         } else if (!t.lump && !t.lw) h += '<p class="hint">' + tr("ex_zero") + "</p>";
         if (t.lw) h += '<p class="hint">' + tr("lb_inexp").replace("{x}", inr(t.lw)) + "</p>";
-        h += '<details class="manage exlump"' + (hasL ? " open" : "") + "><summary>" + tr("ex_lump") + '</summary><p class="hint">' + tr("ex_lump_p") + '</p><div class="grid">' + COST_KEYS.map(k =>
-          '<div class="field"><label for="exl_' + esc(o.id) + "_" + y + "_" + k + '">' + tr("yc_" + k) + ' (₹)</label><input id="exl_' + esc(o.id) + "_" + y + "_" + k + '" data-exlump="' + k + '" data-o="' + esc(o.id) + '" data-y="' + y +
-          '" type="number" inputmode="decimal" min="0" step="any" value="' + (se && +se.costs[k] ? se.costs[k] : "") + '"></div>').join("") + "</div></details></div></section>";
+        if (hasL) h += '<p class="hint">' + tr("qx_lumpro").replace("{x}", inr(t.lump)) + ' <button class="link" type="button" data-exact="goorch" data-o="' + esc(o.id) + '" data-y="' + y + '">' + tr("qx_inorch") + "</button></p>";
+        h += "</div></section>";
       });
       h += "</div>";
     }
@@ -6034,6 +6052,7 @@ $("rp-exp").addEventListener("click", e => {
     if (!opening) exEdit = null;
     renderExpList(); const nb = document.querySelector('#exList [data-exact=otoggle][data-o="' + b.dataset.o + '"][data-y="' + b.dataset.y + '"]'); if (nb) { nb.focus({preventScroll: true}); if (opening) toTop(nb); } return;
   }
+  if (a === "goorch") { qxOpenOrch(b.dataset.o, b.dataset.id || null, +b.dataset.y); return; }
   if (a === "cancel") { exEdit = null; exAdding = false; renderExp(); return; }
   if (a === "add") { exEdit = null; exAdding = true; renderExp(); const f = $("exForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); const k = $("ex_orch"); if (k) k.focus(); return; }
   if (a === "edit") { exEdit = b.dataset.id; renderExp(); const f = $("exForm"); if (f) f.scrollIntoView({block: "start"}); const c = $("ex_cost"); if (c) c.focus(); return; }
@@ -6311,7 +6330,7 @@ function spClick(e) {
     fixSel(); save(); renderAll(); const el = $("n_" + nl.id + "_grade"); if (el) el.focus(); return;
   } else if (act === "orchpage") { dashView = b.dataset.o; otab = "hisab"; dashYear = +b.dataset.y; profEdit = false; diaryEdit = null; tabPicked = true; renderDash(); showTool("orch", false, true); const ms = $("oMoney"); if (ms && ms.scrollIntoView) ms.scrollIntoView({block: "start"}); return; return;
   } else if (act === "goexp") {
-    showSub("exp"); expOpenAt(b.dataset.o || sel.o, +(b.dataset.y || sel.y)); return;
+    qxOpenOrch(b.dataset.o || sel.o, null, +(b.dataset.y || sel.y), true); return;
   } else if (act === "sptoggle") {
     const y = +b.dataset.y;
     /* one year open at a time: opening a year closes the others and brings it to the top of the screen */
@@ -7274,8 +7293,9 @@ $("dash").addEventListener("click", e => {
   if (g.startsWith("y:")) { glY = +g.slice(2); renderDash(); return; }
   if (g.startsWith("o:")) { if (g.length > 2) goSeason(g.slice(2), glY); return; }
   if (g === "sale") { const o = S.orchards.find(x => x.id === sel.o) || S.orchards[0]; if (o) goSeason(o.id, glY || curHYear()); return; }
-  if (g === "exp") { /* add expenses in the orchard's Expenses tab (the Sales/Profit Expenses page no longer has an add form) */
+  if (g === "exp") { /* one quick expense form for the whole site (the + Kharcha button) */
     const o = S.orchards.find(x => x.id === sel.o) || S.orchards[0]; if (!o) return;
+    if (typeof qxOpen === "function") { qxOpen("exp", o.id); return; }
     dashView = o.id; otab = "work"; dashYear = null; profEdit = false; diaryEdit = null; kAdd = true; renderDash();
     const s2 = $("diarySec"); if (s2) s2.scrollIntoView({block: "start"}); const k = $("d_kind"); if (k) k.focus(); return; }
   if (g === "dx") goDiag("cam");
@@ -8349,6 +8369,175 @@ TT.forEach((n, i) => {
     if (j >= 0) { e.preventDefault(); showTool(vis[j], true, false); }
   });
 });
+/* ---------- + Kharcha: one quick expense form, on every page once logged in ----------
+   A round button above Saathi opens a small form from the bottom of the screen. It saves the expense the same way as the
+   orchard's Kharche tab (into that orchard's diary, in the right harvest year). From August to November it first asks
+   "Kharcha or Bikri?" so harvest sales are just as quick (Bikri goes to Season sales record). Editing stays in Kharche. */
+Object.assign(T.en, { qx_fab:"Expense", qx_fab_l:"Add an expense", qx_title:"Add an expense", qx_ask:"What do you want to add?", qx_exp:"Expense", qx_exp_p:"Spray, fertiliser, labour…", qx_sale:"Sale", qx_sale_p:"Boxes sold this season",
+  qx_sale_t:"Add a sale", qx_save:"Save expense", qx_close:"Close", qx_err_o:"Choose the orchard.", qx_saved:"{x} saved for {o}, harvest year {y}.", qx_view:"View",
+  qx_inorch:"Edit in orchard", qx_lumpro:"Plus yearly lump sums: {x}.", qx_lump_p:"If you only know the year's total for a cost, enter it here instead of separate entries. It counts in this harvest year's net income.",
+  qx_more:"Date and details", qx_today:"Today" });
+Object.assign(T.hi, { qx_fab:"ख़र्च", qx_fab_l:"ख़र्च जोड़ें", qx_title:"ख़र्च जोड़ें", qx_ask:"क्या जोड़ना है?", qx_exp:"ख़र्च", qx_exp_p:"स्प्रे, खाद, मज़दूरी…", qx_sale:"बिक्री", qx_sale_p:"इस सीज़न बिकी पेटियाँ",
+  qx_sale_t:"बिक्री जोड़ें", qx_save:"ख़र्च सहेजें", qx_close:"बंद करें", qx_err_o:"बाग़ चुनें।", qx_saved:"{o} में {x} सहेजा गया, हार्वेस्ट साल {y}।", qx_view:"देखें",
+  qx_inorch:"बाग़ में बदलें", qx_lumpro:"साथ में साल की एकमुश्त रक़म: {x}।", qx_lump_p:"अगर किसी ख़र्च का सिर्फ़ साल का कुल पता है, तो अलग एंट्री की जगह यहाँ लिखें। यह इसी हार्वेस्ट साल की शुद्ध आय में गिना जाता है।",
+  qx_more:"तारीख़ और जानकारी", qx_today:"आज" });
+Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kharcha jodein", qx_ask:"Kya jodna hai?", qx_exp:"Kharcha", qx_exp_p:"Spray, khaad, mazdoori…", qx_sale:"Bikri", qx_sale_p:"Is season biki petiyan",
+  qx_sale_t:"Bikri jodein", qx_save:"Kharcha save karein", qx_close:"Band karein", qx_err_o:"Bagicha chunein.", qx_saved:"{o} mein {x} save ho gaya, harvest saal {y}.", qx_view:"Dekhein",
+  qx_inorch:"Bagiche mein badlein", qx_lumpro:"Saath mein saal ki ek-musht rakam: {x}.", qx_lump_p:"Agar kisi kharche ka sirf saal ka total pata hai, to alag entries ki jagah yahan likhein. Ye isi harvest saal ki net kamai mein gina jaata hai.",
+  qx_more:"Tareekh aur detail", qx_today:"Aaj" });
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+.qxfab{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:21;display:inline-flex;align-items:center;gap:6px;
+  font:700 1rem var(--body);padding:0 18px 0 14px;min-height:50px;border-radius:999px;border:0;background:var(--apple);color:var(--on-apple);cursor:pointer;box-shadow:0 8px 22px -8px rgba(0,0,0,.45)}
+.qxfab .pl{font-size:1.5rem;line-height:1;font-weight:700;margin-top:-2px}
+.qxfab:hover{filter:brightness(.94)}
+.qxfab[hidden],html.shro .qxfab{display:none}
+@media print{.qxfab,.qxtoast{display:none}}
+.qxdlg{border:0;padding:0;margin:auto auto 0;width:min(520px,100vw);max-width:100vw;max-height:92dvh;border-radius:18px 18px 0 0;background:var(--bg);color:var(--fg);box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+.qxdlg::backdrop{background:rgba(0,0,0,.4)}
+.qxdlg[open]{display:flex;flex-direction:column;animation:qxup .18s ease-out}
+@keyframes qxup{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+.qxhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 6px}
+.qxhead h3{margin:0;font-size:1.15rem}
+.qxx{border:0;background:none;color:inherit;font-size:1.6rem;line-height:1;width:44px;height:44px;cursor:pointer;border-radius:50%}
+.qxbody{overflow:auto;padding:4px 16px calc(16px + env(safe-area-inset-bottom,0px));display:grid;gap:12px}
+.qxlbl{font-weight:700;font-size:.92rem;margin:0}
+.qxchips{display:flex;flex-wrap:wrap;gap:8px}
+.qxchip{border:1.5px solid var(--line);background:var(--card,transparent);color:inherit;border-radius:999px;padding:9px 14px;min-height:42px;font:600 .95rem var(--body);cursor:pointer}
+.qxchip[aria-pressed="true"]{border-color:var(--apple);background:var(--apple);color:var(--on-apple)}
+.qxbig{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qxbig button{border:1.5px solid var(--line);background:var(--card,transparent);color:inherit;border-radius:14px;padding:16px 12px;text-align:left;cursor:pointer;font:inherit}
+.qxbig b{display:block;font-size:1.15rem;margin-bottom:2px}
+.qxbig span{font-size:.85rem;opacity:.8}
+.qxamt{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:12px;padding:0 12px}
+.qxamt span{font-size:1.4rem;font-weight:700;opacity:.75}
+.qxamt input{border:0;background:none;color:inherit;font:700 1.5rem var(--body);width:100%;padding:10px 0;outline:none}
+.qxamt:focus-within{border-color:var(--apple)}
+.qxrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qxrow .field,.qxbody .field{margin:0}
+.qxsave{width:100%;min-height:50px;font-size:1.05rem}
+.qxerr{margin:0;color:#b3261e;font-weight:600}
+.qxerr:empty{display:none}
+.qxtoast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:12px;max-width:min(92vw,440px);
+  margin:0;padding:10px 14px;border-radius:12px;background:#1f2a1f;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.3);font-weight:600}
+.qxtoast[hidden]{display:none}
+.qxtoast button{border:0;background:none;color:#ffd7cf;font:700 1rem var(--body);cursor:pointer;padding:6px 4px;white-space:nowrap}`;
+  document.head.appendChild(css);
+  const fab = document.createElement("button");
+  fab.type = "button"; fab.className = "qxfab"; fab.id = "qxFab"; fab.hidden = true; fab.setAttribute("aria-haspopup", "dialog");
+  document.body.appendChild(fab);
+  const dlg = document.createElement("dialog");
+  dlg.className = "qxdlg"; dlg.id = "qxDlg"; dlg.setAttribute("aria-labelledby", "qxTitle");
+  document.body.appendChild(dlg);
+  const toast = document.createElement("p");
+  toast.className = "qxtoast"; toast.id = "qxToast"; toast.setAttribute("role", "status"); toast.hidden = true;
+  document.body.appendChild(toast);
+  fab.addEventListener("click", () => qxOpen());
+  dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });   /* tap outside the form closes it */
+})();
+let qx = {mode: "exp", o: "", kind: "", cost: "", date: "", text: "", stage: ""};
+const qxSeason = () => { const m = new Date().getMonth() + 1; return m >= 8 && m <= 11; };   /* August to November: also offer Bikri */
+function qxSync() {
+  const f = $("qxFab"); if (!f) return;
+  f.innerHTML = '<span class="pl" aria-hidden="true">＋</span>' + esc(tr("qx_fab")); f.setAttribute("aria-label", tr("qx_fab_l"));
+  f.hidden = !(user && loaded) || shRO() || isAdminOnly(user);
+}
+function qxOpen(mode, oid) {
+  const last = (() => { try { return localStorage.getItem("qxO") || ""; } catch (e) { return ""; } })();
+  const pick = oid || (S.orchards.some(x => x.id === last) ? last : "") || (S.orchards.length === 1 ? S.orchards[0].id : "");
+  qx = {mode: mode || (qxSeason() ? "ask" : "exp"), o: pick, kind: "", cost: "", date: todayIso(), text: "", stage: ""};
+  qxRender(); const d = $("qxDlg"); if (!d.open) d.showModal();
+  const a = $("qx_cost"); if (a && qx.o) a.focus({preventScroll: true});
+}
+function qxClose() { const d = $("qxDlg"); if (d && d.open) d.close(); }
+function qxOrchChips(act) {
+  if (S.orchards.length > 8) return '<select id="qx_osel" class="qxsel">' + '<option value="">' + tr("dx_pick") + "</option>" +
+    S.orchards.map(o => '<option value="' + esc(o.id) + '"' + (o.id === qx.o ? " selected" : "") + ">" + esc(o.name || tr("orchard_fallback")) + "</option>").join("") + "</select>";
+  return '<div class="qxchips" role="group" aria-label="' + esc(tr("lbl_orchard")) + '">' + S.orchards.map(o => '<button type="button" class="qxchip" data-qx="' + act + '" data-o="' + esc(o.id) + '" aria-pressed="' + (o.id === qx.o) + '">' +
+    esc(o.name || tr("orchard_fallback")) + "</button>").join("") + "</div>";
+}
+function qxRender() {
+  const d = $("qxDlg"); if (!d) return;
+  const title = qx.mode === "ask" ? tr("qx_ask") : qx.mode === "sale" ? tr("qx_sale_t") : tr("qx_title");
+  let b = "";
+  if (!S.orchards.length) b = '<p>' + tr("ex_noorch") + '</p><button class="btn-s add qxsave" type="button" data-qx="goorchs">' + tr("tt_orch") + "</button>";
+  else if (qx.mode === "ask") b = '<div class="qxbig"><button type="button" data-qx="mexp"><b>' + tr("qx_exp") + "</b><span>" + tr("qx_exp_p") + '</span></button><button type="button" data-qx="msale"><b>' + tr("qx_sale") + "</b><span>" +
+    tr("qx_sale_p") + "</span></button></div>";
+  else if (qx.mode === "sale") b = '<p class="qxlbl">' + tr("sp_which") + "</p>" + qxOrchChips("sale");
+  else {
+    const kinds = EXP_KINDS.slice();
+    b = (S.orchards.length > 1 ? '<p class="qxlbl">' + tr("lbl_orchard") + "</p>" + qxOrchChips("o") : "") +
+      '<p class="qxlbl">' + tr("ex_cat") + '</p><div class="qxchips" role="group" aria-label="' + esc(tr("ex_cat")) + '">' + kinds.map(k => '<button type="button" class="qxchip" data-qx="k" data-k="' + k + '" aria-pressed="' + (k === qx.kind) + '">' + tr("dk_" + k) + "</button>").join("") + "</div>" +
+      (qx.kind === "spray" ? '<div class="field"><label for="qx_stage">' + tr("dy_stage") + '</label><select id="qx_stage"><option value="">–</option>' +
+        [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => '<option value="st' + i + '"' + ("st" + i === qx.stage ? " selected" : "") + ">" + tr("st" + i) + "</option>").join("") + "</select></div>" : "") +
+      '<label class="qxlbl" for="qx_cost">' + tr("ex_amt") + '</label><div class="qxamt"><span aria-hidden="true">₹</span><input id="qx_cost" type="number" inputmode="decimal" min="0" step="any" value="' + esc(qx.cost) + '" placeholder="0"></div>' +
+      '<div class="qxrow"><div class="field"><label for="qx_date">' + tr("dy_date") + '</label><input id="qx_date" type="date" value="' + esc(qx.date) + '"></div>' +
+      '<div class="field"><label for="qx_text">' + tr("ex_det") + '</label><input id="qx_text" type="text" maxlength="200" value="' + esc(qx.text) + '"></div></div>' +
+      '<p class="qxerr" id="qx_err" role="alert"></p><button class="btn-s add qxsave" type="button" data-qx="save">' + tr("qx_save") + "</button>";
+  }
+  d.innerHTML = '<div class="qxhead"><h3 id="qxTitle">' + title + '</h3><button class="qxx" type="button" data-qx="close" aria-label="' + esc(tr("qx_close")) + '">×</button></div><div class="qxbody">' + b + "</div>";
+}
+function qxSave() {
+  const err = m => { set("qx_err", m); };
+  const o = S.orchards.find(x => x.id === qx.o);
+  if (!o) { err(tr("qx_err_o")); return; }
+  const date = qx.date, kind = qx.kind, cost = numOf(qx.cost);
+  if (!date || !kind || !cost) { err(tr("ex_err")); return; }
+  const y = hYear(date); if (recBlockY(y)) return;
+  const entry = {id: newId(), date: date, kind: kind, cost: cost, text: (qx.text || "").trim(), stage: kind === "spray" ? qx.stage : ""};
+  o.diary = (o.diary || []).concat([entry]); ensureSeason(o.id, y); if (typeof exOpen !== "undefined") exOpen.add(y);
+  try { localStorage.setItem("qxO", o.id); } catch (e) {}
+  qxClose(); expChanged(); if (typeof renderExp === "function") renderExp();
+  const onIt = !$("tp-orch").hidden && dashView === o.id && otab === "work";
+  if (onIt) kxShow(o, entry);
+  qxToast(tr("qx_saved").replace("{x}", inr(cost)).replace("{o}", esc(o.name || tr("orchard_fallback"))).replace("{y}", y), onIt ? null : () => qxOpenOrch(o.id, entry.id, y));
+}
+function qxToast(msg, view) {
+  const t = $("qxToast"); if (!t) return;
+  t.innerHTML = "<span>" + msg + "</span>" + (view ? '<button type="button" id="qxView">' + tr("qx_view") + "</button>" : "");
+  if (view) $("qxView").onclick = () => { t.hidden = true; view(); };
+  t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 5000);
+}
+/* open one orchard's Kharche tab at a harvest year (optionally highlight one entry, or open the year for editing) */
+function qxOpenOrch(oid, entryId, y, edit) {
+  const o = S.orchards.find(x => x.id === oid) || S.orchards[0]; if (!o) return;
+  tabPicked = true; showTool("orch", false, true);
+  dashView = o.id; otab = "work"; dashYear = null; profEdit = false; diaryEdit = null; dashExp = false; dashAdd = false; detEdit = null; dashExpEdit = null;
+  kxYear = y || hYear(todayIso()); kxEditY = edit ? kxYear : null; kxNew = entryId || null; kxDel = null;
+  renderDash();
+  const t = (entryId && document.querySelector('#oExp li[data-kid="' + entryId + '"]')) || $("kxy-" + kxYear) || $("oExp");
+  if (t && t.scrollIntoView) t.scrollIntoView({block: "center", behavior: "smooth"});
+  if (entryId) setTimeout(() => { kxNew = null; const n = document.querySelector("#oExp li.kxnew"); if (n) n.classList.remove("kxnew"); }, 2500);
+}
+function qxSale(oid) {
+  qxClose();
+  if (saleYears()) { entryOpen = false; saleAsk = false; saleYrFor = oid; tabPicked = true; showTool("calc", false, true); showSub("orch"); renderAll(); const st = $("saleTop"); if (st && st.scrollIntoView) st.scrollIntoView({block: "start"}); }
+  else { goSeason(oid, curHYear()); openEntry(); }
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-qx]"); if (!b) return;
+  const a = b.dataset.qx;
+  if (a === "close") { qxClose(); return; }
+  if (a === "mexp") { qx.mode = "exp"; qxRender(); return; }
+  if (a === "msale") { qx.mode = "sale"; qxRender(); return; }
+  if (a === "sale") { qxSale(b.dataset.o); return; }
+  if (a === "goorchs") { qxClose(); tabPicked = true; showTool("orch", false, true); return; }
+  if (a === "o") { qx.o = b.dataset.o; qxRender(); const c = $("qx_cost"); if (c && !qx.kind) { const k = document.querySelector('[data-qx="k"]'); if (k) k.focus(); } return; }
+  if (a === "k") { qx.kind = b.dataset.k; qxRender(); const c = $("qx_cost"); if (c) c.focus(); return; }
+  if (a === "save") { qxSave(); return; }
+});
+document.addEventListener("input", e => {
+  const t = e.target; if (!t || !t.id || t.id.indexOf("qx_") !== 0) return;
+  if (t.id === "qx_cost") qx.cost = t.value; else if (t.id === "qx_date") qx.date = t.value; else if (t.id === "qx_text") qx.text = t.value;
+});
+document.addEventListener("change", e => {
+  const t = e.target; if (!t || !t.id) return;
+  if (t.id === "qx_stage") qx.stage = t.value;
+  else if (t.id === "qx_date") qx.date = t.value;
+  else if (t.id === "qx_osel") { qx.o = t.value; if (qx.mode === "sale" && qx.o) qxSale(qx.o); else qxRender(); }
+});
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target && (e.target.id === "qx_cost" || e.target.id === "qx_text")) { e.preventDefault(); qxSave(); } });
 showTool("orch");
 libWant = null;
 if (window.ADFeedback) ADFeedback.init({
