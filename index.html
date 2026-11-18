@@ -2240,6 +2240,9 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 #exTop .btn-s.add{display:flex;width:100%;justify-content:center;min-height:48px;font-size:1.02rem;border-radius:12px;margin-bottom:8px}
 
 .yrow.hzone > .yhead{display:none!important}.yrow.hzone > .ybody{border-top:0;margin-top:0}
+
+body:not(.guest) #rt-year{display:none!important}
+.hzchips .hzall{border-style:dashed}
 </style>
 </head>
 <body>
@@ -8524,6 +8527,7 @@ Object.assign(T.hi, { by_gross:"बिक्री", by_net:"पेटी ख़
 Object.assign(T.hn, { by_gross:"Bikri", by_net:"Peti kharche ke baad", y_gp:"Peti kharche ke baad", r_profit:"Munafa", k_net:"Munafa", ls_net:"Munafa", by_npb:"Munafa per peti", hc_ppb:"Munafa per peti", ls_ppb:"Munafa per peti", mc_ppb:"Munafa per peti",
   y_sum:"Harvest saal ke hisaab se munafa", y_note:"Munafa = bikri − peti ke kharche − saal ke kharche (ek-musht rakam aur diary ke kharche bhi). Per peti hisaab mein aadhi peti aadhi gini jaati hai.",
   hz_split:"Peti ke kharche {a} + saal ke kharche {b}", ex_lumpm:"ek-musht rakam" });
+Object.assign(T.en, { hz_ally:"All years" }); Object.assign(T.hi, { hz_ally:"सभी साल" }); Object.assign(T.hn, { hz_ally:"Sabhi saal" });
 Object.assign(T.en, { hz_none:"Nothing recorded for season {y} yet." }); Object.assign(T.hi, { hz_none:"सीज़न {y} का अभी कोई रिकॉर्ड नहीं।" }); Object.assign(T.hn, { hz_none:"Season {y} ka abhi koi record nahi." });
 Object.assign(T.en, { hz_due:"{x} still to come from buyers", hz_how:"How is profit worked out?" });
 Object.assign(T.hi, { hz_due:"{x} अभी ख़रीदारों से आना बाक़ी", hz_how:"मुनाफ़ा कैसे निकलता है?" });
@@ -9368,13 +9372,18 @@ function renderHzTop() {
     const due = S.orchards.reduce((a, o) => { const se = seFor(o.id, hzY); return a + (se ? seasonCalc(se).due : 0); }, 0);
     card = hzCardHtml(hzY, t.sales, t.pbe + t.yearly, t.net, eq, t.boxes, tr("hz_card").replace("{y}", hzY), hzY === cy, [t.pbe, t.yearly], due);
   }
-  el.innerHTML = '<div class="hzchips" role="group">' + ys.map(y => '<button type="button" data-hzy="' + y + '" aria-pressed="' + (y === hzY) + '">' + esc(y === cy ? tr("hz_cur").replace("{y}", y) : String(y)) + "</button>").join("") + "</div>" + ochips + card;
+  const allY = curSub === "year";   /* "All years" chip = the year-by-year comparison (all orchards) */
+  const ychips = '<div class="hzchips" role="group">' + ys.map(y => '<button type="button" data-hzy="' + y + '" aria-pressed="' + (!allY && y === hzY) + '">' + esc(y === cy ? tr("hz_cur").replace("{y}", y) : String(y)) + "</button>").join("") +
+    (ys.length > 1 ? '<button type="button" class="hzall" data-hzy="all" aria-pressed="' + allY + '">' + tr("hz_ally") + "</button>" : "") + "</div>";
+  el.innerHTML = allY ? ychips : ychips + ochips + card;
   setTimeout(() => { try { hzFilterLists(); } catch (e) {} }, 0);
-  el.hidden = curSub === "year";
+  el.hidden = false;
 }
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-hzy]"); if (!b) return;
-  hzY = +b.dataset.hzy; renderHzTop(); try { hzFilterLists(); } catch (x) {}
+  if (b.dataset.hzy === "all") { hzO = null; showSub("year"); renderHzO(); window.scrollTo({top: 0}); return; }
+  const wasAll = curSub === "year";
+  hzY = +b.dataset.hzy; if (wasAll) showSub("orch"); renderHzTop(); try { hzFilterLists(); } catch (x) {}
   if (hzOrch()) { dashYear = hzY; kxYear = hzY; renderHzO(); return; }
   /* open the chosen season in the list below */
   spOpen = new Set([hzY]); exOpen = new Set([hzY]); exoOpen = new Set();
@@ -9437,7 +9446,7 @@ let hzWantQuick = false;
   const base = showTool;
   showTool = function (w, focus, scroll) { base(w, focus, scroll); if (w === "calc" && user && loaded && curSub === "quick" && !hzWantQuick) showSub("orch"); hzWantQuick = false; };
   /* switching Bikri / Kharche / Saal dar saal also redraws the one-orchard view */
-  const bs = showSub; showSub = function (w) { bs(w); try { renderHzO(); } catch (e) {} const t = $("hzTop"); if (t && t.innerHTML) t.hidden = curSub === "year"; };
+  const bs = showSub; showSub = function (w) { bs(w); try { renderHzO(); } catch (e) {} try { if ($("hzTop") && $("hzTop").innerHTML) renderHzTop(); } catch (e) {} };
   /* the orchard page no longer has money tabs: anything that asks for an orchard's Bikri or Kharche opens Hisaab with that orchard picked */
   const rd = renderDash;
   renderDash = function () {
