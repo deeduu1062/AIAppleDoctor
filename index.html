@@ -5178,7 +5178,7 @@ function detailsHtml() {
         '<div class="dgroups dcards">' + soilCardHtml(o) + (locMode ? locCardHtml(o) : "") + "</div>" +
         '<div class="odel odel2"><button class="btn-s danger" type="button" data-delo="ask" data-o="' + esc(o.id) + '">' + tr("d_del") + '</button><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>";
       else if (otab === "work") r += otKharchHtml(o);
-      else r += '<section class="osec omoney" id="oMoney"><h4>' + tr("ot_hisab") + "</h4>" + otMoneyHtml(o) + "</section>";
+      else r += '<section class="osec omoney" id="oMoney">' + (typeof hzOrchCard === "function" ? hzOrchCard(o) : "") + otMoneyHtml(o) + "</section>";
     }
     return r + "</div></div>";
   }).join("") + "</div>";
@@ -8494,6 +8494,8 @@ function qxSync() {
   if (typeof qxNavSync === "function") qxNavSync();
   if ($("tp-more") && !$("tp-more").hidden && typeof renderMore === "function") renderMore();
   if (typeof renderMunCard === "function") renderMunCard();
+  if (typeof hzLabels === "function") hzLabels();
+  if (typeof renderHzTop === "function") renderHzTop();
   document.documentElement.classList.toggle("gapp", !user && !window.SHOTS);
   if (typeof renderGBlocks === "function") renderGBlocks();
   if (typeof qxNavGSync === "function") qxNavGSync();
@@ -8671,7 +8673,7 @@ html.shro .qxnav .plus{visibility:hidden}`;
     '<button type="button" data-nv="home">' + sv('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>') + '<span data-i18n="nv_home"></span></button>' +
     '<button type="button" data-nv="orch">' + sv('<path d="M12 21v-6"/><path d="M12 15c-4 0-7-2.5-7-6a7 7 0 0 1 14 0c0 3.5-3 6-7 6z"/>') + '<span data-i18n="nv_orch"></span></button>' +
     '<button type="button" data-nv="add" class="plus"><span class="c">' + sv('<path d="M12 5v14"/><path d="M5 12h14"/>').replace('stroke-width="2"', 'stroke-width="3"') + '</span><span data-i18n="nv_add"></span></button>' +
-    '<button type="button" data-nv="mun">' + sv('<path d="M4 19h16"/><path d="M7 15v-4"/><path d="M12 15V7"/><path d="M17 15v-6"/>') + '<span data-i18n="nv_mun"></span></button>' +
+    '<button type="button" data-nv="mun">' + sv('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>') + '<span data-i18n="nv_mun"></span></button>' +
     '<button type="button" data-nv="more">' + sv('<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>') + '<span data-i18n="nv_more"></span></button>';
   document.body.appendChild(nav);
   /* Saathi button in the top bar (phone app), opens the same chat as the round Saathi button */
@@ -8689,7 +8691,7 @@ html.shro .qxnav .plus{visibility:hidden}`;
     if (a === "add") { qxOpen(); return; }
     if (a === "home") showTool("home", false, true);
     else if (a === "orch") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
-    else if (a === "mun") { showTool("calc", false, true); showSub("year"); }
+    else if (a === "mun") { showTool("calc", false, true); showSub("orch"); }
     else if (a === "more") showTool("more", false, true);
     window.scrollTo({top: 0});
   });
@@ -8706,7 +8708,7 @@ function renderMore() {
   const who = user.email && !(typeof isPinUser === "function" && isPinUser(user)) ? user.email : user.phone ? (typeof fmtPhone === "function" ? fmtPhone(user.phone) : user.phone) : "";
   const it = (act, label, extra) => '<li><button type="button" data-mr="' + act + '"><span class="t">' + label + "</span>" + (extra || chev) + "</button></li>";
   el.innerHTML = '<div class="more"><h2>' + tr("nv_more") + "</h2>" + (who ? '<p class="who">' + esc(who) + "</p>" : "") +
-    '<p class="grp">' + tr("mr_farm") + "</p><ul>" + it("spray", tr("hm_go_spray")) + it("cal", tr("tt_cal")) + it("checks", tr("mr_checks")) + it("news", tr("tt_news")) + "</ul>" +
+    '<p class="grp">' + tr("mr_farm") + "</p><ul>" + it("spray", tr("hm_go_spray")) + it("cal", tr("tt_cal")) + it("checks", tr("mr_checks")) + it("quick", tr("pt_quick")) + it("news", tr("tt_news")) + "</ul>" +
     '<p class="grp">' + tr("mr_acct") + "</p><ul>" + it("acct", tr("mr_acctplan"), '<span class="mpill">' + esc(pn(st.paid || "free")) + "</span>") + it("invite", tr("sh_invite")) + it("help", tr("mr_help")) +
     (typeof isAdmin === "function" && isAdmin() ? '<li><a href="/admin.html"><span class="t">' + tr("mr_admin") + "</span>" + chev + "</a></li>" : "") + "</ul>" +
     '<button class="out" type="button" data-mr="out">' + tr("auth_out") + "</button></div>";
@@ -8716,6 +8718,7 @@ document.addEventListener("click", e => {
   const a = b.dataset.mr; tabPicked = true;
   if (a === "spray" || a === "cal" || a === "news" || a === "acct") { showTool(a, false, true); window.scrollTo({top: 0}); }
   else if (a === "checks") { goDiag(); const m = $("dxMine"); if (m && !m.hidden && m.scrollIntoView) m.scrollIntoView({block: "start"}); }
+  else if (a === "quick") { hzWantQuick = true; showTool("calc", false, true); showSub("quick"); window.scrollTo({top: 0}); }
   else if (a === "invite") shareOpen();
   else if (a === "help") { const f = $("fbBtn"); if (f) f.click(); }
   else if (a === "out") { const o = $("signOut"); if (o) o.click(); }
@@ -8891,6 +8894,90 @@ function qxNavGSync() {
 (function () {
   const base = showTool;
   showTool = function (w, focus, scroll) { base(w, focus, scroll); qxNavGSync(); };
+})();
+/* ---------- Simpler money (logged in): one place, "Hisaab". Season chips + one card Bikri − Kharche = Munafa on top,
+   then three tabs Bikri · Kharche · Saal dar saal. Jhatpat calculator moves to Aur. Orchard page: Saar · Bikri · Kharche. ---------- */
+Object.assign(T.en, { hz_tab:"Accounts", hz_bikri:"Sales", hz_kharche:"Expenses", hz_saal:"Year by year", hz_mun:"Profit", hz_card:"Season {y} · all orchards", hz_ocard:"{o} · season {y}",
+  hz_cur:"{y} current", hz_ppb:"{x} per peti · {b} boxes", hz_end:"Profit is worked out at the end of the season", nv_mun:"Accounts", hb_sales:"Sales" });
+Object.assign(T.hi, { hz_tab:"हिसाब", hz_bikri:"बिक्री", hz_kharche:"ख़र्चे", hz_saal:"साल दर साल", hz_mun:"मुनाफ़ा", hz_card:"सीज़न {y} · सभी बाग़", hz_ocard:"{o} · सीज़न {y}",
+  hz_cur:"{y} चालू", hz_ppb:"{x} प्रति पेटी · {b} पेटियाँ", hz_end:"मुनाफ़ा सीज़न के अंत में निकलेगा", nv_mun:"हिसाब", hb_sales:"बिक्री" });
+Object.assign(T.hn, { hz_tab:"Hisaab", hz_bikri:"Bikri", hz_kharche:"Kharche", hz_saal:"Saal dar saal", hz_mun:"Munafa", hz_card:"Season {y} · sabhi bagiche", hz_ocard:"{o} · season {y}",
+  hz_cur:"{y} chalu", hz_ppb:"{x} per peti · {b} petiyan", hz_end:"Munafa season ke ant mein nikalega", nv_mun:"Hisaab", hb_sales:"Bikri" });
+/* orchard page: Saar · Bikri · Kharche (the money tab is the orchard's sales and profit) */
+T.en.ot_hisab = "Sales"; T.hi.ot_hisab = "बिक्री"; T.hn.ot_hisab = "Bikri";
+OTABS.splice(0, OTABS.length, "det", "hisab", "work");
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+.hztop{display:grid;gap:10px;margin:0 0 12px}
+.hztop[hidden]{display:none}
+.hzchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+.hzchips::-webkit-scrollbar{display:none}
+.hzchips button{flex:none;min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font:600 .95rem var(--body);cursor:pointer}
+.hzchips button[aria-pressed="true"]{background:#1B5E2B;border-color:#1B5E2B;color:#fff;font-weight:700}
+.hzcard{border-radius:16px;padding:12px 14px;background:#1B5E2B;color:#fff;display:grid;gap:6px}
+.hzcard .w{font-size:.9rem;font-weight:600;opacity:.92}
+.hzeq{display:grid;grid-template-columns:1fr auto 1fr auto 1.2fr;align-items:end;gap:4px}
+.hzeq .k{display:block;font-size:.78rem;opacity:.85}
+.hzeq b{font-size:1.1rem}
+.hzeq .op{font-size:1.1rem;opacity:.8;padding-bottom:2px}
+.hzeq .m b{font-size:1.35rem}
+.hzeq .neg{color:#ffd2c9}
+.hzcard .f{font-size:.9rem;opacity:.92}
+html.app #rt-quick{display:none!important}
+html.app #rt-orch{order:1}html.app #rt-exp{order:2}html.app #rt-year{order:3}
+html.app #munCard{display:none!important}
+@media (max-width:700px){html.app #exList > .hint{display:none}}`;
+  document.head.appendChild(css);
+  const pc = $("tp-calc"), tabs = pc && pc.querySelector(".pctabs");
+  if (tabs) { const d = document.createElement("div"); d.className = "hztop"; d.id = "hzTop"; d.hidden = true; tabs.parentNode.insertBefore(d, tabs); }
+})();
+let hzY = null;
+function hzCardHtml(y, sales, kharche, net, eq, boxes, label, cur) {
+  const m = cur && !sales ? '<span class="m"><span class="k">' + tr("hz_mun") + "</span><b>…</b></span>" : '<span class="m"><span class="k">' + tr("hz_mun") + '</span><b' + (net < 0 ? ' class="neg"' : "") + ">" + shortInr(net) + "</b></span>";
+  const foot = cur && !sales ? tr("hz_end") : eq > 0 ? tr("hz_ppb").replace("{x}", inr(net / eq)).replace("{b}", fmtN(boxes)) : "";
+  return '<div class="hzcard"><span class="w">' + esc(label) + '</span><div class="hzeq"><span><span class="k">' + tr("hz_bikri") + "</span><b>" + shortInr(sales) + '</b></span><span class="op">−</span>' +
+    '<span><span class="k">' + tr("hz_kharche") + "</span><b>" + shortInr(kharche) + '</b></span><span class="op">=</span>' + m + "</div>" + (foot ? '<span class="f">' + esc(foot) + "</span>" : "") + "</div>";
+}
+function hzYears() {
+  const cy = curHYear(), ys = new Set([cy]); try { glYears().forEach(y => ys.add(y)); } catch (e) {}
+  return Array.from(ys).filter(y => y <= cy).sort((a, b) => b - a).slice(0, 8);
+}
+function renderHzTop() {
+  const el = $("hzTop"); if (!el) return;
+  if (!(user && loaded) || !S.orchards.length) { el.hidden = true; el.innerHTML = ""; return; }
+  const ys = hzYears(), cy = curHYear();
+  if (hzY === null || ys.indexOf(hzY) < 0) { let p = null; try { p = homePpb(); } catch (e) {} hzY = p ? p.y : ys[0]; }
+  const d = yearSummary(hzY), t = d.tot;
+  const eq = S.orchards.reduce((a, o) => { const se = seFor(o.id, hzY); return a + (se ? seasonCalc(se).eq : 0); }, 0);
+  el.innerHTML = '<div class="hzchips" role="group">' + ys.map(y => '<button type="button" data-hzy="' + y + '" aria-pressed="' + (y === hzY) + '">' + esc(y === cy ? tr("hz_cur").replace("{y}", y) : String(y)) + "</button>").join("") + "</div>" +
+    hzCardHtml(hzY, t.sales, t.pbe + t.yearly, t.net, eq, t.boxes, tr("hz_card").replace("{y}", hzY), hzY === cy);
+  el.hidden = false;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-hzy]"); if (!b) return;
+  hzY = +b.dataset.hzy; renderHzTop();
+  /* open the chosen season in the list below */
+  spOpen = new Set([hzY]); exOpen = new Set([hzY]); exoOpen = new Set();
+  renderEditor(); if (typeof renderExp === "function") renderExp();
+});
+/* the orchard's own card at the top of its Bikri tab: the latest season with sales (or this season) */
+function hzOrchCard(o) {
+  const cy = curHYear(); let y = cy, r = null;
+  for (let k = cy; k >= cy - 15; k--) { const se = seFor(o.id, k); if (!se) continue; const c = seasonCalc(se); if (c.rev > 0) { y = k; r = c; break; } }
+  if (!r) { const se = seFor(o.id, cy); r = se ? seasonCalc(se) : {rev: 0, profit: 0, eq: 0, boxes: 0}; y = cy; }
+  return hzCardHtml(y, r.rev, r.rev - r.profit, r.profit, r.eq, r.boxes, tr("hz_ocard").replace("{o}", o.name || tr("orchard_fallback")).replace("{y}", y), y === cy);
+}
+function hzLabels() {
+  const on = !!(user && loaded);
+  const set1 = (id, k) => { const n = $(id); if (n) { n.setAttribute("data-i18n", k); n.textContent = tr(k); } };
+  set1("tt-calc", on ? "hz_tab" : "tt_calc"); set1("rt-orch", on ? "hz_bikri" : "pt_season"); set1("rt-exp", on ? "hz_kharche" : "pt_exp"); set1("rt-year", on ? "hz_saal" : "pt_year");
+}
+/* logged in: opening Hisaab never lands on the calculator (that lives in Aur now) unless Aur asked for it */
+let hzWantQuick = false;
+(function () {
+  const base = showTool;
+  showTool = function (w, focus, scroll) { base(w, focus, scroll); if (w === "calc" && user && loaded && curSub === "quick" && !hzWantQuick) showSub("orch"); hzWantQuick = false; };
 })();
 showTool("orch");
 libWant = null;
