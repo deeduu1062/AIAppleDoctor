@@ -2210,6 +2210,11 @@ body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
 .dtitle{display:grid;gap:1px;min-width:0}.dtitle .orsub{font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* 5. trimmed intro */
 .tsum > p.fine{display:none}
+
+/* Bagicha 7–9 */
+.kxempty{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1px dashed var(--line);border-radius:12px;background:var(--surface);color:var(--muted)}
+.kxempty b{color:var(--fg)}
+@media (max-width:700px){html.app body:not(.guest) footer.wrap{display:none}}
 </style>
 </head>
 <body>
@@ -4643,6 +4648,7 @@ function insightsHtml(o, Y) {
   }
   // season timeline from the diary
   const tl = ((o.diary || []).filter(d => hYear(d.date) === +Y && TIMELINE_KINDS.indexOf(d.kind) >= 0)).sort((a, b) => (a.date < b.date ? -1 : 1));
+  if (!tl.length) return h;   /* nothing in the diary for this season: no empty box */
   h += '<section class="osec"><h4>' + tr("s_timeline") + "</h4>" + (tl.length
     ? '<ol class="tl">' + tl.map(d => '<li class="k-' + d.kind + '"><b>' + fmtDay(d.date) + "</b> " + tr("dk_" + d.kind) + (d.text ? '<span class="tlt">' + esc(d.text) + "</span>" : "") + "</li>").join("") + "</ol>"
     : '<p class="hint">' + tr("s_tl_none") + "</p>") + "</section>";
@@ -5207,6 +5213,7 @@ function otKharchHtml(o) {
   if (dashExp) h += dashExpHtml();
   h += '<div class="ylist figrows kxlist">' + ys.map(y => {
     const r = expRowsFor(o, y), open = y === openY;
+    if (y === curY && !r.rows.length && !r.total && !dashExp) return '<div class="kxempty" id="kxy-' + y + '"><span><b>' + y + "</b> · " + tr("kx_none") + "</span></div>";   /* the ＋ Kharcha jodein button is right above */
     return '<div class="yrow' + (open ? " open" : "") + '" id="kxy-' + y + '"><button class="yhead" type="button" data-kxt="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + '</span><span class="yfigs three">' +
       yfig(tr(y >= curY ? "ex_sofar" : "ex_total"), mny(r.total), "ynet exn") + yfig(tr("ex_entries"), fmtN(r.rows.length)) + yfig(tr("m_pt"), trees ? inr(r.total / trees) : "–") + '</span><span class="ychev" aria-hidden="true"></span></button>' +
       (open ? '<div class="ybody">' + kxYearHtml(o, y, y === curY) + "</div>" : "") + "</div>";
@@ -5226,6 +5233,7 @@ document.addEventListener("click", e => {
 Object.assign(T.en, { sp_go_hisab:"See {o}'s profit →", sp_go_munafa:"Profit for all orchards →" });
 Object.assign(T.hi, { sp_go_hisab:"{o} का हिसाब देखें →", sp_go_munafa:"सभी बाग़ों का मुनाफ़ा →" });
 Object.assign(T.hn, { sp_go_hisab:"{o} ka hisaab dekhein →", sp_go_munafa:"Sabhi bagichon ka munafa →" });
+Object.assign(T.en, { kx_none:"No expenses this season yet" }); Object.assign(T.hi, { kx_none:"इस सीज़न अभी कोई ख़र्च नहीं" }); Object.assign(T.hn, { kx_none:"Is season abhi koi kharcha nahi" });
 Object.assign(T.en, { kx_sofar:"Total so far", kx_edit:"Edit expense", kx_save:"Save changes", kx_recent:"Recent expenses", kx_other:"See another year", kx_title:"Expenses, harvest year {y}" });
 Object.assign(T.hi, { kx_sofar:"अब तक का ख़र्च", kx_edit:"ख़र्च बदलें", kx_save:"बदलाव सहेजें", kx_recent:"हाल के ख़र्चे", kx_other:"दूसरा साल देखें", kx_title:"ख़र्चे, फ़सल वर्ष {y}" });
 Object.assign(T.hn, { kx_sofar:"Ab tak ka kharcha", kx_edit:"Kharcha badlein", kx_save:"Badlav save karein", kx_recent:"Haal ke kharche", kx_other:"Doosra saal dekhein", kx_title:"Kharche, harvest saal {y}" });
@@ -5337,12 +5345,14 @@ function detailsHtml() {
               '<dl class="detlist">' + row(tr("p_root"), show("root", "r_"), fld("root")) + row(tr("p_planted"), show("planted"), fld("planted")) + "</dl></section>";
           };
           const grp = (k, rows) => '<section class="dgrp"><h6>' + tr(k) + '</h6><dl class="detlist">' + rows.join("") + "</dl></section>";
-          return '<div class="dgroups">' +
-            grp("dg_place", [row(tr("p_village"), show("village"), fld("village")), row(tr("p_alt"), show("alt"), fld("alt")), row(tr("p_area"), show("area"), fld("area")), row(tr("det_loc"), loc)]) +
+          const P0 = o.profile || {}, placeEmpty = !hasLoc(o) && !P0.village && !(+P0.alt) && !(+P0.area);
+          return '<div class="dgroups">' + (placeEmpty ? "" :   /* nothing about the place yet: the "Jagah set karein" button above is enough */
+            grp("dg_place", [row(tr("p_village"), show("village"), fld("village")), row(tr("p_alt"), show("alt"), fld("alt")), row(tr("p_area"), show("area"), fld("area")), row(tr("det_loc"), loc)])) +
             treesGrp() + "</div>";
         })();
       r += otabsHtml(o);
-      if (otab === "det") r += detWxHtml(o) + groups + (typeof dxHealthCardHtml === "function" ? dxHealthCardHtml(o) : "") +
+      const P1 = o.profile || {}, placeEmpty1 = !hasLoc(o) && !P1.village && !(+P1.alt) && !(+P1.area);
+      if (otab === "det") r += (hasLoc(o) || placeEmpty1 ? detWxHtml(o) : "") + groups + (typeof dxHealthCardHtml === "function" ? dxHealthCardHtml(o) : "") +
         '<div class="dgroups dcards">' + soilCardHtml(o) + (locMode ? locCardHtml(o) : "") + "</div>" +
         '<div class="odel odel2"><button class="btn-s" type="button" data-xact="detedit" data-o="' + esc(o.id) + '">' + tr("o_editp") + "</button></div>";
       else if (otab === "work") r += otKharchHtml(o);
