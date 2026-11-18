@@ -8430,18 +8430,18 @@ TT.forEach((n, i) => {
    A red button at the right end of the tab row (always at the top) opens a small form from the bottom of the screen. It saves the expense the same way as the
    orchard's Kharche tab (into that orchard's diary, in the right harvest year). From August to November it first asks
    "Kharcha or Bikri?" so harvest sales are just as quick (Bikri goes to Season sales record). Editing stays in Kharche. */
-Object.assign(T.en, { qx_fab:"Expense", qx_fab_l:"Add an expense", qx_title:"Add an expense", qx_ask:"What do you want to add?", qx_exp:"Expense", qx_exp_p:"Spray, fertiliser, labour…", qx_sale:"Sale", qx_sale_p:"Boxes sold this season",
+Object.assign(T.en, { qx_fab:"Expense", qx_fab_l:"Add an expense", qx_title:"Add an expense", qx_ask:"What would you like to do?", qx_exp:"Expense", qx_exp_p:"Spray, fertiliser, labour…", qx_sale:"Sale", qx_sale_p:"Boxes sold this season",
   qx_sale_t:"Add a sale", qx_save:"Save expense", qx_close:"Close", qx_err_o:"Choose the orchard.", qx_saved:"{x} saved for {o}, harvest year {y}.", qx_view:"View",
   qx_inorch:"Edit in orchard", qx_lumpro:"Plus yearly lump sums: {x}.", qx_lump_p:"If you only know the year's total for a cost, enter it here instead of separate entries. It counts in this harvest year's net income.",
-  qx_more:"Date and details", qx_today:"Today" });
-Object.assign(T.hi, { qx_fab:"ख़र्च", qx_fab_l:"ख़र्च जोड़ें", qx_title:"ख़र्च जोड़ें", qx_ask:"क्या जोड़ना है?", qx_exp:"ख़र्च", qx_exp_p:"स्प्रे, खाद, मज़दूरी…", qx_sale:"बिक्री", qx_sale_p:"इस सीज़न बिकी पेटियाँ",
+  qx_more:"Date and details", qx_today:"Today", qx_dx:"Check a disease" });
+Object.assign(T.hi, { qx_fab:"ख़र्च", qx_fab_l:"ख़र्च जोड़ें", qx_title:"ख़र्च जोड़ें", qx_ask:"क्या करना है?", qx_exp:"ख़र्च", qx_exp_p:"स्प्रे, खाद, मज़दूरी…", qx_sale:"बिक्री", qx_sale_p:"इस सीज़न बिकी पेटियाँ",
   qx_sale_t:"बिक्री जोड़ें", qx_save:"ख़र्च सहेजें", qx_close:"बंद करें", qx_err_o:"बाग़ चुनें।", qx_saved:"{o} में {x} सहेजा गया, हार्वेस्ट साल {y}।", qx_view:"देखें",
   qx_inorch:"बाग़ में बदलें", qx_lumpro:"साथ में साल की एकमुश्त रक़म: {x}।", qx_lump_p:"अगर किसी ख़र्च का सिर्फ़ साल का कुल पता है, तो अलग एंट्री की जगह यहाँ लिखें। यह इसी हार्वेस्ट साल की शुद्ध आय में गिना जाता है।",
-  qx_more:"तारीख़ और जानकारी", qx_today:"आज" });
-Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kharcha jodein", qx_ask:"Kya jodna hai?", qx_exp:"Kharcha", qx_exp_p:"Spray, khaad, mazdoori…", qx_sale:"Bikri", qx_sale_p:"Is season biki petiyan",
+  qx_more:"तारीख़ और जानकारी", qx_today:"आज", qx_dx:"रोग जाँचें" });
+Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kharcha jodein", qx_ask:"Kya karna hai?", qx_exp:"Kharcha", qx_exp_p:"Spray, khaad, mazdoori…", qx_sale:"Bikri", qx_sale_p:"Is season biki petiyan",
   qx_sale_t:"Bikri jodein", qx_save:"Kharcha save karein", qx_close:"Band karein", qx_err_o:"Bagicha chunein.", qx_saved:"{o} mein {x} save ho gaya, harvest saal {y}.", qx_view:"Dekhein",
   qx_inorch:"Bagiche mein badlein", qx_lumpro:"Saath mein saal ki ek-musht rakam: {x}.", qx_lump_p:"Agar kisi kharche ka sirf saal ka total pata hai, to alag entries ki jagah yahan likhein. Ye isi harvest saal ki net kamai mein gina jaata hai.",
-  qx_more:"Tareekh aur detail", qx_today:"Aaj" });
+  qx_more:"Tareekh aur detail", qx_today:"Aaj", qx_dx:"Bimari jaanchein" });
 (function () {
   const css = document.createElement("style");
   css.textContent = `
@@ -8469,6 +8469,13 @@ Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kha
 .qxbig button{border:1.5px solid var(--line);background:var(--card,transparent);color:inherit;border-radius:14px;padding:16px 12px;text-align:left;cursor:pointer;font:inherit}
 .qxbig b{display:block;font-size:1.15rem;margin-bottom:2px}
 .qxbig span{font-size:.85rem;opacity:.8}
+.qxbig .qe{border-color:rgba(184,50,31,.45);background:linear-gradient(rgba(184,50,31,.07),rgba(184,50,31,.07)),var(--surface)}
+.qxbig .qs{border-color:rgba(27,94,43,.45);background:linear-gradient(rgba(27,94,43,.07),rgba(27,94,43,.07)),var(--surface)}
+.qxdx{display:grid;gap:10px;border:1.5px solid rgba(194,65,12,.4);border-radius:14px;padding:12px;background:linear-gradient(135deg,rgba(232,120,40,.12),rgba(184,50,31,.08)),var(--surface)}
+.qxdx .hd b{display:block;font-size:1.1rem}
+.qxdx .hd span{font-size:.85rem;color:var(--muted)}
+.qxdx .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qxdx .two button{min-height:44px;width:100%;justify-content:center;border-radius:10px}
 .qxamt{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:12px;padding:0 12px}
 .qxamt span{font-size:1.4rem;font-weight:700;opacity:.75}
 .qxamt input{border:0;background:none;color:inherit;font:700 1.5rem var(--body);width:100%;padding:10px 0;outline:none}
@@ -8493,7 +8500,7 @@ Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kha
   const toast = document.createElement("p");
   toast.className = "qxtoast"; toast.id = "qxToast"; toast.setAttribute("role", "status"); toast.hidden = true;
   document.body.appendChild(toast);
-  fab.addEventListener("click", () => qxOpen());
+  fab.addEventListener("click", () => qxOpen("exp"));
   dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });   /* tap outside the form closes it */
 })();
 let qx = {mode: "exp", o: "", kind: "", cost: "", date: "", text: "", stage: ""};
@@ -8515,7 +8522,7 @@ function qxSync() {
 function qxOpen(mode, oid) {
   const last = (() => { try { return localStorage.getItem("qxO") || ""; } catch (e) { return ""; } })();
   const pick = oid || (S.orchards.some(x => x.id === last) ? last : "") || (S.orchards.length === 1 ? S.orchards[0].id : "");
-  qx = {mode: mode || (qxSeason() ? "ask" : "exp"), o: pick, kind: "", cost: "", date: todayIso(), text: "", stage: ""};
+  qx = {mode: mode || "ask", o: pick, kind: "", cost: "", date: todayIso(), text: "", stage: ""};
   qxRender(); const d = $("qxDlg"); if (!d.open) d.showModal();
   const a = $("qx_cost"); if (a && qx.o) a.focus({preventScroll: true});
 }
@@ -8531,8 +8538,9 @@ function qxRender() {
   const title = qx.mode === "ask" ? tr("qx_ask") : qx.mode === "sale" ? tr("qx_sale_t") : tr("qx_title");
   let b = "";
   if (!S.orchards.length) b = '<p>' + tr("ex_noorch") + '</p><button class="btn-s add qxsave" type="button" data-qx="goorchs">' + tr("tt_orch") + "</button>";
-  else if (qx.mode === "ask") b = '<div class="qxbig"><button type="button" data-qx="mexp"><b>' + tr("qx_exp") + "</b><span>" + tr("qx_exp_p") + '</span></button><button type="button" data-qx="msale"><b>' + tr("qx_sale") + "</b><span>" +
-    tr("qx_sale_p") + "</span></button></div>";
+  else if (qx.mode === "ask") b = '<div class="qxbig"><button type="button" class="qe" data-qx="mexp"><b>' + tr("qx_exp") + "</b><span>" + tr("qx_exp_p") + '</span></button><button type="button" class="qs" data-qx="msale"><b>' + tr("qx_sale") + "</b><span>" +
+    tr("qx_sale_p") + '</span></button></div><div class="qxdx"><div class="hd"><b>' + tr("qx_dx") + "</b><span>" + tr("hm_cam_s2") + '</span></div><div class="two"><button type="button" class="btn primary" data-qx="dxcam">' + tr("hm_cam_take") +
+    '</button><button type="button" class="btn-s" data-qx="dxgal">' + tr("hm_cam_gal") + "</button></div></div>";
   else if (qx.mode === "sale") b = '<p class="qxlbl">' + tr("sp_which") + "</p>" + qxOrchChips("sale");
   else {
     const kinds = EXP_KINDS.slice();
@@ -8590,6 +8598,7 @@ document.addEventListener("click", e => {
   if (a === "close") { qxClose(); return; }
   if (a === "mexp") { qx.mode = "exp"; qxRender(); return; }
   if (a === "msale") { qx.mode = "sale"; qxRender(); return; }
+  if (a === "dxcam" || a === "dxgal") { qxClose(); goDiag(a === "dxcam" ? "cam" : "gal"); return; }
   if (a === "sale") { qxSale(b.dataset.o); return; }
   if (a === "goorchs") { qxClose(); tabPicked = true; showTool("orch", false, true); return; }
   if (a === "o") { qx.o = b.dataset.o; qxRender(); const c = $("qx_cost"); if (c && !qx.kind) { const k = document.querySelector('[data-qx="k"]'); if (k) k.focus(); } return; }
