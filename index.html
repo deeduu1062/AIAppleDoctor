@@ -7559,6 +7559,20 @@ function hmWxHtml() {
     esc(wcWord(d.weather_code[0])) + " · " + hi + "° / " + lo + "°</span>" + (w ? '<span class="hww">⚠ ' + esc(w.t) + "</span>" : "") + '<span class="chv" aria-hidden="true">›</span></button>';
 }
 /* Home Spray block: the grower's own next planned spray, else the last one, else the general line */
+/* phone app: make the three rows of Home tiles fill the screen down to the bottom bar */
+function hmFit() {
+  const g = document.querySelector("#homeBody .hmblocks.nine"); if (!g) return;
+  g.style.gridAutoRows = "";
+  const nav = $("qxNav"), tp = $("tp-home");
+  if (window.innerWidth > 700 || !document.documentElement.classList.contains("app") || !nav || !tp || tp.hidden || g.classList.contains("dxopen")) return;
+  const top = g.getBoundingClientRect().top + window.scrollY;
+  const gap = parseFloat(getComputedStyle(g).rowGap) || 8;
+  const avail = window.innerHeight - nav.offsetHeight - 12 - top;
+  const row = Math.floor((avail - 2 * gap) / 3);
+  const natural = Math.max.apply(null, Array.from(g.children).map(c => c.offsetHeight));
+  if (row > natural) g.style.gridAutoRows = Math.min(row, 190) + "px";
+}
+window.addEventListener("resize", () => { try { hmFit(); } catch (e) {} });
 function hmSpraySub() {
   let nx = null, ls = null;
   S.orchards.forEach(o => { const n = nextTodo(o, "spray"), l = lastSpray(o); if (n && (!nx || n.due < nx.due)) nx = n; if (l && (!ls || l.date > ls.date)) ls = l; });
@@ -7641,6 +7655,7 @@ function renderHome() {
     blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
   h += "</div>";   /* the "Today in the orchard" tip card was taken off Home */
   el.innerHTML = h;
+  requestAnimationFrame(() => { try { hmFit(); } catch (e) {} });
 }
 $("homeBody").addEventListener("click", e => {
   const b = e.target.closest("[data-hm]"); if (!b) return;
@@ -9377,13 +9392,13 @@ Object.assign(T.hn, { gb_wx_h:"Mausam", gb_wx:"5 din ka mausam, paala aur ole ki
 .hmblocks.nine .hmblk:last-child{grid-column:auto;min-height:104px}
 @media (max-width:700px){
   .hmblocks.nine{gap:8px}
-  .hmblocks.nine .hmblk{min-height:0!important;padding:10px 6px;gap:6px;align-items:center;justify-content:flex-start;text-align:center;border-radius:14px}
-  .hmblocks.nine .hmblk svg{width:38px;height:38px;padding:8px;border-radius:11px}
-  .hmblocks.nine .hmblk .hbtree{width:38px;height:38px;border-radius:11px}
+  .hmblocks.nine .hmblk{min-height:0!important;padding:10px 6px;gap:8px;align-items:center;justify-content:center;text-align:center;border-radius:16px}
+  .hmblocks.nine .hmblk svg{width:52px;height:52px;padding:11px;border-radius:14px}
+  .hmblocks.nine .hmblk .hbtree{width:52px;height:52px;border-radius:14px}
   .hmblocks.nine .hmblk .hbtree svg{width:100%;height:100%;padding:0}
-  .hmblocks.nine .hmblk .hbsaathi{width:38px;height:38px}
-  .hmblocks.nine .hmblk .hbsaathi svg{width:22px;height:22px;padding:0}
-  .hmblocks.nine .hmblk b{font-size:.9rem;line-height:1.2}
+  .hmblocks.nine .hmblk .hbsaathi{width:52px;height:52px}
+  .hmblocks.nine .hmblk .hbsaathi svg{width:30px;height:30px;padding:0}
+  .hmblocks.nine .hmblk b{font-size:1rem;line-height:1.2}
   .hmblocks.nine .hmblk span span{display:none}
 }
 .hb-cal{--c:#7A5C2E;background:linear-gradient(rgba(122,92,46,.10),rgba(122,92,46,.10)),var(--surface);border-color:rgba(122,92,46,.28)}
