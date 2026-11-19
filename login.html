@@ -450,6 +450,7 @@ footer p{max-width:70ch}
 /* phone sign-in */
 .authtabs{margin-top:14px}
 .phrow{display:flex;align-items:stretch}
+.phcap{margin:6px 0 2px}.phcap:empty{display:none}
 .phcc{display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;background:var(--surface-2);font:500 1.05rem var(--mono);color:var(--muted)}
 .phrow input{border-radius:0 8px 8px 0!important;font-family:var(--mono)!important;letter-spacing:.03em}
 
@@ -1246,6 +1247,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
           <div id="phStep1">
             <form id="phForm" novalidate>
               <div class="field"><label for="phNum" data-i18n="ph_num"></label><div class="phrow"><span class="phcc">+91</span><input id="phNum" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="98765 43210"></div></div>
+              <div id="phCaptcha" class="phcap"></div>
               <p class="autherr" id="phErr" role="alert"></p>
               <div class="dels"><button class="btn-s add" type="submit" id="phSend"></button><button class="btn-s" type="button" id="phWa" hidden></button></div>
             </form>
@@ -1367,7 +1369,7 @@ Object.assign(T.hi, {
 });
 const $ = id => document.getElementById(id);
 const set = (id, t) => { $(id).textContent = t; };
-T.hn = {"hdr_signin": "Login", "auth_h": "Login karein ya account banayein", "auth_p": "Email aur password se login karein. Naye hain? Password chunein aur Account banayein dabayein. Password ki jagah email par login link bhi maang sakte hain.", "auth_email": "Email address", "auth_send": "Iske bajaye mujhe login link email karein", "auth_pw": "Password", "auth_signin": "Login", "auth_create": "Account banayein", "auth_forgot": "Password bhool gaye?", "auth_err_pw": "Kam se kam 8 akshar ka password likhein.", "auth_err_cred": "Email ya password galat hai.", "auth_confirm": "Agar {e} naya hai, to humne confirmation email bheja hai: use kholein, link dabayein, phir login karein. Agar is email se pehle se account hai, to Login dabayein, ya password set karne ke liye Password bhool gaye? dabayein.", "auth_reset_sent": "Agar {e} ka account hai, to humne password reset ka link bheja hai.", "auth_sent": "Humne {e} par email bheja hai. Use isi phone par kholein aur link dabayein. Agar usmein 6 ankon ka code hai, to code neeche likhein.", "auth_code": "6 ankon ka code (agar email mein hai)", "auth_verify": "Code se login karein", "auth_other": "Doosra email use karein", "auth_err_email": "Sahi email address likhein.", "auth_err_lib": "Login load nahi ho saka. Internet check karein aur page refresh karein.", "auth_err_send": "Email nahi bhej sake: {m}", "auth_err_net": "Login service tak nahi pahunch sake. Internet check karein. Login sirf live website par chalta hai, Claude ke preview mein nahi.", "auth_err_code": "Ye code nahi chala. Check karke dobara try karein, ya naya email maangein.", "auth_as": "{e}", "auth_out": "Logout", "lang_btn": "Hinglish", "lg_kicker": "Seb Saathi account", "lg_back": "← Seb Saathi par wapas", "lg_h_login": "Login", "lg_p_login": "Email aur password se login karein, ya email par login link maangein.", "lg_h_signup": "Apna free account banayein", "lg_p_signup": "Apna email daalein aur password chunein (kam se kam 8 akshar), phir Account banayein dabayein. Aapke bagiche aur record sirf aapke rehte hain.", "lg_sw_login": "Seb Saathi par naye hain?", "lg_sw_login_a": "Apna free account banayein", "lg_sw_signup": "Pehle se account hai?", "lg_sw_signup_a": "Login", "g_btn": "Google se login karein", "g_or": "ya", "g_err": "Google se login shuru nahi ho saka: {m}", "g_inapp": "Facebook ya Instagram app ke andar Google se login nahi chalta. ⋮ dabakar Open in Chrome chunein, ya neeche mobile number ya email se login karein.", "ph_tab": "Mobile number", "em_tab": "Email", "ph_p": "Apne mobile number se login karein. Hum {c} se code bhejte hain. Naye hain? Yahi kadam aapka account bana dete hain.", "ph_c_whatsapp": "WhatsApp", "ph_c_sms": "SMS", "ph_num": "Mobile number", "ph_send": "SMS se code bhejein", "ph_wa": "WhatsApp par code bhejein", "ph_sent": "Humne {p} par SMS se code bheja hai. Neeche likhein. Aane mein ek minute lag sakta hai.", "ph_sent_wa": "Humne WhatsApp par {p} ko 6 ankon ka code bheja hai. Neeche likhein.", "ph_code": "SMS wala code", "ph_call": "Call karke code batayein", "ph_verify": "Login", "ph_resend": "Phir se bhejein", "ph_resend_in": "{n}s mein phir se bhejein", "ph_other": "Doosra number use karein", "ph_e_num": "10 ankon ka mobile number likhein, jaise 98765 43210.", "ph_e_code": "Ye code nahi chala. Check karke dobara try karein, ya Phir se bhejein dabayein.", "ph_e_wait": "Naya code maangne se pehle ek minute rukein.", "ph_e_off": "Mobile se login abhi chalu nahi hai. Abhi Email use karein.", "ph_e_send": "Code nahi bhej sake: {m}"};  /* Hinglish */
+T.hn = {"hdr_signin": "Login", "auth_h": "Login karein ya account banayein", "auth_p": "Email aur password se login karein. Naye hain? Password chunein aur Account banayein dabayein. Password ki jagah email par login link bhi maang sakte hain.", "auth_email": "Email address", "auth_send": "Iske bajaye mujhe login link email karein", "auth_pw": "Password", "auth_signin": "Login", "auth_create": "Account banayein", "auth_forgot": "Password bhool gaye?", "auth_err_pw": "Kam se kam 8 akshar ka password likhein.", "auth_err_cred": "Email ya password galat hai.", "auth_confirm": "Agar {e} naya hai, to humne confirmation email bheja hai: use kholein, link dabayein, phir login karein. Agar is email se pehle se account hai, to Login dabayein, ya password set karne ke liye Password bhool gaye? dabayein.", "auth_reset_sent": "Agar {e} ka account hai, to humne password reset ka link bheja hai.", "auth_sent": "Humne {e} par email bheja hai. Use isi phone par kholein aur link dabayein. Agar usmein 6 ankon ka code hai, to code neeche likhein.", "auth_code": "6 ankon ka code (agar email mein hai)", "auth_verify": "Code se login karein", "auth_other": "Doosra email use karein", "auth_err_email": "Sahi email address likhein.", "auth_err_lib": "Login load nahi ho saka. Internet check karein aur page refresh karein.", "auth_err_send": "Email nahi bhej sake: {m}", "auth_err_net": "Login service tak nahi pahunch sake. Internet check karein. Login sirf live website par chalta hai, Claude ke preview mein nahi.", "auth_err_code": "Ye code nahi chala. Check karke dobara try karein, ya naya email maangein.", "auth_as": "{e}", "auth_out": "Logout", "lang_btn": "Hinglish", "lg_kicker": "Seb Saathi account", "lg_back": "← Seb Saathi par wapas", "lg_h_login": "Login", "lg_p_login": "Email aur password se login karein, ya email par login link maangein.", "lg_h_signup": "Apna free account banayein", "lg_p_signup": "Apna email daalein aur password chunein (kam se kam 8 akshar), phir Account banayein dabayein. Aapke bagiche aur record sirf aapke rehte hain.", "lg_sw_login": "Seb Saathi par naye hain?", "lg_sw_login_a": "Apna free account banayein", "lg_sw_signup": "Pehle se account hai?", "lg_sw_signup_a": "Login", "g_btn": "Google se login karein", "g_or": "ya", "g_err": "Google se login shuru nahi ho saka: {m}", "g_inapp": "Facebook ya Instagram app ke andar Google se login nahi chalta. ⋮ dabakar Open in Chrome chunein, ya neeche mobile number ya email se login karein.", "ph_tab": "Mobile number", "em_tab": "Email", "ph_p": "Apne mobile number se login karein. Hum {c} se code bhejte hain. Naye hain? Yahi kadam aapka account bana dete hain.", "ph_c_whatsapp": "WhatsApp", "ph_c_sms": "SMS", "ph_num": "Mobile number", "ph_send": "SMS se code bhejein", "ph_wa": "WhatsApp par code bhejein", "ph_sent": "Humne {p} par SMS se code bheja hai. Neeche likhein. Aane mein ek minute lag sakta hai.", "ph_sent_wa": "Humne WhatsApp par {p} ko 6 ankon ka code bheja hai. Neeche likhein.", "ph_code": "SMS wala code", "ph_call": "Call karke code batayein", "ph_e_human": "Pehle upar \"I am human\" par tick karein, phir code bhejein dabayein.", "ph_verify": "Login", "ph_resend": "Phir se bhejein", "ph_resend_in": "{n}s mein phir se bhejein", "ph_other": "Doosra number use karein", "ph_e_num": "10 ankon ka mobile number likhein, jaise 98765 43210.", "ph_e_code": "Ye code nahi chala. Check karke dobara try karein, ya Phir se bhejein dabayein.", "ph_e_wait": "Naya code maangne se pehle ek minute rukein.", "ph_e_off": "Mobile se login abhi chalu nahi hai. Abhi Email use karein.", "ph_e_send": "Code nahi bhej sake: {m}"};  /* Hinglish */
 let lang = "hn";   /* Hinglish by default; a saved choice (this phone, or the grower's account) wins */
 try {
   const s = localStorage.getItem("ad-lang");
@@ -1473,7 +1475,7 @@ Object.assign(T.en, {
   ph_code:"Code from the SMS", ph_verify:"Log in", ph_resend:"Send again", ph_resend_in:"Send again in {n}s", ph_other:"Use a different number",
   ph_e_num:"Enter a 10-digit mobile number, for example 98765 43210.", ph_e_code:"That code did not work. Check it and try again, or tap Send again.",
   ph_e_wait:"Please wait a minute before asking for another code.", ph_e_off:"Login by mobile is not switched on yet. Please use Email for now.",
-  ph_e_send:"We could not send the code: {m}", ph_call:"Call me with the code"
+  ph_e_send:"We could not send the code: {m}", ph_call:"Call me with the code", ph_e_human:"Tick \"I am human\" above first, then tap Send code."
 });
 Object.assign(T.hi, {
   ph_tab:"मोबाइल नंबर", em_tab:"ईमेल",
@@ -1483,7 +1485,7 @@ Object.assign(T.hi, {
   ph_code:"SMS वाला कोड", ph_verify:"लॉग इन", ph_resend:"फिर से भेजें", ph_resend_in:"{n} सेकंड बाद फिर से भेजें", ph_other:"दूसरा नंबर इस्तेमाल करें",
   ph_e_num:"10 अंकों का मोबाइल नंबर डालें, जैसे 98765 43210।", ph_e_code:"यह कोड काम नहीं किया। जाँचकर दोबारा डालें, या फिर से भेजें दबाएँ।",
   ph_e_wait:"दूसरा कोड मँगवाने से पहले एक मिनट रुकें।", ph_e_off:"मोबाइल से लॉग इन अभी चालू नहीं है। अभी के लिए ईमेल इस्तेमाल करें।",
-  ph_e_send:"कोड नहीं भेजा जा सका: {m}", ph_call:"कॉल करके कोड बताएँ"
+  ph_e_send:"कोड नहीं भेजा जा सका: {m}", ph_call:"कॉल करके कोड बताएँ", ph_e_human:"पहले ऊपर \"I am human\" पर टिक करें, फिर कोड भेजें दबाएँ।"
 });
 /* Mobile number + 6-digit PIN (no SMS): api/phone-signup.js makes the account; login is a normal password login
    on 91XXXXXXXXXX@m.sebsaathi.com with password "sspin-<PIN>-Ss" (same rule in index.html: isPinUser / pinPw).
@@ -1595,12 +1597,12 @@ function msgScript() {
   });
 }
 /* MSG91 with exposeMethods: no MSG91 box; our own number and code screens call window.sendOtp / verifyOtp / retryOtp.
-   No captchaRenderId, so the captcha runs invisibly. Retry channels: "11" SMS, "4" voice call. */
+   The captcha ("I am human") is drawn into #phCaptcha on our page (captchaRenderId). Retry channels: "11" SMS, "4" voice call. */
 let msgInit = null, msgReq = "";
 function msgStart() {
   if (msgInit) return msgInit;
   msgInit = msgScript().then(() => new Promise((ok, no) => {
-    window.initSendOTP({ widgetId: msgCfg.widgetId, tokenAuth: msgCfg.tokenAuth, exposeMethods: true, success: () => {}, failure: () => {} });
+    window.initSendOTP({ widgetId: msgCfg.widgetId, tokenAuth: msgCfg.tokenAuth, exposeMethods: true, captchaRenderId: "phCaptcha", success: () => {}, failure: () => {} });
     let n = 0; const t = setInterval(() => { if (typeof window.sendOtp === "function") { clearInterval(t); ok(); } else if (++n > 50) { clearInterval(t); no(new Error("widget")); } }, 100);
   })).catch(e => { msgInit = null; throw e; });
   return msgInit;
@@ -1609,6 +1611,7 @@ const msgErr = e => String((e && (e.message || e.errors || e.error)) || e || "")
 async function msgSend(phone, errId) {
   if (msgBusy) return; msgBusy = true; $("phSend").disabled = true; set(errId, "");
   try { await msgStart(); } catch (e) { msgBusy = false; $("phSend").disabled = false; set(errId, tr("ph_e_send").replace("{m}", "SMS")); return; }
+  if (typeof window.isCaptchaVerified === "function" && !window.isCaptchaVerified()) { msgBusy = false; $("phSend").disabled = false; set(errId, tr("ph_e_human")); return; }
   window.sendOtp(phone.replace(/\D/g, ""), data => {
     msgBusy = false; $("phSend").disabled = false;
     msgReq = (data && (data.message || data.reqId)) || "";
@@ -1619,9 +1622,11 @@ async function msgSend(phone, errId) {
   }, err => {
     msgBusy = false; $("phSend").disabled = false;
     const m = msgErr(err);
-    set(errId, /limit|block|many|wait/i.test(m) ? tr("ph_e_wait") : tr("ph_e_send").replace("{m}", m || "SMS"));
+    set(errId, /captcha/i.test(m) ? tr("ph_e_human") : /limit|block|many|wait/i.test(m) ? tr("ph_e_wait") : tr("ph_e_send").replace("{m}", m || "SMS"));
   });
 }
+/* draw the "I am human" box as soon as the page knows MSG91 is set up */
+msgReady.then(() => { if (msgCfg) msgStart().catch(() => {}); });
 function msgVerify(code) {
   $("phVerify").disabled = true; set("phCodeErr", ""); justSignedIn = true;
   const fail = m => { justSignedIn = false; $("phVerify").disabled = false; set("phCodeErr", m); };
