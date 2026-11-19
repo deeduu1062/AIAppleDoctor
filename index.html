@@ -1130,6 +1130,8 @@ body.guest .lpmanage{padding-top:28px}
 .gxbar span{font-weight:700}
 .gxbar small{color:var(--good);font-size:.8rem;font-weight:600}
 .gxbar small.neg{color:var(--bad)}
+.gxbar.neg i{background:var(--bad)}.gxbar.neg b{color:var(--bad)}
+.ychart{margin:0 0 18px}
 .gxpick{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:end}
 .gxpick .field{min-width:150px}
 .gxlegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;margin:8px 0 0;padding:0;list-style:none}
@@ -2376,6 +2378,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <div class="panel single" id="rp-year" role="tabpanel" aria-labelledby="rt-year" hidden>
       <div>
         <p class="hynote" data-i18n="hy_note"></p>
+        <div id="yChart"></div>
         <h3 class="ysub" style="margin-top:6px" data-i18n="y_sum"></h3>
         <p class="hint" data-i18n="y_tap"></p>
         <div class="ylist figrows" id="yearDetail"></div>
@@ -6397,6 +6400,7 @@ function renderYearDetail() {
     t.net = t.rev - t.cost; t.rows = rows; return t;
   };
   const all = {}; years.forEach(y => { all[y] = sum(y); });
+  yChartRender(years, all);
   if (!years.length) { $("yearDetail").innerHTML = '<p class="empty">' + tr("y_empty") + "</p>"; return; }
   $("yearDetail").innerHTML = years.map(y => {
     const t = all[y], open = yOpen.has(y), n = t.rows.length;
@@ -6418,6 +6422,19 @@ function renderYearDetail() {
   }).join("");
 }
 /* ---------- harvest-year summary: download for Excel (CSV) or print / save as PDF ---------- */
+/* bar chart of net profit per harvest year (all orchards), the same look as the example on the visitor page; the season still running is left out */
+function yChartRender(years, all) {
+  const el = $("yChart"); if (!el) return;
+  const ys = years.filter(y => !hsCur(all[y].boxes, y) && (all[y].rev || all[y].cost)).sort((a, b) => a - b).slice(-6);
+  if (!ys.length) { el.innerHTML = ""; return; }
+  const max = Math.max.apply(null, ys.map(y => Math.abs(all[y].net))) || 1, last = ys.length - 1;
+  const bars = ys.map((y, i) => {
+    const n = all[y].net, prev = i ? all[ys[i - 1]].net : 0, ch = i && prev ? Math.round((n - prev) / Math.abs(prev) * 100) : null;
+    return '<div class="gxbar' + (i === last ? " now" : "") + (n < 0 ? " neg" : "") + '"><b>' + shortInr(n) + '</b><i style="height:' + Math.max(6, Math.round(Math.abs(n) / max * 130)) + 'px"></i><span>' + y + "</span>" +
+      (ch == null ? "<small>&nbsp;</small>" : '<small class="' + (ch < 0 ? "neg" : "") + '">' + (ch >= 0 ? "+" : "−") + Math.abs(ch) + "%</small>") + "</div>";
+  }).join("");
+  el.innerHTML = '<section class="rccard ychart"><h4>' + tr("gx_chart") + '</h4><div class="gxbars" role="img" aria-label="' + esc(tr("gx_chart")) + '">' + bars + "</div></section>";
+}
 function yearSummary(y) {
   const rows = [], lots = [], exp = [];
   S.orchards.forEach(o => {
