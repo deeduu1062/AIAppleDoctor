@@ -5326,10 +5326,12 @@ function otKharchHtml(o) {
   let h = '<section class="osec omoney" id="oExp" aria-label="' + esc(tr("kx_recent")) + '"><div class="kxhead">' +
     (dashExp ? "" : '<button class="btn-s add" type="button" data-dex="open" data-o="' + esc(o.id) + '">＋ ' + tr("ex_add") + "</button>") + "</div>";
   if (dashExp) h += dashExpHtml();
+  let kxPrev = false;
   h += '<div class="ylist figrows kxlist">' + ys.map(y => {
     const r = expRowsFor(o, y), open = y === openY;
-    if (y === curY && !r.rows.length && !r.total && !dashExp) return '<div class="kxempty" id="kxy-' + y + '"><span><b>' + y + "</b> · " + tr("kx_none") + "</span></div>";   /* the ＋ Kharcha jodein button is right above */
-    return '<div class="yrow' + (open ? " open" : "") + '" id="kxy-' + y + '"><button class="yhead" type="button" data-kxt="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + '</span><span class="yfigs three">' +
+    const ph = y < curY && !kxPrev ? (kxPrev = true, '<p class="khprev">' + tr("kh_prev") + "</p>") : "";
+    if (y === curY && !r.rows.length && !r.total && !dashExp) return ph + '<div class="kxempty" id="kxy-' + y + '"><span><b>' + y + "</b> · " + tr("kx_none") + "</span></div>";   /* the ＋ Kharcha jodein button is right above */
+    return ph + '<div class="yrow' + (open ? " open" : "") + '" id="kxy-' + y + '"><button class="yhead" type="button" data-kxt="' + y + '" aria-expanded="' + open + '"><span class="yy">' + y + '</span><span class="yfigs three">' +
       yfig(tr(y >= curY ? "ex_sofar" : "ex_total"), mny(r.total), "ynet exn") + yfig(tr("ex_entries"), fmtN(r.rows.length)) + yfig(tr("m_pt"), trees ? inr(r.total / trees) : "–") + '</span><span class="ychev" aria-hidden="true"></span></button>' +
       (open ? '<div class="ybody">' + kxYearHtml(o, y, y === curY) + "</div>" : "") + "</div>";
   }).join("") + "</div>";
@@ -6278,7 +6280,9 @@ function renderExpList() {
     data[y] = {rows, cat, total: rows.reduce((a, r) => a + r.t.total, 0), ents: rows.reduce((a, r) => a + r.t.ents.length, 0), n: rows.filter(r => r.t.total).length};
   });
   let h = '<h4>' + tr("ex_years") + '</h4><p class="hint">' + tr("ex_years_hint") + '</p><div class="ylist exlist figrows">';
+  const cyE = curHYear(); let prevH = false;
   years.forEach(y => {
+    if (y < cyE && !prevH) { prevH = true; h += '<p class="khprev">' + tr("kh_prev") + "</p>"; }
     const d = data[y], open = exOpen.has(y);
     const ent = !d.ents && d.total ? tr("ex_lumpm") : tr(d.ents === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(d.ents));
     const top = Object.keys(d.cat).sort((a, b) => d.cat[b] - d.cat[a])[0];
@@ -6295,7 +6299,18 @@ function renderExpList() {
         h += '<p class="subhead">' + tr("ex_yrcat") + '</p><ul class="pbars excat">' + cats.map(k => '<li><span class="yl">' + tr("dk_" + k) + '</span><span class="track"><span class="fill" style="width:' +
           (d.cat[k] / mx * 100).toFixed(1) + '%"></span></span><span class="yv">' + inr(d.cat[k]) + '</span><span class="ys">' + pct(d.cat[k], d.total) + "</span></li>").join("") + "</ul>";
       }
+      /* every entry of the year in one list, newest first, so the grower sees at a glance what was spent */
+      const allE = []; d.rows.forEach(r => r.t.ents.forEach(e => allE.push({o: r.o, e})));
+      allE.sort((a, b) => String(b.e.date).localeCompare(String(a.e.date)));
+      if (allE.length) {
+        const many = S.orchards.length > 1;
+        h += '<p class="subhead">' + tr("kh_list") + '</p><ul class="khall">' + allE.map(x => '<li><span class="d">' + fmtDay(x.e.date) + '</span><span class="t"><b>' + tr("dk_" + x.e.kind) + "</b>" +
+          (x.e.text ? '<span class="det">' + esc(x.e.text) + "</span>" : "") + (many ? '<span class="on">🌳 ' + esc(x.o.name || tr("orchard_fallback")) + "</span>" : "") + '</span><span class="a"><b>' + inr(+x.e.cost) + "</b>" +
+          '<button class="link" type="button" data-exact="goorch" data-o="' + esc(x.o.id) + '" data-y="' + y + '" data-id="' + esc(x.e.id) + '">' + tr("ne_edit") + "</button></span></li>").join("") + "</ul>";
+      }
+      if (S.orchards.length > 1 || !allE.length) h += '<p class="subhead">' + tr("kh_byo") + "</p>";
       d.rows.forEach(r => {
+        if (allE.length && S.orchards.length === 1 && !r.t.lump && !r.t.lw) return;   /* one orchard: the list above already shows it */
         const o = r.o, t = r.t, trees = +o.trees, se = seFor(o.id, y), hasL = se && COST_KEYS.some(k => +se.costs[k] > 0);
         const om = !t.total ? "" : (!t.ents.length ? tr("ex_lumpm") : tr(t.ents.length === 1 ? "ex_ometa1" : "ex_ometa").replace("{e}", fmtN(t.ents.length))) + (trees && t.total ? ", " + tr("ex_ptree").replace("{x}", inr(t.total / trees)) : "") +
           (t.lump ? ", " + tr("ex_pluslump").replace("{x}", inr(t.lump)) : "");
@@ -7635,9 +7650,7 @@ function renderHome() {
   const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
   const fn = userName().split(/\s+/)[0];
   let h = '<div class="home"><p class="hmhi">' + (fn ? esc(tr("hm_hi").replace(/\s*🙏/, ", " + fn + " 🙏")) : tr("hm_hi")) + "</p>" + hmNameHtml() + /* "Today in <place>" weather strip taken off Home: the Mausam tile opens the weather */ (typeof fgHtml === "function" ? fgHtml() : "");
-  h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
-    '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
-    "</button>";   /* only this season's spend here; net per peti lives in Hisaab */
+  /* the season spend card was taken off: the Kharche block in the top row shows this year's spend */
   const ic = {
     dx: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 16c0-3.2 2-4.8 5-4.8 0 3.2-2 4.8-5 4.8z"/><path d="M9.5 16l2.6-2.6"/>',
     his: '<path d="M14 3H5.5A1.5 1.5 0 0 0 4 4.5v15A1.5 1.5 0 0 0 5.5 21H16a1.5 1.5 0 0 0 1.5-1.5V14"/><path d="M7.5 3v18"/><path d="M10.5 8h2"/><path d="M10.5 12h2"/><path d="M19.5 3.5l1.5 1.5-7 7-2.5.8.8-2.5z"/>',
@@ -7657,16 +7670,17 @@ function renderHome() {
   const dxAsk = !hmDxOpen ? "" : '<div class="hmcam2 open hmdxask"><p class="ask">' + tr("hm_cam_ask") + '</p><div class="two">' +
     '<button class="btn-s" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
     '<button class="btn-s" type="button" data-hm="gal"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>' + tr("hm_cam_gal") + "</button></div></div>";
-  /* same nine blocks, in the same order, as the visitor Home: Bagicha · Hisaab · Mausam / Bimari · Spray · Saathi / Kharche · Calendar · News */
+  /* top row: Bagicha · Kharche · Bikri (Bikri comes before Kharche in the selling months, Aug–Nov), then Mausam · Bimari · Spray, then Saathi · Calendar · News */
+  const mo = new Date().getMonth(), selling = mo >= 7 && mo <= 10;
+  const bExp = blk("exp", "exp", tr("hb_exp"), tr("hb_exp_s").replace("{x}", inr(spent)));
+  const bSale = blk("sales", "sales", tr("hb_sales"), p ? esc(tr("hb_sales_s").replace("{y}", p.y).replace("{x}", inr(p.sales)).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none"));
   h += '<div class="hmblocks nine' + (hmDxOpen ? " dxopen" : "") + '">' +
     blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
-    /* one money block: Munafa and Season bikri both opened Hisaab, so they are one block now */
-    blk("sales", "his", tr("nv_mun"), p ? esc(tr("hb_his_s").replace("{y}", p.y).replace("{x}", inr(p.net)).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none")) +
+    (selling ? bSale + bExp : bExp + bSale) +
     blk("wx", "wx", tr("gb_wx_h"), tr("gb_wx")) +
     blk("dxpick", "dx", tr("hm_cam"), tr("hm_cam_s2")).replace('type="button"', 'type="button" aria-expanded="' + hmDxOpen + '"') +
-    blk("spray", "spray", tr("hm_go_spray"), hmSpraySub()) +
-    blk("chat", "chat", "Saathi", tr("gb_chat")) + dxAsk +
-    blk("exp", "exp", tr("hb_exp"), tr("hb_exp_s").replace("{x}", inr(spent))) +
+    blk("spray", "spray", tr("hm_go_spray"), hmSpraySub()) + dxAsk +
+    blk("chat", "chat", "Saathi", tr("gb_chat")) +
     blk("cal", "cal", tr("tt_cal"), "") +
     blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
   h += "</div>";   /* the "Today in the orchard" tip card was taken off Home */
@@ -7688,7 +7702,7 @@ $("homeBody").addEventListener("click", e => {
   else if (a === "orch" || a === "loc") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
   else if (a === "spray") showTool("spray", false, true);
   else if (a === "munafa") { showTool("calc", false, true); showSub("year"); }
-  else if (a === "exp") { showTool("calc", false, true); showSub("exp"); if (typeof renderExp === "function") renderExp(); }
+  else if (a === "exp") hzGoExp();
   else if (a === "news" || a === "cal") showTool(a, false, true);
   else if (a === "chat") { const f = $("chatFab"); if (f) f.click(); }
 });
@@ -9182,7 +9196,7 @@ html{touch-action:manipulation}  /* no double-tap zoom when tapping buttons quic
   html.app #chatFab #chatFabT{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   html.app .hdrsaathi-x{display:inline-flex;align-items:center;gap:6px;border:0;background:#1B5E2B;color:#fff;border-radius:999px;padding:0 12px 0 5px;min-height:38px;font:600 .9rem var(--body);cursor:pointer}
   html.app .hdrsaathi-x .av{width:28px;height:28px;border-radius:50%;background:#F6EFE3;display:grid;place-items:center}
-  html.app .qxnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:22;
+  html.app .qxnav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:22;
     padding:6px 4px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px -14px rgba(0,0,0,.4)}
   html.app .qxnav button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--muted);font:600 .8rem var(--body);min-height:50px;padding:0;cursor:pointer}
   html.app .qxnav button[aria-current="page"]{color:var(--apple);font-weight:700}
@@ -9196,6 +9210,10 @@ html.shro .qxnav .plus{visibility:hidden}
 .qxnav [data-nv="home"],.qxnavg [data-gn="home"]{--nc:#1B5E2B;--nb:rgba(27,94,43,.14)}
 .qxnav [data-nv="orch"],.qxnavg [data-gn="orch"]{--nc:#3E8A3A;--nb:rgba(62,138,58,.16)}
 .qxnav [data-nv="mun"],.qxnavg [data-gn="mun"]{--nc:#A86A12;--nb:rgba(214,146,36,.20)}
+.qxnav [data-nv="exp"]{--nc:#B8321F;--nb:rgba(184,50,31,.13)}
+.qxnav [data-nv="sales"]{--nc:#A86A12;--nb:rgba(214,146,36,.20)}
+html.app .qxnav button:not(.plus) svg{padding:3px 10px}
+html.app .qxnav button{font-size:.76rem}
 .qxnav [data-nv="more"],.qxnavg [data-gn="more"]{--nc:#5A4FA0;--nb:rgba(90,79,160,.15)}
 .qxnavg [data-gn="dx"]{--nc:#C2410C;--nb:rgba(194,65,12,.14)}
 .qxnavg [data-gn="calc"]{--nc:#A86A12;--nb:rgba(214,146,36,.20)}
@@ -9216,7 +9234,9 @@ html.shro .qxnav .plus{visibility:hidden}
     '<button type="button" data-nv="home">' + sv('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>') + '<span data-i18n="nv_home"></span></button>' +
     '<button type="button" data-nv="orch"><span class="ntree" aria-hidden="true">' + treeArt("Seb Saathi") + '</span><span data-i18n="nv_orch"></span></button>' +
     '<button type="button" data-nv="add" class="plus"><span class="c">' + sv('<path d="M12 5v14"/><path d="M5 12h14"/>').replace('stroke-width="2"', 'stroke-width="3"') + '</span><span data-i18n="nv_add"></span></button>' +
-    '<button type="button" data-nv="mun">' + sv('<path d="M14 3H5.5A1.5 1.5 0 0 0 4 4.5v15A1.5 1.5 0 0 0 5.5 21H16a1.5 1.5 0 0 0 1.5-1.5V14"/><path d="M7.5 3v18"/><path d="M10.5 8h2"/><path d="M10.5 12h2"/><path d="M19.5 3.5l1.5 1.5-7 7-2.5.8.8-2.5z"/>')   /* Hisaab: register (bahi-khata) with a pen */ + '<span data-i18n="nv_mun"></span></button>' +
+    /* money is two buttons: Kharche (used all year) and Bikri (the selling months) */
+    '<button type="button" data-nv="exp">' + sv('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>') + '<span data-i18n="nv_exp"></span></button>' +
+    '<button type="button" data-nv="sales">' + sv('<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><path d="M8 7V5h8v2"/>') + '<span data-i18n="nv_sales"></span></button>' +
     '<button type="button" data-nv="more">' + sv('<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>') + '<span data-i18n="nv_more"></span></button>';
   document.body.appendChild(nav);
   /* Saathi button in the top bar (phone app), opens the same chat as the round Saathi button */
@@ -9234,14 +9254,15 @@ html.shro .qxnav .plus{visibility:hidden}
     if (a === "add") { qxOpen(); return; }
     if (a === "home") showTool("home", false, true);
     else if (a === "orch") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
-    else if (a === "mun") { showTool("calc", false, true); showSub("orch"); }
+    else if (a === "exp") { hzGoExp(); return; }
+    else if (a === "sales") { showTool("calc", false, true); showSub("orch"); }
     else if (a === "more") showTool("more", false, true);
     window.scrollTo({top: 0});
   });
 })();
 function qxNavSync() {
   const vis = TT.find(n => !$("tp-" + n).hidden);
-  const cur = vis === "home" ? "home" : vis === "orch" ? "orch" : vis === "calc" ? "mun" : vis === "more" || vis === "spray" || vis === "cal" || vis === "news" || vis === "acct" ? "more" : "";
+  const cur = vis === "home" ? "home" : vis === "orch" ? "orch" :  vis === "calc" ? (curSub === "exp" ? "exp" : "sales") : vis === "more" || vis === "spray" || vis === "cal" || vis === "news" || vis === "acct" ? "more" : "";
   document.querySelectorAll("#qxNav [data-nv]").forEach(b => { if (b.dataset.nv === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
 }
 function renderMore() {
@@ -9558,7 +9579,7 @@ function renderHzO() {
   if (!o) { el.hidden = true; el.innerHTML = ""; return; }
   if (curSub === "year" || curSub === "quick") { curSub = "orch"; try { showSub("orch"); } catch (e) {} }
   el.hidden = false;
-  if (hzY !== null) { dashYear = hzY; if (kxYear !== 0) kxYear = hzY; }   /* the picked season is the open one */
+  if (hzY !== null && curSub !== "exp") { dashYear = hzY; if (kxYear !== 0) kxYear = hzY; }   /* the picked season is the open one (Kharche: this year first, older years below) */
   el.innerHTML = curSub === "exp" ? otKharchHtml(o) : '<section class="osec omoney" id="oMoney">' + otMoneyHtml(o) + "</section>";
   hzFilterLists();
 }
@@ -9603,7 +9624,10 @@ function renderHzTop() {
   const lab = (ic, k) => '<span class="hzlab"><span aria-hidden="true">' + ic + "</span>" + tr(k) + "</span>";
   const pick = '<div class="hzpick">' + (!allY && ochips ? '<div class="hzrow">' + lab("🌳", "hz_opick") + '<div class="hzscroll">' + ochips + "</div></div>" : "") +
     '<div class="hzrow">' + lab("📅", "hz_season") + '<div class="hzscroll">' + ychips + "</div></div></div>";
-  el.innerHTML = allY ? pick : pick + card;
+  if (curSub === "exp") {   /* Kharche: this year's spend up top, every year listed below, so no season chips */
+    const pk = ochips ? '<div class="hzpick"><div class="hzrow">' + lab("🌳", "hz_opick") + '<div class="hzscroll">' + ochips + "</div></div></div>" : "";
+    el.innerHTML = pk + khCardHtml(oo);
+  } else el.innerHTML = allY ? pick : pick + card;
   setTimeout(() => { try { hzFilterLists(); } catch (e) {} }, 0);
   el.hidden = false;
 }
@@ -9619,14 +9643,15 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-hzo]"); if (!b) return;
-  hzO = b.dataset.hzo || null; dashYear = hzY; kxYear = hzY; renderHzTop(); renderHzO();
+  hzO = b.dataset.hzo || null; dashYear = hzY; kxYear = curSub === "exp" ? null : hzY; if (curSub === "exp") { exOpen = new Set([curHYear()]); exoOpen = new Set(); } renderHzTop(); renderHzO();
   if (!hzO) { renderEditor(); if (typeof renderExp === "function") renderExp(); }
 });
 /* the season picked in the chips is the only season listed under Bikri and Kharche (Saal dar saal keeps every year) */
 let hzOpening = false;
 function hzFilterLists() {
   if (!(user && loaded) || hzY === null) return;
-  document.querySelectorAll("#rp-orch .splist > .yrow, #exList .exlist > .yrow, #hzOrch .yrow[id], #hzOrch .kxempty").forEach(r => {
+  const kh = curSub === "exp";
+  document.querySelectorAll(kh ? "#rp-orch .splist > .yrow" : "#rp-orch .splist > .yrow, #exList .exlist > .yrow, #hzOrch .yrow[id], #hzOrch .kxempty").forEach(r => {
     const b = r.querySelector("[data-y]"), m = r.id && r.id.match(/(\d{4})$/), y = b ? +b.dataset.y : m ? +m[1] : null;
     if (y === null) return;
     r.hidden = y !== hzY;
@@ -9636,7 +9661,7 @@ function hzFilterLists() {
     r.classList.toggle("hzone", !r.hidden && r.classList.contains("open"));
   });
   /* the picked season has no rows: say so instead of an empty space */
-  document.querySelectorAll("#rp-orch .splist, #exList .exlist, #hzOrch .ylist").forEach(l => {
+  document.querySelectorAll(kh ? "#rp-orch .splist" : "#rp-orch .splist, #exList .exlist, #hzOrch .ylist").forEach(l => {
     let n = l.querySelector(":scope > .hznone"); const any = [...l.children].some(c => !c.hidden && !c.classList.contains("hznone"));
     if (any) { if (n) n.remove(); return; }
     if (!n) { n = document.createElement("p"); n.className = "hznone hint"; l.appendChild(n); }
@@ -9648,12 +9673,12 @@ function hzFilterLists() {
   const rl = renderExpList; renderExpList = function () { rl.apply(this, arguments); try { hzFilterLists(); } catch (e) {} };
 })();
 document.addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest("[data-hzexp]"); if (b) { qxOpen("exp"); return; }
+  const b = e.target.closest && e.target.closest("[data-hzexp]"); if (b) { if (hzO) qxOpen("exp", hzO); else qxOpen("exp"); return; }
   const i = e.target.closest && e.target.closest("[data-hzinfo]"); if (i) { const n = $("yNote"); if (n) { n.hidden = !n.hidden; i.setAttribute("aria-expanded", !n.hidden); } }
 });
 document.addEventListener("change", e => {
   const t = e.target; if (!t || !t.dataset) return;
-  if (t.dataset.hzosel) { hzO = t.value || null; dashYear = hzY; kxYear = hzY; renderHzTop(); renderHzO(); if (!hzO) { renderEditor(); if (typeof renderExp === "function") renderExp(); } }
+  if (t.dataset.hzosel) { hzO = t.value || null; dashYear = hzY; kxYear = curSub === "exp" ? null : hzY; if (curSub === "exp") { exOpen = new Set([curHYear()]); exoOpen = new Set(); } renderHzTop(); renderHzO(); if (!hzO) { renderEditor(); if (typeof renderExp === "function") renderExp(); } }
   else if (t.dataset.hzysel && t.value) {
     const wasAll = curSub === "year"; hzY = +t.value; if (wasAll) showSub("orch");
     spOpen = new Set([hzY]); exOpen = new Set([hzY]); exoOpen = new Set(); dashYear = hzY; kxYear = hzY;
@@ -9691,6 +9716,53 @@ let hzWantQuick = false;
     rd.apply(this, arguments);
     try { renderHzO(); } catch (e) {}
   };
+})();
+/* ---------- Kharche and Bikri as two front doors (bottom bar and Home). Kharche opens on this year's expenses, older years below ---------- */
+Object.assign(T.en, { nv_exp:"Expenses", nv_sales:"Sales", hb_sales:"Sales", hb_sales_s:"{y}: {x} · {b} boxes", kh_card:"Expenses this year · season {y}", kh_ocard:"{o} · expenses this year · season {y}",
+  kh_range:"1 Nov {a} to 31 Oct {b}", kh_n:"{n} entries", kh_n1:"1 entry", kh_n0:"Nothing added yet this year", kh_top:"Biggest: {c} {x}", kh_list:"All expenses this year", kh_byo:"By orchard", kh_prev:"Earlier years" });
+Object.assign(T.hi, { nv_exp:"ख़र्चे", nv_sales:"बिक्री", hb_sales:"बिक्री", hb_sales_s:"{y}: {x} · {b} पेटियाँ", kh_card:"इस साल के ख़र्चे · सीज़न {y}", kh_ocard:"{o} · इस साल के ख़र्चे · सीज़न {y}",
+  kh_range:"1 नवंबर {a} से 31 अक्टूबर {b}", kh_n:"{n} एंट्री", kh_n1:"1 एंट्री", kh_n0:"इस साल अभी कुछ नहीं जोड़ा", kh_top:"सबसे बड़ा: {c} {x}", kh_list:"इस साल के सारे ख़र्चे", kh_byo:"बाग़ के हिसाब से", kh_prev:"पिछले साल" });
+Object.assign(T.hn, { nv_exp:"Kharche", nv_sales:"Bikri", hb_sales:"Bikri", hb_sales_s:"{y}: {x} · {b} petiyan", kh_card:"Is saal ke kharche · season {y}", kh_ocard:"{o} · is saal ke kharche · season {y}",
+  kh_range:"1 Nov {a} se 31 Oct {b}", kh_n:"{n} entries", kh_n1:"1 entry", kh_n0:"Is saal abhi kuch nahi joda", kh_top:"Sabse bada: {c} {x}", kh_list:"Is saal ke saare kharche", kh_byo:"Bagiche ke hisaab se", kh_prev:"Pichhle saal" });
+function khCardHtml(oo) {
+  const y = curHYear(), list = oo ? [oo] : S.orchards, cat = {};
+  let tot = 0, n = 0;
+  list.forEach(o => { const t = expTotals(o, y); tot += t.total; n += t.ents.length; Object.keys(t.cat).forEach(k => { cat[k] = (cat[k] || 0) + t.cat[k]; }); });
+  const top = Object.keys(cat).sort((a, b) => cat[b] - cat[a])[0];
+  const lab = oo ? tr("kh_ocard").replace("{o}", oo.name || tr("orchard_fallback")).replace("{y}", y) : tr("kh_card").replace("{y}", y);
+  const meta = !tot ? tr("kh_n0") : (n === 1 ? tr("kh_n1") : tr("kh_n").replace("{n}", fmtN(n))) + (top ? " · " + tr("kh_top").replace("{c}", tr("dk_" + top)).replace("{x}", inr(cat[top])) : "");
+  return '<div class="hzcard khcard"><span class="w">' + esc(lab) + '</span><span class="r">' + esc(tr("kh_range").replace("{a}", y - 1).replace("{b}", y)) + "</span><b>" + inr(tot) + '</b><span class="f">' + esc(meta) + "</span>" +
+    (shRO() ? "" : '<button class="khadd" type="button" data-hzexp="1">＋ ' + tr("ex_add") + "</button>") + "</div>";
+}
+/* open Kharche: this harvest year open at the top, earlier years closed below */
+function hzGoExp() {
+  tabPicked = true; exEdit = null; exAdding = false; exOpen = new Set([curHYear()]); exoOpen = new Set(); kxYear = null; kxEditY = null;
+  showTool("calc", false, true); showSub("exp"); if (typeof renderExp === "function") renderExp(); renderHzTop(); renderHzO();
+  window.scrollTo({top: 0});
+}
+$("rt-exp").addEventListener("click", () => { if (user && loaded) hzGoExp(); });
+(function () {
+  const bs = showSub; showSub = function (w) { bs(w); try { if (typeof qxNavSync === "function") qxNavSync(); } catch (e) {} };
+  const css = document.createElement("style");
+  css.textContent = `
+.khcard{gap:4px;background:#8A2A1A}
+.khcard .r{font-size:.82rem;opacity:.85}
+.khcard b{font-size:1.9rem;line-height:1.15}
+.khcard .f{font-size:.92rem}
+.khcard .khadd{justify-self:start;margin-top:6px;min-height:42px;padding:0 16px;border-radius:999px;border:0;background:#fff;color:#8A2A1A;font:700 1rem var(--body);cursor:pointer}
+#rp-exp #exTop{display:none}
+#tp-calc.hzo #oExp .kxhead{display:none}
+.khprev{margin:16px 0 6px;font-weight:700;font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.khall{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:0;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.khall li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 12px;border-top:1px solid var(--line)}
+.khall li:first-child{border-top:0}
+.khall .d{font-size:.85rem;color:var(--muted);min-width:46px;padding-top:2px}
+.khall .t{display:grid;gap:1px;min-width:0}
+.khall .det,.khall .on{font-size:.85rem;color:var(--muted);overflow-wrap:anywhere}
+.khall .a{display:grid;justify-items:end;gap:2px}
+.khall .a .link{font-size:.85rem}
+#tp-calc:not(.hzo) #rp-exp #exList > h4{display:none}`;
+  document.head.appendChild(css);
 })();
 /* ---------- First-time guide on Home: 3 steps (orchard, location, first expense); goes away when done or when the grower taps Later ---------- */
 Object.assign(T.en, { fg_h:"Get started in 3 easy steps", fg_n:"{n} of 3 done", fg_1:"Add your orchard", fg_1s:"Its name and number of trees", fg_2:"Add its location", fg_2s:"For local weather and frost warnings",
