@@ -7603,7 +7603,7 @@ function hmFit() {
   const avail = window.innerHeight - nav.offsetHeight - 12 - top;
   const row = Math.floor((avail - 2 * gap) / 3);
   const natural = Math.max.apply(null, Array.from(g.children).map(c => c.offsetHeight));
-  if (row > natural) g.style.gridAutoRows = Math.min(row, 190) + "px";
+  if (row > natural) g.style.gridAutoRows = Math.min(row, 112) + "px";   /* smaller blocks: never stretched taller than this */
 }
 window.addEventListener("resize", () => { try { hmFit(); } catch (e) {} });
 function hmSpraySub() {
@@ -7677,7 +7677,7 @@ function renderHome() {
   const mo = new Date().getMonth(), selling = mo >= 7 && mo <= 10;
   const bExp = blk("exp", "exp", tr("hb_exp"), tr("hb_exp_s").replace("{x}", inr(spent)));
   const bSale = blk("sales", "sales", tr("hb_sales"), p ? esc(tr("hb_sales_s").replace("{y}", p.y).replace("{x}", inr(p.sales)).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none"));
-  const bMun = blk("munafa", "mun", tr("hz_mun"), p ? esc(tr("hb_mz_s").replace("{y}", p.y).replace("{x}", inr(p.net)).replace("{p}", inr(p.ppb))) : tr("hb_mun_0"));
+  const bMun = blk("munafa", "mun", tr("hz_tmun"), p ? esc(tr("hb_mz_s").replace("{y}", p.y).replace("{x}", inr(p.net)).replace("{p}", inr(p.ppb))) : tr("hb_mun_0"));
   h += '<div class="hmblocks nine' + (hmDxOpen ? " dxopen" : "") + '">' +
     (selling ? bSale + bExp : bExp + bSale) + bMun +
     blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
@@ -9704,7 +9704,7 @@ function hzOrchCard(o) {
 function hzLabels() {
   const on = !!(user && loaded);
   const set1 = (id, k) => { const n = $(id); if (n) { n.setAttribute("data-i18n", k); n.textContent = tr(k); } };
-  set1("tt-calc", on ? "hz_tab" : "tt_calc"); set1("rt-orch", on ? "hz_bikri" : "pt_season"); set1("rt-exp", on ? "hz_kharche" : "pt_exp"); set1("rt-year", on ? "hz_mun" : "pt_year");
+  set1("tt-calc", on ? "hz_tab" : "tt_calc"); set1("rt-orch", on ? "hz_tsales" : "pt_season"); set1("rt-exp", on ? "hz_kharche" : "pt_exp"); set1("rt-year", on ? "hz_tmun" : "pt_year");
 }
 /* logged in: opening Hisaab never lands on the calculator (that lives in Aur now) unless Aur asked for it */
 let hzWantQuick = false;
@@ -9769,9 +9769,9 @@ $("rt-exp").addEventListener("click", () => { if (user && loaded) hzGoExp(); });
   document.head.appendChild(css);
 })();
 /* ---------- Munafa: the third money place (Kharche all year, Bikri at harvest, Munafa at the end of the season) ---------- */
-Object.assign(T.en, { hz_mun:"Profit", hb_mz_s:"{y}: {x} · {p}/peti", mz_card:"Profit · season {y} · all orchards", mz_ppb:"{x} per peti", mz_cur:"Season {y} is on: its profit is worked out at the end of the season.", mz_none:"Profit shows here once you add a season's sales.", mz_years:"Year by year" });
-Object.assign(T.hi, { hz_mun:"मुनाफ़ा", hb_mz_s:"{y}: {x} · {p}/पेटी", mz_card:"मुनाफ़ा · सीज़न {y} · सभी बाग़", mz_ppb:"{x} प्रति पेटी", mz_cur:"सीज़न {y} चल रहा है: इसका मुनाफ़ा सीज़न के अंत में निकलेगा।", mz_none:"किसी सीज़न की बिक्री जोड़ने पर मुनाफ़ा यहाँ दिखेगा।", mz_years:"साल दर साल" });
-Object.assign(T.hn, { hz_mun:"Munafa", hb_mz_s:"{y}: {x} · {p}/peti", mz_card:"Munafa · season {y} · sabhi bagiche", mz_ppb:"{x} per peti", mz_cur:"Season {y} chal raha hai: iska munafa season ke ant mein nikalega.", mz_none:"Kisi season ki bikri jodne par munafa yahan dikhega.", mz_years:"Saal dar saal" });
+Object.assign(T.en, { hz_mun:"Profit", hb_mz_s:"{y}: {x} · {p}/peti", mz_card:"Yearly profit · season {y} · all orchards", mz_ppb:"{x} per peti", mz_cur:"Season {y} is on: its profit is worked out at the end of the season.", mz_none:"Profit shows here once you add a season's sales.", mz_years:"Year by year" });
+Object.assign(T.hi, { hz_mun:"मुनाफ़ा", hb_mz_s:"{y}: {x} · {p}/पेटी", mz_card:"सालाना मुनाफ़ा · सीज़न {y} · सभी बाग़", mz_ppb:"{x} प्रति पेटी", mz_cur:"सीज़न {y} चल रहा है: इसका मुनाफ़ा सीज़न के अंत में निकलेगा।", mz_none:"किसी सीज़न की बिक्री जोड़ने पर मुनाफ़ा यहाँ दिखेगा।", mz_years:"साल दर साल" });
+Object.assign(T.hn, { hz_mun:"Munafa", hb_mz_s:"{y}: {x} · {p}/peti", mz_card:"Saal ka munafa · season {y} · sabhi bagiche", mz_ppb:"{x} per peti", mz_cur:"Season {y} chal raha hai: iska munafa season ke ant mein nikalega.", mz_none:"Kisi season ki bikri jodne par munafa yahan dikhega.", mz_years:"Saal dar saal" });
 function mzCardHtml() {
   let p = null; try { p = homePpb(); } catch (e) {}
   const cy = curHYear(), cur = !p || p.y !== cy ? '<span class="f">⏳ ' + esc(tr("mz_cur").replace("{y}", cy)) + "</span>" : "";
@@ -9792,6 +9792,26 @@ body:not(.guest) #tp-calc:not(.hzo) #rt-year{display:revert!important}
 .mzcard{gap:6px}
 .mzcard .mzppb{font-size:1.05rem;font-weight:700}
 .yy .yppb{display:block;white-space:nowrap;font:600 .8rem var(--body);color:var(--muted);margin-top:4px}`;
+  document.head.appendChild(css);
+})();
+/* ---------- Longer names: Season sales and Yearly profit (bottom bar stays short), and smaller Home blocks ---------- */
+Object.assign(T.en, { hb_sales:"Season sales", hz_tsales:"Season sales", hz_tmun:"Yearly profit" });
+Object.assign(T.hi, { hb_sales:"सीज़न बिक्री", hz_tsales:"सीज़न बिक्री", hz_tmun:"सालाना मुनाफ़ा" });
+Object.assign(T.hn, { hb_sales:"Season bikri", hz_tsales:"Season bikri", hz_tmun:"Saal ka munafa" });
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+@media (max-width:700px){
+  .hmblocks.nine{gap:6px}
+  .hmblocks.nine .hmblk{padding:8px 4px;gap:5px;border-radius:14px}
+  .hmblocks.nine .hmblk svg{width:40px;height:40px;padding:9px;border-radius:11px}
+  .hmblocks.nine .hmblk .hbtree,.hmblocks.nine .hmblk .hbsaathi{width:40px;height:40px;border-radius:11px}
+  .hmblocks.nine .hmblk .hbsaathi{border-radius:50%}
+  .hmblocks.nine .hmblk .hbsaathi svg{width:24px;height:24px}
+  .hmblocks.nine .hmblk b{font-size:.9rem}
+}
+@media (max-width:700px){#tp-calc .pctabs .tab{padding-left:10px;padding-right:10px;font-size:.9rem;white-space:nowrap}}
+@media (min-width:701px){.hmblocks.nine .hmblk,.hmblocks.nine .hmblk:last-child{min-height:84px;padding:10px}.hmblocks.nine .hmblk svg{width:38px;height:38px;padding:8px}}`;
   document.head.appendChild(css);
 })();
 /* ---------- First-time guide on Home: 3 steps (orchard, location, first expense); goes away when done or when the grower taps Later ---------- */
