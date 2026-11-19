@@ -5720,7 +5720,7 @@ function wxBlock(list, one, mini) {
 function renderWxAll() {
   const el = $("wxAll"); if (!el) return;
   const list = S.orchards.filter(o => typeof hasLoc === "function" && hasLoc(o)), miss = S.orchards.filter(o => !(typeof hasLoc === "function" && hasLoc(o)));
-  let h = list.length ? '<div data-wx="all">' + wxBlock(list, false) + "</div>" : '<p class="hint">' + tr("wx_none") + "</p>";
+  let h = list.length ? '<div data-wx="all">' + wxBlock(list, false, true) + "</div>" : '<p class="hint">' + tr("wx_none") + "</p>";
   if (miss.length && list.length) h += '<p class="hint">' + esc(tr("wx_miss").replace("{n}", miss.map(o => o.name || tr("orchard_fallback")).join(", "))) + "</p>";
   if (miss.length) h += '<button class="btn-s" type="button" data-wxset="1">' + tr("wx_setloc") + "</button>";
   el.innerHTML = h;
@@ -5733,7 +5733,7 @@ function refreshWx() {
     const id = el.dataset.wx;
     if (id.indexOf("mini-") === 0) { const o = S.orchards.find(x => x.id === id.slice(5)); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true, true); }
     else if (id.indexOf("chip-") === 0) { const o = S.orchards.find(x => x.id === id.slice(5)); if (o) el.outerHTML = detWxChip(o); }
-    else if (id === "all") { const list = S.orchards.filter(hasLoc); if (list.length) el.innerHTML = wxBlock(list, false); }
+    else if (id === "all") { const list = S.orchards.filter(hasLoc); if (list.length) el.innerHTML = wxBlock(list, false, true); }
     else if (id === "dash") { const list = S.orchards.filter(hasLoc); el.innerHTML = list.length ? wxBlock(list, false, true) : '<p class="hint">' + tr("wx_none") + "</p>"; }
     else if (id === "guest") el.innerHTML = wxBlock([guestPlace()], false, true);
     else if (id === "guestnow") el.innerHTML = guestNowHtml();
