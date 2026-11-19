@@ -7604,7 +7604,7 @@ function renderHome() {
   const cy = curHYear(), spent = S.orchards.reduce((a, o) => a + expTotals(o, cy).total, 0);
   const trees = S.orchards.reduce((a, o) => a + (+o.trees || 0), 0);
   const fn = userName().split(/\s+/)[0];
-  let h = '<div class="home"><p class="hmhi">' + (fn ? esc(tr("hm_hi").replace(/\s*🙏/, ", " + fn + " 🙏")) : tr("hm_hi")) + "</p>" + hmNameHtml() + hmWxHtml() + (typeof fgHtml === "function" ? fgHtml() : "");
+  let h = '<div class="home"><p class="hmhi">' + (fn ? esc(tr("hm_hi").replace(/\s*🙏/, ", " + fn + " 🙏")) : tr("hm_hi")) + "</p>" + hmNameHtml() + /* "Today in <place>" weather strip taken off Home: the Mausam tile opens the weather */ (typeof fgHtml === "function" ? fgHtml() : "");
   h += '<button class="hmseason" type="button" data-hm="exp"><span class="k wide">' + esc(tr("hms_cur").replace("{y}", cy)) + "</span>" +
     '<span><span class="k">' + tr("hms_exp") + '</span><b>' + inr(spent) + "</b></span>" +
     "</button>";   /* only this season's spend here; net per peti lives in Hisaab */
