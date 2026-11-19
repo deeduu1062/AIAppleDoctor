@@ -7616,20 +7616,28 @@ function renderHome() {
     sales: '<rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><path d="M8 7V5h8v2"/>',
     exp: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6"/><path d="M9 12h6"/>',
     spray: '<path d="M5 20l5-5"/><path d="M10 15l4-9 4 4-9 4"/><path d="M16 4l4 4"/>',
-    news: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/>'
+    news: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/>',
+    cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/>',
+    wx: '<circle cx="8" cy="8" r="3"/><path d="M8 2v1.5M2 8h1.5M3.8 3.8l1 1M12.2 3.8l-1 1"/><path d="M8 20h9a4 4 0 0 0 0-8 5 5 0 0 0-9.6 1.5A3.3 3.3 0 0 0 8 20z"/>'
   };
   const o0 = S.orchards[0], tree = '<span class="dthumb hbtree" aria-hidden="true">' + (o0 && o0.photo ? '<img src="' + o0.photo + '" alt="">' : treeArt(o0 ? o0.id + (o0.name || "") : "Seb Saathi")) + "</span>";
-  const blk = (act, k, title, sub) => '<button class="hmblk hb-' + k + '" type="button" data-hm="' + act + '">' + (k === "orch" ? tree : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] + "</svg>") + "<span><b>" + title + "</b><span>" + sub + "</span></span></button>";
+  const sav = document.querySelector("#chatFab .av");
+  const blk = (act, k, title, sub) => '<button class="hmblk hb-' + k + '" type="button" data-hm="' + act + '">' + (k === "orch" ? tree : k === "chat" && sav ? '<span class="hbsaathi" aria-hidden="true">' + sav.innerHTML + "</span>" : '<svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ic[k] + "</svg>") + "<span><b>" + title + "</b><span>" + sub + "</span></span></button>";
   /* disease check is the first block; tapping it opens Photo lein / Gallery se right under it (full row) */
   const dxAsk = !hmDxOpen ? "" : '<div class="hmcam2 open hmdxask"><p class="ask">' + tr("hm_cam_ask") + '</p><div class="two">' +
     '<button class="btn-s" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
     '<button class="btn-s" type="button" data-hm="gal"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>' + tr("hm_cam_gal") + "</button></div></div>";
-  h += '<div class="hmblocks' + (hmDxOpen ? " dxopen" : "") + '">' +
-    blk("dxpick", "dx", tr("hm_cam"), tr("hm_cam_s2")).replace('type="button"', 'type="button" aria-expanded="' + hmDxOpen + '"') +
-    blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) + dxAsk +
+  /* same nine blocks, in the same order, as the visitor Home: Bagicha · Hisaab · Mausam / Bimari · Spray · Saathi / Kharche · Calendar · News */
+  h += '<div class="hmblocks nine' + (hmDxOpen ? " dxopen" : "") + '">' +
+    blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
     /* one money block: Munafa and Season bikri both opened Hisaab, so they are one block now */
     blk("sales", "his", tr("nv_mun"), p ? esc(tr("hb_his_s").replace("{y}", p.y).replace("{x}", inr(p.net)).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none")) +
+    blk("wx", "wx", tr("gb_wx_h"), tr("gb_wx")) +
+    blk("dxpick", "dx", tr("hm_cam"), tr("hm_cam_s2")).replace('type="button"', 'type="button" aria-expanded="' + hmDxOpen + '"') +
     blk("spray", "spray", tr("hm_go_spray"), hmSpraySub()) +
+    blk("chat", "chat", "Saathi", tr("gb_chat")) + dxAsk +
+    blk("exp", "exp", tr("hb_exp"), tr("hb_exp_s").replace("{x}", inr(spent))) +
+    blk("cal", "cal", tr("tt_cal"), "") +
     blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
   h += "</div>";   /* the "Today in the orchard" tip card was taken off Home */
   el.innerHTML = h;
@@ -7650,7 +7658,7 @@ $("homeBody").addEventListener("click", e => {
   else if (a === "spray") showTool("spray", false, true);
   else if (a === "munafa") { showTool("calc", false, true); showSub("year"); }
   else if (a === "exp") { showTool("calc", false, true); showSub("exp"); if (typeof renderExp === "function") renderExp(); }
-  else if (a === "news") showTool("news", false, true);
+  else if (a === "news" || a === "cal") showTool(a, false, true);
   else if (a === "chat") { const f = $("chatFab"); if (f) f.click(); }
 });
 
@@ -9364,6 +9372,19 @@ Object.assign(T.hn, { gb_wx_h:"Mausam", gb_wx:"5 din ka mausam, paala aur ole ki
   html.gapp .gblocks .mgnews{margin-top:0;padding:10px 12px;gap:10px}
   html.gapp .gblocks .mgnews .mgi{width:34px;height:34px;font-size:1.05rem}
   html.gapp .gblocks .mgnews > span:nth-child(2){font-size:.92rem;line-height:1.35}
+}
+.hmblocks.nine{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hmblocks.nine .hmblk:last-child{grid-column:auto;min-height:104px}
+@media (max-width:700px){
+  .hmblocks.nine{gap:8px}
+  .hmblocks.nine .hmblk{min-height:0!important;padding:10px 6px;gap:6px;align-items:center;justify-content:flex-start;text-align:center;border-radius:14px}
+  .hmblocks.nine .hmblk svg{width:38px;height:38px;padding:8px;border-radius:11px}
+  .hmblocks.nine .hmblk .hbtree{width:38px;height:38px;border-radius:11px}
+  .hmblocks.nine .hmblk .hbtree svg{width:100%;height:100%;padding:0}
+  .hmblocks.nine .hmblk .hbsaathi{width:38px;height:38px}
+  .hmblocks.nine .hmblk .hbsaathi svg{width:22px;height:22px;padding:0}
+  .hmblocks.nine .hmblk b{font-size:.9rem;line-height:1.2}
+  .hmblocks.nine .hmblk span span{display:none}
 }
 .hb-cal{--c:#7A5C2E;background:linear-gradient(rgba(122,92,46,.10),rgba(122,92,46,.10)),var(--surface);border-color:rgba(122,92,46,.28)}
 .hb-wx{--c:#2B7BB0;background:linear-gradient(rgba(43,123,176,.10),rgba(43,123,176,.10)),var(--surface);border-color:rgba(43,123,176,.28)}
