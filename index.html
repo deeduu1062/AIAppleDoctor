@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#F2F4EF">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Seb Saathi">
@@ -2009,8 +2009,8 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 .brand2 i{width:42px!important;height:42px!important;border-radius:13px!important;background:url(/icons/mark.svg) center/27px no-repeat,linear-gradient(145deg,#FFF8EC,#F3E6CF)!important;box-shadow:0 0 0 1.5px rgba(184,50,31,.22),0 4px 10px -4px rgba(120,40,20,.35)}
 /* English name and Hindi line kept apart: Devanagari needs extra height above and below, so each line gets its own room */
 .brand2 .bw{display:grid;gap:2px;line-height:1.2;min-width:0}
-.brand2 .bn{display:block;font:800 1.45rem/1.15 var(--display);letter-spacing:-.015em;color:#B8321F;white-space:nowrap}
-.brand2 .bn b{font-weight:800;color:#1B5E2B}
+.brand2 .bn{display:block;font:800 1.45rem/1.15 var(--display);letter-spacing:-.015em;color:#1F6B2B;white-space:nowrap}
+.brand2 .bn b{font-weight:800;color:#C8221C}   /* same colours as the logo: Seb red, Saathi green */
 .brand2 small{display:block;margin-top:0;padding-top:1px;font:600 .72rem/1.55 var(--body);color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:480px){.brand2 .bn{font-size:1.3rem}.brand2 i{width:38px!important;height:38px!important;background-size:24px,auto!important}.brand2 small{font-size:.66rem}}
 @media (max-width:370px){.brand2 small{display:none}}
@@ -2309,7 +2309,7 @@ body:not(.guest) #rt-year{display:none!important}
 <script>/* signed-in growers (or just back from the sign-in link): keep the page hidden until the account has loaded, so the signed-out home page and Plans do not flash first */
 try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(location.hash + location.search) || Object.keys(localStorage).some(k => /^sb-.+-auth-token$/.test(k))) { document.documentElement.classList.add("booting"); setTimeout(() => document.documentElement.classList.remove("booting"), 8000); } } catch (e) {}</script>
 <div class="topbar">
-  <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo"></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
+  <div class="instbar" id="instBar" hidden><div class="wrap instrow"><img src="/icons/icon-192.png?v=2" alt="" width="36" height="36"><span id="instMsg"></span><button class="btn-s add" type="button" id="instGo"></button><button class="link" type="button" id="instNo" data-i18n="in_no"></button></div></div>
   <div class="acctstrip" id="acctBar" hidden><div class="wrap acctrow"><span id="acct_email"></span><a class="link acctplan" href="#plans" id="acctPlan" hidden></a><a class="link" href="/admin.html" id="adminLink" data-i18n="tt_admin" hidden></a><button class="link" type="button" id="signOut" data-i18n="auth_out"></button></div></div>
   <header class="wrap top">
     <a class="brand brand2" href="#top" aria-label="Seb Saathi"><i aria-hidden="true"></i><span class="bw"><span class="bn"><b>Seb</b> Saathi</span><small>सेब साथी · Your Orchard Manager</small></span></a>
@@ -2856,7 +2856,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 </dialog>
 
 <dialog class="instdlg welcome-dlg" id="welDlg" aria-labelledby="welH">
-  <div class="instdlg-head"><img src="/icons/icon-192.png" alt="" width="44" height="44"><h3 id="welH" data-i18n="wl_h"></h3></div>
+  <div class="instdlg-head"><img src="/icons/icon-192.png?v=2" alt="" width="44" height="44"><h3 id="welH" data-i18n="wl_h"></h3></div>
   <p class="fine" data-i18n="wl_p" style="font-size:1rem"></p>
   <div class="dels"><button class="btn-s add" type="button" id="welGo"></button><button class="btn-s" type="button" id="welNo" data-i18n="wl_no"></button></div>
 </dialog>
@@ -2864,7 +2864,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
 <dialog class="limdlg" id="limDlg" aria-labelledby="limH"></dialog>
 
 <dialog class="instdlg" id="instDlg" aria-labelledby="instDlgH">
-  <div class="instdlg-head"><img src="/icons/icon-192.png" alt="" width="44" height="44"><h3 id="instDlgH" data-i18n="ig_h"></h3></div>
+  <div class="instdlg-head"><img src="/icons/icon-192.png?v=2" alt="" width="44" height="44"><h3 id="instDlgH" data-i18n="ig_h"></h3></div>
   <ol class="inststeps" id="instSteps"></ol>
   <p class="fine" id="instNote"></p>
   <div class="dels"><button class="btn-s add" type="button" id="instClose" data-i18n="ig_ok"></button></div>
