@@ -1529,7 +1529,21 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 .admtabs .tab{min-width:0;min-height:34px;padding:5px 4px;font-size:.82rem;line-height:1.15;text-align:center;white-space:normal;overflow-wrap:normal;border-radius:7px}
 @media (max-width:900px){.admtabs{grid-template-columns:repeat(4,minmax(0,1fr))}}
 /* each group of tabs has its own colour: today, money, growers, marketing, the site */
-#at-td,#at-ov{--c:#A86B0E}#at-pay,#at-cost{--c:#1F8A52}#at-users,#at-prof,#at-fb{--c:#2F64B8}#at-mk,#at-gr,#at-bc{--c:#7B4FB0}#at-aq,#at-op{--c:#13808A}
+#at-td,#at-ov{--c:#A86B0E}#at-pay,#at-cost{--c:#1F8A52}#at-users,#at-prof,#at-fb{--c:#2F64B8}#at-mk,#at-gr,#at-bc{--c:#7B4FB0}#at-sl{--c:#8A5A2B}
+/* Soil tests tab (soiltests.js) */
+.slstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin:6px 0 12px}
+.slstats div{border:1px solid var(--line);border-radius:12px;padding:10px 4px}.slstats b{display:block;font-size:1.3rem}.slstats span{font-size:.8rem;color:var(--muted)}
+.slbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:6px}
+.slcard{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 8px;background:var(--surface,#fff)}
+.slcard.open{border-left-color:#8A5A2B}
+.slhead{all:unset;display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;cursor:pointer}.slhead .fine{margin:0}.slsp{flex:1}
+.slcard .tag.sl-report_ready{color:var(--good);border-color:var(--good)}.slcard .tag.sl-cancelled{opacity:.6}
+.slgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.slgrid label,.slwide,.slprice label{display:flex;flex-direction:column;gap:3px;font-size:.85rem;color:var(--muted)}
+.slwide{margin-top:8px}.slgrid input,.slgrid select,.slwide textarea,.slwide input,.slprice input{font:inherit;padding:7px;border:1px solid var(--line);border-radius:8px}
+.slbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.slprice{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:10px 0}.slprice input{width:110px}
+#at-aq,#at-op{--c:#13808A}
 .admtabs .tab{background:color-mix(in srgb,var(--c) 13%,var(--surface));border:1.5px solid color-mix(in srgb,var(--c) 45%,transparent);box-shadow:inset 0 3px 0 var(--c);color:var(--fg);transition:transform .12s,box-shadow .12s,background .12s}
 .admtabs .tab:hover{background:color-mix(in srgb,var(--c) 24%,var(--surface))}
 .admtabs .tab[aria-selected="true"]{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 80%,#fff),var(--c));border-color:var(--c);color:#fff;font-weight:800;box-shadow:0 3px 8px color-mix(in srgb,var(--c) 45%,transparent);transform:translateY(-1px)}
@@ -1784,6 +1798,7 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
       <button class="tab" role="tab" type="button" id="at-fb" aria-controls="ap-fb" data-i18n="adm_t_fb"></button>
       <button class="tab" role="tab" type="button" id="at-mk" aria-controls="ap-mk" data-i18n="adm_t_mk"></button>
       <button class="tab" role="tab" type="button" id="at-gr" aria-controls="ap-gr" data-i18n="adm_t_gr"></button>
+      <button class="tab" role="tab" type="button" id="at-sl" aria-controls="ap-sl" data-i18n="adm_t_sl"></button>
       <button class="tab" role="tab" type="button" id="at-aq" aria-controls="ap-aq" data-i18n="adm_t_aq"></button>
       <button class="tab" role="tab" type="button" id="at-bc" aria-controls="ap-bc" data-i18n="adm_t_bc"></button>
       <button class="tab" role="tab" type="button" id="at-op" aria-controls="ap-op" data-i18n="adm_t_op"></button>
@@ -1810,6 +1825,14 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
         <p class="fine" data-i18n="gr_p"></p>
         <p class="autherr" id="grErr" role="alert"></p>
         <div id="grBody"></div>
+      </section>
+    </div>
+    <div class="adm" id="ap-sl" role="tabpanel" aria-labelledby="at-sl" hidden>
+      <section class="fbadm solo" aria-labelledby="slH">
+        <div class="admbar"><h4 id="slH" data-i18n="sl_h" style="margin:0"></h4><button class="btn-s" type="button" id="slRefresh" data-i18n="ad_refresh"></button><span class="fine" id="slAt" role="status" style="margin:0"></span></div>
+        <p class="fine" data-i18n="sl_p"></p>
+        <p class="autherr" id="slErr" role="alert"></p>
+        <div id="slBody"></div>
       </section>
     </div>
     <div class="adm" id="ap-aq" role="tabpanel" aria-labelledby="at-aq" hidden>
@@ -1985,6 +2008,7 @@ tr.mnsoon>*{background:rgba(224,161,0,.08)}
 <script src="/studio.js?v=17"></script>
 <script src="/vsmusic.js?v=1"></script>
 <script src="/growers.js?v=1"></script>
+<script src="/soiltests.js?v=1"></script>
 <script src="/quality.js?v=1"></script>
 <script src="/ops.js?v=1"></script>
 <script src="/money.js?v=1"></script>
