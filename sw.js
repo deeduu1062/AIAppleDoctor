@@ -5,7 +5,7 @@
 // Versioned site code (?v=…): saved copy first, refreshed in the background. Other site code: internet first.
 // Fonts, icons and the sign-in library: saved copy, refreshed in the background.
 // Never touches sign-in, saving, or the photo check (/api, supabase.co): those always need the internet.
-const CACHE = "seb-saathi-v6";
+const CACHE = "seb-saathi-v7";
 const CORE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 let pendingUpdate = false;
 

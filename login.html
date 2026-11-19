@@ -1072,6 +1072,10 @@ dl.pfacts dd{margin:0;text-align:left;font:500 1rem var(--body)}
 .brand i{flex:none}
 .brand i{width:20px;height:20px;border-radius:0;margin-top:0;background:url(/icons/mark.svg) center/contain no-repeat}
 .brand i::before,.brand i::after{display:none}
+/* header logo = the Seb Saathi logo: apple mark, "Seb" red, "Saathi" green */
+.brand .bn{color:#1F6B2B;font-weight:800}.brand .bn b{color:#C8221C;font-weight:800}
+.brand i{width:30px!important;height:30px!important}
+
 
 /* banner = a printed apple-box label on kraft */
 #top{background:
@@ -1207,7 +1211,7 @@ body{background-color:var(--bg);background-image:var(--page-pattern);background-
 <body>
 <div class="topbar">
   <header class="wrap top">
-    <a class="brand" href="/"><i aria-hidden="true"></i>Seb Saathi</a>
+    <a class="brand" href="/" aria-label="Seb Saathi"><i aria-hidden="true"></i><span class="bn"><b>Seb</b> Saathi</span></a>
     <nav class="nav" aria-label="Language"><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
 </div>
