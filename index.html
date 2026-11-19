@@ -3947,7 +3947,7 @@ async function loadMine() {
   let parsed = null;
   if (!loadFailed && data) { parsed = sanitize(data); if (!parsed) { loadFailed = true; msg = "Saved records were not recognised."; } }
   if (loadFailed) { set("loadErrMsg", msg); renderOrchGate(); return; }
-  S = parsed || makeSample();
+  S = parsed || {v: 2, orchards: [], seasons: []};   /* a new account starts empty: example orchards are only for visitors */
   ledAt = at; ledClash = false; roCopy = shRO() ? JSON.parse(JSON.stringify(S)) : null;
   document.documentElement.classList.toggle("shro", shRO()); document.documentElement.classList.toggle("shon", !!shView);
   if (typeof renderShareBar === "function") renderShareBar();
