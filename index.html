@@ -2316,7 +2316,7 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
     <nav class="nav" aria-label="Account and language"><button class="lang appbtn" id="appBtn" type="button" aria-label="Get the app" hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v11m0 0-4.5-4.5M12 14l4.5-4.5M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="in_btn"></span></button><button class="lang sharebtn" id="shareBtn" type="button" aria-label="Share"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button><button class="lang" id="signBtn" type="button"></button><select class="lang langsel" id="langBtn" aria-label="Language / भाषा"><option value="en">English</option><option value="hi">हिंदी</option><option value="hn">Hinglish</option></select></nav>
   </header>
   <div class="sharebar" id="shareBar" hidden></div>
-  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-home" aria-selected="false" aria-controls="tp-home" type="button" data-i18n="tt_home" hidden></button><button class="tab" role="tab" id="tt-more" aria-selected="false" aria-controls="tp-more" type="button" data-i18n="tt_more" hidden></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button></div></div>
+  <div class="wrap"><div class="tabbar" id="tabbar" role="tablist"><button class="tab" role="tab" id="tt-home" aria-selected="false" aria-controls="tp-home" type="button" data-i18n="tt_home" hidden></button><button class="tab" role="tab" id="tt-more" aria-selected="false" aria-controls="tp-more" type="button" data-i18n="tt_more" hidden></button><button class="tab" role="tab" id="tt-orch" aria-selected="false" aria-controls="tp-orch" type="button" data-i18n="tt_orch"></button><button class="tab" role="tab" id="tt-rec" aria-selected="false" aria-controls="tp-rec" type="button" data-i18n="tt_rec"></button><button class="tab" role="tab" id="tt-calc" aria-selected="true" aria-controls="tp-calc" type="button" data-i18n="tt_calc"></button><button class="tab" role="tab" id="tt-diag" aria-selected="false" aria-controls="tp-diag" type="button" data-i18n="tt_diag"></button><button class="tab" role="tab" id="tt-spray" aria-selected="false" aria-controls="tp-spray" type="button" data-i18n="tt_spray"></button><button class="tab" role="tab" id="tt-news" aria-selected="false" aria-controls="tp-news" type="button" data-i18n="tt_news"></button><button class="tab" role="tab" id="tt-cal" aria-selected="false" aria-controls="tp-cal" type="button" data-i18n="tt_cal"></button><button class="tab" role="tab" id="tt-acct" aria-selected="false" aria-controls="tp-acct" type="button" data-i18n="tt_acct" hidden></button><button class="tab" role="tab" id="tt-wx" aria-selected="false" aria-controls="tp-wx" type="button" data-i18n="tt_wx" hidden></button></div></div>
 </div>
 
 <section class="hero" id="top">
@@ -2624,6 +2624,10 @@ try { if (/access_token|refresh_token|[?&]code=|type=magiclink|#dashboard/.test(
       <div id="homeBody"></div>
     </div>
     <div class="tpanel" id="tp-more" role="tabpanel" aria-labelledby="tt-more" hidden><div id="moreBody"></div></div>
+    <div class="tpanel" id="tp-wx" role="tabpanel" aria-labelledby="tt-wx" hidden>
+      <div class="thead"><h3 data-i18n="wx_h"></h3></div>
+      <div id="wxAll"></div>
+    </div>
     <div class="tpanel" id="tp-orch" role="tabpanel" aria-labelledby="tt-orch" hidden>
       <div class="thead" id="orchHead"><h3 data-i18n="tab_orch"></h3><span class="pill" id="orchPill"></span></div>
       <div class="promo" id="promo"></div>
@@ -5712,12 +5716,24 @@ function wxBlock(list, one, mini) {
   }
   return '<div class="wxcards">' + cards + "</div>" + wl + '<p class="fine">' + tr("wx_src") + "</p>";
 }
+/* Weather page (Mausam tile): 5-day weather for every orchard that has its location set */
+function renderWxAll() {
+  const el = $("wxAll"); if (!el) return;
+  const list = S.orchards.filter(o => typeof hasLoc === "function" && hasLoc(o)), miss = S.orchards.filter(o => !(typeof hasLoc === "function" && hasLoc(o)));
+  let h = list.length ? '<div data-wx="all">' + wxBlock(list, false) + "</div>" : '<p class="hint">' + tr("wx_none") + "</p>";
+  if (miss.length && list.length) h += '<p class="hint">' + esc(tr("wx_miss").replace("{n}", miss.map(o => o.name || tr("orchard_fallback")).join(", "))) + "</p>";
+  if (miss.length) h += '<button class="btn-s" type="button" data-wxset="1">' + tr("wx_setloc") + "</button>";
+  el.innerHTML = h;
+}
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-wxset]"); if (!b) return; tabPicked = true;
+  const o = S.orchards.find(x => !hasLoc(x)); if (o) { dashView = o.id; otab = "det"; renderDash(); } showTool("orch", false, true); });
 function refreshWx() {
   if ($("tp-home") && !$("tp-home").hidden && typeof renderHome === "function") renderHome();
   document.querySelectorAll("[data-wx]").forEach(el => {
     const id = el.dataset.wx;
     if (id.indexOf("mini-") === 0) { const o = S.orchards.find(x => x.id === id.slice(5)); if (o && hasLoc(o)) el.innerHTML = wxBlock([o], true, true); }
     else if (id.indexOf("chip-") === 0) { const o = S.orchards.find(x => x.id === id.slice(5)); if (o) el.outerHTML = detWxChip(o); }
+    else if (id === "all") { const list = S.orchards.filter(hasLoc); if (list.length) el.innerHTML = wxBlock(list, false); }
     else if (id === "dash") { const list = S.orchards.filter(hasLoc); el.innerHTML = list.length ? wxBlock(list, false, true) : '<p class="hint">' + tr("wx_none") + "</p>"; }
     else if (id === "guest") el.innerHTML = wxBlock([guestPlace()], false, true);
     else if (id === "guestnow") el.innerHTML = guestNowHtml();
@@ -7662,7 +7678,7 @@ $("homeBody").addEventListener("click", e => {
   const a = b.dataset.hm; tabPicked = true;
   /* iPhone shows its own menu (Photo Library / Take Photo / Choose File) for any photo picker, so open that straight away */
   if (a === "nmlater") { try { localStorage.setItem("nmLater_" + user.id, "1"); } catch (x) {} renderHome(); return; }
-  if (a === "wx") { const o = S.orchards.find(x => hasLoc(x)); if (o) { dashView = o.id; otab = "det"; renderDash(); } showTool("orch", false, true); return; }
+  if (a === "wx") { showTool("wx", false, true); window.scrollTo({top: 0}); return; }
   if (a === "dxpick" && isIOS) { hmDxOpen = false; goDiag("gal"); return; }
   if (a === "dxpick") { hmDxOpen = !hmDxOpen; renderHome(); const c = document.querySelector("#homeBody .hmdxask"); if (hmDxOpen && c && c.scrollIntoView) c.scrollIntoView({block: "nearest"}); return; }
   if (a === "cam") { hmDxOpen = false; goDiag("cam"); renderHome(); }
@@ -8838,7 +8854,7 @@ document.addEventListener("submit", async e => {
 /* every 2 minutes, and when the phone comes back to the site: pick up shares added, removed or changed */
 setInterval(() => { if (user && shReady && !document.hidden) shLoad(); }, 120000);
 document.addEventListener("visibilitychange", () => { if (user && shReady && !document.hidden) shLoad(); });
-const TT = ["home","orch","rec","calc","diag","spray","news","cal","acct","more"];  /* Library tab removed from the site; its articles still feed Saathi */
+const TT = ["home","orch","rec","calc","diag","spray","news","cal","acct","more","wx"];  /* Library tab removed from the site; its articles still feed Saathi */
 function showTool(w, focus, scroll) {
   TT.forEach(n => {
     $("tp-" + n).hidden = n !== w;
@@ -8855,6 +8871,7 @@ function showTool(w, focus, scroll) {
   if (w === "rec") renderRec();
   if (w === "acct") renderAcctTab();
   if (w === "home") renderHome();
+  if (w === "wx") renderWxAll();
 }
 TT.forEach((n, i) => {
   const b = $("tt-" + n);
@@ -9336,6 +9353,9 @@ function renderMunCard() {
 }
 /* ---------- Visitors on a phone: same app look. Top bar with logo + language, a bottom bar (Home · Bimari · Calculator · Spray · Login),
    and "what you get" blocks on Home that open the example pages. Computers keep the tabs. ---------- */
+Object.assign(T.en, { tt_wx:"Weather", wx_miss:"No location set yet for: {n}. Set it to see their weather here.", wx_setloc:"Set orchard location" });
+Object.assign(T.hi, { tt_wx:"मौसम", wx_miss:"इनकी जगह अभी तय नहीं है: {n}। यहाँ उनका मौसम देखने के लिए जगह जोड़ें।", wx_setloc:"बाग़ की जगह जोड़ें" });
+Object.assign(T.hn, { tt_wx:"Mausam", wx_miss:"Inki jagah abhi set nahi hai: {n}. Yahan unka mausam dekhne ke liye jagah jodein.", wx_setloc:"Bagiche ki jagah jodein" });
 Object.assign(T.en, { gb_wx_h:"Weather", gb_wx:"5-day weather, frost and hail alerts", gn_dx:"Disease", gn_calc:"Calculator", gn_spray:"Spray", gb_h:"What you get, free", gb_see:"See example ›",
   gb_orch:"Every orchard's trees, soil and work in one place", gb_mun:"Real profit on every peti", gb_exp:"Note every expense in seconds",
   gb_dx:"Find a disease from a photo", gb_spray:"What to spray and when", gb_chat:"Ask anything about apples" });
