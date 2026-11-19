@@ -6438,13 +6438,15 @@ function renderYearDetail() {
     const gp = t.rev - t.lot, fig = (k, v, c) => yfig(tr(k), v, c);
     if (hsCur(t.boxes, y)) return '<div class="yrow hscurrow"><div class="yhead"><span class="yy">' + y + "</span>" + hsBadge() + "</div></div>";
     let h = '<div class="yrow' + (open ? " open" : "") + '"><button class="yhead" type="button" data-act="ytoggle" data-y="' + y + '" aria-expanded="' + open + '" aria-controls="yb' + y + '">' +
-      '<span class="yy">' + y + "</span>" + (hsCur(t.boxes, y) ? hsBadge() : '<span class="yfigs">' + fig("y_gp", mny(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(t.net), "ynet " + cls(t.net)) + "</span>") +
+      '<span class="yy">' + y + (user && t.eq > 0 ? '<small class="yppb">' + esc(tr("mz_ppb").replace("{x}", inr(t.net / t.eq))) + "</small>" : "") + "</span>" + (hsCur(t.boxes, y) ? hsBadge() : user ? '<span class="yfigs">' + fig("hz_bikri", mny(t.rev)) + '<span class="yop" aria-hidden="true">−</span>' + fig("hz_kharche", mny(t.cost)) + '<span class="yop" aria-hidden="true">=</span>' + fig("hz_mun", mny(t.net), "ynet " + cls(t.net)) + "</span>" : '<span class="yfigs">' + fig("y_gp", mny(gp)) + '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(t.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(t.net), "ynet " + cls(t.net)) + "</span>") +
       '<span class="ychev" aria-hidden="true"></span></button>';
     h += '<div class="ybody" id="yb' + y + '"' + (open ? "" : " hidden") + ">";
     if (open) {
       /* orchards as green-tinted cards (same pattern as Season sales record), each with sales profit − yearly expenses = net income */
       h += '<div class="olist">' + S.orchards.map(o => { const x = t.rows.find(q => q.o === o), r = x ? x.r : {rev: 0, lotExp: 0, yearly: 0, profit: 0};
         if (hsCur(x ? x.r.boxes : 0, y)) return '<div class="spo orow oprof"><div class="yhead"><span class="oname">' + esc(o.name || tr("orchard_fallback")) + "</span>" + hsBadge() + "</div></div>";
+        if (user) return '<div class="spo orow oprof"><div class="yhead"><span class="oname">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs">' + fig("hz_bikri", mny(r.rev)) +
+          '<span class="yop" aria-hidden="true">−</span>' + fig("hz_kharche", mny(r.rev - r.profit)) + '<span class="yop" aria-hidden="true">=</span>' + fig("hz_mun", mny(r.profit), "ynet " + cls(r.profit)) + "</span></div></div>";
         return '<div class="spo orow oprof"><div class="yhead"><span class="oname">' + esc(o.name || tr("orchard_fallback")) + '</span><span class="yfigs">' + fig("y_gp", mny(r.rev - r.lotExp)) +
           '<span class="yop" aria-hidden="true">−</span>' + fig("y_yc", mny(r.yearly)) + '<span class="yop" aria-hidden="true">=</span>' + fig("ls_net", mny(r.profit), "ynet " + cls(r.profit)) + "</span></div></div>"; }).join("") + "</div>";
       h += '<div class="dlacts"><button class="btn-s" type="button" data-act="dlcsv" data-y="' + y + '">' + tr("dl_csv") + '</button><button class="btn-s" type="button" data-act="dlpdf" data-y="' + y + '">' + tr("dl_pdf") + "</button></div>";
@@ -7670,19 +7672,20 @@ function renderHome() {
   const dxAsk = !hmDxOpen ? "" : '<div class="hmcam2 open hmdxask"><p class="ask">' + tr("hm_cam_ask") + '</p><div class="two">' +
     '<button class="btn-s" type="button" data-hm="cam"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + tr("hm_cam_take") + "</button>" +
     '<button class="btn-s" type="button" data-hm="gal"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>' + tr("hm_cam_gal") + "</button></div></div>";
-  /* top row: Bagicha · Kharche · Bikri (Bikri comes before Kharche in the selling months, Aug–Nov), then Mausam · Bimari · Spray, then Saathi · Calendar · News */
+  /* top row is the money story: Kharche (all year) · Bikri (harvest) · Munafa (end of season); Bikri first in the selling months, Aug–Nov.
+     Then Bagicha · Bimari · Mausam, then Spray · Saathi · Calendar (News is in Aur) */
   const mo = new Date().getMonth(), selling = mo >= 7 && mo <= 10;
   const bExp = blk("exp", "exp", tr("hb_exp"), tr("hb_exp_s").replace("{x}", inr(spent)));
   const bSale = blk("sales", "sales", tr("hb_sales"), p ? esc(tr("hb_sales_s").replace("{y}", p.y).replace("{x}", inr(p.sales)).replace("{b}", fmtN(p.boxes))) : tr("hm_ppb_none"));
+  const bMun = blk("munafa", "mun", tr("hz_mun"), p ? esc(tr("hb_mz_s").replace("{y}", p.y).replace("{x}", inr(p.net)).replace("{p}", inr(p.ppb))) : tr("hb_mun_0"));
   h += '<div class="hmblocks nine' + (hmDxOpen ? " dxopen" : "") + '">' +
+    (selling ? bSale + bExp : bExp + bSale) + bMun +
     blk("orch", "orch", tr("tt_orch"), S.orchards.length ? esc(tr("hb_orch_s").replace("{n}", S.orchards.length).replace("{t}", fmtN(trees))) : tr("d_add")) +
-    (selling ? bSale + bExp : bExp + bSale) +
-    blk("wx", "wx", tr("gb_wx_h"), tr("gb_wx")) +
     blk("dxpick", "dx", tr("hm_cam"), tr("hm_cam_s2")).replace('type="button"', 'type="button" aria-expanded="' + hmDxOpen + '"') +
-    blk("spray", "spray", tr("hm_go_spray"), hmSpraySub()) + dxAsk +
+    blk("wx", "wx", tr("gb_wx_h"), tr("gb_wx")) + dxAsk +
+    blk("spray", "spray", tr("hm_go_spray"), hmSpraySub()) +
     blk("chat", "chat", "Saathi", tr("gb_chat")) +
-    blk("cal", "cal", tr("tt_cal"), "") +
-    blk("news", "news", tr("tt_news"), tr("hb_news_s")) + "</div>";
+    blk("cal", "cal", tr("tt_cal"), "") + "</div>";
   h += "</div>";   /* the "Today in the orchard" tip card was taken off Home */
   el.innerHTML = h;
   requestAnimationFrame(() => { try { hmFit(); } catch (e) {} });
@@ -7701,7 +7704,7 @@ $("homeBody").addEventListener("click", e => {
   else if (a === "addsale") { const o = S.orchards[0]; if (o) goSeason(o.id, curHYear() - 1); else showTool("orch", false, true); }
   else if (a === "orch" || a === "loc") { if (dashView) { dashView = null; profEdit = false; diaryEdit = null; renderDash(); } showTool("orch", false, true); }
   else if (a === "spray") showTool("spray", false, true);
-  else if (a === "munafa") { showTool("calc", false, true); showSub("year"); }
+  else if (a === "munafa") hzGoMun();
   else if (a === "exp") hzGoExp();
   else if (a === "news" || a === "cal") showTool(a, false, true);
   else if (a === "chat") { const f = $("chatFab"); if (f) f.click(); }
@@ -9262,7 +9265,7 @@ html.app .qxnav button{font-size:.76rem}
 })();
 function qxNavSync() {
   const vis = TT.find(n => !$("tp-" + n).hidden);
-  const cur = vis === "home" ? "home" : vis === "orch" ? "orch" :  vis === "calc" ? (curSub === "exp" ? "exp" : "sales") : vis === "more" || vis === "spray" || vis === "cal" || vis === "news" || vis === "acct" ? "more" : "";
+  const cur = vis === "home" ? "home" : vis === "orch" ? "orch" :  vis === "calc" ? (curSub === "exp" ? "exp" : curSub === "year" ? "" : "sales") : vis === "more" || vis === "spray" || vis === "cal" || vis === "news" || vis === "acct" ? "more" : "";
   document.querySelectorAll("#qxNav [data-nv]").forEach(b => { if (b.dataset.nv === cur) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
 }
 function renderMore() {
@@ -9624,6 +9627,7 @@ function renderHzTop() {
   const lab = (ic, k) => '<span class="hzlab"><span aria-hidden="true">' + ic + "</span>" + tr(k) + "</span>";
   const pick = '<div class="hzpick">' + (!allY && ochips ? '<div class="hzrow">' + lab("🌳", "hz_opick") + '<div class="hzscroll">' + ochips + "</div></div>" : "") +
     '<div class="hzrow">' + lab("📅", "hz_season") + '<div class="hzscroll">' + ychips + "</div></div></div>";
+  if (allY) { el.innerHTML = mzCardHtml(); el.hidden = false; return; }
   if (curSub === "exp") {   /* Kharche: this year's spend up top, every year listed below, so no season chips */
     const pk = ochips ? '<div class="hzpick"><div class="hzrow">' + lab("🌳", "hz_opick") + '<div class="hzscroll">' + ochips + "</div></div></div>" : "";
     el.innerHTML = pk + khCardHtml(oo);
@@ -9700,7 +9704,7 @@ function hzOrchCard(o) {
 function hzLabels() {
   const on = !!(user && loaded);
   const set1 = (id, k) => { const n = $(id); if (n) { n.setAttribute("data-i18n", k); n.textContent = tr(k); } };
-  set1("tt-calc", on ? "hz_tab" : "tt_calc"); set1("rt-orch", on ? "hz_bikri" : "pt_season"); set1("rt-exp", on ? "hz_kharche" : "pt_exp"); set1("rt-year", on ? "hz_saal" : "pt_year");
+  set1("tt-calc", on ? "hz_tab" : "tt_calc"); set1("rt-orch", on ? "hz_bikri" : "pt_season"); set1("rt-exp", on ? "hz_kharche" : "pt_exp"); set1("rt-year", on ? "hz_mun" : "pt_year");
 }
 /* logged in: opening Hisaab never lands on the calculator (that lives in Aur now) unless Aur asked for it */
 let hzWantQuick = false;
@@ -9762,6 +9766,32 @@ $("rt-exp").addEventListener("click", () => { if (user && loaded) hzGoExp(); });
 .khall .a{display:grid;justify-items:end;gap:2px}
 .khall .a .link{font-size:.85rem}
 #tp-calc:not(.hzo) #rp-exp #exList > h4{display:none}`;
+  document.head.appendChild(css);
+})();
+/* ---------- Munafa: the third money place (Kharche all year, Bikri at harvest, Munafa at the end of the season) ---------- */
+Object.assign(T.en, { hz_mun:"Profit", hb_mz_s:"{y}: {x} · {p}/peti", mz_card:"Profit · season {y} · all orchards", mz_ppb:"{x} per peti", mz_cur:"Season {y} is on: its profit is worked out at the end of the season.", mz_none:"Profit shows here once you add a season's sales.", mz_years:"Year by year" });
+Object.assign(T.hi, { hz_mun:"मुनाफ़ा", hb_mz_s:"{y}: {x} · {p}/पेटी", mz_card:"मुनाफ़ा · सीज़न {y} · सभी बाग़", mz_ppb:"{x} प्रति पेटी", mz_cur:"सीज़न {y} चल रहा है: इसका मुनाफ़ा सीज़न के अंत में निकलेगा।", mz_none:"किसी सीज़न की बिक्री जोड़ने पर मुनाफ़ा यहाँ दिखेगा।", mz_years:"साल दर साल" });
+Object.assign(T.hn, { hz_mun:"Munafa", hb_mz_s:"{y}: {x} · {p}/peti", mz_card:"Munafa · season {y} · sabhi bagiche", mz_ppb:"{x} per peti", mz_cur:"Season {y} chal raha hai: iska munafa season ke ant mein nikalega.", mz_none:"Kisi season ki bikri jodne par munafa yahan dikhega.", mz_years:"Saal dar saal" });
+function mzCardHtml() {
+  let p = null; try { p = homePpb(); } catch (e) {}
+  const cy = curHYear(), cur = !p || p.y !== cy ? '<span class="f">⏳ ' + esc(tr("mz_cur").replace("{y}", cy)) + "</span>" : "";
+  if (!p) return '<div class="hzcard mzcard"><span class="w">' + esc(tr("hz_mun")) + '</span><span class="f">' + esc(tr("mz_none")) + "</span>" + cur + "</div>";
+  const d = yearSummary(p.y).tot, kh = d.pbe + d.yearly;
+  return '<div class="hzcard mzcard"><span class="w">' + esc(tr("mz_card").replace("{y}", p.y)) + '</span><div class="hzeq"><span><span class="k">' + tr("hz_bikri") + "</span><b>" + shortInr(d.sales) + '</b></span><span class="op">−</span>' +
+    '<span><span class="k">' + tr("hz_kharche") + "</span><b>" + shortInr(kh) + '</b></span><span class="op">=</span><span class="m"><span class="k">' + tr("hz_mun") + "</span><b" + (d.net < 0 ? ' class="neg"' : "") + ">" + shortInr(d.net) + "</b></span></div>" +
+    '<span class="mzppb">' + esc(tr("mz_ppb").replace("{x}", inr(p.ppb))) + " · " + esc(tr("mc_boxes").replace("{b}", fmtN(p.boxes))) + "</span>" + cur + "</div>";
+}
+function hzGoMun() {
+  tabPicked = true; hzO = null; yOpen = new Set();
+  showTool("calc", false, true); showSub("year"); try { renderHzO(); } catch (e) {} renderHzTop(); window.scrollTo({top: 0});
+}
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+body:not(.guest) #tp-calc:not(.hzo) #rt-year{display:revert!important}
+.mzcard{gap:6px}
+.mzcard .mzppb{font-size:1.05rem;font-weight:700}
+.yy .yppb{display:block;white-space:nowrap;font:600 .8rem var(--body);color:var(--muted);margin-top:4px}`;
   document.head.appendChild(css);
 })();
 /* ---------- First-time guide on Home: 3 steps (orchard, location, first expense); goes away when done or when the grower taps Later ---------- */
