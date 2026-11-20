@@ -2306,7 +2306,9 @@ body:not(.guest) #rt-year{display:none!important}
 .lcotot span{font-weight:700;color:#1B5E2B}.lcotot .neg{color:#B8321F}
 /* Visitor page on phones: shorter top banner */
 @media (max-width:640px){
-  html body.guest #top .hero-grid{padding-block:4px 14px}
+  html body.guest #top{padding-bottom:6px}
+  html body.guest #top .hero-grid{padding-block:4px 4px}
+  html body.guest #top .label{padding-bottom:0}
   html body.guest #top h1{font-size:clamp(1.3rem,6.2vw,1.6rem);padding:.12em .7em .1em;margin-top:6px}
   body.guest #top .pillars{margin-top:6px}
   body.guest #top .btns{margin-top:10px}
