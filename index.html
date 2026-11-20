@@ -374,6 +374,10 @@ dd{margin:0;font:500 1rem var(--mono);font-variant-numeric:tabular-nums;text-ali
 .acwho2 small{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .acwho2 b{font-size:.92rem;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .acwho2 small.acwhoid{text-transform:none;letter-spacing:0;font-size:.8rem;font-weight:600;color:var(--fg)}
+/* the top bar is always cream, so its "logged in as" text and Log out pill keep dark colours even in dark mode (else the email looked faded) */
+.topbar .acwho2 small{color:#6E5A45!important}
+.topbar .acwho2 b,.topbar .acwho2 small.acwhoid{color:#2B1D12!important}
+.topbar #signOut{background:#FFFAF1!important;color:#8F2516!important}
 #signOut{display:inline-flex;align-items:center;gap:6px;padding:6px 14px!important;border:1.5px solid rgba(184,50,31,.45);border-radius:999px;background:var(--surface);color:#8F2516!important;font-weight:700;text-decoration:none!important;min-height:34px}
 #signOut::before{content:"";width:15px;height:15px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/%3E%3Cpath d='M16 17l5-5-5-5'/%3E%3Cpath d='M21 12H9'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/%3E%3Cpath d='M16 17l5-5-5-5'/%3E%3Cpath d='M21 12H9'/%3E%3C/svg%3E") center/contain no-repeat}
 #signOut:hover{background:#FBEDEA}
