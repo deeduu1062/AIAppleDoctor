@@ -201,6 +201,8 @@ document.addEventListener("submit", async e => {
     ["o", "y", "dx", "q"].some(k => L.basic[k] < L.free[k] || L.premium[k] < L.basic[k]);
   if (!confirm((odd ? tr("mn_s_warn") + "\n\n" : "") + tr("mn_s_ask"))) return;
   $("mnSetSave").disabled = true;
+  /* keep the other settings kept in the same row (e.g. the AI switch from Site health → Keys & AI) */
+  try { const cur = await sb.from("plan_settings").select("data").eq("id", 1).maybeSingle(); const d0 = cur && cur.data && cur.data.data; if (d0) Object.keys(d0).forEach(k => { if (k !== "prices" && k !== "limits") data[k] = d0[k]; }); } catch (err) {}
   const r = await sb.from("plan_settings").update({ data }).eq("id", 1).select().single();
   $("mnSetSave").disabled = false;
   if (r.error) { set("mnSetMsg", tr("mn_err").replace("{m}", r.error.message || "")); return; }

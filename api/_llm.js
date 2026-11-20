@@ -2,6 +2,7 @@
 // The file name starts with "_" so Vercel does not make it a function of its own.
 //
 // Which AI (Vercel → Settings → Environment Variables, then Redeploy):
+//   The admin page switch (Site health → Keys & AI) chooses per feature and wins over AI_PROVIDER.
 //   AI_PROVIDER         "gemini" or "claude". If not set: Gemini when GEMINI_API_KEY is set, otherwise Claude.
 //   GEMINI_API_KEY      from aistudio.google.com → Get API key (same key as the admin AI video box)
 //   GEMINI_CHAT_MODEL   optional, default gemini-3.1-flash-lite (Saathi chat: fast and cheap)
@@ -14,8 +15,25 @@
 
 const GEMINI_DEFAULT = { chat: "gemini-3.1-flash-lite", dx: "gemini-3.8-flash" };
 
-function provider() {
-  const p = String(process.env.AI_PROVIDER || "").toLowerCase();
+/* the switch on the admin page (Site health → Keys & AI) is kept in plan_settings.data.ai = { chat: "gemini"|"claude"|"auto", dx: … };
+   it wins over AI_PROVIDER. Read at most once a minute. */
+const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
+const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
+let swCache = null, swAt = 0;
+async function adminChoice(kind) {
+  try {
+    if (!swCache || Date.now() - swAt > 60000) {
+      const r = await fetch(SB_URL + "/rest/v1/plan_settings?select=data&id=eq.1", { headers: { apikey: SB_KEY } });
+      const rows = r.ok ? await r.json() : null;
+      swCache = (rows && rows[0] && rows[0].data && rows[0].data.ai) || {}; swAt = Date.now();
+    }
+    const v = String(swCache[kind === "dx" ? "dx" : "chat"] || "");
+    return v === "gemini" || v === "claude" ? v : "";
+  } catch (e) { return ""; }
+}
+
+function provider(choice) {
+  const p = String(choice || process.env.AI_PROVIDER || "").toLowerCase();
   if (p === "claude" || p === "anthropic") return process.env.ANTHROPIC_API_KEY ? "claude" : (process.env.GEMINI_API_KEY ? "gemini" : "");
   if (p === "gemini" || p === "google") return process.env.GEMINI_API_KEY ? "gemini" : (process.env.ANTHROPIC_API_KEY ? "claude" : "");
   return process.env.GEMINI_API_KEY ? "gemini" : (process.env.ANTHROPIC_API_KEY ? "claude" : "");
@@ -71,7 +89,7 @@ async function askGemini(o) {
 
 /* o = { kind: "chat" | "dx", system, messages, max_tokens, claudeModel, geminiModel?, json? } */
 async function ask(o) {
-  const p = provider();
+  const p = provider(await adminChoice(o.kind));
   if (!p) throw new Error("no AI key");
   if (p === "gemini") {
     const gm = o.kind === "dx" ? process.env.GEMINI_DX_MODEL : process.env.GEMINI_CHAT_MODEL;
