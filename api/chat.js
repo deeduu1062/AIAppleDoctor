@@ -2,7 +2,7 @@
 // POST /api/chat  { messages: [{role:"user"|"assistant", content}], lang: "en"|"hi"|"hn" (Hinglish) }
 // Header: Authorization: Bearer <Supabase access token of the logged-in grower>
 //
-// Uses the same ANTHROPIC_API_KEY as the photo check. Optional Vercel environment variables:
+// Uses Google Gemini or Anthropic Claude, chosen in _llm.js (AI_PROVIDER, GEMINI_API_KEY, ANTHROPIC_API_KEY). Optional Vercel environment variables:
 //   CHAT_MODEL        (default below)
 //   Questions per day (India time) by plan: free 5, Saathi 20, Saathi Plus 30 (see PLAN_LIMIT).
 // Needs the "chat_messages" table from supabase/chat.sql.
@@ -12,7 +12,8 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
 const { freePaused, planLimit } = require("./_switches");
-const { logAi } = require("./_aicost");   /* saves each answer's AI cost against the grower (admin → Costs) */
+const { logAi } = require("./_aicost");
+const llm = require("./_llm");   /* Gemini or Claude, see _llm.js */   /* saves each answer's AI cost against the grower (admin → Costs) */
 const PLAN_LIMIT = { free: 5, basic: 20, premium: 30 };   /* questions a day; keep in step with the plans page */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 200;
@@ -198,7 +199,7 @@ function istMonthStart() {
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
-  if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "not_setup" });
+  if (!llm.ready()) return send(res, 503, { error: "not_setup" });
 
   // 1. Who is asking? (must be logged in)
   const auth = String(req.headers.authorization || "");
@@ -249,13 +250,7 @@ module.exports = async (req, res) => {
   system.push({ type: "text", text: "LANGUAGE: the grower has selected " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish: Hindi as a Himachali grower speaks it, written in English letters. Use Hindi words and Hindi sentence order (verb at the end), e.g. \"Patton par kaale daag hain, to pehle saaf photo lein aur baaki pedon ko bhi dekhein.\" Do not write English sentences; use English only for common farm words like spray, scab, KVK, mandi" : "English") + ". Reply ONLY in this language, whatever language the grower types in or earlier messages used." });
   let reply = "";
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 900, system, messages: msgs })
-    });
-    if (!r.ok) { console.error("ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
-    const j = await r.json();
+    const j = await llm.ask({ kind: "chat", system, messages: msgs, max_tokens: 900, claudeModel: MODEL });
     await logAi(token, user.id, "chat", j.model || MODEL, j.usage);
     reply =(j.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim().slice(0, 6000);
     if (!reply) return send(res, 502, { error: "ai" });

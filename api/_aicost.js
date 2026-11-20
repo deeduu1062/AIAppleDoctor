@@ -12,7 +12,12 @@ const PRICES = {
   "claude-sonnet-5-5": { in: 2, out: 10, cr: 0.1, cw: 2.5 },
   "claude-haiku-5-5":  { in: 0.1, out: 0.5, cr: 0.01, cw: 0.125, long: 5 },   /* prompts over 100,000 tokens cost 5 times more */
   "claude-opus-5-5":   { in: 4, out: 20, cr: 0.2, cw: 5 },
-  "claude-haiku-4-5":  { in: 1, out: 5, cr: 0.1, cw: 1.25 }
+  "claude-haiku-4-5":  { in: 1, out: 5, cr: 0.1, cw: 1.25 },
+  /* Google Gemini (Google AI Studio price list, Nov 2026; Flash goes up to 1.5 / 7.5 on 1 Jan 2027). Output includes thinking. */
+  "gemini-3.8-flash":      { in: 0.75, out: 3.75, cr: 0.075, cw: 0.75 },
+  "gemini-3.6-flash":      { in: 0.75, out: 3.75, cr: 0.075, cw: 0.75 },
+  "gemini-3.5-flash-lite": { in: 0.3, out: 2.5, cr: 0.03, cw: 0.3 },
+  "gemini-3.1-flash-lite": { in: 0.25, out: 1.5, cr: 0.025, cw: 0.25 }
 };
 try { if (process.env.AI_PRICES) Object.assign(PRICES, JSON.parse(process.env.AI_PRICES)); } catch (e) { console.error("AI_PRICES is not valid JSON"); }
 
@@ -21,6 +26,7 @@ function priceOf(model) {
   if (PRICES[m]) return PRICES[m];
   const k = Object.keys(PRICES).find(p => m.startsWith(p));   /* dated names like claude-haiku-4-5-20251001 */
   if (k) return PRICES[k];
+  if (/^gemini/.test(m)) return /lite/.test(m) ? PRICES["gemini-3.1-flash-lite"] : PRICES["gemini-3.8-flash"];
   return /haiku/.test(m) ? PRICES["claude-haiku-5-5"] : /opus/.test(m) ? PRICES["claude-opus-5-5"] : PRICES["claude-sonnet-5-5"];
 }
 

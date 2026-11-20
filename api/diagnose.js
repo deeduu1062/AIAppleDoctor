@@ -3,7 +3,7 @@
 // Header: Authorization: Bearer <Supabase access token of the signed-in grower>
 //
 // Needs in Vercel → Settings → Environment Variables:
-//   ANTHROPIC_API_KEY   (required)
+//   GEMINI_API_KEY and/or ANTHROPIC_API_KEY (one is required; which AI answers is chosen in _llm.js, AI_PROVIDER)
 //   ANTHROPIC_MODEL     (optional, default below)
 //   OWN_MODEL_URL       (optional, later) Seb Saathi's own trained model. When set, it is asked first and its answer is
 //   OWN_MODEL_KEY       (optional)        given to the big AI as a second opinion; both answers are saved in model_votes.
@@ -16,7 +16,8 @@ const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
 const { freePaused, planLimit } = require("./_switches");
-const { logAi } = require("./_aicost");   /* saves each check's AI cost against the grower (admin → Costs) */
+const { logAi } = require("./_aicost");
+const llm = require("./_llm");   /* Gemini or Claude, see _llm.js */   /* saves each check's AI cost against the grower (admin → Costs) */
 const PLAN_LIMIT = { free: 3, basic: 15, premium: 50 };   /* photo checks a month; keep in step with the plans page */
 const ADMIN_EMAILS = ["deeduu@gmail.com", "admin@sebsaathi.com"];
 const ADMIN_LIMIT = 50;
@@ -278,7 +279,7 @@ module.exports = async (req, res) => {
   if (typeof body === "string") { try { body = JSON.parse(body); } catch (e) { body = null; } }
   if (!body) return send(res, 400, { error: "photos" });
 
-  if (!process.env.ANTHROPIC_API_KEY) return send(res, 503, { error: "not_setup" });
+  if (!llm.ready()) return send(res, 503, { error: "not_setup" });
 
   // The grower switched language after a check: translate that answer's words (no photo, no new check, not counted)
   if (body.translate && typeof body.translate === "object") {
@@ -287,15 +288,9 @@ module.exports = async (req, res) => {
     const words = { photo_issue: src.photo_issue, summary: src.summary, next_steps: src.next_steps, why: src.matches.map(m => m.why) };
     const want = tl === "hi" ? "simple Devanagari Hindi" : tl === "hn" ? "Hinglish: Hindi as a Himachali apple grower speaks it, written in English letters, with Hindi words and Hindi sentence order (not English sentences); English only for common farm words like spray, scab, KVK, mandi" : "simple English";
     try {
-      const r = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-        body: JSON.stringify({ model: MODEL, max_tokens: 1400,
+      const j = await llm.ask({ kind: "chat", json: true, max_tokens: 1400, claudeModel: MODEL,
           system: "You translate an apple orchard disease check for a farmer. Return ONLY the same JSON object with the same keys and the same number of list items, every text value rewritten in " + want + ". Keep empty strings empty. Keep product names, doses and numbers exactly. Short and simple.",
-          messages: [{ role: "user", content: JSON.stringify(words) }] })
-      });
-      if (!r.ok) { console.error("ai-tr", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
-      const j = await r.json();
+          messages: [{ role: "user", content: JSON.stringify(words) }] });
       await logAi(token, user.id, "translate", j.model || MODEL, j.usage);
       const t = parseJson((j.content || []).filter(b => b.type === "text").map(b => b.text).join("")) || {};
       const why = Array.isArray(t.why) ? t.why : [];
@@ -342,24 +337,17 @@ module.exports = async (req, res) => {
     (note ? "Grower's note: " + note + "\n" : "") +
     (oc.text ? "Orchard record (background from the grower's own records; the photo comes first, use this to weigh likely causes, e.g. recent rain and humidity, days since the last spray, variety, altitude, soil calcium or boron, and problems seen here before):\n" + oc.text + "\n" : "") +
     "LANGUAGE (selected by the grower; write every text field only in this): " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish: Hindi as a Himachali grower speaks it, written in English letters. Use Hindi words and Hindi sentence order (verb at the end), e.g. \"Patton par kaale daag hain, to pehle saaf photo lein aur baaki pedon ko bhi dekhein.\" Do not write English sentences; use English only for common farm words like spray, scab, KVK, mandi" : "English");
-  let result;
+  let result, aiModel = MODEL;
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 1400,
-        system: SYSTEM,
-        messages: [{
-          role: "user",
-          content: images.map(im => ({ type: "image", source: { type: "base64", media_type: im.type, data: im.data } }))
-            .concat([{ type: "text", text: userText }])
-        }]
-      })
+    const j = await llm.ask({
+      kind: "dx", json: true, max_tokens: 1400, claudeModel: MODEL, system: SYSTEM,
+      messages: [{
+        role: "user",
+        content: images.map(im => ({ type: "image", source: { type: "base64", media_type: im.type, data: im.data } }))
+          .concat([{ type: "text", text: userText }])
+      }]
     });
-    if (!r.ok) { console.error("ai", r.status, await r.text()); return send(res, 502, { error: "ai" }); }
-    const j = await r.json();
+    aiModel = j.model || MODEL;
     await logAi(token, user.id, "photo", j.model || MODEL, j.usage);
     const text = (j.content || []).filter(b => b.type === "text").map(b => b.text).join("");
     const parsed = parseJson(text);
@@ -382,7 +370,7 @@ module.exports = async (req, res) => {
   /* newest columns first; if supabase/diagnosis_plus.sql has not been run yet, fall back to the older columns */
   const today = istToday(), recheck = new Date(Date.parse(today + "T00:00:00Z") + result.recheck_days * 864e5).toISOString().slice(0, 10);
   const v3 = { stage: stage || null, context: oc.ctx || null, recheck_on: null,
-    model_votes: { ai: { model: MODEL, top: result.matches.map(m => ({ id: m.id, confidence: m.confidence })) }, own: own || null } };
+    model_votes: { ai: { model: aiModel, top: result.matches.map(m => ({ id: m.id, confidence: m.confidence })) }, own: own || null } };
   /* newest (supabase/diagnosis_v3.sql) first */
   saved = await ins(Object.assign({}, full, v3));
   if (!saved) saved = await ins(full);
