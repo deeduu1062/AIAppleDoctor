@@ -1781,7 +1781,7 @@ if (sb) {
   sb.auth.onAuthStateChange((ev, session) => { if (session && ev !== "PASSWORD_RECOVERY") goHome(); });
   sb.auth.getSession().then(r => { if (r && r.data && r.data.session) goHome(); }).catch(() => {});
 }
-if (window.ADFeedback) ADFeedback.init({getSb: () => sb, getLang: () => lang, getUser: () => null, getPage: () => mode === "signup" ? "Create account" : "Log in"});
+if (window.ADFeedback) ADFeedback.init({getSb: () => sb, getLang: () => lang, getUser: () => null, getPage: () => mode === "signup" ? "Create account" : "Log in", inline: "main"});
 applyLang();
 if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("/sw.js"); } catch (e) {} }
 </script>

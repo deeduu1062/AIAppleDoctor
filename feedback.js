@@ -1,7 +1,8 @@
 /* Seb Saathi: "Feedback" button on every page.
    A small button sits at the bottom corner; it opens a form (problem / suggestion / other + message).
    Messages are saved to the Supabase table public.feedback (see supabase/feedback.sql) and read on the Admin tab.
-   Each page calls ADFeedback.init({getSb, getLang, getUser, getPage}). */
+   Each page calls ADFeedback.init({getSb, getLang, getUser, getPage}).
+   Optional inline: CSS selector — the button sits inside that element instead of floating (used on the login page so it never covers a form button). */
 (function () {
   const TXT = {
     en: {
@@ -59,7 +60,9 @@
 .fbdlg .fberr{color:var(--bad,#B3261E);min-height:1.2em;margin:0;font-size:.95rem}
 .fbdlg .fbok{color:var(--good,#16723F);font-weight:600;margin:12px 0 0}
 .fbdlg .fbpage{font-size:.82rem;margin:0}
-body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+body.fbpad{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+.fbbtn.fbinline{position:static;box-shadow:none;margin:14px auto 0}
+.fbinwrap{display:flex;justify-content:center}
 @media print{.fbbtn{display:none}}`;
   let opts = null, dlg = null, busy = false;
   const L = () => { const l = opts && opts.getLang ? opts.getLang() : "en"; return TXT[l] ? l : "en"; };
@@ -71,7 +74,9 @@ body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
     const b = document.createElement("button");
     b.type = "button"; b.className = "fbbtn"; b.id = "fbBtn";
     b.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M4 5h16v11H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span id="fbBtnT"></span>';
-    document.body.appendChild(b);
+    const host = opts.inline ? document.querySelector(opts.inline) : null;
+    if (host) { b.classList.add("fbinline"); const w = document.createElement("div"); w.className = "fbinwrap"; w.appendChild(b); host.appendChild(w); }
+    else { document.body.appendChild(b); document.body.classList.add("fbpad"); }
     dlg = document.createElement("dialog");
     dlg.className = "fbdlg"; dlg.id = "fbDlg"; dlg.setAttribute("aria-labelledby", "fbH");
     dlg.innerHTML =
