@@ -3757,6 +3757,7 @@ const visitSrc = (function () {
   return s;
 })();
 let visitLogged = false;
+let visitSent = false;
 function logVisit(u) {
   if (visitLogged || !sb) return; visitLogged = true;
   try {
@@ -3777,11 +3778,14 @@ function logVisit(u) {
     /* rough place (country, state, city) from the site's own server; kept for this browser session */
     const place = new Promise(ok => {
       try { const c = JSON.parse(sessionStorage.getItem("ss-geo") || "null"); if (c) return ok(c); } catch (e) {}
-      const t = setTimeout(() => ok(null), 1500);
+      const t = setTimeout(() => ok(null), 5000);   /* slow mobile data in the hills: wait up to 5 s for the place */
       fetch("/api/social?fn=geo").then(r => r.ok ? r.json() : null).then(g => { clearTimeout(t); try { if (g) sessionStorage.setItem("ss-geo", JSON.stringify(g)); } catch (e) {} ok(g); }, () => { clearTimeout(t); ok(null); });
     });
+    /* leaving before the place arrives: count the visit anyway, without a place */
+    addEventListener("pagehide", () => { if (visitSent) return; visitSent = true; try { sb.from("site_visits").insert(row).then(() => {}, () => {}); } catch (e) {} }, {once: true});
     place.then(g => {
       if (g && g.country) { row.country = g.country; if (g.region) row.region = g.region; if (g.city) row.city = g.city; }
+      if (visitSent) return; visitSent = true;
       const add = x => sb.from("site_visits").insert(x);
       add(row).then(r => {   /* before the location columns (or supabase/marketing_v2.sql's src column) exist: log the visit without them */
         if (!(r && r.error)) return;
