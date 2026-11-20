@@ -3892,8 +3892,7 @@ function renderAcct() {
   if (user) {   /* "logged in as" chip: round initial + name/email */
     const md = user.user_metadata || {}, lb = userLabel(user), nm = String(md.full_name || md.name || "").trim();
     const ini = /^[a-z\u0900-\u097f]/i.test(nm || lb) ? (nm || lb)[0].toUpperCase() : "👤";
-    $("acct_email").innerHTML = '<i class="acav2" aria-hidden="true">' + esc(ini) + '</i><span class="acwho2"><small>' + esc(tr("ac_who_s")) + "</small><b>" + esc(nm || lb) + "</b>" +
-      (nm && lb && lb !== "–" && lb !== nm ? '<small class="acwhoid">' + esc(lb) + "</small>" : "") + "</span>";   /* name, with the number or email under it */
+    $("acct_email").innerHTML = '<i class="acav2" aria-hidden="true">' + esc(ini) + '</i><span class="acwho2"><small>' + esc(tr("ac_who_s")) + "</small><b>" + esc(lb || nm) + "</b></span>";   /* logged in as: the mobile number or email used to log in, not the name */
   }
 }
 let recovering = false, pwOpen = false;
@@ -8635,7 +8634,7 @@ function renderAcctTab() {
   if (Array.isArray(feats) && feats.length) plan += '<p class="subhead acinc">' + esc(tr("ac_inc")) + '</p><ul class="acfeat">' + feats.map(f => "<li>" + esc(f) + "</li>").join("") + "</ul>";
   /* who is logged in: name (Google) or the email/phone, and how they logged in */
   const md = user.user_metadata || {}, prov = (user.app_metadata && user.app_metadata.provider) || (pin || (!em && ph) ? "phone" : "email");
-  const nm = userName(), main = nm || em || ph || "–", sub = nm ? (em || ph) : (em && ph ? ph : "");
+  const nm = userName(), main = em || ph || "–", sub = em && ph ? ph : "";   /* the login (number or email), not the name */
   const via = prov === "google" ? "ac_via_g" : prov === "phone" ? "ac_via_p" : "ac_via_e";
   const who = '<section class="accard acwho"><span class="acav" aria-hidden="true">' + (/^[a-z\u0900-\u097f]/i.test(main) ? esc(main[0].toUpperCase()) : '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>') + '</span><div class="acwt">' +
     '<p class="fine">' + tr("ac_who") + '</p><p class="acwn">' + esc(main) + "</p>" + (sub ? '<p class="acws">' + esc(sub) + "</p>" : "") +
