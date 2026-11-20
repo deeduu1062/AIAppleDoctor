@@ -2304,6 +2304,14 @@ body:not(.guest) #rt-year{display:none!important}
 .lcnone{margin:0;padding:12px;color:var(--muted)}
 .lcotot{display:grid;gap:2px;padding:10px 12px;border-radius:12px;background:#F1F6EE;border:1px solid rgba(62,138,58,.3);font-size:.9rem}
 .lcotot span{font-weight:700;color:#1B5E2B}.lcotot .neg{color:#B8321F}
+/* Visitor page on phones: shorter top banner */
+@media (max-width:640px){
+  html body.guest #top .hero-grid{padding-block:4px 14px}
+  html body.guest #top h1{font-size:clamp(1.3rem,6.2vw,1.6rem);padding:.12em .7em .1em;margin-top:6px}
+  body.guest #top .pillars{margin-top:6px}
+  body.guest #top .btns{margin-top:10px}
+  body.guest #top .lplogin{margin-top:8px}
+}
 </style>
 </head>
 <body>
