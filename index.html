@@ -3745,7 +3745,8 @@ const curSeason = () => S.seasons.find(s => s.oid === sel.o && s.year === sel.y)
 function fixSel() {
   if (!S.orchards.some(x => x.id === sel.o)) sel.o = S.orchards.length ? S.orchards[0].id : null;
   const ys = seasonsOf(sel.o).map(s => s.year);
-  const ty = new Date().getFullYear();
+  /* allow up to the current harvest year: from November it is next year's season (e.g. Nov 2026 → 2027) */
+  const d0 = new Date(), ty = d0.getFullYear() + (d0.getMonth() >= 10 ? 1 : 0);
   if (!ys.includes(sel.y) && !(sel.y >= ty - 9 && sel.y <= ty)) sel.y = ys.length ? Math.max.apply(null, ys) : null;
 }
 fixSel();
@@ -4372,7 +4373,7 @@ function renderEditor() {
     '<option value="__new"' + (addingO ? " selected" : "") + ">" + tr("opt_new_o") + "</option>";
   $("selOrchard").disabled = false;
   const have = seasonsOf(sel.o).map(s => s.year);
-  const thisY = new Date().getFullYear(), yl = [];
+  const nd0 = new Date(), thisY = nd0.getFullYear() + (nd0.getMonth() >= 10 ? 1 : 0), yl = [];   /* current harvest year (Nov 2026 → 2027) */
   for (let i = 0; i < 10; i++) yl.push(thisY - i);
   have.forEach(y => { if (yl.indexOf(y) < 0) yl.push(y); });
   yl.sort((a, b) => b - a);
