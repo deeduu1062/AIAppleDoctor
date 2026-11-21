@@ -15,7 +15,7 @@ Object.assign(T.en, {
   mn_r_msg: "Namaste! Aapka Seb Saathi {p} plan {d} ko khatam ho raha hai. Apna record aur photo jaanch chalu rakhne ke liye renew karein: sebsaathi.com → Mera account → Renew ({r}). Dhanyavaad 🍎",
   mn_r_msg_x: "Namaste! Aapka Seb Saathi {p} plan {d} ko khatam ho gaya. Aapka sab record surakshit hai. Dobara chalu karne ke liye: sebsaathi.com → Mera account → Renew ({r}). Dhanyavaad 🍎",
   mn_s_h: "Plans & prices", mn_s_p: "Change prices and what each plan includes. Growers see the new numbers the next time they open the site; Saathi and photo-check limits change within a minute. Plans already paid keep their end date.",
-  mn_s_plan: "Plan", mn_s_pm: "Price a month (₹)", mn_s_py: "Price a year (₹)", mn_s_o: "Orchards", mn_s_y: "Years of records", mn_s_dx: "Photo checks a month", mn_s_q: "Saathi questions a day",
+  mn_s_plan: "Plan", mn_s_pm: "Price a month (₹)", mn_s_pw: "Regular price a year, shown crossed out (₹, 0 = no offer)", mn_s_py: "Price a year (₹)", mn_s_o: "Orchards", mn_s_y: "Years of records", mn_s_dx: "Photo checks a month", mn_s_q: "Saathi questions a day",
   mn_s_save: "Save plans & prices", mn_s_ask: "Save these plans and prices? Growers see them straight away.", mn_s_ok: "Saved. The plans page now shows these numbers.", mn_s_bad: "Use whole numbers: prices 1 to 100000, limits 0 to 1000.",
   mn_s_setup: "Plans & prices are not set up yet. Run supabase/money.sql once in the Supabase SQL Editor, then tap Refresh.", mn_s_last: "Last changed {t} by {b}", mn_s_free: "free",
   mn_s_warn: "Saathi Plus is cheaper than Saathi, or a paid plan gives less than Free. Check the numbers.", mn_err: "Could not save: {m}"
@@ -29,7 +29,7 @@ Object.assign(T.hi, {
   mn_c_left: "ख़त्म", mn_c_rem: "याद दिलाया", mn_c_act: "याद दिलाएँ", mn_r_in: "{n} दिन में", mn_r_tod: "आज", mn_r_ago: "{n} दिन पहले ख़त्म",
   mn_r_wa: "WhatsApp", mn_r_mail: "ईमेल", mn_r_none: "इस समय में कोई प्लान ख़त्म नहीं हो रहा।", mn_r_setup: "याद दिलाने की तारीख़ सेव करने के लिए Supabase में supabase/money.sql एक बार चलाएँ।",
   mn_s_h: "प्लान और दाम", mn_s_p: "दाम और हर प्लान में क्या मिलता है, बदलें। बाग़वान अगली बार साइट खोलने पर नए नंबर देखेंगे। पहले से भरे प्लान की तारीख़ नहीं बदलती।",
-  mn_s_plan: "प्लान", mn_s_pm: "महीने का दाम (₹)", mn_s_py: "साल का दाम (₹)", mn_s_o: "बाग़", mn_s_y: "रिकॉर्ड के साल", mn_s_dx: "महीने में फ़ोटो जाँच", mn_s_q: "रोज़ साथी सवाल",
+  mn_s_plan: "प्लान", mn_s_pm: "महीने का दाम (₹)", mn_s_pw: "साल का असली दाम, कटा हुआ दिखेगा (₹, 0 = कोई ऑफ़र नहीं)", mn_s_py: "साल का दाम (₹)", mn_s_o: "बाग़", mn_s_y: "रिकॉर्ड के साल", mn_s_dx: "महीने में फ़ोटो जाँच", mn_s_q: "रोज़ साथी सवाल",
   mn_s_save: "प्लान और दाम सेव करें", mn_s_ask: "ये प्लान और दाम सेव करें? बाग़वानों को तुरंत दिखेंगे।", mn_s_ok: "सेव हो गया।", mn_s_bad: "पूरे नंबर डालें: दाम 1 से 100000, सीमा 0 से 1000।",
   mn_s_setup: "प्लान और दाम अभी सेट नहीं हैं। Supabase SQL Editor में supabase/money.sql एक बार चलाएँ।", mn_s_last: "आख़िरी बदलाव {t}, {b}", mn_s_free: "मुफ़्त",
   mn_s_warn: "साथी प्लस साथी से सस्ता है, या पेड प्लान में मुफ़्त से कम है। नंबर जाँचें।", mn_err: "सेव नहीं हो सका: {m}"
@@ -158,7 +158,7 @@ document.addEventListener("click", e => {
 });
 
 /* ---------- 3. plans & prices ---------- */
-const MN_DEF = { prices: { basic: { month: 49, year: 299 }, premium: { month: 149, year: 999 } },
+const MN_DEF = { prices: { basic: { month: 49, year: 299, was: 499 }, premium: { month: 149, year: 999, was: 0 } },
   limits: { free: { o: 2, y: 2, dx: 3, q: 5 }, basic: { o: 5, y: 5, dx: 15, q: 20 }, premium: { o: 10, y: 10, dx: 50, q: 30 } } };
 async function mnLoadSet() {
   if (!sb || mnsBusy) return; mnsBusy = true; mnsErr = "";
@@ -180,7 +180,7 @@ function mnRenderSet() {
     (mnsBusy ? '<p class="fine">' + esc(tr("ad_loading")) + "</p>" : mnsErr ? '<p class="autherr">' + esc(mnsErr) + "</p>" :
     '<form id="mnSetF"><div class="mnplans">' +
     ["free", "basic", "premium"].map(p => '<fieldset class="mnplan"><legend>' + esc(plName(p)) + "</legend>" +
-      (p === "free" ? "" : [["month", "mn_s_pm"], ["year", "mn_s_py"]].map(([k, l]) => '<label><span>' + esc(tr(l)) + "</span>" + inp("mn-" + p + "-" + k, P[p] && P[p][k]) + "</label>").join("")) +
+      (p === "free" ? "" : [["month", "mn_s_pm"], ["year", "mn_s_py"], ["was", "mn_s_pw"]].map(([k, l]) => '<label><span>' + esc(tr(l)) + "</span>" + inp("mn-" + p + "-" + k, P[p] && P[p][k] != null ? P[p][k] : MN_DEF.prices[p][k]) + "</label>").join("")) +
       [["o", "mn_s_o"], ["y", "mn_s_y"], ["dx", "mn_s_dx"], ["q", "mn_s_q"]].map(([k, l]) => '<label><span>' + esc(tr(l)) + "</span>" + inp("mn-" + p + "-" + k, L[p] && L[p][k]) + "</label>").join("") +
       "</fieldset>").join("") +
     '</div><p><button class="btn-s add" type="submit" id="mnSetSave">' + esc(tr("mn_s_save")) + '</button> <span class="fine" id="mnSetMsg" role="status"></span></p></form>' +
@@ -193,7 +193,7 @@ document.addEventListener("submit", async e => {
   const num = id => { const v = $(id).value.trim(); return /^\d+$/.test(v) ? +v : NaN; };
   const data = { prices: {}, limits: {} };
   let bad = false;
-  ["basic", "premium"].forEach(p => { data.prices[p] = { month: num("mn-" + p + "-month"), year: num("mn-" + p + "-year") }; [data.prices[p].month, data.prices[p].year].forEach(v => { if (!(v >= 1 && v <= 100000)) bad = true; }); });
+  ["basic", "premium"].forEach(p => { data.prices[p] = { month: num("mn-" + p + "-month"), year: num("mn-" + p + "-year"), was: num("mn-" + p + "-was") }; if (!(data.prices[p].was >= 0 && data.prices[p].was <= 100000)) bad = true; [data.prices[p].month, data.prices[p].year].forEach(v => { if (!(v >= 1 && v <= 100000)) bad = true; }); });
   ["free", "basic", "premium"].forEach(p => { data.limits[p] = {}; ["o", "y", "dx", "q"].forEach(k => { const v = num("mn-" + p + "-" + k); if (!(v >= 0 && v <= 1000)) bad = true; data.limits[p][k] = v; }); });
   if (bad) { set("mnSetMsg", tr("mn_s_bad")); return; }
   const L = data.limits, Pr = data.prices;
