@@ -257,6 +257,8 @@ renderDiagAi = function (id, r) {
     if (dxLast && dxLast.kept) h += '<p class="fine dxok">✓ ' + tr("dx_kept") + "</p>";
     if (dxLast && dxLast.review && !asked) h += '<p class="fine">' + tr("dx_review") + "</p>";
   }
+  /* visitor's free try: ask them to make the free account right under the answer */
+  if (!user && dxLast && dxLast.trial) h += '<article class="dxcard dxjoin"><h5>' + tr("dx_tj_h") + "</h5><p>" + tr("dx_tj_p") + '</p><div class="dels"><button class="btn-s add" type="button" data-lp="join">' + tr("hero_start") + "</button></div></article>";
   box.innerHTML = h + "</div>";
 };
 

@@ -261,13 +261,94 @@ function needsReview(r) {
   return !top || top.confidence === "low" || r.see_expert || ["collar", "wrr"].includes(top.id) || r.severity === "severe";
 }
 
+/* the words sent with the photo(s): part, stage, own model, note, orchard record (if any), and the answer language */
+function promptText(part, stage, own, note, oc, lang) {
+  const partWord = { leaf: "leaves", fruit: "fruit", bark: "branch, bark or trunk", tree: "whole tree or roots" }[part] || "not said";
+  return "Part of the tree in the photo: " + partWord + ".\n" +
+    (stage ? "Tree stage now (grower says): " + STAGES[stage] + ".\n" : "") +
+    (own ? "Second opinion from Seb Saathi's own model (trained on local photos): " + own.predictions.map(p => p.id + " " + Math.round(p.score * 100) + "%").join(", ") + "\n" : "") +
+    (note ? "Grower's note: " + note + "\n" : "") +
+    (oc.text ? "Orchard record (background from the grower's own records; the photo comes first, use this to weigh likely causes, e.g. recent rain and humidity, days since the last spray, variety, altitude, soil calcium or boron, and problems seen here before):\n" + oc.text + "\n" : "") +
+    "LANGUAGE (selected by the grower; write every text field only in this): " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish: Hindi as a Himachali grower speaks it, written in English letters. Use Hindi words and Hindi sentence order (verb at the end), e.g. \"Patton par kaale daag hain, to pehle saaf photo lein aur baaki pedon ko bhi dekhein.\" Do not write English sentences; use English only for common farm words like spray, scab, KVK, mandi" : "English");
+}
+
+/* ---- one free photo check for visitors (not logged in), so growers can try it before making an account ----
+   One check per phone/network (IP, kept only as a hash) every 30 days, and at most VISITOR_TRIALS_PER_DAY checks a day for
+   all visitors together (default 40), so AI costs stay small. Only the first photo is used. Nothing is saved except a small
+   row in visitor_trials (supabase/visitor_trials.sql: ip hash, AI cost, top answer) so the admin can see the trials and costs.
+   Needs SUPABASE_SERVICE_ROLE_KEY for the limits to hold across servers; without it a per-server memory limit is used. */
+const crypto = require("crypto");
+const { costUsd } = require("./_aicost");
+const TRIAL_DAY = Math.max(0, parseInt(process.env.VISITOR_TRIALS_PER_DAY, 10) || 40);
+let trialMemDay = "", trialMemCount = 0;
+const trialMem = new Set();
+async function visitorTrial(req, res, body) {
+  if (!llm.ready()) return send(res, 503, { error: "not_setup" });
+  const SVC = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+  const svc = SVC ? { apikey: SVC, Authorization: "Bearer " + SVC } : null;
+  const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || String(req.headers["x-real-ip"] || "") || "?";
+  const ipHash = crypto.createHash("sha256").update("seb-saathi-trial|" + ip).digest("hex").slice(0, 40);
+  const day = istToday();
+  if (trialMemDay !== day) { trialMemDay = day; trialMemCount = 0; }
+  if (trialMem.has(ipHash)) return send(res, 429, { error: "trial_used" });
+  if (trialMemCount >= TRIAL_DAY) return send(res, 503, { error: "trial_full" });
+  if (svc) {
+    if (await freePaused(SB_URL, svc, "dx")) return send(res, 503, { error: "paused" });   /* admin → Site health → AI safety switch also stops visitor checks */
+    try {
+      const month = new Date(Date.now() - 30 * 864e5).toISOString(), since = new Date(Date.parse(day + "T00:00:00+05:30")).toISOString();
+      const [a, b] = await Promise.all([
+        fetch(SB_URL + "/rest/v1/visitor_trials?select=id&ip_hash=eq." + ipHash + "&created_at=gte." + encodeURIComponent(month) + "&limit=1", { headers: svc }),
+        fetch(SB_URL + "/rest/v1/visitor_trials?select=id&created_at=gte." + encodeURIComponent(since) + "&limit=" + (TRIAL_DAY + 1), { headers: svc })
+      ]);
+      if (a.ok && (await a.json()).length) { trialMem.add(ipHash); return send(res, 429, { error: "trial_used" }); }
+      if (b.ok && (await b.json()).length >= TRIAL_DAY) return send(res, 503, { error: "trial_full" });
+    } catch (e) { /* table not there yet: the memory limit still applies */ }
+  }
+  const images = readImages(body.images);
+  if (!images) return send(res, 400, { error: "photos" });
+  const one = images.slice(0, 1);
+  const part = PARTS.includes(body.part) ? body.part : "";
+  const note = String(body.note || "").slice(0, 400);
+  const lang = body.lang === "hi" || body.lang === "hn" ? body.lang : "en";
+  const stage = STAGES[body.stage] ? body.stage : "";
+  trialMem.add(ipHash); trialMemCount++;   /* counted before asking the AI, so a double tap cannot get two */
+  const own = await ownModel(one, part, stage);
+  let result, aiModel = MODEL, usage = null;
+  try {
+    const j = await llm.ask({
+      kind: "dx", json: true, max_tokens: 1400, claudeModel: MODEL, system: SYSTEM,
+      messages: [{ role: "user", content: one.map(im => ({ type: "image", source: { type: "base64", media_type: im.type, data: im.data } }))
+        .concat([{ type: "text", text: promptText(part, stage, own, note, { text: "" }, lang) }]) }]
+    });
+    aiModel = j.model || MODEL; usage = j.usage || null;
+    const parsed = parseJson((j.content || []).filter(b => b.type === "text").map(b => b.text).join(""));
+    if (!parsed) { trialMem.delete(ipHash); trialMemCount--; return send(res, 502, { error: "ai" }); }
+    result = clean(parsed);
+  } catch (e) { console.error("trial-ai-fail", e); trialMem.delete(ipHash); trialMemCount--; return send(res, 502, { error: "ai" }); }
+  if (svc) {
+    const top = result.matches[0];
+    const row = { ip_hash: ipHash, lang, part: part || null, model: String(aiModel).slice(0, 60), top: top ? top.id : null,
+      cost_usd: usage ? +costUsd(aiModel, usage).toFixed(6) : 0 };
+    try {
+      const r = await fetch(SB_URL + "/rest/v1/visitor_trials", { method: "POST", headers: Object.assign({ "Content-Type": "application/json", Prefer: "return=minimal" }, svc), body: JSON.stringify(row) });
+      if (!r.ok) console.error("visitor_trials", r.status, (await r.text()).slice(0, 200));
+    } catch (e) { console.error("visitor_trials-fail", e); }
+  }
+  return send(res, 200, { id: null, result, trial: true });
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
 
   // 1. Who is asking? (must be signed in)
   const auth = String(req.headers.authorization || "");
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  if (!token) return send(res, 401, { error: "signin" });
+  if (!token) {
+    let b = req.body;
+    if (typeof b === "string") { try { b = JSON.parse(b); } catch (e) { b = null; } }
+    if (b && b.trial === true && !b.translate) return visitorTrial(req, res, b);   /* visitor's one free try */
+    return send(res, 401, { error: "signin" });
+  }
   let user;
   try {
     const u = await fetch(SB_URL + "/auth/v1/user", { headers: sbHeaders(token) });
@@ -330,13 +411,7 @@ module.exports = async (req, res) => {
 
   // 4. Ask the AI (with the chosen orchard's record as background)
   const [oc, own] = await Promise.all([orchardContext(token, user.id, orchardId).catch(() => ({ text: "", name: "", ctx: null })), ownModel(images, part, stage)]);
-  const partWord = { leaf: "leaves", fruit: "fruit", bark: "branch, bark or trunk", tree: "whole tree or roots" }[part] || "not said";
-  const userText = "Part of the tree in the photo: " + partWord + ".\n" +
-    (stage ? "Tree stage now (grower says): " + STAGES[stage] + ".\n" : "") +
-    (own ? "Second opinion from Seb Saathi's own model (trained on local photos): " + own.predictions.map(p => p.id + " " + Math.round(p.score * 100) + "%").join(", ") + "\n" : "") +
-    (note ? "Grower's note: " + note + "\n" : "") +
-    (oc.text ? "Orchard record (background from the grower's own records; the photo comes first, use this to weigh likely causes, e.g. recent rain and humidity, days since the last spray, variety, altitude, soil calcium or boron, and problems seen here before):\n" + oc.text + "\n" : "") +
-    "LANGUAGE (selected by the grower; write every text field only in this): " + (lang === "hi" ? "Hindi" : lang === "hn" ? "Hinglish: Hindi as a Himachali grower speaks it, written in English letters. Use Hindi words and Hindi sentence order (verb at the end), e.g. \"Patton par kaale daag hain, to pehle saaf photo lein aur baaki pedon ko bhi dekhein.\" Do not write English sentences; use English only for common farm words like spray, scab, KVK, mandi" : "English");
+  const userText = promptText(part, stage, own, note, oc, lang);
   let result, aiModel = MODEL;
   try {
     const j = await llm.ask({
