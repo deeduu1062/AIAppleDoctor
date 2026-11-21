@@ -4099,7 +4099,7 @@ $("rp-year").addEventListener("click", e => {
 $("rt-orch").addEventListener("click", () => showSub("orch"));
 
 /* ---------- orchards panel ---------- */
-let addingO = false, entryOpen = false, editLine = null, newPos = null;
+let addingO = false, addingAuto = false, entryOpen = false, editLine = null, newPos = null;
 const autoName = n => !n || /^(lot|part|लॉट|पार्ट)\s*\d+$/i.test(String(n).trim());
 const lotNo = i => tr("lot_fallback") + " " + (i + 1);
 const lineBlank = n => !(+n.boxes || +n.rate || n.grade);
@@ -4368,7 +4368,8 @@ $("entryForm").addEventListener("submit", e => {
 function renderEditor() {
   const o = curOrchard(), se = curSeason();
   const noO = !S.orchards.length;
-  if (noO) addingO = true;
+  /* no orchards yet: the sales page shows "add orchard". Once one is added anywhere (e.g. on Bagicha), go back to the normal sales view */
+  if (noO) { addingO = true; addingAuto = true; } else if (addingAuto) { addingO = false; addingAuto = false; }
   $("selOrchard").innerHTML = S.orchards.map(x => '<option value="' + esc(x.id) + '"' + (x.id === sel.o && !addingO ? " selected" : "") + ">" + esc(x.name || tr("orchard_fallback")) + "</option>").join("") +
     '<option value="__new"' + (addingO ? " selected" : "") + ">" + tr("opt_new_o") + "</option>";
   $("selOrchard").disabled = false;
@@ -4973,7 +4974,7 @@ document.addEventListener("click", e => { const sm = e.target.closest && e.targe
 function orchardPage(o) {
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
     .concat((o.diary || []).map(d => hYear(d.date)).filter(y => y > 1900)))).sort((a, b) => b - a);
-  if (!yrs.length) yrs.push(thisYear());
+  if (!yrs.length) yrs.push(curHYear());   /* current harvest year (from November it is next year) */
   if (yrs.indexOf(dashYear) < 0) {
     const sy = S.seasons.filter(x => x.oid === o.id).map(x => x.year);
     dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0];
@@ -5389,7 +5390,7 @@ function otMoneyHtml(o) {
   /* every harvest year as a dropdown with the same five figures as Season sales record; one open at a time */
   const yrs = Array.from(new Set(S.seasons.filter(x => x.oid === o.id).map(x => x.year)
     .concat((o.diary || []).map(d => hYear(d.date)).filter(y => y > 1900)))).sort((a, b) => b - a);
-  if (!yrs.length) yrs.push(thisYear());
+  if (!yrs.length) yrs.push(curHYear());   /* current harvest year (from November it is next year) */
   if (dashYear !== 0 && (yrs.indexOf(dashYear) < 0 || hsCur(seT(seFor(o.id, dashYear)).boxes, dashYear))) { const sy = S.seasons.filter(x => x.oid === o.id && seT(x).boxes).map(x => x.year); dashYear = sy.length ? Math.max.apply(null, sy) : yrs[0]; }
   return '<div class="ylist figrows hslist">' + yrs.map(y => {
     const open = y === dashYear, t = seT(seFor(o.id, y)), cur = !t.boxes && y >= curHYear();
@@ -6149,7 +6150,7 @@ $("dash").addEventListener("click", e => {
   else if (a === "year") { dashYear = +b.dataset.y; renderDash(); const y = $("o_season"); if (y) y.scrollIntoView({block: "start"}); }
   else if (a === "open") {
     const ys = S.seasons.filter(se => se.oid === oid).map(se => se.year);
-    goSeason(oid, dashView === oid && ys.indexOf(dashYear) >= 0 ? dashYear : ys.length ? Math.max.apply(null, ys) : thisYear());
+    goSeason(oid, dashView === oid && ys.indexOf(dashYear) >= 0 ? dashYear : ys.length ? Math.max.apply(null, ys) : curHYear());
   } else if (a === "addsale") {
     if (saleYears()) { entryOpen = false; saleAsk = false; saleYrFor = oid; tabPicked = true; showTool("calc", false, true); showSub("orch"); renderAll(); const st = $("saleTop"); if (st && st.scrollIntoView) st.scrollIntoView({block: "start"}); }
     else { goSeason(oid, curHYear()); openEntry(); }
@@ -6407,7 +6408,7 @@ $("rp-exp").addEventListener("click", e => {
     if (!opening) exEdit = null;
     renderExpList(); const nb = document.querySelector('#exList [data-exact=otoggle][data-o="' + b.dataset.o + '"][data-y="' + b.dataset.y + '"]'); if (nb) { nb.focus({preventScroll: true}); if (opening) toTop(nb); } return;
   }
-  if (a === "goorch") { qxOpenOrch(b.dataset.o, b.dataset.id || null, +b.dataset.y); return; }
+  if (a === "goorch") { qxOpenOrch(b.dataset.o, b.dataset.id || null, +b.dataset.y, !!b.dataset.id); return; }   /* "Edit" on an entry opens that year for editing */
   if (a === "cancel") { exEdit = null; exAdding = false; renderExp(); return; }
   if (a === "add") { exEdit = null; exAdding = true; renderExp(); const f = $("exForm"); if (f && f.scrollIntoView) f.scrollIntoView({block: "start"}); const k = $("ex_orch"); if (k) k.focus(); return; }
   if (a === "edit") { exEdit = b.dataset.id; renderExp(); const f = $("exForm"); if (f) f.scrollIntoView({block: "start"}); const c = $("ex_cost"); if (c) c.focus(); return; }
@@ -6643,7 +6644,7 @@ function spClick(e) {
   const b = e.target.closest("[data-act]"); if (!b) return;
   if (e.currentTarget === $("dash")) { if (!b.closest(".olotsec")) return; editCtx = "hisab"; } else editCtx = "sp";
   const act = b.dataset.act;
-  const thisYear = new Date().getFullYear();
+  const thisYear = curHYear();   /* the current harvest year, as used for new sales */
   if ((act === "rmlot" || act === "rmline" || act === "nedel" || act === "sdel") && !b.dataset.armed) {
     const back = b.textContent;
     b.dataset.armed = "1"; b.textContent = tr(act === "nedel" || act === "sdel" ? "ne_sure" : "rm_sure");
@@ -8997,6 +8998,7 @@ Object.assign(T.hn, { qx_fab:"Kharcha", qx_fab_l:"Kharcha jodein", qx_title:"Kha
 .qxtoast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:12px;max-width:min(92vw,440px);
   margin:0;padding:10px 14px;border-radius:12px;background:#1f2a1f;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.3);font-weight:600}
 .qxtoast[hidden]{display:none}
+.qxtoast{width:max-content}   /* with left:50% the box could only use half the screen, so the message wrapped word by word */
 .qxtoast button{border:0;background:none;color:#ffd7cf;font:700 1rem var(--body);cursor:pointer;padding:6px 4px;white-space:nowrap}`;
   document.head.appendChild(css);
   const fab = document.createElement("button");
