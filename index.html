@@ -2194,6 +2194,8 @@ body.guest main,body.guest section:last-of-type{scroll-padding-bottom:80px}
 body.guest footer{padding-bottom:96px}
 @media (max-width:700px){body.guest .mgnews{padding-right:58px!important}}
 @media (max-width:700px){body.guest .card,body.guest .hmblk,body.guest .ann{margin-right:0}body.guest #chatFab{transform:scale(.8);transform-origin:bottom right}}
+/* visitors (not logged in) get no floating Saathi button: Saathi is for logged-in growers */
+body.guest #chatFab{display:none!important}
 
 /* ---- logged-in Home polish ---- */
 body:not(.guest) #trust,body:not(.guest) #join{display:none!important}
