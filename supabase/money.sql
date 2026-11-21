@@ -40,7 +40,7 @@ create table if not exists public.plan_settings (
   updated_by text
 );
 insert into public.plan_settings (id, data) values (1, '{
-  "prices": {"basic": {"month": 49, "year": 299}, "premium": {"month": 149, "year": 999}},
+  "prices": {"basic": {"month": 29, "year": 299, "was": 499, "wasm": 49}, "premium": {"month": 99, "year": 999, "was": 1499, "wasm": 149}},
   "limits": {"free":    {"o": 2,  "y": 2,  "dx": 3,  "q": 5},
              "basic":   {"o": 5,  "y": 5,  "dx": 15, "q": 20},
              "premium": {"o": 10, "y": 10, "dx": 50, "q": 30}}
@@ -83,8 +83,8 @@ create or replace function public.plan_price(p text, per text) returns integer
 language sql stable security definer set search_path = public as $$
   select coalesce(
     (select (data -> 'prices' -> p ->> per)::integer from public.plan_settings where id = 1),
-    case p || '/' || per when 'basic/month' then 49 when 'basic/year' then 299
-                         when 'premium/month' then 149 when 'premium/year' then 999 end)
+    case p || '/' || per when 'basic/month' then 29 when 'basic/year' then 299
+                         when 'premium/month' then 99 when 'premium/year' then 999 end)
 $$;
 
 -- admin activity log (from site_ops.sql), if it is set up

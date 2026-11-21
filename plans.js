@@ -1,7 +1,7 @@
 /* Seb Saathi — plans and UPI payment (Option A: direct UPI, checked by hand).
    Put your UPI ID below. While it is empty, the pay buttons say "being set up". */
 const UPI = { id: "6230366306@ybl", name: "Seb Saathi" };
-const PRICES = { basic: { month: 49, year: 299, was: 499 }, premium: { month: 149, year: 999, was: 0 } };   /* was = regular yearly price shown crossed out (limited-time offer); 0 = no offer. Admin → Payments → Plans & prices */
+const PRICES = { basic: { month: 29, year: 299, was: 499, wasm: 49 }, premium: { month: 99, year: 999, was: 1499, wasm: 149 } };   /* was / wasm = regular yearly / monthly price shown crossed out (limited-time offer); 0 = no offer. Admin → Payments → Plans & prices */
 Object.assign(T.en, { pl_offer: "Limited-time offer · save {x}" }); Object.assign(T.hi, { pl_offer: "सीमित समय का ऑफ़र · {x} बचाएँ" }); if (T.hn) Object.assign(T.hn, { pl_offer: "Limited time offer · {x} bachayein" });
 const QR_SRC = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";
 
@@ -105,7 +105,7 @@ function renderPlans() {
       ? '<p class="plprice">' + tr("pl_zero") + '</p><p class="plsub">' + tr("pl_always") + "</p>"
       : (PRICES[key].was > PRICES[key].year ? '<p class="ploffer">' + tr("pl_offer").replace("{x}", rupees(PRICES[key].was - PRICES[key].year)) + "</p>" : "") +
         '<p class="plprice">' + (PRICES[key].was > PRICES[key].year ? '<s class="plwas">' + rupees(PRICES[key].was) + "</s> " : "") + rupees(PRICES[key].year) + " <small>" + tr("pl_yr") + '</small></p><p class="plsub">' +
-        tr("pl_mo").replace("{m}", PRICES[key].month) + "</p>";
+        tr("pl_mo").replace("₹{m}", (PRICES[key].wasm > PRICES[key].month ? '<s class="plwas2">' + rupees(PRICES[key].wasm) + "</s> " : "") + rupees(PRICES[key].month)) + "</p>";
     let act;
     if (key === "free") {
       act = typeof user !== "undefined" && user
@@ -303,7 +303,7 @@ let plOrig = null;
 function applyPlanSettings(d) {
   if (!d || typeof d !== "object") return;
   const ok = v => Number.isInteger(v) && v >= 0;
-  ["basic", "premium"].forEach(p => { const x = d.prices && d.prices[p]; if (x && ok(x.month) && ok(x.year) && x.month > 0 && x.year > 0) { PRICES[p].month = x.month; PRICES[p].year = x.year; if (ok(x.was)) PRICES[p].was = x.was; } });
+  ["basic", "premium"].forEach(p => { const x = d.prices && d.prices[p]; if (x && ok(x.month) && ok(x.year) && x.month > 0 && x.year > 0) { PRICES[p].month = x.month; PRICES[p].year = x.year; if (ok(x.was)) PRICES[p].was = x.was; if (ok(x.wasm)) PRICES[p].wasm = x.wasm; } });
   const L = d.limits || {};
   ["free", "basic", "premium"].forEach(p => {
     const x = L[p]; if (!x) return;

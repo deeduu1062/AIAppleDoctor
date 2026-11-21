@@ -21,8 +21,8 @@ alter table public.payments add constraint payments_ref_check
 -- prices: keep in step with PRICES in plans.js
 create or replace function public.plan_price(p text, per text) returns integer
 language sql immutable as $$
-  select case p || '/' || per when 'basic/month' then 49 when 'basic/year' then 299
-                              when 'premium/month' then 149 when 'premium/year' then 999 end
+  select case p || '/' || per when 'basic/month' then 29 when 'basic/year' then 299
+                              when 'premium/month' then 99 when 'premium/year' then 999 end
 $$;
 
 -- an "I've paid" row: the right price, approved now, end date worked out here (renewals add on to the current end date)

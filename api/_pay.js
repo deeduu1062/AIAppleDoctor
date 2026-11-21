@@ -12,7 +12,7 @@ const crypto = require("crypto");
 const SB_URL = "https://rylqzyylbsephirwslce.supabase.co";
 const SB_KEY = "sb_publishable_EYVtP0ljYd-jta5ENmX9Jg_mCtYLzJo"; // public key, same as the website
 /* keep in step with PRICES in plans.js */
-const PRICES = { basic: { month: 49, year: 299 }, premium: { month: 149, year: 999 } };
+const PRICES = { basic: { month: 29, year: 299 }, premium: { month: 99, year: 999 } };
 
 const env = () => ({ id: process.env.RAZORPAY_KEY_ID || "", secret: process.env.RAZORPAY_KEY_SECRET || "", svc: process.env.SUPABASE_SERVICE_ROLE_KEY || "" });
 const enabled = () => { const e = env(); return !!(e.id && e.secret && e.svc); };
