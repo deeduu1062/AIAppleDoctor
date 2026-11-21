@@ -1,8 +1,8 @@
 /* Seb Saathi — plans and UPI payment (Option A: direct UPI, checked by hand).
    Put your UPI ID below. While it is empty, the pay buttons say "being set up". */
 const UPI = { id: "6230366306@ybl", name: "Seb Saathi" };
-const PRICES = { basic: { month: 29, year: 299, was: 499, wasm: 49 }, premium: { month: 99, year: 999, was: 1499, wasm: 149 } };   /* was / wasm = regular yearly / monthly price shown crossed out (limited-time offer); 0 = no offer. Admin → Payments → Plans & prices */
-Object.assign(T.en, { pl_offer: "Limited-time offer · save {x}" }); Object.assign(T.hi, { pl_offer: "सीमित समय का ऑफ़र · {x} बचाएँ" }); if (T.hn) Object.assign(T.hn, { pl_offer: "Limited time offer · {x} bachayein" });
+const PRICES = { basic: { month: 29, year: 299, was: 499, wasm: 49 }, premium: { month: 99, year: 999, was: 1499, wasm: 149 } };   /* was / wasm = regular yearly / monthly price shown crossed out (launch price); 0 = no offer. Admin → Payments → Plans & prices */
+Object.assign(T.en, { pl_offer: "Launch price · save {x}" }); Object.assign(T.hi, { pl_offer: "लॉन्च कीमत · {x} बचाएँ" }); if (T.hn) Object.assign(T.hn, { pl_offer: "Launch price · {x} bachayein" });
 const QR_SRC = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";
 
 let payPlan = "basic", payPer = "year", myPay = null, qrLoad = null;
