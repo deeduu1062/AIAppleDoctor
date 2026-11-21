@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
     model,
     input: img ? [{ type: "image", data: img.data, mime_type: img.mime }, { type: "text", text: prompt }] : prompt,
     response_format: { type: "video", aspect_ratio: aspect, resolution: "720p", delivery: "uri" },
-    background: false, store: false, stream: false
+    background: false, store: true, stream: false   /* Google requires store=true when the video comes back as a download link */
   };
   let j;
   try {
